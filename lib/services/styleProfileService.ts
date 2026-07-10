@@ -37,3 +37,24 @@ export function isProfileComplete(profile: StyleProfile | null): boolean {
     profile.occasionPreferences.length > 0
   )
 }
+
+export interface ProfileCompletion {
+  completedSections: number
+  totalSections: number
+  percent: number
+}
+
+export function getProfileCompletion(profile: StyleProfile | null): ProfileCompletion {
+  const sections = [
+    (profile?.preferredStyles?.length ?? 0) > 0,
+    (profile?.favoriteColors?.length ?? 0) > 0,
+    (profile?.occasionPreferences?.length ?? 0) > 0,
+  ]
+  const completedSections = sections.filter(Boolean).length
+  const totalSections = sections.length
+  return {
+    completedSections,
+    totalSections,
+    percent: Math.round((completedSections / totalSections) * 100),
+  }
+}

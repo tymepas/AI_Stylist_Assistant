@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { ImageOff, HelpCircle, LucideIcon } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ImageOff, HelpCircle, LucideIcon, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import UploadCard from '@/components/fashion/UploadCard'
 import LoadingAnalysis from '@/components/fashion/LoadingAnalysis'
 import ErrorState from '@/components/fashion/ErrorState'
 import DecisionReport from '@/components/fashion/DecisionReport'
+import StepIndicator from '@/components/fashion/StepIndicator'
 import { OCCASION_OPTIONS } from '@/lib/constants/options'
 import { validateImageMeta } from '@/lib/services/analysisService'
 import { AnalysisResult, CompleteAnalysisResult, ImageMeta } from '@/types/schema'
@@ -20,11 +22,14 @@ interface ErrorInfo {
   icon?: LucideIcon
 }
 
+const STEPS = [{ label: 'Your Photo' }, { label: 'Garment' }, { label: 'Occasion' }]
+
 function toImageMeta(file: File): ImageMeta {
   return { name: file.name, type: file.type, size: file.size }
 }
 
 export default function AnalysisPage() {
+  const [formStep, setFormStep] = useState(1)
   const [photo, setPhoto] = useState<File | null>(null)
   const [garment, setGarment] = useState<File | null>(null)
   const [occasion, setOccasion] = useState<string>('')
@@ -107,53 +112,118 @@ export default function AnalysisPage() {
     setErrorInfo(null)
   }
 
+  function handleRetryFromError() {
+    // Return to whichever step still needs attention instead of wiping the whole form.
+    if (!photo) setFormStep(1)
+    else if (!garment) setFormStep(2)
+    else setFormStep(3)
+    setStage('form')
+    setErrorInfo(null)
+  }
+
   if (stage === 'loading') return <LoadingAnalysis />
   if (stage === 'result' && result) return <DecisionReport result={result} onReset={handleReset} />
   if (stage === 'error' && errorInfo) {
-    return <ErrorState title={errorInfo.title} message={errorInfo.message} icon={errorInfo.icon} onRetry={handleReset} />
+    return <ErrorState title={errorInfo.title} message={errorInfo.message} icon={errorInfo.icon} onRetry={handleRetryFromError} />
+  }
+
+  const slideVariants = {
+    enter: { opacity: 0, x: 24 },
+    center: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -24 },
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">New Analysis</h2>
-        <p className="mt-1 text-muted-foreground">Upload your photo, the garment you're considering, and pick an occasion.</p>
+        <p className="mt-1 text-muted-foreground">A guided, three-step workflow — your photo, the garment, and the occasion.</p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <UploadCard
-          label="Personal Photo"
-          description="A clear photo of yourself"
-          file={photo}
-          onFileSelect={setPhoto}
-          onRemove={() => setPhoto(null)}
-        />
-        <UploadCard
-          label="Clothing Image"
-          description="The garment you're deciding on"
-          file={garment}
-          onFileSelect={setGarment}
-          onRemove={() => setGarment(null)}
-        />
-      </div>
+      <StepIndicator steps={STEPS} currentStep={formStep} />
 
-      <div className="rounded-2xl border border-border bg-card p-6">
-        <label className="text-sm font-medium text-foreground">Occasion</label>
-        <p className="mt-1 text-sm text-muted-foreground">What is this for?</p>
-        <Select value={occasion} onValueChange={setOccasion}>
-          <SelectTrigger className="mt-4">
-            <SelectValue placeholder="Select an occasion" />
-          </SelectTrigger>
-          <SelectContent>
-            {OCCASION_OPTIONS.map((o) => (
-              <SelectItem key={o} value={o}>{o}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <div className="min-h-[340px] overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <AnimatePresence mode="wait" initial={false}>
+          {formStep === 1 && (
+            <motion.div key="step1" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }}>
+              <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 1 of 3</p>
+              <UploadCard
+                label="Personal Photo"
+                description="A clear, well-lit photo of yourself"
+                file={photo}
+                onFileSelect={setPhoto}
+                onRemove={() => setPhoto(null)}
+              />
+              <div className="mt-6 flex justify-end">
+                <Button size="lg" className="focus-ring" disabled={!photo} onClick={() => setFormStep(2)}>
+                  Continue <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
 
-      <div className="flex justify-end">
-        <Button size="lg" onClick={handleAnalyze}>Analyze</Button>
+          {formStep === 2 && (
+            <motion.div key="step2" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }}>
+              <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 2 of 3</p>
+              <UploadCard
+                label="Clothing Image"
+                description="The garment you're deciding on"
+                file={garment}
+                onFileSelect={setGarment}
+                onRemove={() => setGarment(null)}
+              />
+              <div className="mt-6 flex justify-between">
+                <Button size="lg" variant="ghost" className="focus-ring" onClick={() => setFormStep(1)}>
+                  <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" /> Back
+                </Button>
+                <Button size="lg" className="focus-ring" disabled={!garment} onClick={() => setFormStep(3)}>
+                  Continue <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {formStep === 3 && (
+            <motion.div key="step3" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }}>
+              <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 3 of 3</p>
+
+              <div className="mb-6 flex gap-3">
+                {photo && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
+                    Photo: {photo.name}
+                  </span>
+                )}
+                {garment && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
+                    Garment: {garment.name}
+                  </span>
+                )}
+              </div>
+
+              <label htmlFor="occasion-select" className="text-sm font-medium text-foreground">Occasion</label>
+              <p className="mt-1 text-sm text-muted-foreground">What is this for?</p>
+              <Select value={occasion} onValueChange={setOccasion}>
+                <SelectTrigger id="occasion-select" className="focus-ring mt-4">
+                  <SelectValue placeholder="Select an occasion" />
+                </SelectTrigger>
+                <SelectContent>
+                  {OCCASION_OPTIONS.map((o) => (
+                    <SelectItem key={o} value={o}>{o}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="mt-8 flex justify-between">
+                <Button size="lg" variant="ghost" className="focus-ring" onClick={() => setFormStep(2)}>
+                  <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" /> Back
+                </Button>
+                <Button size="lg" className="focus-ring" disabled={!occasion} onClick={handleAnalyze}>
+                  <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" /> Analyze
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )

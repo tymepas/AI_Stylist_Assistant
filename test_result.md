@@ -216,6 +216,24 @@
         loading state, and failure states (missing image, invalid upload, unable to analyze) with retry.
         Verified visually via screenshot tool already. Requesting backend agent to run automated tests against
         POST /api/analyze for validation logic, schema conformance, and verdict calculation correctness.
+    - agent: "main"
+      message: >
+        Phase 1.5 (UX/visual polish pass, no scope/architecture changes): re-verified all Phase 1 requirements
+        against PRD.md/AI_OUTPUT_SCHEMA.md/MEMORY.md/SYSTEM_PROMPT.md (6 dimensions, calculated verdict, 3 mock
+        scenarios, Analysis Based On + Not Considered, failure states) - all intact, verdict calculation logic
+        in analysisService.ts and route.js left untouched. Changes made: landing page storytelling rewrite with
+        Example Report preview section + floating verdict card on hero; dashboard now has Profile Completion
+        (real, from localStorage), Recent Analyses/Recent Activity (clearly labeled "Example" mock widgets),
+        Style Insights, Quick Tips; profile page has live completion %, motion feedback on chip/swatch selection;
+        analysis page converted to a 3-step guided wizard (StepIndicator component) instead of one long form;
+        DecisionReport redesigned with circular ScoreGauge, verdict icon, per-dimension colored accent border,
+        confidence meter (visual bars), "Recommended Next Step" callout; UploadCard/LoadingAnalysis/ErrorState
+        polished with framer-motion micro-interactions; added focus-ring/card-hover utilities + accessibility
+        (aria-current, aria-pressed, role=button+keyboard on upload cards, sr-only sheet title). Also fixed a
+        UX bug found during this pass: UploadCard previously accepted invalid file types into preview with a
+        false "Uploaded" badge - now validates immediately via validateImageMeta and shows a toast + keeps the
+        card empty. No backend/API contract changes in this pass, so no backend re-test needed. Verified all
+        pages, the 3-step analysis flow, all 3 mock scenarios, and error states via screenshot tool.
     - agent: "testing"
       message: >
         Backend testing completed successfully. Created /app/backend_test.py with comprehensive test suite using
