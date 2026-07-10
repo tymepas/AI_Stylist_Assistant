@@ -234,6 +234,24 @@
         false "Uploaded" badge - now validates immediately via validateImageMeta and shows a toast + keeps the
         card empty. No backend/API contract changes in this pass, so no backend re-test needed. Verified all
         pages, the 3-step analysis flow, all 3 mock scenarios, and error states via screenshot tool.
+    - agent: "main"
+      message: >
+        Phase 1.75 (correctness/consistency audit + polish, no logic changes): Found and fixed one factual
+        inconsistency - a hero floating card said "Calculated from 5 weighted dimensions" (contradicted the
+        "six evaluation dimensions" messaging used everywhere else); changed to "Calculated across all six
+        evaluation dimensions". Found the landing page's Example Report preview only showed 4 of 6 dimensions
+        with no "preview" disclaimer - fixed by showing all 6 dimensions so it accurately mirrors the real
+        report. Added a "How it works" mini flow visual (Photo -> Garment -> AI -> Report) to the hero image.
+        Added contextual "Tips" side panels to each analysis step to fix excessive empty space (Priority 2).
+        Strengthened the Decision Report verdict card (ring-2, bold heading, larger icon) per "make verdict
+        card slightly stronger" instruction, kept motion subtle (no dramatic reveals). Added verdict-colored
+        status dots to dashboard's Recent Analyses widget for visual hierarchy (still labeled EXAMPLE, no fake
+        analytics added). No file in the repo named ARCHITECTURE.md exists / was ever provided - flagged to
+        user, proceeded using PRD.md/AI_OUTPUT_SCHEMA.md/MEMORY.md/SYSTEM_PROMPT.md as source of truth.
+        Re-verified: 6 dimensions render everywhere, verdict still calculated app-side (untouched), 3 mock
+        scenarios still rotate correctly (re-tested Not Recommended scenario end-to-end via screenshot),
+        accessibility attributes (aria-current, aria-pressed, focus-ring, keyboard upload) intact, no lint
+        errors. No backend/API changes made in this pass.
     - agent: "testing"
       message: >
         Backend testing completed successfully. Created /app/backend_test.py with comprehensive test suite using

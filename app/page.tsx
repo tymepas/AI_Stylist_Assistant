@@ -117,6 +117,33 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             </div>
             <motion.div
+              initial={{ opacity: 0, x: -16, y: -16 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="absolute -top-6 -right-4 hidden w-52 rounded-2xl border border-border bg-card p-4 shadow-xl shadow-black/30 sm:-right-8 sm:block"
+              aria-hidden="true"
+            >
+              <p className="mb-3 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">How it works</p>
+              <div className="flex items-center justify-between">
+                {[
+                  { icon: UserCircle2, label: 'Photo' },
+                  { icon: Shirt, label: 'Garment' },
+                  { icon: Sparkles, label: 'AI' },
+                  { icon: FileCheck2, label: 'Report' },
+                ].map((step, i, arr) => (
+                  <div key={step.label} className="flex items-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10">
+                        <step.icon className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      <span className="text-[9px] text-muted-foreground">{step.label}</span>
+                    </div>
+                    {i < arr.length - 1 && <div className="mx-1 h-px w-3 shrink-0 bg-border" />}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0, x: 20, y: 20 }}
               animate={{ opacity: 1, x: 0, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
@@ -129,7 +156,7 @@ export default function LandingPage() {
               <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
                 <div className="h-full w-[94%] rounded-full bg-emerald-400" />
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">Calculated from 5 weighted dimensions</p>
+              <p className="mt-2 text-[11px] text-muted-foreground">Calculated across all six evaluation dimensions</p>
             </motion.div>
           </motion.div>
         </div>

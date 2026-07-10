@@ -10,6 +10,7 @@ import LoadingAnalysis from '@/components/fashion/LoadingAnalysis'
 import ErrorState from '@/components/fashion/ErrorState'
 import DecisionReport from '@/components/fashion/DecisionReport'
 import StepIndicator from '@/components/fashion/StepIndicator'
+import StepTips from '@/components/fashion/StepTips'
 import { OCCASION_OPTIONS } from '@/lib/constants/options'
 import { validateImageMeta } from '@/lib/services/analysisService'
 import { AnalysisResult, CompleteAnalysisResult, ImageMeta } from '@/types/schema'
@@ -23,6 +24,9 @@ interface ErrorInfo {
 }
 
 const STEPS = [{ label: 'Your Photo' }, { label: 'Garment' }, { label: 'Occasion' }]
+
+const PHOTO_TIPS = ['Use natural, even lighting', 'Face the camera directly, torso visible', 'Avoid heavy filters or busy backgrounds']
+const GARMENT_TIPS = ['Lay flat or hang the garment', 'Capture the full item in frame', 'Use a plain, uncluttered background']
 
 function toImageMeta(file: File): ImageMeta {
   return { name: file.name, type: file.type, size: file.size }
@@ -147,13 +151,16 @@ export default function AnalysisPage() {
           {formStep === 1 && (
             <motion.div key="step1" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }}>
               <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 1 of 3</p>
-              <UploadCard
-                label="Personal Photo"
-                description="A clear, well-lit photo of yourself"
-                file={photo}
-                onFileSelect={setPhoto}
-                onRemove={() => setPhoto(null)}
-              />
+              <div className="grid gap-6 md:grid-cols-[1fr_240px]">
+                <UploadCard
+                  label="Personal Photo"
+                  description="A clear, well-lit photo of yourself"
+                  file={photo}
+                  onFileSelect={setPhoto}
+                  onRemove={() => setPhoto(null)}
+                />
+                <StepTips title="For best results" tips={PHOTO_TIPS} />
+              </div>
               <div className="mt-6 flex justify-end">
                 <Button size="lg" className="focus-ring" disabled={!photo} onClick={() => setFormStep(2)}>
                   Continue <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
@@ -165,13 +172,16 @@ export default function AnalysisPage() {
           {formStep === 2 && (
             <motion.div key="step2" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }}>
               <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 2 of 3</p>
-              <UploadCard
-                label="Clothing Image"
-                description="The garment you're deciding on"
-                file={garment}
-                onFileSelect={setGarment}
-                onRemove={() => setGarment(null)}
-              />
+              <div className="grid gap-6 md:grid-cols-[1fr_240px]">
+                <UploadCard
+                  label="Clothing Image"
+                  description="The garment you're deciding on"
+                  file={garment}
+                  onFileSelect={setGarment}
+                  onRemove={() => setGarment(null)}
+                />
+                <StepTips title="For best results" tips={GARMENT_TIPS} />
+              </div>
               <div className="mt-6 flex justify-between">
                 <Button size="lg" variant="ghost" className="focus-ring" onClick={() => setFormStep(1)}>
                   <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" /> Back
@@ -187,31 +197,43 @@ export default function AnalysisPage() {
             <motion.div key="step3" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }}>
               <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 3 of 3</p>
 
-              <div className="mb-6 flex gap-3">
-                {photo && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
-                    Photo: {photo.name}
-                  </span>
-                )}
-                {garment && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
-                    Garment: {garment.name}
-                  </span>
-                )}
-              </div>
+              <div className="grid gap-6 md:grid-cols-[1fr_240px]">
+                <div>
+                  <div className="mb-6 flex flex-wrap gap-2">
+                    {photo && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
+                        Photo: {photo.name}
+                      </span>
+                    )}
+                    {garment && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
+                        Garment: {garment.name}
+                      </span>
+                    )}
+                  </div>
 
-              <label htmlFor="occasion-select" className="text-sm font-medium text-foreground">Occasion</label>
-              <p className="mt-1 text-sm text-muted-foreground">What is this for?</p>
-              <Select value={occasion} onValueChange={setOccasion}>
-                <SelectTrigger id="occasion-select" className="focus-ring mt-4">
-                  <SelectValue placeholder="Select an occasion" />
-                </SelectTrigger>
-                <SelectContent>
-                  {OCCASION_OPTIONS.map((o) => (
-                    <SelectItem key={o} value={o}>{o}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <label htmlFor="occasion-select" className="text-sm font-medium text-foreground">Occasion</label>
+                  <p className="mt-1 text-sm text-muted-foreground">What is this for?</p>
+                  <Select value={occasion} onValueChange={setOccasion}>
+                    <SelectTrigger id="occasion-select" className="focus-ring mt-4">
+                      <SelectValue placeholder="Select an occasion" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {OCCASION_OPTIONS.map((o) => (
+                        <SelectItem key={o} value={o}>{o}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <StepTips
+                  title="Why occasion matters"
+                  tips={[
+                    'Occasion carries the most weight in your verdict (30%)',
+                    'Formality is weighted second (25%)',
+                    'Style preference match follows at 20%',
+                  ]}
+                />
+              </div>
 
               <div className="mt-8 flex justify-between">
                 <Button size="lg" variant="ghost" className="focus-ring" onClick={() => setFormStep(2)}>

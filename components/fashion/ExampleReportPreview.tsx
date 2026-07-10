@@ -1,12 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CalendarCheck, Palette, Shirt, Heart, CheckCircle2 } from 'lucide-react'
+import { CalendarCheck, Palette, Shirt, CloudSun, Sparkles, Heart, CheckCircle2 } from 'lucide-react'
 
 const EXAMPLE_DIMENSIONS = [
   { label: 'Occasion Fit', icon: CalendarCheck, rating: 'Excellent' },
   { label: 'Color Harmony', icon: Palette, rating: 'Excellent' },
   { label: 'Formality', icon: Shirt, rating: 'Good' },
+  { label: 'Seasonality', icon: CloudSun, rating: 'Good' },
+  { label: 'Style Consistency', icon: Sparkles, rating: 'Excellent' },
   { label: 'Style Preference Match', icon: Heart, rating: 'Good' },
 ]
 

@@ -17,6 +17,13 @@ const VERDICT_COLOR: Record<string, string> = {
   'Not Recommended': 'text-red-400',
 }
 
+const VERDICT_DOT: Record<string, string> = {
+  'Highly Recommended': 'bg-emerald-400',
+  Recommended: 'bg-blue-400',
+  'Consider Alternatives': 'bg-amber-400',
+  'Not Recommended': 'bg-red-400',
+}
+
 export default function DashboardHome() {
   const [profile, setProfile] = useState<StyleProfile | null>(null)
   const [hydrated, setHydrated] = useState(false)
@@ -124,9 +131,12 @@ export default function DashboardHome() {
           <div className="mt-4 space-y-3">
             {RECENT_ANALYSES_PREVIEW.map((item) => (
               <div key={item.id} className="flex items-center justify-between rounded-xl border border-border/60 bg-background/40 px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{item.garment}</p>
-                  <p className="text-xs text-muted-foreground">{item.occasion} · {item.timeAgo}</p>
+                <div className="flex items-center gap-3">
+                  <span className={`h-2 w-2 shrink-0 rounded-full ${VERDICT_DOT[item.verdict]}`} aria-hidden="true" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{item.garment}</p>
+                    <p className="text-xs text-muted-foreground">{item.occasion} · {item.timeAgo}</p>
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className={`text-sm font-medium ${VERDICT_COLOR[item.verdict]}`}>{item.verdict}</p>

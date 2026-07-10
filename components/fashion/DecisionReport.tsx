@@ -106,7 +106,7 @@ export default function DecisionReport({ result, onReset }: DecisionReportProps)
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={`relative overflow-hidden rounded-3xl border border-border bg-card p-8 ring-1 ${style.ring}`}
+        className={`relative overflow-hidden rounded-3xl border border-border bg-card p-8 ring-2 ${style.ring}`}
       >
         <div className={`absolute -right-16 -top-16 h-56 w-56 rounded-full ${style.bg} blur-3xl`} aria-hidden="true" />
         <div className="relative flex flex-col items-start justify-between gap-8 sm:flex-row sm:items-center">
@@ -114,8 +114,8 @@ export default function DecisionReport({ result, onReset }: DecisionReportProps)
             <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /> Decision Report · Calculated Verdict
             </p>
-            <h2 className={`mt-3 flex items-center gap-2.5 text-3xl font-semibold tracking-tight sm:text-4xl ${style.text}`}>
-              <VerdictIcon className="h-8 w-8" aria-hidden="true" />
+            <h2 className={`mt-3 flex items-center gap-2.5 text-3xl font-bold tracking-tight sm:text-4xl ${style.text}`}>
+              <VerdictIcon className="h-9 w-9" aria-hidden="true" />
               {result.overall_recommendation}
             </h2>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">{result.next_step}</p>
