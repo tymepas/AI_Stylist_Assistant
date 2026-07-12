@@ -68,6 +68,7 @@ export interface AnalyzeRequestPayload {
   photo: ImageMeta
   garment: ImageMeta
   stylePreferences?: string[]
+  styleProfile?: StyleProfile
 }
 
 export type AnalyzeErrorCode = 'missing_image' | 'invalid_upload' | 'server_error'

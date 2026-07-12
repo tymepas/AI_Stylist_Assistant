@@ -1,5 +1,8 @@
 const nextConfig = {
   output: 'standalone',
+  outputFileTracingIncludes: {
+    '/*': ['./memory/SYSTEM_PROMPT.md'],
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

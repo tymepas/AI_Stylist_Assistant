@@ -13,6 +13,7 @@ import StepIndicator from '@/components/fashion/StepIndicator'
 import StepTips from '@/components/fashion/StepTips'
 import { OCCASION_OPTIONS } from '@/lib/constants/options'
 import { validateImageMeta } from '@/lib/services/analysisService'
+import { emptyProfile, getProfile } from '@/lib/services/styleProfileService'
 import { AnalysisResult, CompleteAnalysisResult, ImageMeta } from '@/types/schema'
 
 type Stage = 'form' | 'loading' | 'result' | 'error'
@@ -27,9 +28,43 @@ const STEPS = [{ label: 'Your Photo' }, { label: 'Garment' }, { label: 'Occasion
 
 const PHOTO_TIPS = ['Use natural, even lighting', 'Face the camera directly, torso visible', 'Avoid heavy filters or busy backgrounds']
 const GARMENT_TIPS = ['Lay flat or hang the garment', 'Capture the full item in frame', 'Use a plain, uncluttered background']
+const MIN_ANALYSIS_DIMENSION = 512
 
 function toImageMeta(file: File): ImageMeta {
   return { name: file.name, type: file.type, size: file.size }
+}
+
+/** Returns the original File unless its shorter side needs upscaling for analysis. */
+async function prepareImageForAnalysis(file: File): Promise<File> {
+  const bitmap = await createImageBitmap(file)
+
+  try {
+    if (bitmap.width >= MIN_ANALYSIS_DIMENSION && bitmap.height >= MIN_ANALYSIS_DIMENSION) {
+      return file
+    }
+
+    const scale = Math.max(MIN_ANALYSIS_DIMENSION / bitmap.width, MIN_ANALYSIS_DIMENSION / bitmap.height)
+    const width = Math.ceil(bitmap.width * scale)
+    const height = Math.ceil(bitmap.height * scale)
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Unable to prepare image.')
+    context.imageSmoothingEnabled = true
+    context.imageSmoothingQuality = 'high'
+    context.drawImage(bitmap, 0, 0, width, height)
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, file.type, file.type === 'image/png' ? undefined : 0.92)
+    })
+    if (!blob) throw new Error('Unable to prepare image.')
+
+    return new File([blob], file.name, { type: blob.type, lastModified: file.lastModified })
+  } finally {
+    bitmap.close()
+  }
 }
 
 export default function AnalysisPage() {
@@ -70,10 +105,24 @@ export default function AnalysisPage() {
     setStage('loading')
 
     try {
+
+      const analysisPhoto = await prepareImageForAnalysis(photo)
+      const analysisGarment = await prepareImageForAnalysis(garment)
+
+      const analysisPhotoCheck = validateImageMeta(toImageMeta(analysisPhoto))
+      if (!analysisPhotoCheck.valid) throw new Error(`Personal photo: ${analysisPhotoCheck.message}`)
+      const analysisGarmentCheck = validateImageMeta(toImageMeta(analysisGarment))
+      if (!analysisGarmentCheck.valid) throw new Error(`Garment photo: ${analysisGarmentCheck.message}`)
+
+      const formData = new FormData()
+      formData.append('occasion', occasion)
+      formData.append('photo', analysisPhoto)
+      formData.append('garment', analysisGarment)
+      formData.append('styleProfile', JSON.stringify(getProfile() ?? emptyProfile))
+
       const response = await fetch('/api/analyze', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ occasion, photo: photoMeta, garment: garmentMeta }),
+        body: formData,
       })
 
       if (!response.ok) {

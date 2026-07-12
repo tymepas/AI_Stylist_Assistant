@@ -13,6 +13,7 @@ import {
   UnableToAnalyzeResult,
   OverallRecommendation,
   ImageMeta,
+  StyleProfile,
 } from '@/types/schema'
 
 const RATING_SCORES: Record<string, number> = {
@@ -66,6 +67,116 @@ export function computeVerdict(
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE_BYTES = 10 * 1024 * 1024
+const MIN_IMAGE_DIMENSION = 512
+
+function createEmptyStyleProfile(): StyleProfile {
+  return { preferredStyles: [], favoriteColors: [], occasionPreferences: [] }
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+}
+
+/** Safely parses the optional multipart style profile without blocking users who have not saved one. */
+export function parseStyleProfile(value: unknown): { valid: boolean; profile: StyleProfile; message?: string } {
+  if (value === null || value === undefined || value === '') {
+    return { valid: true, profile: createEmptyStyleProfile() }
+  }
+  if (typeof value !== 'string') {
+    return { valid: false, profile: createEmptyStyleProfile(), message: 'Style profile data is invalid.' }
+  }
+
+  try {
+    const profile: unknown = JSON.parse(value)
+    if (
+      !profile ||
+      typeof profile !== 'object' ||
+      !isStringArray((profile as StyleProfile).preferredStyles) ||
+      !isStringArray((profile as StyleProfile).favoriteColors) ||
+      !isStringArray((profile as StyleProfile).occasionPreferences)
+    ) {
+      return { valid: false, profile: createEmptyStyleProfile(), message: 'Style profile data is invalid.' }
+    }
+    return { valid: true, profile: profile as StyleProfile }
+  } catch {
+    return { valid: false, profile: createEmptyStyleProfile(), message: 'Style profile data is invalid.' }
+  }
+}
+
+type ImageDimensions = { width: number; height: number }
+
+function bytesMatch(bytes: Uint8Array, offset: number, expected: number[]): boolean {
+  return expected.every((value, index) => bytes[offset + index] === value)
+}
+
+function readUint24LittleEndian(bytes: Uint8Array, offset: number): number {
+  return bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16)
+}
+
+function getPngDimensions(bytes: Uint8Array): ImageDimensions | null {
+  if (!bytesMatch(bytes, 0, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]) || !bytesMatch(bytes, 12, [0x49, 0x48, 0x44, 0x52]) || bytes.length < 24) return null
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  return { width: view.getUint32(16), height: view.getUint32(20) }
+}
+
+function getJpegDimensions(bytes: Uint8Array): ImageDimensions | null {
+  if (!bytesMatch(bytes, 0, [0xff, 0xd8])) return null
+
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+  let offset = 2
+  const startOfFrameMarkers = new Set([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf])
+
+  while (offset + 9 <= bytes.length) {
+    while (bytes[offset] === 0xff) offset += 1
+    const marker = bytes[offset]
+    offset += 1
+
+    // Standalone JPEG markers do not have a segment length.
+    if (marker === 0xd8 || marker === 0xd9 || (marker >= 0xd0 && marker <= 0xd7)) continue
+    if (offset + 2 > bytes.length) return null
+
+    const segmentLength = view.getUint16(offset)
+    if (segmentLength < 2 || offset + segmentLength > bytes.length) return null
+    if (startOfFrameMarkers.has(marker)) {
+      if (segmentLength < 8) return null
+      return { height: view.getUint16(offset + 3), width: view.getUint16(offset + 5) }
+    }
+    offset += segmentLength
+  }
+
+  return null
+}
+
+function getWebpDimensions(bytes: Uint8Array): ImageDimensions | null {
+  if (!bytesMatch(bytes, 0, [0x52, 0x49, 0x46, 0x46]) || !bytesMatch(bytes, 8, [0x57, 0x45, 0x42, 0x50]) || bytes.length < 30) return null
+
+  if (bytesMatch(bytes, 12, [0x56, 0x50, 0x38, 0x58])) { // VP8X
+    return {
+      width: readUint24LittleEndian(bytes, 24) + 1,
+      height: readUint24LittleEndian(bytes, 27) + 1,
+    }
+  }
+
+  if (bytesMatch(bytes, 12, [0x56, 0x50, 0x38, 0x20])) { // VP8
+    if (!bytesMatch(bytes, 23, [0x9d, 0x01, 0x2a])) return null
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
+    return { width: view.getUint16(26, true) & 0x3fff, height: view.getUint16(28, true) & 0x3fff }
+  }
+
+  if (bytesMatch(bytes, 12, [0x56, 0x50, 0x38, 0x4c]) && bytes[20] === 0x2f) { // VP8L
+    const packed = (bytes[21] | (bytes[22] << 8) | (bytes[23] << 16) | (bytes[24] << 24)) >>> 0
+    return { width: (packed & 0x3fff) + 1, height: ((packed >>> 14) & 0x3fff) + 1 }
+  }
+
+  return null
+}
+
+function getImageDimensions(bytes: Uint8Array, type: string): ImageDimensions | null {
+  if (type === 'image/jpeg') return getJpegDimensions(bytes)
+  if (type === 'image/png') return getPngDimensions(bytes)
+  if (type === 'image/webp') return getWebpDimensions(bytes)
+  return null
+}
 
 export function validateImageMeta(meta: ImageMeta | undefined | null): { valid: boolean; message?: string } {
   if (!meta || !meta.type) return { valid: false, message: 'Image data is missing.' }
@@ -78,6 +189,25 @@ export function validateImageMeta(meta: ImageMeta | undefined | null): { valid: 
   if (meta.size > MAX_SIZE_BYTES) {
     return { valid: false, message: 'Image must be smaller than 10MB.' }
   }
+  return { valid: true }
+}
+
+/** Validates a multipart upload's MIME metadata, bytes, and decoded dimensions. */
+export async function validateImageFile(file: File | undefined | null): Promise<{ valid: boolean; message?: string }> {
+  if (!file) return { valid: false, message: 'Image data is missing.' }
+
+  const metaCheck = validateImageMeta({ name: file.name, type: file.type, size: file.size })
+  if (!metaCheck.valid) return metaCheck
+
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  const dimensions = getImageDimensions(bytes, file.type)
+  if (!dimensions) {
+    return { valid: false, message: 'The uploaded file is not a valid JPEG, PNG, or WEBP image.' }
+  }
+  if (dimensions.width < MIN_IMAGE_DIMENSION || dimensions.height < MIN_IMAGE_DIMENSION) {
+    return { valid: false, message: 'Image must be at least 512×512 pixels.' }
+  }
+
   return { valid: true }
 }
 

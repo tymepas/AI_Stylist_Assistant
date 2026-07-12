@@ -1,7 +1,9 @@
 import { MongoClient } from 'mongodb'
 import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
-import { getMockAnalysis, validateImageMeta } from '@/lib/services/analysisService'
+import { getMockAnalysis, parseStyleProfile, validateImageFile } from '@/lib/services/analysisService'
+import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
+import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/openAIAnalysisService'
 
 // MongoDB connection (lazy - only used by the /status template endpoints below)
 let client
@@ -38,14 +40,17 @@ async function handleRoute(request, { params }) {
 
   try {
     // ------------------------------------------------------------------
-    // Fashion Decision Assistant - Phase 1 mock analysis endpoint.
-    // No real AI model is called here. No database is used for this route.
-    // See /app/lib/services/analysisService.ts and AI_OUTPUT_SCHEMA.md / PRD.md
+    // Fashion Decision Assistant analysis endpoint.
+    // No database is used for this route. ANALYSIS_MODE selects mock or OpenAI.
     // ------------------------------------------------------------------
     if (route === '/analyze' && method === 'POST') {
-      const body = await request.json().catch(() => null)
+      const formData = await request.formData().catch(() => null)
+      const occasion = formData?.get('occasion')
+      const photo = formData?.get('photo')
+      const garment = formData?.get('garment')
+      const styleProfile = formData?.get('styleProfile')
 
-      if (!body || !body.occasion || !body.photo || !body.garment) {
+      if (!formData || typeof occasion !== 'string' || !occasion || !isUploadedFile(photo) || !isUploadedFile(garment)) {
         return handleCORS(NextResponse.json(
           {
             error: 'missing_image',
@@ -55,7 +60,7 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      const photoCheck = validateImageMeta(body.photo)
+      const photoCheck = await validateImageFile(photo)
       if (!photoCheck.valid) {
         return handleCORS(NextResponse.json(
           { error: 'invalid_upload', message: `Personal photo: ${photoCheck.message}` },
@@ -63,7 +68,7 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      const garmentCheck = validateImageMeta(body.garment)
+      const garmentCheck = await validateImageFile(garment)
       if (!garmentCheck.valid) {
         return handleCORS(NextResponse.json(
           { error: 'invalid_upload', message: `Garment photo: ${garmentCheck.message}` },
@@ -71,11 +76,49 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      // Simulate realistic multimodal AI latency (PRD target: under 5 seconds).
-      await new Promise((resolve) => setTimeout(resolve, 1400 + Math.random() * 1000))
+      const styleProfileCheck = parseStyleProfile(styleProfile)
+      if (!styleProfileCheck.valid) {
+        return handleCORS(NextResponse.json(
+          { error: 'invalid_upload', message: styleProfileCheck.message },
+          { status: 400 }
+        ))
+      }
 
-      const result = getMockAnalysis()
-      return handleCORS(NextResponse.json(result))
+
+      const analysisMode = process.env.ANALYSIS_MODE?.trim().toLowerCase() || 'mock'
+
+      if (analysisMode === 'mock') {
+        // Preserve the existing mock-mode behavior and latency.
+        await new Promise((resolve) => setTimeout(resolve, 1400 + Math.random() * 1000))
+        return handleCORS(NextResponse.json(getMockAnalysis()))
+      }
+
+      if (analysisMode !== 'openai') {
+        return handleCORS(NextResponse.json(
+          { error: 'server_error', message: 'The analysis service is not configured correctly.' },
+          { status: 500 }
+        ))
+      }
+
+      try {
+        const rawAnalysis = await analyzeWithOpenAI({
+          photo,
+          garment,
+          occasion,
+          styleProfile: styleProfileCheck.profile,
+        })
+
+        const result = rawAnalysis.status === 'complete'
+          ? buildCompleteAnalysisResult(rawAnalysis.dimensions)
+          : rawAnalysis
+
+        return handleCORS(NextResponse.json(result))
+      } catch (error) {
+        if (error instanceof OpenAIAnalysisError) {
+          return handleCORS(createOpenAIErrorResponse(error))
+        }
+        throw error
+      }
     }
 
     // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
@@ -140,6 +183,40 @@ async function handleRoute(request, { params }) {
 
 // Export all HTTP methods
 export const GET = handleRoute
+
+function isUploadedFile(value) {
+  return value && typeof value !== 'string' && typeof value.arrayBuffer === 'function'
+}
+
+function createOpenAIErrorResponse(error) {
+  const responses = {
+    configuration_error: {
+      status: 500,
+      message: 'The analysis service is not configured. Please try again later.',
+    },
+    timeout: {
+      status: 504,
+      message: 'The analysis took too long. Please try again.',
+    },
+    rate_limit: {
+      status: 429,
+      message: 'The analysis service is busy. Please wait a moment and try again.',
+    },
+    invalid_response: {
+      status: 502,
+      message: 'The analysis could not be completed reliably. Please try again.',
+    },
+    api_error: {
+      status: 502,
+      message: 'The analysis service is temporarily unavailable. Please try again.',
+    },
+  }
+  const response = responses[error.code] || responses.api_error
+  return NextResponse.json(
+    { error: 'server_error', message: response.message },
+    { status: response.status }
+  )
+}
 export const POST = handleRoute
 export const PUT = handleRoute
 export const DELETE = handleRoute
