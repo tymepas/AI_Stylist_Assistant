@@ -284,7 +284,7 @@ export default function LandingPage() {
             </div>
             <span className="text-sm font-medium">Verdict</span>
           </div>
-          <p className="text-xs text-muted-foreground">Phase 1 preview · Mock analysis for demonstration</p>
+          <p className="text-xs text-muted-foreground">Phase 1 MVP · v0.1 · AI-powered outfit decision support</p>
         </div>
       </footer>
     </div>

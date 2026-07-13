@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Sparkles, UserCircle2, ArrowRight, Clock, BarChart3, Lightbulb, Activity, Palette } from 'lucide-react'
+import { Sparkles, UserCircle2, ArrowRight, BarChart3, Lightbulb, Palette } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getProfile, isProfileComplete, getProfileCompletion } from '@/lib/services/styleProfileService'
-import { RECENT_ANALYSES_PREVIEW, QUICK_TIPS, RECENT_ACTIVITY } from '@/lib/constants/mockDashboard'
+import { RECENT_ANALYSES_PREVIEW, QUICK_TIPS } from '@/lib/constants/mockDashboard'
 import { StyleProfile } from '@/types/schema'
-import { fadeUp, staggerContainer, viewportOnce } from '@/lib/motion'
+import { fadeUp, staggerContainer } from '@/lib/motion'
 
 const VERDICT_COLOR: Record<string, string> = {
   'Highly Recommended': 'text-emerald-400',
@@ -46,15 +46,15 @@ export default function DashboardHome() {
   return (
     <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mx-auto max-w-6xl space-y-8">
       <motion.div variants={fadeUp}>
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Welcome back</h2>
-        <p className="mt-1 text-muted-foreground">Here is a quick overview of your fashion decision assistant.</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h2>
+        <p className="mt-1 text-muted-foreground">Your AI-powered outfit decision assistant.</p>
       </motion.div>
 
       {hydrated && !profileComplete && (
         <motion.div variants={fadeUp} className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:flex-row sm:items-center">
           <div>
             <p className="font-medium text-foreground">Complete your style profile</p>
-            <p className="mt-1 text-sm text-muted-foreground">Add your preferred style, colors, and occasions for more relevant analysis.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Add your preferred style, colors, and occasions to improve the Style Preference Match dimension.</p>
           </div>
           <Button asChild className="focus-ring">
             <Link href="/dashboard/profile">Set up profile <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" /></Link>
@@ -116,17 +116,17 @@ export default function DashboardHome() {
           <p className="mt-4 text-sm text-muted-foreground">
             {completion.percent === 100
               ? 'Your profile is fully set up.'
-              : 'A complete profile helps the style preference match dimension.'}
+              : 'A complete profile improves the style preference match dimension.'}
           </p>
         </motion.div>
 
-        {/* Recent analyses (mock preview) */}
+        {/* Demo reports */}
         <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card p-6 lg:col-span-2">
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <BarChart3 className="h-4 w-4 text-primary" aria-hidden="true" /> Recent Analyses
+              <BarChart3 className="h-4 w-4 text-primary" aria-hidden="true" /> Demo Reports
             </h3>
-            <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">Example</span>
+            <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">Examples</span>
           </div>
           <div className="mt-4 space-y-3">
             {RECENT_ANALYSES_PREVIEW.map((item) => (
@@ -135,7 +135,7 @@ export default function DashboardHome() {
                   <span className={`h-2 w-2 shrink-0 rounded-full ${VERDICT_DOT[item.verdict]}`} aria-hidden="true" />
                   <div>
                     <p className="text-sm font-medium text-foreground">{item.garment}</p>
-                    <p className="text-xs text-muted-foreground">{item.occasion} · {item.timeAgo}</p>
+                    <p className="text-xs text-muted-foreground">{item.occasion}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -145,11 +145,11 @@ export default function DashboardHome() {
               </div>
             ))}
           </div>
-          <p className="mt-3 text-xs text-muted-foreground/70">Illustrative preview — saved analysis history is on the roadmap.</p>
+          <p className="mt-3 text-xs text-muted-foreground/70">Illustrative examples only — saved analysis history is on the roadmap.</p>
         </motion.div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-2">
         {/* Style insights */}
         <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card/50 p-6">
           <h3 className="flex items-center gap-2 font-medium text-foreground">
@@ -157,12 +157,12 @@ export default function DashboardHome() {
           </h3>
           {profileComplete && profile ? (
             <div className="mt-3 space-y-2 text-sm text-muted-foreground">
-              {profile.preferredStyles[0] && <p>Your top style: <span className="text-foreground">{profile.preferredStyles[0]}</span></p>}
+              {profile.preferredStyles[0] && <p>Top style: <span className="text-foreground">{profile.preferredStyles[0]}</span></p>}
               {profile.favoriteColors[0] && <p>Favorite tone: <span className="text-foreground">{profile.favoriteColors[0]}</span></p>}
               {profile.occasionPreferences[0] && <p>Shops most for: <span className="text-foreground">{profile.occasionPreferences[0]}</span></p>}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-muted-foreground">Complete your style profile to unlock personalized insights.</p>
+            <p className="mt-3 text-sm text-muted-foreground">Complete your style profile to see personalized insights here.</p>
           )}
         </motion.div>
 
@@ -176,43 +176,15 @@ export default function DashboardHome() {
             <p className="mt-1 text-sm text-muted-foreground">{tip.description}</p>
           </motion.div>
         </motion.div>
-
-        {/* Recent activity (mock) */}
-        <motion.div variants={fadeUp} className="rounded-2xl border border-border bg-card/50 p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 font-medium text-foreground">
-              <Activity className="h-4 w-4 text-primary" aria-hidden="true" /> Recent Activity
-            </h3>
-            <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">Example</span>
-          </div>
-          <ul className="mt-3 space-y-2.5">
-            {RECENT_ACTIVITY.map((activity) => (
-              <li key={activity.id} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary/60" aria-hidden="true" />
-                <span>{activity.label} <span className="text-muted-foreground/60">· {activity.timeAgo}</span></span>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
       </div>
 
-      <motion.div variants={fadeUp} className="grid gap-6 sm:grid-cols-2">
+      <motion.div variants={fadeUp}>
         <div className="rounded-2xl border border-border bg-card/50 p-6">
           <h3 className="flex items-center gap-2 font-medium text-foreground">
             <BarChart3 className="h-4 w-4 text-primary" aria-hidden="true" /> How verdicts are calculated
           </h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Each analysis rates six dimensions independently. A weighted formula then produces one of four verdicts:
-            Highly Recommended, Recommended, Consider Alternatives, or Not Recommended. The verdict is always
-            calculated, never invented.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card/50 p-6">
-          <h3 className="flex items-center gap-2 font-medium text-foreground">
-            <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> History
-          </h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Saved analysis history is coming in a future release. For now, each analysis is independent.
+            Each analysis rates six dimensions independently — occasion fit, color harmony, formality, seasonality, style consistency, and style preference match. A fixed weighted formula then produces one of four verdicts: <span className="text-emerald-400">Highly Recommended</span>, <span className="text-blue-400">Recommended</span>, <span className="text-amber-400">Consider Alternatives</span>, or <span className="text-red-400">Not Recommended</span>. The verdict is always calculated, never invented.
           </p>
         </div>
       </motion.div>

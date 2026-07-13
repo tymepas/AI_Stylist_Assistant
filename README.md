@@ -3,27 +3,22 @@
 Verdict helps people decide with confidence whether a piece of clothing suits them, their occasion, and their
 style — **before** they spend money. It is a decision-support tool, not a chatbot, not an outfit-scoring toy.
 
-This repository contains **Phase 1** only: a production-quality, dark-themed SaaS foundation built with a fully
-mocked analysis engine, ready to be wired up to a real multimodal AI model later.
+This repository contains **Phase 1 MVP** — a polished, production-quality SaaS product with a live AI analysis engine powered by GPT-4.1 Vision.
 
 ## What's included (Phase 1)
 
 - **Landing page** — dark, premium SaaS design (hero, value props, features, how-it-works, CTA).
-- **Dashboard** — responsive sidebar (Dashboard, Profile, Analysis, Settings, History — Coming Soon).
-- **Style Profile** — preferred style, favorite colors, occasion preferences. Stored in the browser
-  (`localStorage`) only — no backend database.
+- **Dashboard** — responsive sidebar (Dashboard, Style Profile, Analysis, Settings).
+- **Style Profile** — preferred style, favorite colors, occasion preferences. Stored in the browser (`localStorage`) only — no backend database required.
 - **Analysis flow** — upload a personal photo, upload a clothing image, pick an occasion, click Analyze.
-- **Mock `AnalysisService`** — returns realistic JSON matching `AI_OUTPUT_SCHEMA.md` exactly, rotating randomly
-  between three scenarios: Highly Recommended, Not Recommended (with a named style-preference conflict), and
-  Unable to Analyze. The overall verdict is **calculated** by the app using the weighted formula from `PRD.md`
-  — never invented by the mock "model" output.
+- **AI analysis** — evaluated by GPT-4.1 Vision across six dimensions. The overall verdict is **calculated** by the app using a fixed weighted formula, never invented by the model.
 - **Decision Report** — evaluation dimensions, confidence, things to consider, what was/wasn't considered.
+- **Outfit Comparison** — compare a second garment without re-uploading your personal photo.
 - **Loading and failure states** — missing upload, invalid upload, unable to analyze, with Retry.
 
 ## Explicitly out of scope for Phase 1
 
-Real AI calls, authentication, a database, virtual try-on, shopping search, wardrobe memory, and history are
-intentionally **not** implemented yet (see `memory/PRD.md` → Non Goals / Roadmap).
+Saved history, user accounts, cloud sync, and AI Vision (direct camera) are intentionally **not** implemented yet (see `memory/PRD.md` → Roadmap).
 
 ## Tech stack
 
@@ -42,7 +37,7 @@ app/
     profile/page.tsx         # Style Profile
     analysis/page.tsx        # Upload + Analyze + Decision Report flow
     settings/page.tsx
-    history/page.tsx         # Coming Soon
+    history/page.tsx         # Roadmap placeholder — intentional empty state
 components/fashion/          # Sidebar, UploadCard, LoadingAnalysis, ErrorState, DecisionReport, RatingBadge
 lib/services/                # analysisService.ts (mock engine + verdict formula), styleProfileService.ts
 types/schema.ts              # TypeScript types mirroring AI_OUTPUT_SCHEMA.md

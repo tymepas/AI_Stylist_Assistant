@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button'
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/profile': 'Style Profile',
-  '/dashboard/analysis': 'Analysis',
+  '/dashboard/analysis': 'New Analysis',
   '/dashboard/settings': 'Settings',
-  '/dashboard/history': 'History',
+  '/dashboard/history': 'Analysis History',
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

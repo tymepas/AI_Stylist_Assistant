@@ -7,7 +7,6 @@ import {
   UserCircle2,
   Sparkles,
   Settings,
-  Clock,
   LucideIcon,
 } from 'lucide-react'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
@@ -17,15 +16,13 @@ interface NavItem {
   label: string
   href: string
   icon: LucideIcon
-  badge?: string
 }
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Profile', href: '/dashboard/profile', icon: UserCircle2 },
+  { label: 'Style Profile', href: '/dashboard/profile', icon: UserCircle2 },
   { label: 'Analysis', href: '/dashboard/analysis', icon: Sparkles },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
-  { label: 'History', href: '/dashboard/history', icon: Clock, badge: 'Soon' },
 ]
 
 function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
@@ -47,29 +44,22 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
               onClick={onNavigate}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'focus-ring relative flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
+                'focus-ring relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
                 active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
             >
               {active && (
                 <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary" aria-hidden="true" />
               )}
-              <span className="flex items-center gap-3">
-                <item.icon className="h-4 w-4" aria-hidden="true" />
-                {item.label}
-              </span>
-              {item.badge && (
-                <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-                  {item.badge}
-                </span>
-              )}
+              <item.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {item.label}
             </Link>
           )
         })}
       </nav>
       <div className="px-6 py-6">
         <div className="rounded-xl border border-border bg-card/50 px-3 py-2 text-center text-[11px] text-muted-foreground">
-          Phase 1 Preview
+          Phase 1 MVP · v0.1
         </div>
       </div>
     </div>
