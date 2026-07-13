@@ -1,17 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ImageOff, HelpCircle, LucideIcon, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import UploadCard from '@/components/fashion/UploadCard'
 import LoadingAnalysis from '@/components/fashion/LoadingAnalysis'
 import ErrorState from '@/components/fashion/ErrorState'
 import DecisionReport from '@/components/fashion/DecisionReport'
 import StepIndicator from '@/components/fashion/StepIndicator'
 import StepTips from '@/components/fashion/StepTips'
-import { OCCASION_OPTIONS } from '@/lib/constants/options'
+import { OCCASION_GROUPS } from '@/lib/constants/options'
 import { validateImageMeta } from '@/lib/services/analysisService'
 import { emptyProfile, getProfile } from '@/lib/services/styleProfileService'
 import { AnalysisResult, CompleteAnalysisResult, ImageMeta } from '@/types/schema'
@@ -67,6 +67,23 @@ async function prepareImageForAnalysis(file: File): Promise<File> {
   }
 }
 
+/** Generates a stable object URL for a file and revokes the previous one. */
+function useObjectURL(file: File | null): string | null {
+  const [url, setUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!file) {
+      setUrl(null)
+      return
+    }
+    const objectUrl = URL.createObjectURL(file)
+    setUrl(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [file])
+
+  return url
+}
+
 export default function AnalysisPage() {
   const [formStep, setFormStep] = useState(1)
   const [photo, setPhoto] = useState<File | null>(null)
@@ -75,6 +92,8 @@ export default function AnalysisPage() {
   const [stage, setStage] = useState<Stage>('form')
   const [result, setResult] = useState<CompleteAnalysisResult | null>(null)
   const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
+
+  const photoThumbnailUrl = useObjectURL(photo)
 
   async function handleAnalyze() {
     if (!photo || !garment || !occasion) {
@@ -160,6 +179,20 @@ export default function AnalysisPage() {
   }
 
   function handleReset() {
+    setPhoto(null)
+    setGarment(null)
+    setOccasion('')
+    setFormStep(1)
+    setStage('form')
+    setResult(null)
+    setErrorInfo(null)
+  }
+
+  function handleCompare() {
+    // Keep photo, discard garment + occasion + previous result, return to step 2.
+    setGarment(null)
+    setOccasion('')
+    setFormStep(2)
     setStage('form')
     setResult(null)
     setErrorInfo(null)
@@ -175,7 +208,7 @@ export default function AnalysisPage() {
   }
 
   if (stage === 'loading') return <LoadingAnalysis />
-  if (stage === 'result' && result) return <DecisionReport result={result} onReset={handleReset} />
+  if (stage === 'result' && result) return <DecisionReport result={result} onReset={handleReset} onCompare={handleCompare} />
   if (stage === 'error' && errorInfo) {
     return <ErrorState title={errorInfo.title} message={errorInfo.message} icon={errorInfo.icon} onRetry={handleRetryFromError} />
   }
@@ -229,7 +262,20 @@ export default function AnalysisPage() {
                   onFileSelect={setGarment}
                   onRemove={() => setGarment(null)}
                 />
-                <StepTips title="For best results" tips={GARMENT_TIPS} />
+                <div className="flex flex-col gap-4">
+                  {photoThumbnailUrl && photo && (
+                    <div className="rounded-xl border border-border bg-secondary/40 p-3">
+                      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Your Photo</p>
+                      <img
+                        src={photoThumbnailUrl}
+                        alt="Your uploaded photo"
+                        className="h-28 w-full rounded-lg object-cover"
+                      />
+                      <p className="mt-1.5 truncate text-[11px] text-muted-foreground/70">{photo.name}</p>
+                    </div>
+                  )}
+                  <StepTips title="For best results" tips={GARMENT_TIPS} />
+                </div>
               </div>
               <div className="mt-6 flex justify-between">
                 <Button size="lg" variant="ghost" className="focus-ring" onClick={() => setFormStep(1)}>
@@ -249,11 +295,6 @@ export default function AnalysisPage() {
               <div className="grid gap-6 md:grid-cols-[1fr_240px]">
                 <div>
                   <div className="mb-6 flex flex-wrap gap-2">
-                    {photo && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
-                        Photo: {photo.name}
-                      </span>
-                    )}
                     {garment && (
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs text-muted-foreground">
                         Garment: {garment.name}
@@ -261,27 +302,45 @@ export default function AnalysisPage() {
                     )}
                   </div>
 
-                  <label htmlFor="occasion-select" className="text-sm font-medium text-foreground">Occasion</label>
-                  <p className="mt-1 text-sm text-muted-foreground">What is this for?</p>
+                  <label htmlFor="occasion-select" className="text-sm font-medium text-foreground">Choose the occasion</label>
+                  <p className="mt-1 text-sm text-muted-foreground">Where will you wear this outfit?</p>
                   <Select value={occasion} onValueChange={setOccasion}>
                     <SelectTrigger id="occasion-select" className="focus-ring mt-4">
                       <SelectValue placeholder="Select an occasion" />
                     </SelectTrigger>
                     <SelectContent>
-                      {OCCASION_OPTIONS.map((o) => (
-                        <SelectItem key={o} value={o}>{o}</SelectItem>
+                      {OCCASION_GROUPS.map((group) => (
+                        <SelectGroup key={group.label}>
+                          <SelectLabel>{group.label}</SelectLabel>
+                          {group.options.map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                        </SelectGroup>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                <StepTips
-                  title="Why occasion matters"
-                  tips={[
-                    'Occasion carries the most weight in your verdict (30%)',
-                    'Formality is weighted second (25%)',
-                    'Style preference match follows at 20%',
-                  ]}
-                />
+                <div className="flex flex-col gap-4">
+                  {photoThumbnailUrl && photo && (
+                    <div className="rounded-xl border border-border bg-secondary/40 p-3">
+                      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Your Photo</p>
+                      <img
+                        src={photoThumbnailUrl}
+                        alt="Your uploaded photo"
+                        className="h-28 w-full rounded-lg object-cover"
+                      />
+                      <p className="mt-1.5 truncate text-[11px] text-muted-foreground/70">{photo.name}</p>
+                    </div>
+                  )}
+                  <StepTips
+                    title="Why occasion matters"
+                    tips={[
+                      'Occasion carries the most weight in your verdict (30%)',
+                      'Formality is weighted second (25%)',
+                      'Style preference match follows at 20%',
+                    ]}
+                  />
+                </div>
               </div>
 
               <div className="mt-8 flex justify-between">

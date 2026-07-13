@@ -31,13 +31,70 @@ export const COLOR_OPTIONS: ColorOption[] = [
   { name: 'Brown', hex: '#78350f' },
 ]
 
-export const OCCASION_OPTIONS: string[] = [
-  'Work',
-  'Casual Outing',
-  'Date Night',
-  'Wedding',
-  'Interview',
-  'Party',
-  'Travel',
-  'Formal Event',
+export interface OccasionGroup {
+  label: string
+  options: string[]
+}
+
+export const OCCASION_GROUPS: OccasionGroup[] = [
+  {
+    label: 'Work',
+    options: [
+      'Office Work',
+      'Client Meeting',
+      'Client Presentation',
+      'Corporate Interview',
+      'Startup Interview',
+      'Networking Event',
+      'Business Lunch',
+      'Business Casual',
+      'Conference',
+    ],
+  },
+  {
+    label: 'Social',
+    options: [
+      'Coffee Date',
+      'Dinner Date',
+      'First Date',
+      'Birthday Party',
+      'Night Out',
+      'House Party',
+      'Cocktail Party',
+    ],
+  },
+  {
+    label: 'Formal',
+    options: [
+      'Wedding Guest',
+      'Wedding Reception',
+      'Formal Dinner',
+      'Black Tie Event',
+      'Award Ceremony',
+    ],
+  },
+  {
+    label: 'Casual',
+    options: [
+      'Casual Outing',
+      'Shopping',
+      'College',
+      'Weekend',
+      'Travel',
+      'Vacation',
+    ],
+  },
+  {
+    label: 'Outdoor / Seasonal',
+    options: [
+      'Outdoor Event',
+      'Summer Event',
+      'Winter Event',
+      'Beach',
+      'Rainy Day',
+    ],
+  },
 ]
+
+/** Flat list of all occasions, derived from OCCASION_GROUPS. */
+export const OCCASION_OPTIONS: string[] = OCCASION_GROUPS.flatMap((g) => g.options)

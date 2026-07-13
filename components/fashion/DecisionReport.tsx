@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   ThumbsDown,
   LucideIcon,
+  RefreshCw,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { RatingBadge, ConfidenceMeter, ScoreGauge } from '@/components/fashion/RatingBadge'
@@ -27,6 +28,7 @@ import { CompleteAnalysisResult, Dimensions, DimensionResult, OverallRecommendat
 interface DecisionReportProps {
   result: CompleteAnalysisResult
   onReset: () => void
+  onCompare: () => void
 }
 
 const DIMENSION_META: Record<keyof Dimensions, { label: string; icon: LucideIcon }> = {
@@ -94,7 +96,7 @@ function SectionHeading({ icon: Icon, children }: { icon: LucideIcon; children: 
   )
 }
 
-export default function DecisionReport({ result, onReset }: DecisionReportProps) {
+export default function DecisionReport({ result, onReset, onCompare }: DecisionReportProps) {
   const style = VERDICT_STYLES[result.overall_recommendation]
   const VerdictIcon = style.icon
   const dimensionKeys = Object.keys(result.dimensions) as Array<keyof Dimensions>
@@ -197,9 +199,12 @@ export default function DecisionReport({ result, onReset }: DecisionReportProps)
         </div>
       </motion.div>
 
-      <div className="flex justify-center pt-2">
-        <Button onClick={onReset} size="lg" variant="outline" className="focus-ring">
-          <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" /> Analyze Another Item
+      <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center">
+        <Button onClick={onCompare} size="lg" className="focus-ring w-full sm:w-auto">
+          <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" /> Compare Another Outfit
+        </Button>
+        <Button onClick={onReset} size="lg" variant="outline" className="focus-ring w-full sm:w-auto">
+          <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" /> Start New Analysis
         </Button>
       </div>
     </div>
