@@ -227,7 +227,7 @@ export default function AnalysisPage() {
   }
 
   if (stage === 'loading') return <LoadingAnalysis />
-  if (stage === 'result' && result) return <DecisionReport result={result} onReset={handleReset} onCompare={handleCompare} />
+  if (stage === 'result' && result) return <DecisionReport result={result} onReset={handleReset} onCompare={handleCompare} occasion={occasion} />
   if (stage === 'error' && errorInfo) {
     return <ErrorState title={errorInfo.title} message={errorInfo.message} icon={errorInfo.icon} onRetry={handleRetryFromError} />
   }

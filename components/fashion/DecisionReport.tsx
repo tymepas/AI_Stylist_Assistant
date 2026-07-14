@@ -23,12 +23,14 @@ import {
 import { Button } from '@/components/ui/button'
 import { RatingBadge, ConfidenceMeter, ScoreGauge } from '@/components/fashion/RatingBadge'
 import { fadeUp, staggerContainer, viewportOnce } from '@/lib/motion'
+import ShoppingAdvisor from '@/components/fashion/ShoppingAdvisor'
 import { CompleteAnalysisResult, Dimensions, DimensionResult, OverallRecommendation } from '@/types/schema'
 
 interface DecisionReportProps {
   result: CompleteAnalysisResult
   onReset: () => void
   onCompare: () => void
+  occasion: string
 }
 
 const DIMENSION_META: Record<keyof Dimensions, { label: string; icon: LucideIcon }> = {
@@ -96,7 +98,7 @@ function SectionHeading({ icon: Icon, children }: { icon: LucideIcon; children: 
   )
 }
 
-export default function DecisionReport({ result, onReset, onCompare }: DecisionReportProps) {
+export default function DecisionReport({ result, onReset, onCompare, occasion }: DecisionReportProps) {
   const style = VERDICT_STYLES[result.overall_recommendation]
   const VerdictIcon = style.icon
   const dimensionKeys = Object.keys(result.dimensions) as Array<keyof Dimensions>
@@ -183,6 +185,8 @@ export default function DecisionReport({ result, onReset, onCompare }: DecisionR
           </div>
         </motion.div>
       </div>
+
+      <ShoppingAdvisor advisor={result.shopping_advisor} occasion={occasion} />
 
       {/* Next step callout */}
       <motion.div
