@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
 import { getMockAnalysis, parseStyleProfile, validateImageFile } from '@/lib/services/analysisService'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
+import { buildShoppingAdvisor } from '@/lib/services/shoppingAdvisorService'
 import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/openAIAnalysisService'
 // Phase 3 — AI Style Profile
 import { parseAIStyleProfile } from '@/lib/services/aiStyleProfileService'
@@ -186,7 +187,10 @@ async function handleRoute(request, { params }) {
         })
 
         const result = rawAnalysis.status === 'complete'
-          ? buildCompleteAnalysisResult(rawAnalysis.dimensions)
+          ? buildCompleteAnalysisResult(
+            rawAnalysis.dimensions,
+            buildShoppingAdvisor(rawAnalysis.shopping_advisor, Boolean(aiStyleProfileCheck.profile))
+          )
           : rawAnalysis
 
         return handleCORS(NextResponse.json(result))

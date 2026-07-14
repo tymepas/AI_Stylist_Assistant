@@ -29,6 +29,8 @@ const dimensionsSchema = z.object({
 const completeAnalysisSchema = z.object({
   status: z.literal('complete'),
   dimensions: dimensionsSchema,
+  // Advisory output is validated separately so it cannot invalidate core analysis.
+  shopping_advisor: z.unknown().optional(),
 }).strict()
 
 const unableToAnalyzeSchema = z.object({

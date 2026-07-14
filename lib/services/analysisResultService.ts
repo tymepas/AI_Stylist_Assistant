@@ -1,6 +1,6 @@
 import { computeVerdict } from '@/lib/services/analysisService'
 import type { RawOpenAIDimensions } from '@/types/openai'
-import type { CompleteAnalysisResult, OverallRecommendation } from '@/types/schema'
+import type { CompleteAnalysisResult, OverallRecommendation, ShoppingAdvisor } from '@/types/schema'
 
 const DIMENSION_LABELS: Record<keyof RawOpenAIDimensions, string> = {
   occasion: 'Occasion compatibility',
@@ -29,7 +29,8 @@ function buildThingsToConsider(dimensions: RawOpenAIDimensions): string[] {
 }
 
 export function buildCompleteAnalysisResult(
-  dimensions: RawOpenAIDimensions
+  dimensions: RawOpenAIDimensions,
+  shopping_advisor: ShoppingAdvisor = { availability: 'unavailable', recommendations: [] }
 ): CompleteAnalysisResult {
   const verdict = computeVerdict(dimensions)
 
@@ -42,6 +43,7 @@ export function buildCompleteAnalysisResult(
       not_considered: ['price', 'material_quality', 'brand', 'durability', 'comfort'],
     },
     next_step: NEXT_STEPS[verdict.overall_recommendation],
+    shopping_advisor,
     ...verdict,
   }
 }

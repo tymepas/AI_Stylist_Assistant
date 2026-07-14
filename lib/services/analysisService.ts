@@ -257,6 +257,29 @@ function buildMockA(): CompleteAnalysisResult {
       not_considered: ['price', 'material_quality', 'brand', 'durability', 'comfort'],
     },
     next_step: 'You can move forward with this purchase with confidence.',
+    shopping_advisor: {
+      availability: 'available',
+      recommendations: [
+        {
+          title: 'Structured navy blazer',
+          garment_type: 'suiting',
+          color_direction: 'Deep navy or charcoal',
+          style_direction: 'Clean tailoring with minimal detailing',
+          rationale: 'A polished layer that supports professional settings while staying aligned with a classic, minimalist direction.',
+          addresses: ['occasion', 'formality'],
+          match_level: 'Excellent Match',
+        },
+        {
+          title: 'Lightweight tailored shirt',
+          garment_type: 'top',
+          color_direction: 'Soft blue, white, or muted neutral',
+          style_direction: 'Crisp, understated, and easy to layer',
+          rationale: 'A lighter tailored option keeps the look professional while offering a more seasonally flexible alternative.',
+          addresses: ['seasonality', 'style_preference_match'],
+          match_level: 'Strong Match',
+        },
+      ],
+    },
     ...verdict,
   }
 }
@@ -307,6 +330,29 @@ function buildMockB(): CompleteAnalysisResult {
       not_considered: ['price', 'material_quality', 'brand', 'durability', 'comfort'],
     },
     next_step: 'Consider a more formal alternative before purchasing.',
+    shopping_advisor: {
+      availability: 'available',
+      recommendations: [
+        {
+          title: 'Tailored evening blazer',
+          garment_type: 'suiting',
+          color_direction: 'Navy, charcoal, or black',
+          style_direction: 'Structured, polished, and free from distressing',
+          rationale: 'A tailored evening layer is better suited to a wedding because it addresses the current formality and occasion mismatch.',
+          addresses: ['occasion', 'formality'],
+          match_level: 'Excellent Match',
+        },
+        {
+          title: 'Refined formal shirt',
+          garment_type: 'top',
+          color_direction: 'White, ivory, or a muted solid',
+          style_direction: 'Classic silhouette with minimal pattern',
+          rationale: 'A refined shirt supports a more intentional formal look and avoids the casual streetwear signal of the current option.',
+          addresses: ['style', 'style_preference_match'],
+          match_level: 'Strong Match',
+        },
+      ],
+    },
     ...verdict,
   }
 }

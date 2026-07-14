@@ -141,7 +141,10 @@ function buildUserContext(
 
   lines.push(
     'For status "complete", return exactly this raw JSON shape and no additional fields:',
-    '{"status":"complete","dimensions":{"occasion":{"rating":"","reason":"","confidence":""},"color":{"rating":"","reason":"","confidence":""},"formality":{"rating":"","reason":"","confidence":""},"seasonality":{"rating":"","reason":"","confidence":""},"style":{"rating":"","reason":"","confidence":""},"style_preference_match":{"rating":"","reason":"","confidence":""}}}',
+    '{"status":"complete","dimensions":{"occasion":{"rating":"","reason":"","confidence":""},"color":{"rating":"","reason":"","confidence":""},"formality":{"rating":"","reason":"","confidence":""},"seasonality":{"rating":"","reason":"","confidence":""},"style":{"rating":"","reason":"","confidence":""},"style_preference_match":{"rating":"","reason":"","confidence":""}},"shopping_advisor":{"recommendations":[]}}',
+    'The shopping_advisor is advisory only. If AI Style Profile context is absent, return an empty recommendations array. If it is present, return one to three alternatives that address weak dimensions without changing their ratings.',
+    'Each recommendation must contain title, garment_type (top|bottom|outerwear|dress|footwear|accessory|suiting|traditional_wear), color_direction, style_direction, rationale, addresses (one or two dimension keys), and match_level (Excellent Match|Strong Match|Good Match|Possible Match).',
+    'Describe expected outcomes qualitatively through the affected dimensions. Never estimate a future verdict score, calculate a verdict, mention retailers, provide URLs, claim price, availability, discounts, material quality, brand, durability, or comfort.',
     'Do not return an overall verdict, recommendation, verdict score, weighted score, things_to_consider, analysis_based_on, or next_step for a complete analysis.',
     'For status "unable_to_analyze", return exactly: {"status":"unable_to_analyze","reason":"","confidence":"Low","next_step":""}.',
     'Return one JSON object only.',

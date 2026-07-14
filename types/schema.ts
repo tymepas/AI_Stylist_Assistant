@@ -41,6 +41,7 @@ export interface CompleteAnalysisResult {
   next_step: string
   overall_recommendation: OverallRecommendation
   verdict_score: number
+  shopping_advisor: ShoppingAdvisor
 }
 
 export interface UnableToAnalyzeResult {
@@ -52,6 +53,48 @@ export interface UnableToAnalyzeResult {
 
 export type AnalysisResult = CompleteAnalysisResult | UnableToAnalyzeResult
 
+
+// ---------------------------------------------------------------------------
+// Phase 4 - Shopping Advisor
+// ---------------------------------------------------------------------------
+
+/** Shopping guidance is advisory only. It never participates in verdict scoring. */
+export type ShoppingAdvisorAvailability =
+  | 'available'
+  | 'requires_style_dna'
+  | 'unavailable'
+
+/** Qualitative fit label shown on Shopping Advisor cards. */
+export type ShoppingMatchLevel =
+  | 'Excellent Match'
+  | 'Strong Match'
+  | 'Good Match'
+  | 'Possible Match'
+
+export type ShoppingGarmentCategory =
+  | 'top'
+  | 'bottom'
+  | 'outerwear'
+  | 'dress'
+  | 'footwear'
+  | 'accessory'
+  | 'suiting'
+  | 'traditional_wear'
+
+export interface ShoppingRecommendation {
+  title: string
+  garment_type: ShoppingGarmentCategory
+  color_direction: string
+  style_direction: string
+  rationale: string
+  addresses: Array<keyof Dimensions>
+  match_level: ShoppingMatchLevel
+}
+
+export interface ShoppingAdvisor {
+  availability: ShoppingAdvisorAvailability
+  recommendations: ShoppingRecommendation[]
+}
 export interface StyleProfile {
   preferredStyles: string[]
   favoriteColors: string[]

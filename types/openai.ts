@@ -25,6 +25,8 @@ export interface RawOpenAIDimensions {
 export interface RawOpenAICompleteAnalysis {
   status: 'complete'
   dimensions: RawOpenAIDimensions
+  /** Optional untrusted extension; validated separately from core analysis. */
+  shopping_advisor?: unknown
 }
 
 export interface RawOpenAIUnableToAnalyze {
