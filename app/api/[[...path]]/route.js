@@ -166,7 +166,14 @@ async function handleRoute(request, { params }) {
       if (analysisMode === 'mock') {
         // Preserve the existing mock-mode behavior and latency.
         await new Promise((resolve) => setTimeout(resolve, 1400 + Math.random() * 1000))
-        return handleCORS(NextResponse.json(getMockAnalysis()))
+        const mockAnalysis = getMockAnalysis()
+        if (mockAnalysis.status === 'complete') {
+          mockAnalysis.shopping_advisor = buildShoppingAdvisor(
+            mockAnalysis.shopping_advisor,
+            Boolean(aiStyleProfileCheck.profile)
+          )
+        }
+        return handleCORS(NextResponse.json(mockAnalysis))
       }
 
       if (analysisMode !== 'openai') {
