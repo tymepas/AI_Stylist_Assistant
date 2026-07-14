@@ -49,7 +49,7 @@ Excellent = 5, Good = 4, Fair = 3, Poor = 2, Unable to Evaluate = excluded from 
 Weighted average -> verdict: >=4.5 Highly Recommended · 3.5-4.4 Recommended · 2.5-3.4 Consider Alternatives · <2.5 Not Recommended.
 
 ## Non Goals
-Virtual try on, wardrobe memory, shopping integration, authentication, payments, saved history.
+Virtual try on, wardrobe memory, authentication, payments, and saved history.
 
 ## Technical Constraints
 Single multimodal AI request, target latency under 5 seconds, structured JSON output, graceful failure handling.
@@ -69,3 +69,7 @@ MVP -> Better Evaluation Engine -> Shopping -> Wardrobe Memory -> Virtual Try On
 - `AnalysisService` (`/app/lib/services/analysisService.ts`) returns realistic mock JSON matching `AI_OUTPUT_SCHEMA.md` exactly, rotating randomly between three scenarios: Highly Recommended, Not Recommended (style preference conflict), Unable to Analyze.
 - The application (not the model) computes `overall_recommendation` and `verdict_score` from the weighted formula above — implemented in `computeVerdict()`.
 - Backend endpoint: `POST /api/analyze` in `/app/app/api/[[...path]]/route.js`.
+
+## Phase 4 - Shopping Advisor
+
+Shopping Advisor offers up to three personalized alternatives after a completed decision report when Style DNA context exists. It is advisory only and never changes the deterministic verdict, score, weights, or recommendation thresholds. Retail links are search links only; Verdict does not provide product availability, pricing, affiliate links, scraping, or retailer integrations.

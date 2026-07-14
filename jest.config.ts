@@ -10,7 +10,7 @@ const config: Config = {
   },
   // Only run Phase 3 unit tests in this suite.
   // Integration and AI tests are run separately.
-  testMatch: ['<rootDir>/tests/phase3/**/*.test.ts'],
+  testMatch: ['<rootDir>/tests/phase3/**/*.test.ts', '<rootDir>/tests/phase4/**/*.test.ts'],
   transform: {
     '^.+\\.[tj]sx?$': [
       'ts-jest',

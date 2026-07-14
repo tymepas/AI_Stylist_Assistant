@@ -98,3 +98,19 @@ Expanding the occasion list to include "Startup Interview", "Networking Event", 
 - Backend API unchanged — `occasion` continues to be sent as a plain `string`.
 - No schema changes, no API route changes, no AI logic changes.
 - Compare Another Outfit, Start New Analysis, photo thumbnail, loading animation, upload validation, style profile, and report rendering are all unaffected.
+---
+
+## Unreleased - Phase 4 Shopping Advisor
+
+### Added
+
+- Advisory shopping alternatives returned as part of the existing single analysis call
+- Strict recommendation validation isolated from core verdict validation
+- Qualitative match labels and expected-outcome guidance
+- Application-generated Myntra, Amazon, and Ajio search links
+
+### Preserved
+
+- Deterministic verdict calculation, weights, thresholds, and report dimensions
+- Existing multipart upload and Style DNA privacy model
+- No retailer API, scraping, affiliate links, or saved shopping data

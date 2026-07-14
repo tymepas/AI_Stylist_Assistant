@@ -1,13 +1,15 @@
 # Roadmap
 
-- Phase 1: MVP, AI decision report
-- Phase 2: Better evaluation engine (run benchmark, fix prompt failure patterns)
-- Phase 3: Shopping recommendations
-- Phase 4: Wardrobe memory
-- Phase 5: Virtual try on
-- Phase 6: Production polish
+- Phase 1: MVP, decision report
+- Phase 2: Better evaluation engine and benchmark validation
+- Phase 3: Style DNA
+- Phase 4: Shopping Advisor
+- Phase 5: Wardrobe Memory
+- Phase 6: Virtual Try-On
+- Phase 7: Production polish
 
 ## Change Log
-Record any change to the verdict weighting, rating enum, or evaluation dimensions here, with date and reason (benchmark evidence, not opinion).
 
-- (none yet, v1 frozen)
+Record any change to verdict weighting, rating enums, or evaluation dimensions here, with date and benchmark evidence. Shopping Advisor is advisory and does not change the deterministic verdict formula.
+
+- (none yet, v1 verdict formula frozen)
