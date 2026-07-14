@@ -1,6 +1,6 @@
-import { StyleProfile } from '@/types/schema'
+import { StyleProfile, AIStyleProfile } from '@/types/schema'
 
-const STORAGE_KEY = 'verdict_style_profile'
+export const STORAGE_KEY = 'verdict_style_profile'
 
 export const emptyProfile: StyleProfile = {
   preferredStyles: [],
@@ -44,10 +44,25 @@ export interface ProfileCompletion {
   percent: number
 }
 
-export function getProfileCompletion(profile: StyleProfile | null): ProfileCompletion {
+/**
+ * Computes profile completion across up to 4 sections.
+ *
+ * Phase 3 extension: pass the optional `aiProfile` parameter to include
+ * the AI Style Profile section in the completion meter.
+ * If omitted, behaves identically to the Phase 1/2 behaviour (3 sections).
+ */
+export function getProfileCompletion(
+  profile: StyleProfile | null,
+  aiProfile?: AIStyleProfile | null
+): ProfileCompletion {
   const sections = [
+    // Section 1 (Phase 3): AI Style Profile generated
+    ...(aiProfile !== undefined ? [aiProfile !== null && aiProfile.status === 'complete'] : []),
+    // Section 2: Preferred styles (manual)
     (profile?.preferredStyles?.length ?? 0) > 0,
+    // Section 3: Favorite colors (manual)
     (profile?.favoriteColors?.length ?? 0) > 0,
+    // Section 4: Occasion preferences (manual)
     (profile?.occasionPreferences?.length ?? 0) > 0,
   ]
   const completedSections = sections.filter(Boolean).length
