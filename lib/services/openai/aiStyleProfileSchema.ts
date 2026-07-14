@@ -121,7 +121,7 @@ const wardrobeContextSchema = z
 const analysisNotesSchema = z
   .object({
     photo_quality: z.enum(['excellent', 'good', 'acceptable', 'poor']),
-    visibility_limitations: z.array(z.string()),
+    visibility_limitations: z.array(z.string()).max(5),
     confidence_summary: z.string().max(300),
   })
   .strict()

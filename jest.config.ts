@@ -12,7 +12,7 @@ const config: Config = {
   // Integration and AI tests are run separately.
   testMatch: ['<rootDir>/tests/phase3/**/*.test.ts'],
   transform: {
-    '^.+\\.tsx?$': [
+    '^.+\\.[tj]sx?$': [
       'ts-jest',
       {
         tsconfig: {

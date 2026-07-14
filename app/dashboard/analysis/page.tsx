@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ImageOff, HelpCircle, LucideIcon, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react'
+import { ImageOff, HelpCircle, LucideIcon, ArrowLeft, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import UploadCard from '@/components/fashion/UploadCard'
@@ -14,6 +15,8 @@ import StepTips from '@/components/fashion/StepTips'
 import { OCCASION_GROUPS } from '@/lib/constants/options'
 import { validateImageMeta } from '@/lib/services/analysisService'
 import { emptyProfile, getProfile } from '@/lib/services/styleProfileService'
+import { getProfile as getAIStyleProfile } from '@/lib/services/aiStyleProfileService'
+import type { AIStyleProfile } from '@/types/schema'
 import { AnalysisResult, CompleteAnalysisResult, ImageMeta } from '@/types/schema'
 
 type Stage = 'form' | 'loading' | 'result' | 'error'
@@ -29,6 +32,12 @@ const STEPS = [{ label: 'Your Photo' }, { label: 'Garment' }, { label: 'Occasion
 const PHOTO_TIPS = ['Use natural, even lighting', 'Face the camera directly, torso visible', 'Avoid heavy filters or busy backgrounds']
 const GARMENT_TIPS = ['Lay flat or hang the garment', 'Capture the full item in frame', 'Use a plain, uncluttered background']
 const MIN_ANALYSIS_DIMENSION = 512
+
+function formatStyleDNADate(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'recently'
+  return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
+}
 
 function toImageMeta(file: File): ImageMeta {
   return { name: file.name, type: file.type, size: file.size }
@@ -92,8 +101,16 @@ export default function AnalysisPage() {
   const [stage, setStage] = useState<Stage>('form')
   const [result, setResult] = useState<CompleteAnalysisResult | null>(null)
   const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
+  const [aiStyleProfile, setAIStyleProfile] = useState<AIStyleProfile | null>(null)
+  const [profilePromptDismissed, setProfilePromptDismissed] = useState(true)
 
   const photoThumbnailUrl = useObjectURL(photo)
+
+  useEffect(() => {
+    const storedProfile = getAIStyleProfile()
+    setAIStyleProfile(storedProfile)
+    setProfilePromptDismissed(window.localStorage.getItem('verdict_profile_prompt_dismissed') === 'true')
+  }, [])
 
   async function handleAnalyze() {
     if (!photo || !garment || !occasion) {
@@ -138,6 +155,8 @@ export default function AnalysisPage() {
       formData.append('photo', analysisPhoto)
       formData.append('garment', analysisGarment)
       formData.append('styleProfile', JSON.stringify(getProfile() ?? emptyProfile))
+      const storedAIProfile = getAIStyleProfile()
+      if (storedAIProfile) formData.append('aiStyleProfile', JSON.stringify(storedAIProfile))
 
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -223,8 +242,31 @@ export default function AnalysisPage() {
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">New Analysis</h2>
-        <p className="mt-1 text-muted-foreground">A guided, three-step workflow — your photo, the garment, and the occasion.</p>
+        <p className="mt-1 text-muted-foreground">A guided decision using your current photo, the garment, the occasion, and your saved Style DNA when available.</p>
       </div>
+
+      {aiStyleProfile ? (
+        <section aria-label="Style DNA personalization is active" className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card px-4 py-4 shadow-sm sm:px-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex min-w-0 gap-3">
+              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10">
+                <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Personalization active</p>
+                <p className="mt-1 max-w-xl text-sm leading-6 text-muted-foreground">Your current photo reflects how you look today. Your Style DNA adds long-term color and style signals. Together, they create a more personal outfit recommendation.</p>
+                <p className="mt-2 text-xs text-muted-foreground/80">Style DNA generated {formatStyleDNADate(aiStyleProfile.generated_at_utc)}. It is saved profile context; your original profile photo is not retained.</p>
+              </div>
+            </div>
+            <Link href="/dashboard/profile" className="focus-ring shrink-0 rounded-lg px-2 py-1 text-sm font-medium text-primary transition-colors hover:bg-primary/10 hover:text-primary">View Style DNA</Link>
+          </div>
+        </section>
+      ) : !profilePromptDismissed ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card/60 px-4 py-3 text-sm text-muted-foreground">
+          <span>Add your Style DNA for more personalized results.</span>
+          <div className="flex items-center gap-3"><Link href="/dashboard/profile" className="focus-ring font-medium text-primary hover:underline">Build Style DNA</Link><button type="button" className="focus-ring text-muted-foreground hover:text-foreground" onClick={() => { window.localStorage.setItem('verdict_profile_prompt_dismissed', 'true'); setProfilePromptDismissed(true) }}>Dismiss</button></div>
+        </div>
+      ) : null}
 
       <StepIndicator steps={STEPS} currentStep={formStep} />
 
@@ -235,8 +277,8 @@ export default function AnalysisPage() {
               <p className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">Step 1 of 3</p>
               <div className="grid gap-6 md:grid-cols-[1fr_240px]">
                 <UploadCard
-                  label="Personal Photo"
-                  description="A clear, well-lit photo of yourself"
+                  label="Current Photo"
+                  description="A clear, current photo of yourself"
                   file={photo}
                   onFileSelect={setPhoto}
                   onRemove={() => setPhoto(null)}
@@ -265,10 +307,10 @@ export default function AnalysisPage() {
                 <div className="flex flex-col gap-4">
                   {photoThumbnailUrl && photo && (
                     <div className="rounded-xl border border-border bg-secondary/40 p-3">
-                      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Your Photo</p>
+                      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Current photo</p>
                       <img
                         src={photoThumbnailUrl}
-                        alt="Your uploaded photo"
+                        alt="Your current uploaded photo"
                         className="h-28 w-full rounded-lg object-cover"
                       />
                       <p className="mt-1.5 truncate text-[11px] text-muted-foreground/70">{photo.name}</p>
@@ -323,10 +365,10 @@ export default function AnalysisPage() {
                 <div className="flex flex-col gap-4">
                   {photoThumbnailUrl && photo && (
                     <div className="rounded-xl border border-border bg-secondary/40 p-3">
-                      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Your Photo</p>
+                      <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Current photo</p>
                       <img
                         src={photoThumbnailUrl}
-                        alt="Your uploaded photo"
+                        alt="Your current uploaded photo"
                         className="h-28 w-full rounded-lg object-cover"
                       />
                       <p className="mt-1.5 truncate text-[11px] text-muted-foreground/70">{photo.name}</p>

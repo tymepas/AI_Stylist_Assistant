@@ -272,3 +272,14 @@ describe('SAFE-08 — schema does not define prohibited fields', () => {
     expect(() => validateAIStyleProfile(bad)).toThrow(ZodError)
   })
 })
+
+// ---------------------------------------------------------------------------
+// Schema bound from 05_STYLE_PROFILE_SCHEMA.md: visibility_limitations max 5
+// ---------------------------------------------------------------------------
+describe('analysis_notes.visibility_limitations bounds', () => {
+  it('rejects more than five visibility limitations', () => {
+    const bad = clone(VALID_COMPLETE_PROFILE)
+    bad.analysis_notes.visibility_limitations = ['one', 'two', 'three', 'four', 'five', 'six']
+    expect(() => validateAIStyleProfile(bad)).toThrow(ZodError)
+  })
+})

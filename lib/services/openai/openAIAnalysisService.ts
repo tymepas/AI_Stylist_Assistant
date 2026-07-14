@@ -2,7 +2,7 @@ import 'server-only'
 
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import type { StyleProfile } from '@/types/schema'
+import type { StyleProfile, AIStyleProfile } from '@/types/schema'
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
 import { validateRawOpenAIAnalysis } from './openAIAnalysisSchema'
 
@@ -32,6 +32,8 @@ interface AnalyzeWithOpenAIInput {
   garment: File
   occasion: string
   styleProfile: StyleProfile
+  /** Phase 3 — optional AI-generated style profile for richer context injection. */
+  aiStyleProfile?: AIStyleProfile
 }
 
 interface OpenAIUsage {
@@ -81,17 +83,71 @@ function extractOutputText(response: OpenAIResponseBody): string | null {
   return outputText?.trim() ? outputText : null
 }
 
-function buildUserContext(occasion: string, styleProfile: StyleProfile): string {
-  return [
+/**
+ * Builds the user-facing context string injected into the outfit analysis prompt.
+ *
+ * Phase 3 extension: when an AI Style Profile is present, coloring, aesthetic,
+ * and proportions data are included as labeled context so the AI can use them
+ * to improve the color and style_preference_match dimensions without being asked
+ * to reference them explicitly in its output text.
+ * Spec: specs/phase3/07_AI_ANALYSIS_SPEC.md § "Additional Context Provided to the AI"
+ */
+function buildUserContext(
+  occasion: string,
+  styleProfile: StyleProfile,
+  aiStyleProfile?: AIStyleProfile
+): string {
+  const lines = [
     'Analyze the person image and garment image together for the supplied context.',
     `Selected occasion: ${occasion}`,
     `Complete style profile: ${JSON.stringify(styleProfile)}`,
+  ]
+
+  if (aiStyleProfile) {
+    // Coloring context — improves color dimension (spec § "Coloring context")
+    const c = aiStyleProfile.coloring
+    const coloringParts: string[] = []
+    if (c.skin_tone_depth) coloringParts.push(`skin tone depth: ${c.skin_tone_depth}`)
+    if (c.skin_tone_undertone) coloringParts.push(`undertone: ${c.skin_tone_undertone}`)
+    if (c.hair_color) coloringParts.push(`hair: ${c.hair_color}`)
+    if (c.high_contrast !== null) coloringParts.push(`high contrast coloring: ${c.high_contrast}`)
+    if (coloringParts.length > 0) {
+      lines.push(`AI-analyzed coloring context (use for color harmony assessment): ${coloringParts.join(', ')}.`)
+    }
+
+    // Aesthetic context — improves style_preference_match dimension (spec § "Aesthetic context")
+    const a = aiStyleProfile.aesthetic_signals
+    const aestheticParts: string[] = []
+    if (aiStyleProfile.style_keywords.length > 0) {
+      aestheticParts.push(`observed style: ${aiStyleProfile.style_keywords.map((k) => k.keyword).join(', ')}`)
+    }
+    if (a.current_outfit_formality) {
+      aestheticParts.push(`typical formality level: ${a.current_outfit_formality}`)
+    }
+    if (aestheticParts.length > 0) {
+      lines.push(`AI-analyzed aesthetic context (use for style preference match assessment): ${aestheticParts.join(', ')}.`)
+    }
+
+    // Proportions context — optional enrichment for formality/silhouette (spec § "Proportions context")
+    const p = aiStyleProfile.proportions
+    const proportionParts: string[] = []
+    if (p.frame_width) proportionParts.push(`frame: ${p.frame_width}`)
+    if (p.torso_length) proportionParts.push(`torso: ${p.torso_length}`)
+    if (p.shoulder_breadth) proportionParts.push(`shoulders: ${p.shoulder_breadth}`)
+    if (proportionParts.length > 0) {
+      lines.push(`AI-analyzed proportions context (optional — use only if relevant to garment cut): ${proportionParts.join(', ')}.`)
+    }
+  }
+
+  lines.push(
     'For status "complete", return exactly this raw JSON shape and no additional fields:',
     '{"status":"complete","dimensions":{"occasion":{"rating":"","reason":"","confidence":""},"color":{"rating":"","reason":"","confidence":""},"formality":{"rating":"","reason":"","confidence":""},"seasonality":{"rating":"","reason":"","confidence":""},"style":{"rating":"","reason":"","confidence":""},"style_preference_match":{"rating":"","reason":"","confidence":""}}}',
     'Do not return an overall verdict, recommendation, verdict score, weighted score, things_to_consider, analysis_based_on, or next_step for a complete analysis.',
     'For status "unable_to_analyze", return exactly: {"status":"unable_to_analyze","reason":"","confidence":"Low","next_step":""}.',
     'Return one JSON object only.',
-  ].join('\n')
+  )
+
+  return lines.join('\n')
 }
 
 function logStarted(model: string): void {
@@ -136,6 +192,7 @@ export async function analyzeWithOpenAI({
   garment,
   occasion,
   styleProfile,
+  aiStyleProfile,
 }: AnalyzeWithOpenAIInput): Promise<RawOpenAIAnalysisResult> {
   const apiKey = process.env.OPENAI_API_KEY
   const model = process.env.OPENAI_MODEL
@@ -187,7 +244,7 @@ export async function analyzeWithOpenAI({
           {
             role: 'user',
             content: [
-              { type: 'input_text', text: buildUserContext(occasion, styleProfile) },
+              { type: 'input_text', text: buildUserContext(occasion, styleProfile, aiStyleProfile) },
               { type: 'input_text', text: 'Person image:' },
               { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
               { type: 'input_text', text: 'Garment image:' },
