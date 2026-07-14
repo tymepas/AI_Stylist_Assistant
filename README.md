@@ -30,6 +30,14 @@ Users upload:
 Verdict analyzes multiple fashion dimensions, explains every decision, and provides a transparent recommendation before the purchase.
 
 ---
+## 🎥 Demo
+
+Watch the project in action:
+
+**Demo Video**
+https://drive.google.com/file/d/1wQFR70_mVzPfCXiIN-O18zXg6TZe0oNg/view?usp=sharing
+
+---
 
 # Key Features
 
