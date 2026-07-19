@@ -1,333 +1,82 @@
-# Verdict AI
+# Verdict -- Know Before You Buy
 
-> **Know Before You Buy.**
->
-> AI-powered fashion purchase decision support that helps users make better clothing decisions before spending money.
+> AI-powered fashion purchase decision support that helps users make
+> smarter buying decisions before they spend money.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4.1%20Vision-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Phase%203%20Complete-success)
+## 🌐 Live Demo
 
----
+Add your Vercel URL here.
 
-# Overview
+## 🎥 Demo Video
 
-Verdict AI is an explainable AI fashion decision-support platform.
+https://verdictai-fawn.vercel.app/
 
-Instead of recommending random products or generating unrealistic outfit suggestions, Verdict helps users answer one simple question:
+## 📦 Repository
 
-> **"Should I buy this?"**
+https://github.com/tymepas/AI_Stylist_Assistant
 
-Users upload:
+## Overview
 
-- A current personal photo
-- A garment photo
-- An occasion
-- Optional style preferences
+Verdict is an AI-powered fashion purchase decision support platform that
+evaluates outfits for specific occasions using OpenAI Vision,
+deterministic business logic, and explainable AI.
 
-Verdict analyzes multiple fashion dimensions, explains every decision, and provides a transparent recommendation before the purchase.
+## Features
 
----
-## 🎥 Demo
+-   AI Style DNA
+-   Outfit Analysis
+-   Explainable Verdict
+-   Shopping Advisor
+-   Occasion Fit
+-   Color Harmony
+-   Formality Analysis
+-   Retail Search Integration
 
-Watch the project in action:
+## Tech Stack
 
-**Demo Video**
-https://drive.google.com/file/d/1wQFR70_mVzPfCXiIN-O18zXg6TZe0oNg/view?usp=sharing
+-   Next.js
+-   React
+-   TypeScript
+-   Tailwind CSS
+-   OpenAI Responses API
+-   GPT-4.1 Vision
+-   Zod
+-   Jest
+-   Vercel
 
----
+## Local Setup
 
-# Key Features
-
-## AI Outfit Analysis
-
-Analyze garments against:
-
-- Occasion Fit
-- Color Harmony
-- Formality
-- Seasonality
-- Style Consistency
-- Style Preference Match
-
-Every recommendation includes explainable reasoning.
-
----
-
-## Style DNA (Phase 3)
-
-Generate a personalized AI Style DNA from a single photo.
-
-Style DNA captures long-term styling characteristics including:
-
-- Coloring
-- Body proportions (observable)
-- Style signals
-- Clothing preferences
-- Analysis confidence
-
-During future outfit analyses, Verdict combines:
-
-- Current photo
-- Style DNA
-- Garment
-- Occasion
-
-to deliver more personalized recommendations.
-
-The original profile photo is **not retained**. Only structured Style DNA data is stored locally.
-
----
-
-## Explainable AI
-
-Verdict never returns a simple score without explanation.
-
-Every recommendation includes:
-
-- Dimension-by-dimension reasoning
-- Confidence indicators
-- Strengths
-- Considerations
-- Transparent decision factors
-
----
-
-## Privacy First
-
-Privacy is a core design principle.
-
-- Personal photos are analyzed only for the current request.
-- Original Style DNA photos are not retained.
-- Only structured Style DNA JSON is stored locally.
-- Outfit analysis continues to require a current personal photo for up-to-date context.
-
----
-
-# Technology Stack
-
-## Frontend
-
-- Next.js 15
-- React
-- TypeScript
-- Tailwind CSS
-
-## Backend
-
-- Next.js API Routes
-- OpenAI Responses API
-- GPT-4.1 Vision
-
-## Validation
-
-- Zod Runtime Validation
-- Multipart Upload Validation
-- MIME Validation
-- Image Dimension Validation
-- File Size Validation
-
----
-
-# AI Architecture
-
-```text
-Current Photo
-        +
-Style DNA
-        +
-Garment Photo
-        +
-Occasion
-        +
-Style Preferences
-            │
-            ▼
-OpenAI GPT-4.1 Vision
-            │
-            ▼
-Structured AI Response
-            │
-            ▼
-Runtime Schema Validation
-            │
-            ▼
-Deterministic Verdict Calculation
-            │
-            ▼
-Decision Report
-```
-
----
-
-# Project Status
-
-## Phase 1 — MVP
-
-✅ Complete
-
-- Mock AI responses
-- Outfit analysis workflow
-- Decision report
-- Style preferences
-- Responsive UI
-
----
-
-## Phase 2 — AI Integration
-
-✅ Complete
-
-- GPT-4.1 Vision integration
-- OpenAI Responses API
-- Multipart uploads
-- Runtime validation
-- Error handling
-- Benchmark framework
-- 30 benchmark cases
-
----
-
-## Phase 3 — Style DNA
-
-✅ Complete
-
-- AI Style DNA generation
-- Persistent structured profile
-- Personalized analysis context
-- Privacy-first storage model
-- Regenerate & Delete flows
-- UX polish
-- Responsive interface
-
----
-
-## Phase 4 — Shopping Recommendations
-
-🚧 Planned
-
-Upcoming work includes:
-
-- AI shopping recommendations
-- Product matching
-- Alternative suggestions
-- Explainable recommendation engine
-- Personalized shopping assistant
-
----
-
-# Repository Structure
-
-```text
-app/
-components/
-lib/
-memory/
-public/
-specs/
-tests/
-types/
-```
-
----
-
-# Running Locally
-
-Install dependencies:
-
-```bash
+``` bash
+git clone https://github.com/tymepas/AI_Stylist_Assistant
+cd AI_Stylist_Assistant
 npm install
-```
-
-Run development server:
-
-```bash
 npm run dev
 ```
 
-Run TypeScript:
+Create `.env.local`
 
-```bash
-npm run typecheck
+``` env
+OPENAI_API_KEY=
+OPENAI_MODEL=
+ANALYSIS_MODE=openai
 ```
 
-Run tests:
+## How Codex & GPT-5.6 Were Used
 
-```bash
-npm test
-```
+Codex powered by GPT-5.6 assisted with: - Architecture planning -
+TypeScript implementation - Component generation - Runtime validation -
+Jest tests - Refactoring - Documentation - Bug fixing
 
-Build production:
+The application keeps verdict calculation deterministic while AI
+provides structured analysis and personalized recommendations.
 
-```bash
-npm run build
-```
+## Roadmap
 
----
+-   ✅ Phase 1 -- Foundation
+-   ✅ Phase 2 -- Vision AI
+-   ✅ Phase 3 -- Style DNA
+-   ✅ Phase 4 -- Shopping Advisor
 
-# Testing
+## License
 
-Current test coverage includes:
-
-- Runtime schema validation
-- Storage services
-- Local persistence
-- API integration
-- Route validation
-- Error handling
-- Graceful degradation
-- Type safety
-
-All current tests pass successfully.
-
----
-
-# Design Principles
-
-Verdict is intentionally designed to be:
-
-- Explainable
-- Privacy-first
-- AI-assisted rather than AI-authoritative
-- Respectful
-- Transparent
-- Production-ready
-- Scalable
-
----
-
-# Roadmap
-
-| Phase | Status |
-|---------|--------|
-| Phase 1 – MVP | ✅ Complete |
-| Phase 2 – AI Integration | ✅ Complete |
-| Phase 3 – Style DNA | ✅ Complete |
-| Phase 4 – Shopping Recommendations | 🚧 Planned |
-| Phase 5 – Wardrobe Memory | 📋 Planned |
-| Phase 6 – Virtual Try-On | 📋 Planned |
-
----
-
-# License
-
-MIT License
-
----
-
-# Acknowledgements
-
-Built with:
-
-- Next.js
-- TypeScript
-- Tailwind CSS
-- OpenAI GPT-4.1 Vision
-
----
-
-## Verdict AI
-
-**Know Before You Buy.**
+MIT
