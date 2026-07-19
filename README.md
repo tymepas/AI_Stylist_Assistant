@@ -905,20 +905,6 @@ npm run build
 
 ---
 
-# 📸 Demo
-
-### 🎥 YouTube Demo
-
-https://youtu.be/4gkygS8-xSU
-
----
-
-### 🌐 Live Application
-
-> Replace this with your Vercel deployment URL.
-
----
-
 # 📦 Deployment
 
 Verdict is deployed using **Vercel**.
@@ -963,14 +949,6 @@ git push origin feature/amazing-feature
 
 ---
 
-# 📄 License
-
-This project is licensed under the MIT License.
-
-See the LICENSE file for details.
-
----
-
 # 🙏 Acknowledgements
 
 Special thanks to:
@@ -1008,7 +986,7 @@ GitHub:
 https://github.com/tymepas
 
 LinkedIn:
-> Add your LinkedIn profile URL here
+https://www.linkedin.com/in/garvitai/
 
 ---
 
