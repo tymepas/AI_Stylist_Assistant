@@ -5,11 +5,12 @@
 
 ## 🌐 Live Demo
 
-Add your Vercel URL here.
+https://verdictai-fawn.vercel.app/
+
 
 ## 🎥 Demo Video
 
-https://verdictai-fawn.vercel.app/
+https://youtu.be/4gkygS8-xSU
 
 ## 📦 Repository
 
