@@ -818,7 +818,217 @@ The project demonstrates how modern AI systems can be combined with deterministi
 Rather than replacing human decision making, Verdict helps users make more confident purchasing decisions through explainable AI.
 
 ---
+# 🚀 Getting Started
 
+## Prerequisites
+
+Before running the project locally, make sure you have:
+
+- Node.js 18+
+- npm or yarn
+- OpenAI API Key
+
+---
+
+# ⚙️ Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/tymepas/AI_Stylist_Assistant.git
+cd AI_Stylist_Assistant
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+or
+
+```bash
+yarn install
+```
+
+---
+
+# 🔑 Environment Variables
+
+Create a `.env.local` file in the project root.
+
+```env
+OPENAI_API_KEY=your_api_key_here
+OPENAI_MODEL=gpt-4.1
+ANALYSIS_MODE=openai
+```
+
+> Never commit your API keys to GitHub.
+
+---
+
+# ▶️ Running the Project
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Open your browser:
+
+```
+http://localhost:3000
+```
+
+---
+
+# 🧪 Running Tests
+
+Execute the test suite:
+
+```bash
+npm test
+```
+
+Run linting:
+
+```bash
+npm run lint
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+---
+
+# 📸 Demo
+
+### 🎥 YouTube Demo
+
+https://youtu.be/4gkygS8-xSU
+
+---
+
+### 🌐 Live Application
+
+> Replace this with your Vercel deployment URL.
+
+---
+
+# 📦 Deployment
+
+Verdict is deployed using **Vercel**.
+
+Deployment includes:
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- OpenAI Responses API
+- GPT-4.1 Vision
+- Runtime Validation
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+If you'd like to improve Verdict:
+
+1. Fork the repository
+2. Create a new feature branch
+
+```bash
+git checkout -b feature/amazing-feature
+```
+
+3. Commit your changes
+
+```bash
+git commit -m "Add amazing feature"
+```
+
+4. Push your branch
+
+```bash
+git push origin feature/amazing-feature
+```
+
+5. Open a Pull Request
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+See the LICENSE file for details.
+
+---
+
+# 🙏 Acknowledgements
+
+Special thanks to:
+
+- OpenAI
+- Codex
+- GPT-5.6
+- GPT-4.1 Vision
+- Next.js
+- React
+- Tailwind CSS
+- Vercel
+- Zod
+- Jest
+
+for providing the technologies that made this project possible.
+
+---
+
+# 💡 Project Vision
+
+Verdict is built on a simple belief:
+
+> **AI should help people make better decisions—not make decisions for them.**
+
+Rather than replacing human judgment, Verdict provides transparent, explainable recommendations that empower users to purchase clothing with greater confidence.
+
+---
+
+# 📬 Contact
+
+**Garvit Mathur**
+
+GitHub:
+https://github.com/tymepas
+
+LinkedIn:
+> Add your LinkedIn profile URL here
+
+---
+
+<div align="center">
+
+## ⭐ If you found this project interesting...
+
+Give it a ⭐ on GitHub!
+
+It helps others discover the project and supports future development.
+
+---
+
+### 👔 Verdict – Know Before You Buy
+
+**AI-powered Fashion Purchase Decision Support**
+
+Built with ❤️ during **OpenAI Build Week** using **Codex**, **GPT-5.6**, and **OpenAI GPT-4.1 Vision**.
+
+</div>
 
 
 
