@@ -581,6 +581,245 @@ Verdict was built around five principles:
 
 ---
 
+# 🤖 How Codex & GPT-5.6 Were Used
+
+Verdict was built during **OpenAI Build Week** with extensive assistance from **Codex powered by GPT-5.6**.
+
+Rather than generating an application from scratch, Codex acted as an AI engineering collaborator throughout the development lifecycle.
+
+It accelerated implementation while every architectural and product decision remained human-directed.
+
+---
+
+## 🧠 Architecture Design
+
+Codex assisted in designing the overall project architecture including:
+
+- API structure
+- Component organization
+- Feature separation
+- Shopping Advisor architecture
+- Runtime validation pipeline
+- Explainable AI workflow
+
+---
+
+## 💻 Feature Development
+
+Codex helped implement production-ready features including:
+
+- Style DNA
+- Outfit Analysis
+- Shopping Advisor
+- Retail Search Integration
+- Explainability Components
+- Report UI
+- API Routes
+- Type-safe interfaces
+
+---
+
+## ⚙️ OpenAI Integration
+
+Codex accelerated integration with:
+
+- OpenAI Responses API
+- GPT-4.1 Vision
+- Structured JSON Outputs
+- Runtime Validation
+- Error Handling
+- Prompt Engineering
+
+---
+
+## 🧪 Testing & Debugging
+
+Codex was used to:
+
+- Write Jest tests
+- Review implementation
+- Fix TypeScript issues
+- Refactor components
+- Improve code quality
+- Resolve build errors
+- Validate schemas
+
+---
+
+## 📖 Documentation
+
+Codex also helped generate and refine:
+
+- Technical documentation
+- README improvements
+- Architecture explanations
+- API documentation
+- Feature documentation
+
+---
+
+# 🎯 AI Responsibilities vs Application Responsibilities
+
+A major design goal was keeping AI responsible only for perception and reasoning while the application remains responsible for decision making.
+
+| AI Responsibilities | Application Responsibilities |
+|---------------------|------------------------------|
+| Analyze uploaded images | Validate AI response |
+| Detect colors | Calculate Verdict |
+| Evaluate formality | Apply business rules |
+| Evaluate occasion fit | Compute weighted score |
+| Generate explanations | Shopping recommendations |
+| Suggest improvements | Render final report |
+
+This separation improves reliability, consistency, and explainability.
+
+---
+
+# 🔄 End-to-End Workflow
+
+```text
+User Uploads Images
+          │
+          ▼
+Image Validation
+          │
+          ▼
+OpenAI GPT-4.1 Vision
+          │
+          ▼
+Structured JSON Response
+          │
+          ▼
+Zod Runtime Validation
+          │
+          ▼
+Deterministic Verdict Engine
+          │
+          ▼
+Shopping Advisor
+          │
+          ▼
+Interactive Report
+```
+
+---
+
+# 🚀 Performance Goals
+
+Verdict was designed around several engineering principles.
+
+### ✅ Reliability
+
+Deterministic verdict calculation ensures consistent results.
+
+---
+
+### ✅ Explainability
+
+Every recommendation includes supporting reasoning.
+
+---
+
+### ✅ Privacy
+
+Images are processed only for analysis.
+
+Original uploads are never permanently stored.
+
+---
+
+### ✅ Personalization
+
+Style DNA creates recommendations unique to each user.
+
+---
+
+### ✅ Transparency
+
+Business logic remains independent from AI-generated reasoning.
+
+---
+
+# 🧪 Testing
+
+The project includes testing for:
+
+- Runtime validation
+- Verdict calculation
+- API responses
+- Component rendering
+- Shopping Advisor
+- Utility functions
+
+Testing was used throughout development to improve reliability.
+
+---
+
+# 📈 Future Roadmap
+
+## ✅ Phase 1 — Foundation
+
+- Landing Page
+- Dashboard
+- Upload Flow
+- Initial UI
+
+---
+
+## ✅ Phase 2 — AI Analysis
+
+- GPT-4.1 Vision
+- Explainable Report
+- AI Recommendations
+
+---
+
+## ✅ Phase 3 — Style DNA
+
+- Persistent Profile
+- Runtime Validation
+- Deterministic Verdict
+- Personalization
+
+---
+
+## ✅ Phase 4 — Shopping Advisor
+
+- Personalized Recommendations
+- Retail Search
+- Recommendation Cards
+- Expected Outcome
+
+---
+
+# 🔮 Future Enhancements
+
+Potential future improvements include:
+
+- Multi-outfit comparison
+- Wardrobe management
+- Seasonal wardrobe planning
+- Wishlist support
+- Brand personalization
+- Outfit history
+- Mobile application
+- User accounts
+- Cloud profile synchronization
+- AI wardrobe assistant
+
+---
+
+# 🏆 OpenAI Build Week
+
+Verdict was created as part of **OpenAI Build Week**.
+
+The project demonstrates how modern AI systems can be combined with deterministic software engineering to build trustworthy consumer applications.
+
+Rather than replacing human decision making, Verdict helps users make more confident purchasing decisions through explainable AI.
+
+---
+
+
 
 
 
