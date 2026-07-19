@@ -237,4 +237,351 @@ Shopping Advisor
 
 ✅ Built using Codex during OpenAI Build Week
 
+
+# 🛠️ Technology Stack
+
+## Frontend
+
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+
+---
+
+## AI
+
+- OpenAI Responses API
+- GPT-4.1 Vision
+- Structured JSON Output
+- Prompt Engineering
+
+---
+
+## Validation
+
+- Zod Runtime Validation
+- JSON Schema Validation
+- Type-safe AI Responses
+
+---
+
+## Testing
+
+- Jest
+- Unit Testing
+- Component Testing
+
+---
+
+## Deployment
+
+- Vercel
+- GitHub
+- npm
+
+---
+
+# 📁 Project Structure
+
+```text
+AI_Stylist_Assistant/
+
+├── app/
+│   ├── api/
+│   │   ├── analyze/
+│   │   ├── style-profile/
+│   │   └── shopping/
+│   │
+│   ├── dashboard/
+│   ├── report/
+│   └── page.tsx
+│
+├── components/
+│   ├── analysis/
+│   ├── dashboard/
+│   ├── fashion/
+│   ├── shopping/
+│   └── ui/
+│
+├── lib/
+│   ├── services/
+│   │   ├── openai/
+│   │   ├── verdict/
+│   │   └── shopping/
+│   │
+│   ├── schemas/
+│   └── utils/
+│
+├── public/
+├── tests/
+├── docs/
+└── README.md
+```
+
+---
+
+# 🧬 Style DNA
+
+Style DNA is the personalization engine behind Verdict.
+
+Instead of making recommendations using only the uploaded images, Verdict builds a reusable profile that represents the user's fashion preferences.
+
+Style DNA captures:
+
+- Preferred aesthetics
+- Favorite colors
+- Clothing preferences
+- Lifestyle
+- Comfort level
+- Fashion goals
+- Occasion preferences
+
+This allows recommendations to remain consistent across future analyses.
+
+---
+
+## Why Style DNA?
+
+Traditional fashion AI evaluates only the current image.
+
+Verdict evaluates:
+
+Current Outfit
+
++
+
+Current Occasion
+
++
+
+Personal Style DNA
+
+This creates recommendations that feel significantly more personalized.
+
+---
+
+# 🤖 AI Analysis Pipeline
+
+Every analysis follows the same structured pipeline.
+
+```text
+User Upload
+
+↓
+
+Image Validation
+
+↓
+
+Prompt Construction
+
+↓
+
+OpenAI GPT-4.1 Vision
+
+↓
+
+Structured JSON Response
+
+↓
+
+Runtime Validation
+
+↓
+
+Business Rules Engine
+
+↓
+
+Verdict Calculation
+
+↓
+
+Explainable Report
+
+↓
+
+Shopping Advisor
+```
+
+---
+
+# ⚙️ Deterministic Verdict Engine
+
+One of Verdict's biggest design decisions is separating AI reasoning from business logic.
+
+The AI **never decides the final verdict.**
+
+Instead:
+
+AI provides structured observations.
+
+↓
+
+Application validates the response.
+
+↓
+
+Application calculates the final verdict.
+
+This guarantees:
+
+- Consistency
+- Explainability
+- Transparency
+- Repeatability
+
+---
+
+# 🛍️ Shopping Advisor
+
+Shopping Advisor is Verdict's intelligent recommendation system.
+
+Rather than recommending random clothing items, it combines:
+
+- AI Analysis
+- Style DNA
+- Occasion Context
+- Current Outfit
+- User Preferences
+
+to suggest alternatives that better match the user's needs.
+
+---
+
+## Shopping Recommendation Flow
+
+```text
+AI Analysis
+
++
+
+Style DNA
+
++
+
+Occasion
+
+↓
+
+Recommendation Engine
+
+↓
+
+Top 3 Alternatives
+
+↓
+
+Expected Outcome
+
+↓
+
+Retail Search
+```
+
+---
+
+## Recommendation Quality
+
+Every recommendation includes:
+
+- Match Level
+- Why it fits
+- Styling Advice
+- Expected Outcome
+
+No arbitrary numerical scores are shown.
+
+Recommendations are explainable rather than opaque.
+
+---
+
+# 🛒 Retail Search Integration
+
+Verdict allows users to immediately explore similar products from popular retailers.
+
+Current integrations:
+
+- Myntra
+- Amazon
+- AJIO
+
+These links perform product searches only.
+
+Verdict does **not** use affiliate links or sponsored recommendations.
+
+---
+
+# 🔍 Explainable AI
+
+Instead of a simple "Looks Good" response, Verdict explains:
+
+- Why the outfit works
+- Which colors complement each other
+- Whether the outfit matches the occasion
+- Whether the formality is appropriate
+- Which improvements could be made
+
+Every recommendation is backed by structured reasoning.
+
+---
+
+# 🔐 Privacy & Security
+
+Privacy was a core design goal.
+
+## Images
+
+- Processed only for analysis
+- Not permanently stored
+- No user gallery maintained
+
+## Style DNA
+
+- Stored locally
+- User controlled
+- Editable at any time
+
+## AI Responses
+
+- Runtime validated
+- Schema checked
+- No blind rendering of model output
+
+---
+
+# 🎯 Design Principles
+
+Verdict was built around five principles:
+
+✅ Explainability over mystery
+
+✅ Decision support over automation
+
+✅ Privacy before personalization
+
+✅ Deterministic logic over AI-only scoring
+
+✅ Human-centered recommendations
+
+---
+
+# 📊 What Makes Verdict Different?
+
+| Traditional Fashion AI | Verdict |
+|-------------------------|---------|
+| Generic outfit rating | Context-aware decision support |
+| AI decides everything | AI + deterministic business logic |
+| Limited personalization | Persistent Style DNA |
+| Opaque recommendations | Explainable insights |
+| Single image evaluation | User + Garment + Occasion + Style DNA |
+| Fashion score | Transparent Verdict |
+| No shopping guidance | Personalized Shopping Advisor |
+
+---
+
+
+
+
 ---
