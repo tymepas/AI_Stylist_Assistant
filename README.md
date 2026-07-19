@@ -64,9 +64,15 @@ ANALYSIS_MODE=openai
 
 ## How Codex & GPT-5.6 Were Used
 
-Codex powered by GPT-5.6 assisted with: - Architecture planning -
-TypeScript implementation - Component generation - Runtime validation -
-Jest tests - Refactoring - Documentation - Bug fixing
+Codex powered by GPT-5.6 assisted with: 
+- Architecture planning
+- TypeScript implementation
+- Component generation
+- Runtime validation
+- Jest tests 
+- Refactoring 
+- Documentation 
+- Bug fixing
 
 The application keeps verdict calculation deterministic while AI
 provides structured analysis and personalized recommendations.
