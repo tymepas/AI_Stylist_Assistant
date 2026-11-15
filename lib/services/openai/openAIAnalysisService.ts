@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { StyleProfile, AIStyleProfile } from '@/types/schema'
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
+import { logEvent, summarizeValidationIssues, type ConfigIssue, type SafeLogFields } from '@/lib/observability/safeLogger'
 import { validateRawOpenAIAnalysis } from './openAIAnalysisSchema'
 
 const OPENAI_RESPONSES_URL = 'https://api.openai.com/v1/responses'
@@ -34,6 +35,8 @@ interface AnalyzeWithOpenAIInput {
   styleProfile: StyleProfile
   /** Phase 3 — optional AI-generated style profile for richer context injection. */
   aiStyleProfile?: AIStyleProfile
+  /** Correlates log events for one API request. Never derived from user input. */
+  requestId?: string
 }
 
 interface OpenAIUsage {
@@ -44,6 +47,7 @@ interface OpenAIUsage {
 
 interface OpenAIResponseBody {
   status?: string
+  incomplete_details?: { reason?: string } | null
   output_text?: string
   output?: Array<{
     type?: string
@@ -153,41 +157,39 @@ function buildUserContext(
   return lines.join('\n')
 }
 
-function logStarted(model: string): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.info('[OpenAI analysis] request started', { model })
+// Logging: safe, structured events only (lib/observability/safeLogger.ts).
+// Never log prompts, images, model output text or validation messages.
+
+function usageFields(usage?: OpenAIUsage): SafeLogFields {
+  return {
+    input_tokens: usage?.input_tokens,
+    output_tokens: usage?.output_tokens,
+    total_tokens: usage?.total_tokens,
   }
 }
 
-function logCompleted(model: string, startedAt: number, usage?: OpenAIUsage): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.info('[OpenAI analysis] request completed', {
-      model,
-      duration_ms: Date.now() - startedAt,
-      usage: usage
-        ? {
-            input_tokens: usage.input_tokens,
-            output_tokens: usage.output_tokens,
-            total_tokens: usage.total_tokens,
-          }
-        : undefined,
-    })
-  }
+function logConfigIssue(requestId: string | undefined, configIssue: ConfigIssue): void {
+  logEvent('error', 'openai_config_invalid', {
+    request_id: requestId,
+    operation: 'analysis',
+    error_code: 'configuration_error',
+    config_issue: configIssue,
+  })
 }
 
 function logFailed(
-  model: string,
+  base: SafeLogFields,
   startedAt: number,
-  error: OpenAIAnalysisError
+  error: OpenAIAnalysisError,
+  usage?: OpenAIUsage
 ): void {
-  if (process.env.NODE_ENV !== 'production') {
-    console.error('[OpenAI analysis] request failed', {
-      model,
-      duration_ms: Date.now() - startedAt,
-      code: error.code,
-      status: error.status,
-    })
-  }
+  logEvent('error', 'openai_request_failed', {
+    ...base,
+    duration_ms: Date.now() - startedAt,
+    error_code: error.code,
+    http_status: error.status,
+    ...usageFields(usage),
+  })
 }
 
 export async function analyzeWithOpenAI({
@@ -196,11 +198,13 @@ export async function analyzeWithOpenAI({
   occasion,
   styleProfile,
   aiStyleProfile,
+  requestId,
 }: AnalyzeWithOpenAIInput): Promise<RawOpenAIAnalysisResult> {
   const apiKey = process.env.OPENAI_API_KEY
   const model = process.env.OPENAI_MODEL
 
   if (!apiKey || !model) {
+    logConfigIssue(requestId, !apiKey && !model ? 'missing_api_key_and_model' : !apiKey ? 'missing_api_key' : 'missing_model')
     throw new OpenAIAnalysisError(
       'configuration_error',
       'OpenAI analysis is not configured.'
@@ -211,6 +215,7 @@ export async function analyzeWithOpenAI({
   try {
     instructions = await loadSystemPrompt()
   } catch {
+    logConfigIssue(requestId, 'prompt_unreadable')
     throw new OpenAIAnalysisError(
       'configuration_error',
       'The system prompt could not be loaded.'
@@ -231,7 +236,9 @@ export async function analyzeWithOpenAI({
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), OPENAI_TIMEOUT_MS)
   const startedAt = Date.now()
-  logStarted(model)
+  const logBase: SafeLogFields = { request_id: requestId, operation: 'analysis', model }
+  let usage: OpenAIUsage | undefined
+  logEvent('debug', 'openai_request_started', logBase)
 
   try {
     const response = await fetch(OPENAI_RESPONSES_URL, {
@@ -279,8 +286,15 @@ export async function analyzeWithOpenAI({
       if (error instanceof Error && error.name === 'AbortError') throw error
       throw new OpenAIAnalysisError('invalid_response', 'The analysis service returned invalid JSON.')
     }
+    usage = responseBody.usage
 
     if (responseBody.status && responseBody.status !== 'completed') {
+      // Status and reason are OpenAI enum values (e.g. incomplete:max_output_tokens), never content.
+      const reason = responseBody.incomplete_details?.reason
+      logEvent('warn', 'openai_response_not_completed', {
+        ...logBase,
+        outcome: reason ? `${responseBody.status}:${reason}` : responseBody.status,
+      })
       throw new OpenAIAnalysisError('invalid_response', 'The analysis service did not complete the response.')
     }
 
@@ -299,27 +313,37 @@ export async function analyzeWithOpenAI({
     let result: RawOpenAIAnalysisResult
     try {
       result = validateRawOpenAIAnalysis(parsedOutput)
-    } catch {
+    } catch (validationError) {
+      // Schema paths only. Issue messages and received values can echo model output.
+      logEvent('warn', 'openai_output_schema_invalid', {
+        ...logBase,
+        ...summarizeValidationIssues(validationError),
+      })
       throw new OpenAIAnalysisError(
         'invalid_response',
         'The model response did not match the required analysis schema.'
       )
     }
 
-    logCompleted(model, startedAt, responseBody.usage)
+    logEvent('info', 'openai_request_completed', {
+      ...logBase,
+      duration_ms: Date.now() - startedAt,
+      outcome: result.status,
+      ...usageFields(usage),
+    })
     return result
   } catch (error) {
     if (error instanceof OpenAIAnalysisError) {
-      logFailed(model, startedAt, error)
+      logFailed(logBase, startedAt, error, usage)
       throw error
     }
     if (error instanceof Error && error.name === 'AbortError') {
       const timeoutError = new OpenAIAnalysisError('timeout', 'The analysis request timed out.')
-      logFailed(model, startedAt, timeoutError)
+      logFailed(logBase, startedAt, timeoutError, usage)
       throw timeoutError
     }
     const apiError = new OpenAIAnalysisError('api_error', 'The analysis service could not be reached.')
-    logFailed(model, startedAt, apiError)
+    logFailed(logBase, startedAt, apiError, usage)
     throw apiError
   } finally {
     clearTimeout(timeout)

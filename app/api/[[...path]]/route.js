@@ -9,6 +9,7 @@ import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/op
 import { parseAIStyleProfile } from '@/lib/services/aiStyleProfileService'
 import { generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileService'
 import { getMockProfile } from '@/lib/constants/mockProfile'
+import { createRequestId, logEvent } from '@/lib/observability/safeLogger'
 
 // MongoDB connection (lazy - only used by the /status template endpoints below)
 let client
@@ -39,6 +40,8 @@ export async function OPTIONS() {
 
 // Route handler function
 async function handleRoute(request, { params }) {
+  // Server-generated id that correlates the log events of one request.
+  const requestId = createRequestId()
   const { path = [] } = await params
   const route = `/${path.join('/')}`
   const method = request.method
@@ -94,7 +97,7 @@ async function handleRoute(request, { params }) {
 
       // openai mode — call the AI, validate response, set generated_at_utc
       try {
-        const profileResult = await generateProfileWithOpenAI({ photo })
+        const profileResult = await generateProfileWithOpenAI({ photo, requestId })
 
         if (profileResult.status === 'complete') {
           // Application sets generated_at_utc — AI always returns ""
@@ -191,6 +194,7 @@ async function handleRoute(request, { params }) {
           styleProfile: styleProfileCheck.profile,
           // Phase 3: pass AI profile as optional context; undefined when absent
           aiStyleProfile: aiStyleProfileCheck.profile ?? undefined,
+          requestId,
         })
 
         const result = rawAnalysis.status === 'complete'
@@ -261,7 +265,13 @@ async function handleRoute(request, { params }) {
     ))
 
   } catch (error) {
-    console.error('API Error:', error)
+    // Error messages and stacks can contain request data (e.g. JSON parse errors
+    // quote the input) or connection strings, so only the error type is logged.
+    logEvent('error', 'api_unhandled_error', {
+      request_id: requestId,
+      endpoint: route,
+      error_name: error instanceof Error ? error.name : typeof error,
+    })
     return handleCORS(NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

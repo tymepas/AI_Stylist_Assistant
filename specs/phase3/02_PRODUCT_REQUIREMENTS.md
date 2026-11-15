@@ -179,7 +179,7 @@ As a user who has manually set style preferences, I want my preferences to be pr
 | Photo contains multiple people | Return `unable_to_generate` with instruction to upload a solo photo |
 | Photo is cropped to face only | Return `unable_to_generate` with instruction to show at least an upper body |
 | Photo is very dark or blurry | Return `unable_to_generate` with instruction to retake in good lighting |
-| AI returns partial or malformed JSON | Treat as generation failure; log raw response; show retry |
+| AI returns partial or malformed JSON | Treat as generation failure; log the error category only (never the raw response); show retry |
 | AI returns schema-invalid field values | Treat as generation failure; do not display partial data |
 | User regenerates while existing profile is in use | New profile replaces old; in-progress analysis sessions (if any) use whatever profile was sent at request time |
 | User deletes profile mid-analysis | Analysis uses the profile that was included in the request; deletion is client-side only |

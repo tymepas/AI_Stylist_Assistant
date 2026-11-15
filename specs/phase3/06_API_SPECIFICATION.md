@@ -86,7 +86,7 @@ All validation failures return 400 with a structured error response (see Error R
 The AI response is parsed and validated using Zod against the `AIStyleProfile` schema.
 
 - If validation passes: `generated_at_utc` is set by the application (not the AI), and the complete object is returned
-- If validation fails: return `unable_to_generate` response; log the raw AI output for debugging
+- If validation fails: return `unable_to_generate` response; log schema issue paths for debugging (never the raw AI output, which describes the person)
 
 #### Success Response
 
@@ -208,7 +208,7 @@ POST /api/generate-profile
       → AI call (single photo, profile generation system prompt)
       → Zod schema validation
       → if valid: append generated_at_utc, return AIStyleProfile
-      → if invalid: return unable_to_generate + log raw
+      → if invalid: return unable_to_generate + log schema issue paths (never raw output)
   → error states: structured error JSON + appropriate HTTP status
 ```
 

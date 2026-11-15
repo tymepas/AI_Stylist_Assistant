@@ -174,7 +174,7 @@ Every failure state must:
 
 **Error code:** `api_error`
 
-**Logging:** Raw AI response is logged server-side for debugging.
+**Logging:** The schema issue count and paths are logged server-side for debugging. The raw AI response is never logged, because it describes the person in the photo.
 
 **User-facing message:** "Something went wrong during analysis. Please try again."
 
