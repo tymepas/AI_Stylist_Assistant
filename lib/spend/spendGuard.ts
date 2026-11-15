@@ -85,6 +85,19 @@ function logConfigIssue(requestId: string | undefined, operation: OpenAIOperatio
   logEvent('error', 'spend_guard_config_invalid', { request_id: requestId, operation, config_issue: configIssue })
 }
 
+/** Exact value required to allow unprotected billable calls in local `next dev`. */
+export const UNPROTECTED_DEV_OPT_IN = 'I_ACCEPT_UNPROTECTED_SPEND'
+
+/**
+ * Billable calls without a spend store are allowed only in Jest (which mocks
+ * every network call) or in local `next dev` with an explicit opt-in. Never in a
+ * production build, whatever the opt-in says.
+ */
+function unprotectedCallsAllowed(): boolean {
+  if (process.env.NODE_ENV === 'test') return true
+  return process.env.NODE_ENV === 'development' && process.env.SPEND_GUARD_ALLOW_UNPROTECTED_DEV === UNPROTECTED_DEV_OPT_IN
+}
+
 function namespace(): string {
   return process.env.VERCEL_ENV || process.env.NODE_ENV || 'development'
 }
@@ -131,14 +144,15 @@ export async function reserveSpend(input: {
     return { allowed: false, rejection: UNAVAILABLE }
   }
   if (handle === 'missing') {
-    if (process.env.NODE_ENV === 'production') {
-      // Production and Preview builds never make billable calls without the guard.
+    if (!unprotectedCallsAllowed()) {
+      // Production, Preview and local development all share the same OpenAI credits,
+      // so none of them make billable calls without the guard by default.
       logConfigIssue(requestId, operation, 'spend_store_not_configured')
       return { allowed: false, rejection: UNAVAILABLE }
     }
     if (!warnedDisabled) {
       warnedDisabled = true
-      logEvent('warn', 'spend_guard_disabled', { request_id: requestId, operation, outcome: 'development_without_store' })
+      logEvent('warn', 'spend_guard_disabled', { request_id: requestId, operation, outcome: 'unprotected_without_store' })
     }
     return { allowed: true, ticket: NOOP_TICKET }
   }

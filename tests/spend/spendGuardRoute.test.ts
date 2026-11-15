@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals
 jest.mock('server-only', () => ({}), { virtual: true })
 
 import { POST } from '@/app/api/[[...path]]/route'
-import { reserveSpend, setSpendStoreForTesting, settlementAmount } from '@/lib/spend/spendGuard'
+import { reserveSpend, setSpendStoreForTesting, settlementAmount, UNPROTECTED_DEV_OPT_IN } from '@/lib/spend/spendGuard'
 import { OpenAIAnalysisError } from '@/lib/services/openai/openAIErrors'
 import { estimateMaxCostMicroUsd, resolveModelConfig } from '@/lib/services/openai/modelConfig'
 import { DEFAULT_SPEND_CONFIG } from '@/lib/spend/spendConfig'
@@ -80,12 +80,32 @@ describe('fail closed', () => {
     expect((await analyze()).status).toBe(503)
   })
 
-  it('allows development without a store, with a warning, and never in production', async () => {
+  it('also fails closed in local development without a store, by default', async () => {
     setSpendStoreForTesting(null)
     process.env = { ...process.env, NODE_ENV: 'development' }
+    const fetchMock = jest.spyOn(global, 'fetch')
+    expect((await analyze()).status).toBe(503)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('allows unprotected local development only with the exact opt-in, with a warning', async () => {
+    setSpendStoreForTesting(null)
+    process.env = { ...process.env, NODE_ENV: 'development', SPEND_GUARD_ALLOW_UNPROTECTED_DEV: 'true' }
+    expect((await analyze()).status).toBe(503)
+
+    setSpendStoreForTesting(null) // reset the one-time warning
+    process.env.SPEND_GUARD_ALLOW_UNPROTECTED_DEV = UNPROTECTED_DEV_OPT_IN
     jest.spyOn(global, 'fetch').mockResolvedValue(openAIResponse({ status: 'complete', dimensions: allRated('Good') }))
     expect((await analyze()).status).toBe(200)
     expect(events().find((e) => e.event === 'spend_guard_disabled')).toBeTruthy()
+  })
+
+  it('ignores the development opt-in in production builds', async () => {
+    setSpendStoreForTesting(null)
+    process.env.SPEND_GUARD_ALLOW_UNPROTECTED_DEV = UNPROTECTED_DEV_OPT_IN
+    const fetchMock = jest.spyOn(global, 'fetch')
+    expect((await analyze()).status).toBe(503)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })
 

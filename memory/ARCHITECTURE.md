@@ -72,8 +72,10 @@ GPT-4.1 requests are byte-for-byte what they were before. All calls go through `
 
 **Fail-closed rules:**
 - A missing, invalid or unreachable store, or an invalid `SPEND_*` value, returns 503 with no OpenAI call. This applies to every `NODE_ENV=production` build, including Vercel Preview.
-- Only `next dev` without a store is allowed through, and it logs `spend_guard_disabled` once.
+- Local `next dev` fails closed too: Production, Preview and local development share the same OpenAI credits. Unprotected local calls are allowed only with `SPEND_GUARD_ALLOW_UNPROTECTED_DEV=I_ACCEPT_UNPROTECTED_SPEND`, which logs `spend_guard_disabled` once and is ignored in production builds.
 - Mock mode never reaches the guard.
+
+**Local development with real calls:** give local development its own Upstash database in `.env.local`, with smaller limits (for example `SPEND_TOTAL_LIMIT_USD=3`, `SPEND_DAILY_LIMIT_USD=0.5`, `SPEND_DAILY_WARN_USD=0.4`). Keys are namespaced by environment, so local and Production counters are separate. Their limits together must stay within the available OpenAI credit.
 
 **Client identity:** client addresses come from Vercel-set headers only when `VERCEL=1`, and are stored as an HMAC, never raw.
 
