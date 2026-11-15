@@ -4,29 +4,14 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { StyleProfile, AIStyleProfile } from '@/types/schema'
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
-import { logEvent, summarizeValidationIssues, type ConfigIssue, type SafeLogFields } from '@/lib/observability/safeLogger'
+import { logEvent, type ConfigIssue } from '@/lib/observability/safeLogger'
 import { validateRawOpenAIAnalysis } from './openAIAnalysisSchema'
+import { OpenAIAnalysisError } from './openAIErrors'
+import { resolveModelConfig, type NormalizedUsage, type SupportedModelId } from './modelConfig'
+import { callResponsesApi, type RunOverrides } from './responsesClient'
 
-const OPENAI_RESPONSES_URL = 'https://api.openai.com/v1/responses'
-const OPENAI_TIMEOUT_MS = 20_000
-
-export type OpenAIAnalysisErrorCode =
-  | 'configuration_error'
-  | 'timeout'
-  | 'rate_limit'
-  | 'api_error'
-  | 'invalid_response'
-
-export class OpenAIAnalysisError extends Error {
-  constructor(
-    public readonly code: OpenAIAnalysisErrorCode,
-    message: string,
-    public readonly status?: number
-  ) {
-    super(message)
-    this.name = 'OpenAIAnalysisError'
-  }
-}
+export { OpenAIAnalysisError } from './openAIErrors'
+export type { OpenAIAnalysisErrorCode } from './openAIErrors'
 
 interface AnalyzeWithOpenAIInput {
   photo: File
@@ -37,26 +22,10 @@ interface AnalyzeWithOpenAIInput {
   aiStyleProfile?: AIStyleProfile
   /** Correlates log events for one API request. Never derived from user input. */
   requestId?: string
-}
-
-interface OpenAIUsage {
-  input_tokens?: number
-  output_tokens?: number
-  total_tokens?: number
-}
-
-interface OpenAIResponseBody {
-  status?: string
-  incomplete_details?: { reason?: string } | null
-  output_text?: string
-  output?: Array<{
-    type?: string
-    content?: Array<{
-      type?: string
-      text?: string
-    }>
-  }>
-  usage?: OpenAIUsage
+  /** Called once with provider-reported usage (success or failure), for spend settlement. */
+  onUsage?: (usage: NormalizedUsage) => void
+  /** Benchmark harness only: choose the model and tuning explicitly. The API route never sets this. */
+  runOverrides?: RunOverrides & { model?: SupportedModelId }
 }
 
 let systemPromptPromise: Promise<string> | undefined
@@ -74,19 +43,6 @@ async function fileToDataUrl(file: File): Promise<string> {
   return `data:${file.type};base64,${bytes.toString('base64')}`
 }
 
-function extractOutputText(response: OpenAIResponseBody): string | null {
-  if (typeof response.output_text === 'string' && response.output_text.trim()) {
-    return response.output_text
-  }
-
-  const outputText = response.output
-    ?.flatMap((item) => item.content ?? [])
-    .find((content) => content.type === 'output_text' && typeof content.text === 'string')
-    ?.text
-
-  return outputText?.trim() ? outputText : null
-}
-
 /**
  * Builds the user-facing context string injected into the outfit analysis prompt.
  *
@@ -96,7 +52,7 @@ function extractOutputText(response: OpenAIResponseBody): string | null {
  * to reference them explicitly in its output text.
  * Spec: specs/phase3/07_AI_ANALYSIS_SPEC.md § "Additional Context Provided to the AI"
  */
-function buildUserContext(
+export function buildUserContext(
   occasion: string,
   styleProfile: StyleProfile,
   aiStyleProfile?: AIStyleProfile
@@ -157,38 +113,12 @@ function buildUserContext(
   return lines.join('\n')
 }
 
-// Logging: safe, structured events only (lib/observability/safeLogger.ts).
-// Never log prompts, images, model output text or validation messages.
-
-function usageFields(usage?: OpenAIUsage): SafeLogFields {
-  return {
-    input_tokens: usage?.input_tokens,
-    output_tokens: usage?.output_tokens,
-    total_tokens: usage?.total_tokens,
-  }
-}
-
 function logConfigIssue(requestId: string | undefined, configIssue: ConfigIssue): void {
   logEvent('error', 'openai_config_invalid', {
     request_id: requestId,
     operation: 'analysis',
     error_code: 'configuration_error',
     config_issue: configIssue,
-  })
-}
-
-function logFailed(
-  base: SafeLogFields,
-  startedAt: number,
-  error: OpenAIAnalysisError,
-  usage?: OpenAIUsage
-): void {
-  logEvent('error', 'openai_request_failed', {
-    ...base,
-    duration_ms: Date.now() - startedAt,
-    error_code: error.code,
-    http_status: error.status,
-    ...usageFields(usage),
   })
 }
 
@@ -199,16 +129,25 @@ export async function analyzeWithOpenAI({
   styleProfile,
   aiStyleProfile,
   requestId,
+  onUsage,
+  runOverrides,
 }: AnalyzeWithOpenAIInput): Promise<RawOpenAIAnalysisResult> {
   const apiKey = process.env.OPENAI_API_KEY
-  const model = process.env.OPENAI_MODEL
+  const modelSetting = runOverrides?.model ?? process.env.OPENAI_MODEL
 
-  if (!apiKey || !model) {
-    logConfigIssue(requestId, !apiKey && !model ? 'missing_api_key_and_model' : !apiKey ? 'missing_api_key' : 'missing_model')
+  if (!apiKey || !modelSetting) {
+    logConfigIssue(requestId, !apiKey && !modelSetting ? 'missing_api_key_and_model' : !apiKey ? 'missing_api_key' : 'missing_model')
     throw new OpenAIAnalysisError(
       'configuration_error',
       'OpenAI analysis is not configured.'
     )
+  }
+
+  const modelConfig = resolveModelConfig(modelSetting)
+  if (!modelConfig) {
+    // Never log the configured value: it may be a misplaced credential.
+    logConfigIssue(requestId, 'unsupported_model')
+    throw new OpenAIAnalysisError('configuration_error', 'The configured OpenAI model is not supported.')
   }
 
   let instructions: string
@@ -233,119 +172,22 @@ export async function analyzeWithOpenAI({
     throw new OpenAIAnalysisError('api_error', 'The uploaded images could not be prepared.')
   }
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), OPENAI_TIMEOUT_MS)
-  const startedAt = Date.now()
-  const logBase: SafeLogFields = { request_id: requestId, operation: 'analysis', model }
-  let usage: OpenAIUsage | undefined
-  logEvent('debug', 'openai_request_started', logBase)
-
-  try {
-    const response = await fetch(OPENAI_RESPONSES_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        instructions,
-        input: [
-          {
-            role: 'user',
-            content: [
-              { type: 'input_text', text: buildUserContext(occasion, styleProfile, aiStyleProfile) },
-              { type: 'input_text', text: 'Person image:' },
-              { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
-              { type: 'input_text', text: 'Garment image:' },
-              { type: 'input_image', image_url: garmentDataUrl, detail: 'high' },
-            ],
-          },
-        ],
-        text: { format: { type: 'json_object' } },
-        max_output_tokens: 1_500,
-        store: false,
-      }),
-      signal: controller.signal,
-    })
-
-    if (!response.ok) {
-      throw new OpenAIAnalysisError(
-        response.status === 429 ? 'rate_limit' : 'api_error',
-        response.status === 429
-          ? 'The analysis service is temporarily rate limited.'
-          : 'The analysis service returned an error.',
-        response.status
-      )
-    }
-
-    let responseBody: OpenAIResponseBody
-    try {
-      responseBody = await response.json() as OpenAIResponseBody
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') throw error
-      throw new OpenAIAnalysisError('invalid_response', 'The analysis service returned invalid JSON.')
-    }
-    usage = responseBody.usage
-
-    if (responseBody.status && responseBody.status !== 'completed') {
-      // Status and reason are OpenAI enum values (e.g. incomplete:max_output_tokens), never content.
-      const reason = responseBody.incomplete_details?.reason
-      logEvent('warn', 'openai_response_not_completed', {
-        ...logBase,
-        outcome: reason ? `${responseBody.status}:${reason}` : responseBody.status,
-      })
-      throw new OpenAIAnalysisError('invalid_response', 'The analysis service did not complete the response.')
-    }
-
-    const outputText = extractOutputText(responseBody)
-    if (!outputText) {
-      throw new OpenAIAnalysisError('invalid_response', 'The analysis service returned no analysis.')
-    }
-
-    let parsedOutput: unknown
-    try {
-      parsedOutput = JSON.parse(outputText)
-    } catch {
-      throw new OpenAIAnalysisError('invalid_response', 'The model response was not valid JSON.')
-    }
-
-    let result: RawOpenAIAnalysisResult
-    try {
-      result = validateRawOpenAIAnalysis(parsedOutput)
-    } catch (validationError) {
-      // Schema paths only. Issue messages and received values can echo model output.
-      logEvent('warn', 'openai_output_schema_invalid', {
-        ...logBase,
-        ...summarizeValidationIssues(validationError),
-      })
-      throw new OpenAIAnalysisError(
-        'invalid_response',
-        'The model response did not match the required analysis schema.'
-      )
-    }
-
-    logEvent('info', 'openai_request_completed', {
-      ...logBase,
-      duration_ms: Date.now() - startedAt,
-      outcome: result.status,
-      ...usageFields(usage),
-    })
-    return result
-  } catch (error) {
-    if (error instanceof OpenAIAnalysisError) {
-      logFailed(logBase, startedAt, error, usage)
-      throw error
-    }
-    if (error instanceof Error && error.name === 'AbortError') {
-      const timeoutError = new OpenAIAnalysisError('timeout', 'The analysis request timed out.')
-      logFailed(logBase, startedAt, timeoutError, usage)
-      throw timeoutError
-    }
-    const apiError = new OpenAIAnalysisError('api_error', 'The analysis service could not be reached.')
-    logFailed(logBase, startedAt, apiError, usage)
-    throw apiError
-  } finally {
-    clearTimeout(timeout)
-  }
+  return callResponsesApi({
+    operation: 'analysis',
+    apiKey,
+    modelConfig,
+    instructions,
+    content: [
+      { type: 'input_text', text: buildUserContext(occasion, styleProfile, aiStyleProfile) },
+      { type: 'input_text', text: 'Person image:' },
+      { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
+      { type: 'input_text', text: 'Garment image:' },
+      { type: 'input_image', image_url: garmentDataUrl, detail: 'high' },
+    ],
+    validate: validateRawOpenAIAnalysis,
+    outcomeOf: (result) => result.status,
+    requestId,
+    overrides: runOverrides,
+    onUsage,
+  })
 }

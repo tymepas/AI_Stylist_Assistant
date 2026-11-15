@@ -42,7 +42,7 @@ function profileForm() {
 }
 
 beforeEach(() => {
-  process.env = { ...originalEnv, ANALYSIS_MODE: 'openai', OPENAI_API_KEY: 'sk-test-fake-key-route-0000', OPENAI_MODEL: 'test-model' }
+  process.env = { ...originalEnv, ANALYSIS_MODE: 'openai', OPENAI_API_KEY: 'sk-test-fake-key-route-0000', OPENAI_MODEL: 'gpt-4.1' }
   jest.spyOn(console, 'info').mockImplementation(() => undefined)
   jest.spyOn(console, 'warn').mockImplementation(() => undefined)
   jest.spyOn(console, 'error').mockImplementation(() => undefined)

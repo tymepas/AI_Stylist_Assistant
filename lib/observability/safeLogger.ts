@@ -14,13 +14,21 @@ import { randomUUID } from 'node:crypto'
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
-export type ConfigIssue = 'missing_api_key' | 'missing_model' | 'missing_api_key_and_model' | 'prompt_unreadable'
+export type ConfigIssue =
+  | 'missing_api_key'
+  | 'missing_model'
+  | 'missing_api_key_and_model'
+  | 'unsupported_model'
+  | 'prompt_unreadable'
+  | 'spend_store_not_configured'
+  | 'spend_config_invalid'
 
 export interface SafeLogFields {
   request_id?: string
   endpoint?: string
   operation?: 'analysis' | 'profile'
   model?: string
+  reasoning_effort?: string
   outcome?: string
   config_issue?: ConfigIssue
   duration_ms?: number
@@ -30,15 +38,22 @@ export interface SafeLogFields {
   input_tokens?: number
   output_tokens?: number
   total_tokens?: number
+  cached_tokens?: number
+  reasoning_tokens?: number
+  /** Cost in integer micro-USD (1,000,000 = $1). */
+  cost_micro_usd?: number
+  reserved_micro_usd?: number
+  retry_after_s?: number
   issue_count?: number
   issue_paths?: string[]
 }
 
 const NUMBER_FIELDS = new Set<keyof SafeLogFields>([
-  'duration_ms', 'http_status', 'input_tokens', 'output_tokens', 'total_tokens', 'issue_count',
+  'duration_ms', 'http_status', 'input_tokens', 'output_tokens', 'total_tokens', 'cached_tokens',
+  'reasoning_tokens', 'cost_micro_usd', 'reserved_micro_usd', 'retry_after_s', 'issue_count',
 ])
 const STRING_FIELDS = new Set<keyof SafeLogFields>([
-  'request_id', 'endpoint', 'operation', 'model', 'outcome', 'config_issue', 'error_code', 'error_name',
+  'request_id', 'endpoint', 'operation', 'model', 'reasoning_effort', 'outcome', 'config_issue', 'error_code', 'error_name',
 ])
 
 const MAX_STRING_LENGTH = 120

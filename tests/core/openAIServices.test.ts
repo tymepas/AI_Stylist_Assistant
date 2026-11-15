@@ -33,7 +33,7 @@ function lastRequest(fetchMock: ReturnType<typeof jest.spyOn>) {
 }
 
 beforeEach(() => {
-  process.env = { ...originalEnv, OPENAI_API_KEY: FAKE_KEY, OPENAI_MODEL: 'test-model' }
+  process.env = { ...originalEnv, OPENAI_API_KEY: FAKE_KEY, OPENAI_MODEL: 'gpt-4.1' }
   // Keep test output readable; logging content is covered by dedicated logging tests.
   jest.spyOn(console, 'info').mockImplementation(() => undefined)
   jest.spyOn(console, 'warn').mockImplementation(() => undefined)
@@ -56,7 +56,7 @@ describe('analyzeWithOpenAI — request construction', () => {
     expect(url).toBe('https://api.openai.com/v1/responses')
     expect(init.method).toBe('POST')
     expect((init.headers as Record<string, string>).Authorization).toBe(`Bearer ${FAKE_KEY}`)
-    expect(body.model).toBe('test-model')
+    expect(body.model).toBe('gpt-4.1')
     expect(body.store).toBe(false)
     expect(body.max_output_tokens).toBe(1500)
     expect(body.text).toEqual({ format: { type: 'json_object' } })
@@ -125,13 +125,20 @@ describe('analyzeWithOpenAI — failure mapping', () => {
 
   it.each([
     ['a non-JSON body', () => new Response('<html>gateway</html>', { status: 200 })],
-    ['an incomplete response', () => openAIResponse({ status: 'complete', dimensions: allRated('Good') }, { status: 'incomplete' })],
+    ['a failed response', () => openAIResponse({ status: 'complete', dimensions: allRated('Good') }, { status: 'failed' })],
     ['no output text', () => new Response(JSON.stringify({ status: 'completed', output: [] }), { status: 200 })],
     ['output that is not JSON', () => openAIResponse('Sure! Here is my analysis.')],
     ['output that fails the schema', () => openAIResponse({ status: 'complete', dimensions: allRated('Good'), verdict_score: 5 })],
   ])('maps %s to invalid_response', async (_label, makeResponse) => {
     jest.spyOn(global, 'fetch').mockResolvedValue(makeResponse())
     await expect(analyzeWithOpenAI(analysisInput())).rejects.toMatchObject({ code: 'invalid_response' })
+  })
+
+  // Changed in the Terra readiness PR: an incomplete response has its own code so that
+  // its (billed) usage can be settled and logged. The HTTP response to users is unchanged.
+  it('maps an incomplete response to incomplete', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue(openAIResponse({ status: 'complete', dimensions: allRated('Good') }, { status: 'incomplete' }))
+    await expect(analyzeWithOpenAI(analysisInput())).rejects.toMatchObject({ code: 'incomplete' })
   })
 
   it('maps an aborted request to timeout', async () => {
@@ -156,7 +163,7 @@ describe('generateProfileWithOpenAI', () => {
     const { url, init, body } = lastRequest(fetchMock)
     expect(url).toBe('https://api.openai.com/v1/responses')
     expect((init.headers as Record<string, string>).Authorization).toBe(`Bearer ${FAKE_KEY}`)
-    expect(body.model).toBe('test-model')
+    expect(body.model).toBe('gpt-4.1')
     expect(body.store).toBe(false)
     expect(body.max_output_tokens).toBe(2000)
     expect(body.instructions).toBe(readFileSync(path.join(process.cwd(), 'memory', 'STYLE_PROFILE_SYSTEM_PROMPT.md'), 'utf8'))

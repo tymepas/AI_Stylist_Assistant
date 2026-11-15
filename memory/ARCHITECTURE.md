@@ -33,3 +33,54 @@ Shopping Advisor is an optional extension of the existing single multimodal anal
 Server code logs through `lib/observability/safeLogger.ts`, which emits one JSON object per event with an allowlisted set of fields (request id, endpoint, operation, model, duration, token usage, error category, HTTP status, schema issue count and paths). Unknown fields are dropped, secret-like strings are redacted, and a model name that looks like an API key is replaced with `[redacted]` and flagged as `model_config_suspect`.
 
 Never logged: API keys, uploaded images, prompts, model output text (it can describe a person's appearance), validation messages or received values, request bodies, error messages or stack traces. Each API request gets a server-generated `request_id` so its events can be correlated.
+
+## Model configuration
+
+`lib/services/openai/modelConfig.ts` is the single allowlist of models: `gpt-4.1` and `gpt-6.1-terra`. Any other `OPENAI_MODEL` value is rejected before a request is made (`config_issue: unsupported_model`); the value itself is never logged.
+
+| | gpt-4.1 | gpt-6.1-terra |
+|---|---|---|
+| Reasoning effort | none sent (unsupported) | `low`, set explicitly (provider default is `medium`) |
+| Output cap (analysis / profile) | 1,500 / 2,000 | 4,000 / 4,000, which includes reasoning tokens |
+| Timeout (analysis / profile) | 20 s / 30 s | 45 s / 45 s |
+| Price per 1M tokens (input / cached / output) | $2 / $0.50 / $8 | $1 / $0.05 / $5 |
+
+GPT-4.1 requests are byte-for-byte what they were before. All calls go through `lib/services/openai/responsesClient.ts`, which never retries. A response cut off by the output cap returns error code `incomplete` (still billed); users see the same 502 message as for invalid output. The route's `maxDuration` is 60 seconds.
+
+## Spending protection
+
+`lib/spend/spendGuard.ts` runs around every billable call in `app/api/[[...path]]/route.js`:
+
+1. **Reserve** the worst-case cost atomically in Redis (one Lua script). The worst case is the text-input bound plus the per-image bound plus the full output cap. The same script enforces:
+   - per-client rate limits: analysis 6 per 10 minutes and 30 per day; profile 3 per 10 minutes and 10 per day;
+   - one in-flight call per client, and a global concurrency cap;
+   - the daily budget and the cumulative budget.
+2. **Call** OpenAI.
+3. **Settle**:
+   - reported usage: settle to the actual cost;
+   - configuration errors and HTTP 4xx: settle to $0;
+   - timeouts, network errors, 5xx and anything else unknown: keep the full reservation;
+   - a lease that is never settled expires after 90 seconds and stays charged in full.
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (or `KV_REST_API_URL`, `KV_REST_API_TOKEN`) | Budget store. The URL must be an https `*.upstash.io` endpoint. | required in production |
+| `SPEND_DAILY_LIMIT_USD` | Daily application budget | 1 |
+| `SPEND_DAILY_WARN_USD` | Logs `spend_daily_warning_threshold` once per day | 0.75 |
+| `SPEND_TOTAL_LIMIT_USD` | Cumulative budget; never resets in code | 25 |
+| `SPEND_MAX_CONCURRENT` | Global in-flight billable calls | 2 |
+
+**Fail-closed rules:**
+- A missing, invalid or unreachable store, or an invalid `SPEND_*` value, returns 503 with no OpenAI call. This applies to every `NODE_ENV=production` build, including Vercel Preview.
+- Only `next dev` without a store is allowed through, and it logs `spend_guard_disabled` once.
+- Mock mode never reaches the guard.
+
+**Client identity:** client addresses come from Vercel-set headers only when `VERCEL=1`, and are stored as an HMAC, never raw.
+
+**Administration:** there is no endpoint to read or reset budgets; counters are visible and editable only in the Upstash console (`verdict:<environment>:spend:*`).
+
+**Limits of this guard:** it does not see spend made with the same OpenAI key outside this app (local development, benchmarks). Give production its own OpenAI project and key.
+
+## Benchmark
+
+`benchmark/` compares models on the production code path. It defaults to a dry run with networking disabled; billable runs need an explicit opt-in phrase and a spend cap. See `benchmark/README.md`.

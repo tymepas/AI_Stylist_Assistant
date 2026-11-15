@@ -15,6 +15,8 @@ import { analyzeWithOpenAI } from '@/lib/services/openai/openAIAnalysisService'
 import { generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileService'
 import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
 import { captureLogs, dimensions, makePng, openAIResponse, PNG_BASE64_PREFIX, type LogCapture } from './logTestUtils'
+import { setSpendStoreForTesting } from '@/lib/spend/spendGuard'
+import { installMemorySpendStore } from '../helpers/memorySpendStore'
 
 const FAKE_KEY = 'sk-test-a2-secret-key-must-never-be-logged-0000'
 const originalEnv = { ...process.env }
@@ -128,7 +130,7 @@ describe('analysis logging', () => {
 
   it('records why an incomplete response stopped, using OpenAI enum values only', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValue(openAIResponse('{"status":"complete","dimensions":{"occ', { status: 'incomplete', incomplete_details: { reason: 'max_output_tokens' } }))
-    await expect(analyzeWithOpenAI(analysisInput())).rejects.toMatchObject({ code: 'invalid_response' })
+    await expect(analyzeWithOpenAI(analysisInput())).rejects.toMatchObject({ code: 'incomplete' })
     expectNoSensitiveData()
     expect(logs.events().find((e) => e.event === 'openai_response_not_completed')).toMatchObject({ outcome: 'incomplete:max_output_tokens' })
   })
@@ -146,15 +148,18 @@ describe('analysis logging', () => {
     expectNoSensitiveData()
   })
 
-  it('redacts and flags OPENAI_MODEL when it contains an API key', async () => {
+  // Changed in the Terra readiness PR: an unsupported model (including a misplaced key)
+  // is now rejected by the allowlist before any request, and its value is never logged.
+  it('rejects OPENAI_MODEL containing an API key before calling OpenAI, without logging it', async () => {
     const keyLikeModel = 'sk-proj-MisplacedKeyInModelVariable0123456789'
     process.env.OPENAI_MODEL = keyLikeModel
-    jest.spyOn(global, 'fetch').mockResolvedValue(new Response('{}', { status: 400 }))
+    const fetchMock = jest.spyOn(global, 'fetch')
 
-    await expect(analyzeWithOpenAI(analysisInput())).rejects.toMatchObject({ code: 'api_error' })
+    await expect(analyzeWithOpenAI(analysisInput())).rejects.toMatchObject({ code: 'configuration_error' })
 
+    expect(fetchMock).not.toHaveBeenCalled()
     expect(logs.text()).not.toContain('MisplacedKey')
-    expect(logs.events()[0]).toMatchObject({ event: 'openai_request_failed', model: '[redacted]', model_config_suspect: true, http_status: 400 })
+    expect(logs.events()).toEqual([expect.objectContaining({ event: 'openai_config_invalid', config_issue: 'unsupported_model' })])
   })
 
   it.each([
@@ -169,6 +174,12 @@ describe('analysis logging', () => {
 })
 
 describe('end-to-end through the API route (production)', () => {
+  // Production fails closed without a spend store, so these tests install the in-memory one.
+  beforeEach(async () => { await installMemorySpendStore() })
+  afterEach(() => { setSpendStoreForTesting(undefined) })
+
+  const openAIEvents = () => logs.events().filter((e) => String(e.event).startsWith('openai_'))
+
   function analyzeForm() {
     const form = new FormData()
     form.append('occasion', 'MARKER_OCCASION Office Work')
@@ -186,10 +197,12 @@ describe('end-to-end through the API route (production)', () => {
 
     expect(response.status).toBe(200)
     expectNoSensitiveData()
-    const events = logs.events()
+    const events = openAIEvents()
     expect(events).toHaveLength(1)
     expect(events[0]).toMatchObject({ event: 'openai_request_completed', operation: 'analysis' })
     expect(events[0].request_id).toMatch(/^[0-9a-f-]{36}$/)
+    // The spend settlement shares the request id and carries only amounts.
+    expect(logs.events().find((e) => e.event === 'spend_settled')).toMatchObject({ request_id: events[0].request_id, outcome: 'settled' })
   })
 
   it('gives each request its own request id', async () => {
@@ -211,8 +224,7 @@ describe('end-to-end through the API route (production)', () => {
 
     expect(response.status).toBe(502)
     expectNoSensitiveData()
-    const events = logs.events()
-    expect(new Set(events.map((e) => e.request_id)).size).toBe(1)
-    expect(events.map((e) => e.event)).toEqual(['openai_output_schema_invalid', 'openai_request_failed'])
+    expect(new Set(logs.events().map((e) => e.request_id)).size).toBe(1)
+    expect(openAIEvents().map((e) => e.event)).toEqual(['openai_output_schema_invalid', 'openai_request_failed'])
   })
 })

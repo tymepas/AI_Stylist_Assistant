@@ -83,7 +83,7 @@ describe('POST /api/generate-profile', () => {
   it('returns rate_limit when OpenAI rate-limits a valid request', async () => {
     process.env.ANALYSIS_MODE = 'openai'
     process.env.OPENAI_API_KEY = 'test-key'
-    process.env.OPENAI_MODEL = 'test-model'
+    process.env.OPENAI_MODEL = 'gpt-4.1'
     jest.spyOn(global, 'fetch').mockResolvedValue(new Response('{}', { status: 429 }))
 
     const response = await postProfile()

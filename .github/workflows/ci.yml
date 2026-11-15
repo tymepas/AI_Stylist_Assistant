@@ -22,10 +22,24 @@ jobs:
       fail-fast: false
       matrix:
         node-version: ['22.x', '24.x']
+    # Real Redis for the spend-guard Lua script integration tests. Not Upstash and
+    # not production: a throwaway container with no credentials.
+    services:
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       NEXT_TELEMETRY_DISABLED: '1'
-      # No OpenAI credentials are provided to CI. Tests mock every network call,
-      # so a missing mock fails safely with a configuration error instead of spending.
+      REDIS_TEST_URL: redis://localhost:6379
+      REQUIRE_REDIS_TESTS: '1'
+      # No OpenAI or Upstash credentials are provided to CI. Tests mock every network
+      # call, so a missing mock fails safely with a configuration error instead of spending.
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
