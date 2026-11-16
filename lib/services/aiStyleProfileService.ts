@@ -8,6 +8,7 @@
 
 import type { AIStyleProfile, ParseAIStyleProfileResult } from '@/types/schema'
 import { validateAIStyleProfile } from '@/lib/services/openai/aiStyleProfileSchema'
+import { MAX_AI_STYLE_PROFILE_BYTES, utf8ByteLength } from '@/lib/services/requestLimits'
 
 export const STORAGE_KEY = 'verdict_ai_style_profile'
 export const CURRENT_SCHEMA_VERSION = '1.0'
@@ -152,6 +153,13 @@ export function parseAIStyleProfile(value: unknown): ParseAIStyleProfileResult {
   // Must be a string (multipart form field)
   if (typeof value !== 'string') {
     console.warn('[parseAIStyleProfile] aiStyleProfile field is not a string; ignoring')
+    return { valid: true, profile: null }
+  }
+
+  // Oversized payloads are ignored before JSON parsing or schema validation, which
+  // would otherwise allocate per element (a real profile is under 2 KB).
+  if (utf8ByteLength(value) > MAX_AI_STYLE_PROFILE_BYTES) {
+    console.warn('[parseAIStyleProfile] aiStyleProfile field exceeds the size limit; ignoring')
     return { valid: true, profile: null }
   }
 

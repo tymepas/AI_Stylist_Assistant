@@ -9,6 +9,13 @@ import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/op
 import { parseAIStyleProfile } from '@/lib/services/aiStyleProfileService'
 import { generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileService'
 import { getMockProfile } from '@/lib/constants/mockProfile'
+import { createRequestId, logEvent } from '@/lib/observability/safeLogger'
+import { MAX_OCCASION_LENGTH } from '@/lib/services/requestLimits'
+import { applySpendRejectionHeaders, reserveSpend } from '@/lib/spend/spendGuard'
+
+// Vercel function limit. Must stay above every OpenAI timeout (lib/services/openai/modelConfig.ts)
+// and equal ROUTE_MAX_DURATION_S (lib/spend/spendConfig.ts), which sizes spend reservations.
+export const maxDuration = 60
 
 // MongoDB connection (lazy - only used by the /status template endpoints below)
 let client
@@ -39,6 +46,8 @@ export async function OPTIONS() {
 
 // Route handler function
 async function handleRoute(request, { params }) {
+  // Server-generated id that correlates the log events of one request.
+  const requestId = createRequestId()
   const { path = [] } = await params
   const route = `/${path.join('/')}`
   const method = request.method
@@ -92,9 +101,13 @@ async function handleRoute(request, { params }) {
         return handleCORS(NextResponse.json(mockProfile))
       }
 
-      // openai mode — call the AI, validate response, set generated_at_utc
+      // openai mode — reserve spend, call the AI, validate response, set generated_at_utc
+      const profileSpend = await reserveSpend({ operation: 'profile', request, imageCount: 1, requestId })
+      if (!profileSpend.allowed) return handleCORS(createSpendRejectionResponse(profileSpend.rejection))
+
+      let profileError
       try {
-        const profileResult = await generateProfileWithOpenAI({ photo })
+        const profileResult = await generateProfileWithOpenAI({ photo, requestId, onUsage: profileSpend.ticket.onUsage })
 
         if (profileResult.status === 'complete') {
           // Application sets generated_at_utc — AI always returns ""
@@ -103,10 +116,13 @@ async function handleRoute(request, { params }) {
 
         return handleCORS(NextResponse.json(profileResult))
       } catch (error) {
+        profileError = error
         if (error instanceof OpenAIAnalysisError) {
           return handleCORS(createProfileErrorResponse(error))
         }
         throw error
+      } finally {
+        await profileSpend.ticket.settle(profileError)
       }
     }
 
@@ -129,6 +145,14 @@ async function handleRoute(request, { params }) {
             error: 'missing_image',
             message: 'Please upload a personal photo, a garment image, and select an occasion before analyzing.',
           },
+          { status: 400 }
+        ))
+      }
+
+      // Occasions offered by the UI are short; a cap bounds prompt tokens and reserved spend.
+      if (occasion.length > MAX_OCCASION_LENGTH) {
+        return handleCORS(NextResponse.json(
+          { error: 'invalid_upload', message: 'Please select a valid occasion.' },
           { status: 400 }
         ))
       }
@@ -183,6 +207,10 @@ async function handleRoute(request, { params }) {
         ))
       }
 
+      const analysisSpend = await reserveSpend({ operation: 'analysis', request, imageCount: 2, requestId })
+      if (!analysisSpend.allowed) return handleCORS(createSpendRejectionResponse(analysisSpend.rejection))
+
+      let analysisError
       try {
         const rawAnalysis = await analyzeWithOpenAI({
           photo,
@@ -191,6 +219,8 @@ async function handleRoute(request, { params }) {
           styleProfile: styleProfileCheck.profile,
           // Phase 3: pass AI profile as optional context; undefined when absent
           aiStyleProfile: aiStyleProfileCheck.profile ?? undefined,
+          requestId,
+          onUsage: analysisSpend.ticket.onUsage,
         })
 
         const result = rawAnalysis.status === 'complete'
@@ -202,10 +232,13 @@ async function handleRoute(request, { params }) {
 
         return handleCORS(NextResponse.json(result))
       } catch (error) {
+        analysisError = error
         if (error instanceof OpenAIAnalysisError) {
           return handleCORS(createOpenAIErrorResponse(error))
         }
         throw error
+      } finally {
+        await analysisSpend.ticket.settle(analysisError)
       }
     }
 
@@ -261,7 +294,13 @@ async function handleRoute(request, { params }) {
     ))
 
   } catch (error) {
-    console.error('API Error:', error)
+    // Error messages and stacks can contain request data (e.g. JSON parse errors
+    // quote the input) or connection strings, so only the error type is logged.
+    logEvent('error', 'api_unhandled_error', {
+      request_id: requestId,
+      endpoint: route,
+      error_name: error instanceof Error ? error.name : typeof error,
+    })
     return handleCORS(NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -274,6 +313,13 @@ export const GET = handleRoute
 
 function isUploadedFile(value) {
   return value && typeof value !== 'string' && typeof value.arrayBuffer === 'function'
+}
+
+/** 429 or 503 from the spend guard, with Retry-After when retrying can help. */
+function createSpendRejectionResponse(rejection) {
+  const response = NextResponse.json(rejection.body, { status: rejection.status })
+  applySpendRejectionHeaders(response.headers, rejection)
+  return response
 }
 
 function createOpenAIErrorResponse(error) {
@@ -291,6 +337,11 @@ function createOpenAIErrorResponse(error) {
       message: 'The analysis service is busy. Please wait a moment and try again.',
     },
     invalid_response: {
+      status: 502,
+      message: 'The analysis could not be completed reliably. Please try again.',
+    },
+    // The provider stopped early (e.g. output cap reached). Same user message as invalid output.
+    incomplete: {
       status: 502,
       message: 'The analysis could not be completed reliably. Please try again.',
     },
@@ -328,6 +379,11 @@ function createProfileErrorResponse(error) {
       message: 'The analysis service is busy right now. Please wait a moment and try again.',
     },
     invalid_response: {
+      status: 502,
+      error: 'api_error',
+      message: 'Something went wrong during analysis. Please try again.',
+    },
+    incomplete: {
       status: 502,
       error: 'api_error',
       message: 'Something went wrong during analysis. Please try again.',

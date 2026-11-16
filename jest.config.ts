@@ -8,9 +8,11 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  // Only run Phase 3 unit tests in this suite.
-  // Integration and AI tests are run separately.
-  testMatch: ['<rootDir>/tests/phase3/**/*.test.ts', '<rootDir>/tests/phase4/**/*.test.ts'],
+  // Every *.test.ts file under tests/ runs, so new suites are never silently skipped.
+  testMatch: ['<rootDir>/tests/**/*.test.ts'],
+  // `next build` (output: 'standalone') copies package.json into .next/; ignoring it
+  // prevents Jest module-name collisions when tests run after a local build.
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   transform: {
     '^.+\\.[tj]sx?$': [
       'ts-jest',

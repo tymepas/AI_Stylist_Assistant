@@ -87,3 +87,8 @@ node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
 credentials.json
 *.key
 .credentials
+
+# Benchmark images and results (local only, may contain photos)
+benchmark/data/
+benchmark/results/
+benchmark/cases.json

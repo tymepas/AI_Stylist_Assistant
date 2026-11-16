@@ -15,6 +15,7 @@ import {
   ImageMeta,
   StyleProfile,
 } from '@/types/schema'
+import { MAX_STYLE_PROFILE_BYTES, utf8ByteLength } from '@/lib/services/requestLimits'
 
 const RATING_SCORES: Record<string, number> = {
   Excellent: 5,
@@ -83,6 +84,10 @@ export function parseStyleProfile(value: unknown): { valid: boolean; profile: St
     return { valid: true, profile: createEmptyStyleProfile() }
   }
   if (typeof value !== 'string') {
+    return { valid: false, profile: createEmptyStyleProfile(), message: 'Style profile data is invalid.' }
+  }
+  // Bounds prompt tokens and reserved spend; a full UI profile is about 1.2 KB.
+  if (utf8ByteLength(value) > MAX_STYLE_PROFILE_BYTES) {
     return { valid: false, profile: createEmptyStyleProfile(), message: 'Style profile data is invalid.' }
   }
 
