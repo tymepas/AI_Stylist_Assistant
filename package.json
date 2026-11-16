@@ -8,10 +8,10 @@
         "dev:webpack": "next dev --hostname 0.0.0.0 --port 3000",
         "build": "next build",
         "start": "next start",
+        "audit:check": "node scripts/security/audit-check.cjs",
         "test": "jest --config jest.config.ts",
         "test:phase3": "jest --config jest.config.ts --testPathPattern tests/phase3",
         "typecheck": "tsc --noEmit",
-        "audit:check": "node scripts/security/audit-check.cjs",
         "benchmark": "jest --config jest.benchmark.config.ts --runInBand"
     },
     "dependencies": {
