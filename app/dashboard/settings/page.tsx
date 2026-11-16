@@ -1,9 +1,16 @@
 'use client'
 
 import { toast } from 'sonner'
-import { Trash2, Sparkles, CheckCircle2, Circle } from 'lucide-react'
+import { Check, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { clearProfile } from '@/lib/services/styleProfileService'
+
+const PRIVACY = [
+  'Your style preferences and Style DNA are saved in this browser, and sent along as context when you run an analysis.',
+  'Photos stay on your device until you press Analyze or generate Style DNA.',
+  'They are then sent to Verdict and to the AI provider for that one analysis.',
+  'Verdict does not keep your photos afterwards, and reports are not saved.',
+]
 
 export default function SettingsPage() {
   function handleClear() {
@@ -12,71 +19,39 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-12">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Settings</h2>
-        <p className="mt-1 text-muted-foreground">Manage your Verdict data and preferences.</p>
+        <p className="eyebrow">Settings</p>
+        <h2 className="mt-2 font-display text-5xl text-foreground">Your data</h2>
+        <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">What Verdict keeps, where it keeps it, and how to remove it.</p>
       </div>
 
-      <section className="rounded-2xl border border-border bg-card p-6">
-        <h3 className="font-medium text-foreground">Data</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Your style profile is stored only in this browser. No account or server is required.
+      <section aria-labelledby="privacy-heading" className="border-t border-border pt-10">
+        <h3 id="privacy-heading" className="font-display text-3xl text-foreground">Privacy</h3>
+        <ul className="mt-5 space-y-3">
+          {PRIVACY.map((item) => (
+            <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-foreground/90">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-verdict-high" aria-hidden="true" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="data-heading" className="border-t border-border pt-10">
+        <h3 id="data-heading" className="font-display text-3xl text-foreground">Style profile</h3>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Your style preferences are stored only in this browser. Clearing them removes them from this device; nothing else needs to be deleted because no account exists.
         </p>
-        <Button variant="outline" className="mt-4" onClick={handleClear}>
-          <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" /> Clear Style Profile
+        <Button variant="outline" className="focus-ring mt-5" onClick={handleClear}>
+          <Trash2 className="h-4 w-4" aria-hidden="true" /> Clear Style Profile
         </Button>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-6">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Sparkles className="h-4 w-4 text-primary-foreground" aria-hidden="true" />
-          </div>
-          <div>
-            <h3 className="font-medium text-foreground">Verdict</h3>
-            <p className="text-xs text-muted-foreground">v0.1 · Phase 1 MVP</p>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Current Features</p>
-            <ul className="space-y-1.5">
-              {[
-                'Style Profile',
-                'Outfit Analysis',
-                'Outfit Comparison',
-                'Decision Reports',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-foreground">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" aria-hidden="true" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Roadmap</p>
-            <ul className="space-y-1.5">
-              {[
-                'Saved Reports',
-                'Analysis History',
-                'AI Vision (direct camera)',
-                'Cloud Sync',
-                'User Accounts',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Circle className="h-3 w-3 shrink-0 text-muted-foreground/40" aria-hidden="true" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <p className="mt-5 text-xs text-muted-foreground/60">
-          Phase 1 keeps every analysis private and local. No account needed. No data leaves your device.
+      <section aria-labelledby="about-heading" className="border-t border-border pt-10">
+        <h3 id="about-heading" className="font-display text-3xl text-foreground">About Verdict</h3>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Verdict helps you decide whether a garment suits you, the occasion and your style before you buy it. The AI rates six dimensions; the app calculates the verdict from them with one fixed formula.
         </p>
       </section>
     </div>

@@ -373,7 +373,7 @@ export default function AnalysisPage() {
             <motion.div key="photo" {...stepMotion}>
               <h3 className="font-display text-3xl text-foreground">Start with a photo of you</h3>
               <p className="mt-2 text-sm text-muted-foreground">It stays on your device until you start the analysis.</p>
-              <div className="mt-6 grid gap-6 md:grid-cols-[1fr_240px]">
+              <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_240px]">
                 <UploadCard
                   label="Current Photo"
                   description="A clear, current photo of yourself"
@@ -424,7 +424,7 @@ export default function AnalysisPage() {
                   <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Change
                 </button>
               </div>
-              <div className={garmentMode === 'single' ? 'mt-6 grid gap-6 md:grid-cols-[1fr_240px]' : 'mt-6 space-y-6'}>
+              <div className={garmentMode === 'single' ? 'mt-6 grid gap-6 lg:grid-cols-[1fr_240px]' : 'mt-6 space-y-6'}>
                 <GarmentUploader mode={garmentMode} garments={garments} onChange={setGarments} />
                 <StepTips title="For best results" tips={GARMENT_TIPS[garmentMode]} />
               </div>
@@ -439,7 +439,7 @@ export default function AnalysisPage() {
             <motion.div key="occasion" {...stepMotion}>
               <h3 className="font-display text-3xl text-foreground">Where will you wear it?</h3>
               <p className="mt-2 text-sm text-muted-foreground">The occasion carries the most weight in the verdict.</p>
-              <div className="mt-6 grid gap-6 md:grid-cols-[1fr_240px]">
+              <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_240px]">
                 <div>
                   <label htmlFor="occasion-select" className="text-sm font-medium text-foreground">Choose the occasion</label>
                   <Select value={occasion} onValueChange={setOccasion}>

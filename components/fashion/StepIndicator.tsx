@@ -16,8 +16,9 @@ interface StepIndicatorProps {
  * Where the user is in the analysis journey.
  *
  * Small screens get one line ("Step 2 of 6 · Garment photos") and a thin
- * progress bar, because six labelled circles do not fit a phone. From the `md`
- * breakpoint the full list is shown. Both describe the same state.
+ * progress bar, because six labelled circles do not fit a phone, or a tablet
+ * once the sidebar is showing. From the `lg` breakpoint the full list is shown.
+ * Both describe the same state.
  */
 export default function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
   const current = steps[Math.min(Math.max(currentStep, 1), steps.length) - 1]
@@ -25,7 +26,7 @@ export default function StepIndicator({ steps, currentStep }: StepIndicatorProps
 
   return (
     <div>
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <div className="flex items-baseline justify-between gap-3">
           <p className="eyebrow">Step {currentStep} of {steps.length}</p>
           <p className="truncate text-sm font-medium text-foreground">{current.label}</p>
@@ -35,7 +36,7 @@ export default function StepIndicator({ steps, currentStep }: StepIndicatorProps
         </div>
       </div>
 
-      <ol className="hidden items-start md:flex" aria-label="Analysis steps">
+      <ol className="hidden items-start lg:flex" aria-label="Analysis steps">
         {steps.map((step, index) => {
           const stepNumber = index + 1
           const isComplete = stepNumber < currentStep

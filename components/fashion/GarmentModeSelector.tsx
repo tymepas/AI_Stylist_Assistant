@@ -26,7 +26,7 @@ interface GarmentModeSelectorProps {
 /** Three explicit choices for how the garment photos relate to each other. */
 export default function GarmentModeSelector({ value, onChange, disabled = false }: GarmentModeSelectorProps) {
   return (
-    <div role="radiogroup" aria-label="How many garment photos" className="grid gap-3 md:grid-cols-3">
+    <div role="radiogroup" aria-label="How many garment photos" className="grid gap-3 lg:grid-cols-3">
       {GARMENT_MODES.map((mode) => {
         const Icon = ICONS[mode]
         const selected = value === mode
