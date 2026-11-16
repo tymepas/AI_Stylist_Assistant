@@ -1,74 +1,75 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/*
+ * Verdict design system.
+ *
+ * One dark, warm palette: ink surfaces, ivory type and a single champagne accent.
+ * Headings use the display serif, everything else the sans. Fonts are loaded by
+ * next/font in app/layout.tsx (self-hosted, no request to a font CDN at runtime)
+ * and exposed as --font-sans and --font-display.
+ *
+ * Colours are HSL triplets so Tailwind can apply opacity (bg-primary/10).
+ * The four verdict tones are deliberately muted: a verdict is information,
+ * not an alarm.
+ */
 
 @layer base {
-  :root {
-    --background: 240 8% 6%;
-    --foreground: 0 0% 98%;
-    --card: 240 8% 9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 8% 9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 245 82% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 14%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 240 6% 14%;
-    --muted-foreground: 240 5% 64%;
-    --accent: 240 6% 16%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 6% 18%;
-    --input: 240 6% 18%;
-    --ring: 245 82% 67%;
-    --chart-1: 245 82% 67%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --radius: 0.9rem;
-    --sidebar-background: 240 9% 7%;
-    --sidebar-foreground: 240 5% 88%;
-    --sidebar-primary: 245 82% 67%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 6% 14%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 6% 16%;
-    --sidebar-ring: 245 82% 67%;
-  }
+  :root,
   .dark {
-    --background: 240 8% 6%;
-    --foreground: 0 0% 98%;
-    --card: 240 8% 9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 8% 9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 245 82% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 14%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 240 6% 14%;
-    --muted-foreground: 240 5% 64%;
-    --accent: 240 6% 16%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 6% 18%;
-    --input: 240 6% 18%;
-    --ring: 245 82% 67%;
-    --chart-1: 245 82% 67%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 9% 7%;
-    --sidebar-foreground: 240 5% 88%;
-    --sidebar-primary: 245 82% 67%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 6% 14%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 6% 16%;
-    --sidebar-ring: 245 82% 67%;
+    /* Surfaces */
+    --background: 30 9% 6%;
+    --foreground: 38 24% 92%;
+    --card: 30 8% 9%;
+    --card-foreground: 38 24% 92%;
+    --popover: 30 8% 10%;
+    --popover-foreground: 38 24% 92%;
+    --secondary: 30 7% 13%;
+    --secondary-foreground: 38 18% 88%;
+    --muted: 30 7% 13%;
+    --muted-foreground: 34 9% 63%;
+    --accent: 30 8% 16%;
+    --accent-foreground: 38 24% 92%;
+    --border: 32 9% 17%;
+    --input: 32 9% 21%;
+
+    /* The one accent */
+    --primary: 38 46% 70%;
+    --primary-foreground: 30 20% 9%;
+    --ring: 38 46% 70%;
+
+    --destructive: 8 58% 58%;
+    --destructive-foreground: 38 24% 96%;
+
+    /* Verdict tones, from most to least favourable */
+    --verdict-high: 152 28% 62%;
+    --verdict-good: 78 22% 64%;
+    --verdict-caution: 34 62% 64%;
+    --verdict-low: 10 52% 62%;
+
+    --chart-1: 38 46% 70%;
+    --chart-2: 152 28% 62%;
+    --chart-3: 34 62% 64%;
+    --chart-4: 10 52% 62%;
+    --chart-5: 78 22% 64%;
+
+    --radius: 0.875rem;
+
+    --sidebar-background: 30 9% 7%;
+    --sidebar-foreground: 38 16% 84%;
+    --sidebar-primary: 38 46% 70%;
+    --sidebar-primary-foreground: 30 20% 9%;
+    --sidebar-accent: 30 7% 13%;
+    --sidebar-accent-foreground: 38 24% 92%;
+    --sidebar-border: 32 9% 15%;
+    --sidebar-ring: 38 46% 70%;
+
+    /* Elevation: soft, warm, never a hard drop shadow */
+    --shadow-soft: 0 1px 0 hsl(38 30% 96% / 0.03) inset, 0 18px 40px -24px hsl(30 40% 2% / 0.9);
+    --shadow-lift: 0 1px 0 hsl(38 30% 96% / 0.05) inset, 0 28px 60px -28px hsl(30 40% 2% / 0.95);
+
+    /* Motion */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-fast: 160ms;
+    --duration-base: 320ms;
+    --duration-slow: 640ms;
   }
 }
 
@@ -76,9 +77,52 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1, 'ss01' 1;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.28);
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer components {
+  /* Display type: editorial serif for headings and for the verdict itself. */
+  .font-display {
+    font-family: var(--font-display), 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+  }
+  /* Small uppercase label above a heading or a group. */
+  .eyebrow {
+    @apply text-[0.6875rem] font-medium uppercase text-muted-foreground;
+    letter-spacing: 0.18em;
+  }
+  /* The standard raised surface. */
+  .surface {
+    @apply rounded-2xl border border-border bg-card;
+    box-shadow: var(--shadow-soft);
+  }
+  .surface-quiet {
+    @apply rounded-2xl border border-border/70 bg-card/40;
+  }
+  .hairline {
+    @apply h-px w-full bg-border;
+  }
+  /* Loading placeholder with a slow sheen. */
+  .skeleton {
+    @apply rounded-md bg-secondary;
+    background-image: linear-gradient(100deg, transparent 30%, hsl(var(--foreground) / 0.06) 50%, transparent 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
   }
 }
 
@@ -87,8 +131,16 @@
     background-image: radial-gradient(circle at 1px 1px, hsl(var(--border) / 0.6) 1px, transparent 0);
     background-size: 32px 32px;
   }
+  /* A slow, barely visible warm glow behind hero areas. Static when motion is reduced. */
+  .bg-ambient {
+    background-image:
+      radial-gradient(60% 50% at 20% 0%, hsl(var(--primary) / 0.1), transparent 70%),
+      radial-gradient(50% 45% at 90% 10%, hsl(var(--verdict-high) / 0.06), transparent 70%);
+    background-size: 140% 140%;
+    animation: ambient-drift 28s ease-in-out infinite alternate;
+  }
   .text-gradient {
-    background: linear-gradient(90deg, hsl(var(--foreground)), hsl(var(--muted-foreground)));
+    background: linear-gradient(90deg, hsl(var(--foreground)), hsl(var(--primary)));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -97,53 +149,137 @@
     display: none;
   }
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30;
+    transition: transform var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.35);
+    box-shadow: var(--shadow-lift);
+  }
+  /* Press feedback for buttons and other tappable surfaces. */
+  .press {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .press:active {
+    transform: scale(0.98);
+  }
+  /* An image that eases in slightly on hover; the wrapper must clip. */
+  .image-zoom {
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  .group:hover .image-zoom,
+  .image-zoom:hover {
+    transform: scale(1.04);
   }
   .animate-shimmer {
-    background: linear-gradient(
-      100deg,
-      hsl(var(--secondary)) 30%,
-      hsl(var(--muted)) 50%,
-      hsl(var(--secondary)) 70%
-    );
+    background: linear-gradient(100deg, hsl(var(--secondary)) 30%, hsl(var(--muted)) 50%, hsl(var(--secondary)) 70%);
     background-size: 200% 100%;
     animation: shimmer 1.8s ease-in-out infinite;
   }
+  .animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+  /* Entrances. `animation-fill-mode: both` keeps the element hidden until its delay has passed. */
+  .animate-page-in {
+    animation: fade-up var(--duration-base) var(--ease-out) both;
+  }
+  .animate-fade-in {
+    animation: fade-in var(--duration-base) ease-out both;
+  }
+  .animate-rise {
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+  }
+  .animate-reveal {
+    animation: reveal var(--duration-slow) var(--ease-out) both;
+  }
+  /* A bar that fills from the left to the width set inline. */
+  .animate-meter {
+    transform-origin: left center;
+    animation: meter-fill 900ms var(--ease-out) both;
+  }
+  .animate-progress {
+    animation: progress-slide 1.6s ease-in-out infinite;
+  }
+  .delay-1 { animation-delay: 80ms; }
+  .delay-2 { animation-delay: 160ms; }
+  .delay-3 { animation-delay: 240ms; }
+  .delay-4 { animation-delay: 320ms; }
+  .delay-5 { animation-delay: 400ms; }
+  .delay-6 { animation-delay: 480ms; }
 }
 
 @layer base {
   @keyframes shimmer {
-    0% {
-      background-position: 200% 0;
-    }
-    100% {
-      background-position: -200% 0;
-    }
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
   @keyframes float-slow {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
-  .animate-float-slow {
-    animation: float-slow 6s ease-in-out infinite;
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); filter: blur(6px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  @keyframes meter-fill {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes progress-slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+  }
+  @keyframes ambient-drift {
+    from { background-position: 0% 0%; }
+    to { background-position: 100% 60%; }
+  }
+}
+
+/*
+ * Reduced motion: every animation and transition in the app is switched off in
+ * one place. Content appears in its final state immediately; nothing depends on
+ * an animation having run. Framer Motion components follow the same preference
+ * through MotionConfig in app/providers.js.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg-ambient,
+  .animate-float-slow,
+  .animate-shimmer,
+  .animate-progress,
+  .skeleton {
+    animation: none !important;
+  }
+  .card-hover:hover,
+  .press:active,
+  .group:hover .image-zoom,
+  .image-zoom:hover {
+    transform: none !important;
   }
 }
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
