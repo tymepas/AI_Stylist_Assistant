@@ -4,6 +4,13 @@
  * skipped otherwise. Each test uses its own key namespace.
  *
  * Concurrency tests open separate TCP connections so reservations genuinely race.
+ *
+ * Clock: every request uses the Redis server's own time, read once when the suite
+ * starts. The reserve script gives the per-client lease key an absolute expiry
+ * (PEXPIREAT) computed from the caller's clock, and Redis judges that expiry
+ * against its own clock. A hard-coded date therefore only works until that date
+ * passes: after it, Redis deletes the key at once and the per-client cap looks
+ * broken. Production passes the real current time, as this suite now does.
  */
 
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
@@ -24,16 +31,26 @@ if (process.env.REQUIRE_REDIS_TESTS === '1' && !url) {
 
 describeRedis('spend Lua scripts on real Redis', () => {
   const pool: RespConnection[] = []
-  const NOW = Date.UTC(2026, 10, 16, 12, 0, 0)
+  /** Key namespaces created by this suite, so they can be removed afterwards. */
+  const namespaces: string[] = []
+  /** The Redis server's time when the suite started. Fixed for the whole suite so requests share a day and a rate window. */
+  let NOW = 0
+
+  const keyPattern = (namespace: string) => `verdict:${namespace}:spend:*`
 
   beforeAll(async () => {
     for (let i = 0; i < 12; i += 1) pool.push(await RespConnection.open(url!))
+    NOW = await pool[0].serverTimeMs()
   })
 
-  afterAll(() => { for (const connection of pool) connection.close() })
+  afterAll(async () => {
+    for (const namespace of namespaces) await pool[0].deleteMatching(keyPattern(namespace))
+    for (const connection of pool) connection.close()
+  })
 
   function stores(config: Partial<SpendConfig> = {}) {
     const namespace = `test_${randomUUID().slice(0, 8)}`
+    namespaces.push(namespace)
     const full = { ...DEFAULT_SPEND_CONFIG, ...config }
     return pool.map((connection) => createRedisSpendStore(connection.eval, full, namespace))
   }
@@ -50,6 +67,24 @@ describeRedis('spend Lua scripts on real Redis', () => {
   async function counter(key: string): Promise<number> {
     return Number((await pool[0].command('GET', key)) ?? 0)
   }
+
+  it('uses the Redis server clock, so lease keys expire in the future and not at once', async () => {
+    const serverNow = await pool[0].serverTimeMs()
+    // NOW was read from this server moments ago; it can only be slightly behind.
+    expect(NOW).toBeGreaterThan(0)
+    expect(serverNow - NOW).toBeGreaterThanOrEqual(0)
+    expect(serverNow - NOW).toBeLessThan(60_000)
+
+    const [store] = stores()
+    const result = await store.reserve(request({ clientKey: 'clock-client' }))
+    if (!result.ok) throw new Error('expected reservation')
+    const clientLeasesKey = result.lease.keys[4]
+    // The key must still exist with time to live: this is what the per-client cap depends on.
+    expect(await pool[0].command('ZCARD', clientLeasesKey)).toBe(1)
+    const ttl = Number(await pool[0].command('PTTL', clientLeasesKey))
+    expect(ttl).toBeGreaterThan(LEASE_TTL_MS)
+    expect(ttl).toBeLessThanOrEqual(LEASE_TTL_MS + 60_000)
+  })
 
   it('reserves, then settles to the actual cost', async () => {
     const [store] = stores()
@@ -105,6 +140,10 @@ describeRedis('spend Lua scripts on real Redis', () => {
     const sameClient = await Promise.all([0, 1, 2].map((i) => perClient[i].reserve(request({ clientKey: 'one-client', amountMicroUsd: 10 }))))
     expect(sameClient.filter((r) => r.ok)).toHaveLength(1)
     expect(sameClient.filter((r) => !r.ok && r.reason === 'client_busy')).toHaveLength(2)
+
+    // The cap still holds for a later, sequential request while the first lease is live.
+    const fourth = await perClient[3].reserve(request({ clientKey: 'one-client', amountMicroUsd: 10 }))
+    expect(fourth).toMatchObject({ ok: false, reason: 'client_busy' })
   })
 
   it('sweeps expired leases without refunding them', async () => {
@@ -145,5 +184,19 @@ describeRedis('spend Lua scripts on real Redis', () => {
       warnings.push(result.ok && result.dailyWarning)
     }
     expect(warnings).toEqual([false, true, false, false])
+  })
+
+  it('can remove every key it created, leaving nothing behind for other runs', async () => {
+    const [store] = stores()
+    const result = await store.reserve(request())
+    if (!result.ok) throw new Error('expected reservation')
+    expect(namespaces.length).toBeGreaterThan(1)
+
+    let removed = 0
+    for (const namespace of namespaces) removed += await pool[0].deleteMatching(keyPattern(namespace))
+    expect(removed).toBeGreaterThan(0)
+
+    // A second full scan finds nothing left to delete.
+    for (const namespace of namespaces) expect(await pool[0].deleteMatching(keyPattern(namespace))).toBe(0)
   })
 })
