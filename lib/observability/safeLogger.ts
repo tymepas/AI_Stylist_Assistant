@@ -29,6 +29,14 @@ export interface SafeLogFields {
   operation?: 'analysis' | 'profile'
   model?: string
   reasoning_effort?: string
+  /** Fingerprint of the prompt template that was sent (lib/services/openai/promptVersion.ts). */
+  prompt_version?: string
+  /** Version of the schema the model output is validated against. */
+  schema_version?: string
+  /** 'mock', 'openai' or 'benchmark'. */
+  analysis_mode?: string
+  /** Schema validation of the model output: 'passed', 'failed' or 'not_run'. */
+  validation?: string
   outcome?: string
   config_issue?: ConfigIssue
   duration_ms?: number
@@ -54,6 +62,7 @@ const NUMBER_FIELDS = new Set<keyof SafeLogFields>([
 ])
 const STRING_FIELDS = new Set<keyof SafeLogFields>([
   'request_id', 'endpoint', 'operation', 'model', 'reasoning_effort', 'outcome', 'config_issue', 'error_code', 'error_name',
+  'prompt_version', 'schema_version', 'analysis_mode', 'validation',
 ])
 
 const MAX_STRING_LENGTH = 120

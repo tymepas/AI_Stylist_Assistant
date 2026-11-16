@@ -1,5 +1,3 @@
-import { MongoClient } from 'mongodb'
-import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
 import { getMockAnalysis, parseStyleProfile, validateImageFile } from '@/lib/services/analysisService'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
@@ -12,45 +10,66 @@ import { getMockProfile } from '@/lib/constants/mockProfile'
 import { createRequestId, logEvent } from '@/lib/observability/safeLogger'
 import { MAX_OCCASION_LENGTH } from '@/lib/services/requestLimits'
 import { applySpendRejectionHeaders, reserveSpend } from '@/lib/spend/spendGuard'
+import { ALLOWED_METHODS, applyCorsHeaders, evaluateOrigin, isStateChanging } from '@/lib/security/originPolicy'
 
 // Vercel function limit. Must stay above every OpenAI timeout (lib/services/openai/modelConfig.ts)
 // and equal ROUTE_MAX_DURATION_S (lib/spend/spendConfig.ts), which sizes spend reservations.
 export const maxDuration = 60
 
-// MongoDB connection (lazy - only used by the /status template endpoints below)
-let client
-let db
-
-async function connectToMongo() {
-  if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
+// OPTIONS: CORS preflight. Only origins listed in CORS_ORIGINS get an answer they can use.
+export async function OPTIONS(request) {
+  const origin = evaluateOrigin(request.headers)
+  if (!origin.allowed) {
+    const rejected = new NextResponse(null, { status: 403 })
+    applyCorsHeaders(rejected.headers, origin)
+    return rejected
   }
-  return db
-}
-
-// Helper function to handle CORS
-function handleCORS(response) {
-  response.headers.set('Access-Control-Allow-Origin', process.env.CORS_ORIGINS || '*')
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  response.headers.set('Access-Control-Allow-Credentials', 'true')
+  const response = new NextResponse(null, { status: 204, headers: { Allow: ALLOWED_METHODS } })
+  applyCorsHeaders(response.headers, origin, { preflight: true })
   return response
-}
-
-// OPTIONS handler for CORS
-export async function OPTIONS() {
-  return handleCORS(new NextResponse(null, { status: 200 }))
 }
 
 // Route handler function
 async function handleRoute(request, { params }) {
   // Server-generated id that correlates the log events of one request.
   const requestId = createRequestId()
+  const startedAt = Date.now()
   const { path = [] } = await params
   const route = `/${path.join('/')}`
   const method = request.method
+
+  const origin = evaluateOrigin(request.headers)
+  const handleCORS = (response) => {
+    applyCorsHeaders(response.headers, origin)
+    // Lets a user quote the id when reporting a problem. It is random, is not
+    // stored anywhere, and no endpoint looks anything up by it.
+    response.headers.set('X-Request-Id', requestId)
+    return response
+  }
+
+  // Mock mode never reaches the model client, so it gets its own trace event.
+  const logMockCompleted = (operation, outcome) => {
+    logEvent('info', 'api_request_completed', {
+      request_id: requestId,
+      endpoint: route,
+      operation,
+      analysis_mode: 'mock',
+      outcome,
+      http_status: 200,
+      duration_ms: Date.now() - startedAt,
+    })
+  }
+
+  // A browser on another site can send a multipart POST without a preflight, so
+  // refusing to share the response is not enough: the request itself is refused
+  // here, before validation, spend reservation or any model call.
+  if (isStateChanging(method) && !origin.allowed) {
+    logEvent('warn', 'api_origin_rejected', { request_id: requestId, endpoint: route, http_status: 403 })
+    return handleCORS(NextResponse.json(
+      { error: 'forbidden_origin', message: 'This request is not allowed from this origin.' },
+      { status: 403 }
+    ))
+  }
 
   try {
     // ------------------------------------------------------------------
@@ -98,6 +117,7 @@ async function handleRoute(request, { params }) {
         const mockProfile = await getMockProfile()
         // Application sets generated_at_utc (spec: 06_API_SPECIFICATION.md)
         mockProfile.generated_at_utc = new Date().toISOString()
+        logMockCompleted('profile', mockProfile.status)
         return handleCORS(NextResponse.json(mockProfile))
       }
 
@@ -197,6 +217,7 @@ async function handleRoute(request, { params }) {
             Boolean(aiStyleProfileCheck.profile)
           )
         }
+        logMockCompleted('analysis', mockAnalysis.status)
         return handleCORS(NextResponse.json(mockAnalysis))
       }
 
@@ -249,42 +270,6 @@ async function handleRoute(request, { params }) {
     // Root endpoint - GET /api/
     if (route === '/' && method === 'GET') {
       return handleCORS(NextResponse.json({ message: "Hello World" }))
-    }
-
-    // Status endpoints - POST /api/status
-    if (route === '/status' && method === 'POST') {
-      const db = await connectToMongo()
-      const body = await request.json()
-
-      if (!body.client_name) {
-        return handleCORS(NextResponse.json(
-          { error: "client_name is required" },
-          { status: 400 }
-        ))
-      }
-
-      const statusObj = {
-        id: uuidv4(),
-        client_name: body.client_name,
-        timestamp: new Date()
-      }
-
-      await db.collection('status_checks').insertOne(statusObj)
-      return handleCORS(NextResponse.json(statusObj))
-    }
-
-    // Status endpoints - GET /api/status
-    if (route === '/status' && method === 'GET') {
-      const db = await connectToMongo()
-      const statusChecks = await db.collection('status_checks')
-        .find({})
-        .limit(1000)
-        .toArray()
-
-      // Remove MongoDB's _id field from response
-      const cleanedStatusChecks = statusChecks.map(({ _id, ...rest }) => rest)
-
-      return handleCORS(NextResponse.json(cleanedStatusChecks))
     }
 
     // Route not found
@@ -401,6 +386,3 @@ function createProfileErrorResponse(error) {
   )
 }
 export const POST = handleRoute
-export const PUT = handleRoute
-export const DELETE = handleRoute
-export const PATCH = handleRoute

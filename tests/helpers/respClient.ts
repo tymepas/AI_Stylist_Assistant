@@ -43,6 +43,20 @@ function parse(buffer: Buffer, offset: number): { value: Reply; next: number } |
   throw new Error(`Unsupported RESP type ${type}`)
 }
 
+/**
+ * Converts a Redis `TIME` reply ([seconds, microseconds]) to Unix milliseconds.
+ * Throws on anything else, so a test can never silently fall back to another clock.
+ */
+export function timeReplyToMs(reply: unknown): number {
+  if (!Array.isArray(reply) || reply.length !== 2) throw new Error('Unexpected reply to TIME')
+  const seconds = Number(reply[0])
+  const microseconds = Number(reply[1])
+  if (!Number.isInteger(seconds) || !Number.isInteger(microseconds) || seconds <= 0 || microseconds < 0 || microseconds >= 1_000_000) {
+    throw new Error('Unexpected reply to TIME')
+  }
+  return seconds * 1000 + Math.floor(microseconds / 1000)
+}
+
 export class RespConnection {
   private buffer = Buffer.alloc(0)
   private pending: Array<{ resolve: (v: Reply) => void; reject: (e: Error) => void }> = []
@@ -76,6 +90,27 @@ export class RespConnection {
       this.pending.push({ resolve, reject })
       this.socket.write(encode(args))
     })
+  }
+
+  /**
+   * The Redis server's own clock, in Unix milliseconds. Redis evaluates absolute
+   * key expiries (PEXPIREAT) against this clock, not against the test process's.
+   */
+  async serverTimeMs(): Promise<number> {
+    return timeReplyToMs(await this.command('TIME'))
+  }
+
+  /** Deletes every key matching a pattern, using SCAN so the server is never blocked. Returns the number deleted. */
+  async deleteMatching(pattern: string): Promise<number> {
+    let cursor = '0'
+    let deleted = 0
+    do {
+      const reply = (await this.command('SCAN', cursor, 'MATCH', pattern, 'COUNT', '500')) as [string, string[]]
+      cursor = String(reply[0])
+      const keys = reply[1] ?? []
+      if (keys.length > 0) deleted += Number(await this.command('DEL', ...keys))
+    } while (cursor !== '0')
+    return deleted
   }
 
   /** Same contract as the Upstash transport. */

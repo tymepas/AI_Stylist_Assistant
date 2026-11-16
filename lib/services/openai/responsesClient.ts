@@ -56,6 +56,12 @@ export interface ResponsesCallInput<T> {
   /** Safe enum describing a successful result (e.g. its status), for logs. */
   outcomeOf: (result: T) => string
   requestId?: string
+  /** Fingerprint of the prompt template in `instructions` and `content`, for the request trace. */
+  promptVersion?: string
+  /** Version of the schema `validate` enforces, for the request trace. */
+  schemaVersion?: string
+  /** Where the call comes from: the API route ('openai') or the benchmark ('benchmark'). */
+  analysisMode?: 'openai' | 'benchmark'
   overrides?: RunOverrides
   /** Called once when the provider reports usage, on success or failure. */
   onUsage?: (usage: NormalizedUsage) => void
@@ -125,12 +131,17 @@ export async function callResponsesApi<T>(input: ResponsesCallInput<T>): Promise
     operation,
     model: modelConfig.id,
     reasoning_effort: effort ?? undefined,
+    prompt_version: input.promptVersion,
+    schema_version: input.schemaVersion,
+    analysis_mode: input.analysisMode ?? 'openai',
   }
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), modelConfig.operations[operation].timeoutMs)
   const startedAt = Date.now()
   let usage: NormalizedUsage | null = null
+  // 'not_run' until the model output reaches schema validation.
+  let validation: 'not_run' | 'passed' | 'failed' = 'not_run'
 
   const logFailed = (error: OpenAIAnalysisError) => {
     logEvent('error', 'openai_request_failed', {
@@ -138,6 +149,7 @@ export async function callResponsesApi<T>(input: ResponsesCallInput<T>): Promise
       duration_ms: Date.now() - startedAt,
       error_code: error.code,
       http_status: error.status,
+      validation,
       ...usageLogFields(modelConfig, usage),
     })
   }
@@ -211,11 +223,14 @@ export async function callResponsesApi<T>(input: ResponsesCallInput<T>): Promise
     let result: T
     try {
       result = input.validate(parsedOutput)
+      validation = 'passed'
     } catch (validationError) {
+      validation = 'failed'
       // Schema paths only. Issue messages and received values can echo model output,
       // which may describe the person in the photo.
       logEvent('warn', 'openai_output_schema_invalid', {
         ...logBase,
+        validation,
         ...summarizeValidationIssues(validationError),
       })
       throw new OpenAIAnalysisError('invalid_response', `The model response did not match the required ${label} schema.`)
@@ -225,6 +240,7 @@ export async function callResponsesApi<T>(input: ResponsesCallInput<T>): Promise
       ...logBase,
       duration_ms: Date.now() - startedAt,
       outcome: input.outcomeOf(result),
+      validation,
       ...usageLogFields(modelConfig, usage),
     })
     return result

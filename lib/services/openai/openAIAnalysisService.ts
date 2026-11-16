@@ -5,10 +5,11 @@ import path from 'node:path'
 import type { StyleProfile, AIStyleProfile } from '@/types/schema'
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
 import { logEvent, type ConfigIssue } from '@/lib/observability/safeLogger'
-import { validateRawOpenAIAnalysis } from './openAIAnalysisSchema'
+import { ANALYSIS_OUTPUT_SCHEMA_VERSION, validateRawOpenAIAnalysis } from './openAIAnalysisSchema'
 import { OpenAIAnalysisError } from './openAIErrors'
 import { resolveModelConfig, type NormalizedUsage, type SupportedModelId } from './modelConfig'
-import { callResponsesApi, type RunOverrides } from './responsesClient'
+import { fingerprint, IMAGE_PLACEHOLDER } from './promptVersion'
+import { callResponsesApi, type InputContentPart, type RunOverrides } from './responsesClient'
 
 export { OpenAIAnalysisError } from './openAIErrors'
 export type { OpenAIAnalysisErrorCode } from './openAIErrors'
@@ -26,6 +27,8 @@ interface AnalyzeWithOpenAIInput {
   onUsage?: (usage: NormalizedUsage) => void
   /** Benchmark harness only: choose the model and tuning explicitly. The API route never sets this. */
   runOverrides?: RunOverrides & { model?: SupportedModelId }
+  /** Recorded in the request trace. The API route leaves the default ('openai'). */
+  analysisMode?: 'openai' | 'benchmark'
 }
 
 let systemPromptPromise: Promise<string> | undefined
@@ -113,6 +116,48 @@ export function buildUserContext(
   return lines.join('\n')
 }
 
+/** The user message of an analysis request. The same builder is used for the real call and for the prompt version. */
+export function buildAnalysisContent(userContext: string, photoDataUrl: string, garmentDataUrl: string): InputContentPart[] {
+  return [
+    { type: 'input_text', text: userContext },
+    { type: 'input_text', text: 'Person image:' },
+    { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
+    { type: 'input_text', text: 'Garment image:' },
+    { type: 'input_image', image_url: garmentDataUrl, detail: 'high' },
+  ]
+}
+
+// Placeholder inputs for fingerprinting. Every optional context line is switched
+// on, so a change to any fixed instruction text changes the version.
+const TEMPLATE_OCCASION = '<occasion>'
+const TEMPLATE_STYLE_PROFILE: StyleProfile = { preferredStyles: [], favoriteColors: [], occasionPreferences: [] }
+const TEMPLATE_AI_PROFILE = {
+  coloring: { skin_tone_depth: '<depth>', skin_tone_undertone: '<undertone>', hair_color: '<hair>', high_contrast: false },
+  aesthetic_signals: { current_outfit_formality: '<formality>' },
+  style_keywords: [{ keyword: '<keyword>' }],
+  proportions: { frame_width: '<frame>', torso_length: '<torso>', shoulder_breadth: '<shoulders>' },
+} as unknown as AIStyleProfile
+
+/**
+ * Fingerprint of the analysis prompt template: the system prompt plus the user
+ * message as built with and without Style DNA context, with placeholders in
+ * place of user data and images.
+ */
+export function computeAnalysisPromptVersion(instructions: string): string {
+  const withoutProfile = buildAnalysisContent(buildUserContext(TEMPLATE_OCCASION, TEMPLATE_STYLE_PROFILE), IMAGE_PLACEHOLDER, IMAGE_PLACEHOLDER)
+  const withProfile = buildAnalysisContent(
+    buildUserContext(TEMPLATE_OCCASION, TEMPLATE_STYLE_PROFILE, TEMPLATE_AI_PROFILE),
+    IMAGE_PLACEHOLDER,
+    IMAGE_PLACEHOLDER
+  )
+  return fingerprint([instructions, JSON.stringify(withoutProfile), JSON.stringify(withProfile)])
+}
+
+/** Version of the analysis prompt currently on disk, for benchmark and evaluation records. */
+export async function getAnalysisPromptVersion(): Promise<string> {
+  return computeAnalysisPromptVersion(await loadSystemPrompt())
+}
+
 function logConfigIssue(requestId: string | undefined, configIssue: ConfigIssue): void {
   logEvent('error', 'openai_config_invalid', {
     request_id: requestId,
@@ -131,6 +176,7 @@ export async function analyzeWithOpenAI({
   requestId,
   onUsage,
   runOverrides,
+  analysisMode,
 }: AnalyzeWithOpenAIInput): Promise<RawOpenAIAnalysisResult> {
   const apiKey = process.env.OPENAI_API_KEY
   const modelSetting = runOverrides?.model ?? process.env.OPENAI_MODEL
@@ -177,16 +223,13 @@ export async function analyzeWithOpenAI({
     apiKey,
     modelConfig,
     instructions,
-    content: [
-      { type: 'input_text', text: buildUserContext(occasion, styleProfile, aiStyleProfile) },
-      { type: 'input_text', text: 'Person image:' },
-      { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
-      { type: 'input_text', text: 'Garment image:' },
-      { type: 'input_image', image_url: garmentDataUrl, detail: 'high' },
-    ],
+    content: buildAnalysisContent(buildUserContext(occasion, styleProfile, aiStyleProfile), photoDataUrl, garmentDataUrl),
     validate: validateRawOpenAIAnalysis,
     outcomeOf: (result) => result.status,
     requestId,
+    promptVersion: computeAnalysisPromptVersion(instructions),
+    schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION,
+    analysisMode,
     overrides: runOverrides,
     onUsage,
   })

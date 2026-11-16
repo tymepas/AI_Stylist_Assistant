@@ -49,6 +49,28 @@ export const CASE_CATEGORIES = [
 
 const VERDICT_BANDS = ['Highly Recommended', 'Recommended', 'Consider Alternatives', 'Not Recommended'] as const
 
+export const DIMENSION_KEYS = ['occasion', 'color', 'formality', 'seasonality', 'style', 'style_preference_match'] as const
+export type DimensionKey = (typeof DIMENSION_KEYS)[number]
+const RATINGS = ['Excellent', 'Good', 'Fair', 'Poor', 'Unable to Evaluate'] as const
+const caseId = z.string().regex(/^[a-z0-9_-]{1,40}$/)
+
+/**
+ * Human labels for one case. They describe what is visible in the case's images
+ * and must be assigned by a person looking at those images, never guessed from a
+ * description. Labels are scored only once `verified` is true.
+ */
+const labelsSchema = z
+  .object({
+    garment_category: z.string().min(1).max(40).optional(),
+    colour_family: z.string().min(1).max(40).optional(),
+    pattern: z.string().min(1).max(40).optional(),
+    formality: z.enum(['casual', 'smart casual', 'business casual', 'business formal', 'formal']).optional(),
+    /** How uncertain a careful reviewer would be about this case. */
+    expected_uncertainty: z.enum(['low', 'medium', 'high']).optional(),
+    verified: z.boolean().default(false),
+  })
+  .strict()
+
 const relativeImagePath = z
   .string()
   .min(1)
@@ -58,7 +80,7 @@ const relativeImagePath = z
 
 const caseSchema = z
   .object({
-    id: z.string().regex(/^[a-z0-9_-]{1,40}$/),
+    id: caseId,
     category: z.enum(CASE_CATEGORIES),
     description: z.string().min(1).max(300),
     /** Where the images come from. Real customer photos are never allowed. */
@@ -84,8 +106,13 @@ const caseSchema = z
         key_facts: z.array(z.string().max(200)).max(10).default([]),
         /** Case-specific claims that must not appear (e.g. text printed on the garment). */
         forbidden_claims: z.array(z.string().min(2).max(80)).max(20).default([]),
+        /** Ratings a correct answer may give per dimension. Used for confidence calibration; needs verified labels. */
+        dimension_ratings: z.record(z.enum(DIMENSION_KEYS), z.array(z.enum(RATINGS)).min(1).max(5)).optional(),
       })
       .strict(),
+    labels: labelsSchema.optional(),
+    /** For an adversarial case: the id of the same scene without the adversarial content. */
+    twin_of: caseId.optional(),
   })
   .strict()
 
@@ -100,6 +127,12 @@ export const manifestSchema = z
     for (const benchmarkCase of manifest.cases) {
       if (seen.has(benchmarkCase.id)) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Duplicate case id ${benchmarkCase.id}` })
       seen.add(benchmarkCase.id)
+    }
+    for (const benchmarkCase of manifest.cases) {
+      if (benchmarkCase.twin_of === undefined) continue
+      if (benchmarkCase.twin_of === benchmarkCase.id || !seen.has(benchmarkCase.twin_of)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: twin_of must name another case in the manifest` })
+      }
     }
   })
 
@@ -404,6 +437,9 @@ export type AnalyzeFn = (input: {
   options: RunOptions
   onUsage: (usage: NormalizedUsage) => void
   requestId: string
+  /** Identify the call for recording; they do not reach the model. */
+  caseId: string
+  run: number
 }) => Promise<RawOpenAIAnalysisResult>
 
 export interface RunOutcome {
@@ -438,6 +474,8 @@ export async function runCases(prepared: PreparedCase[], options: RunOptions, an
           options,
           onUsage: (u) => { usage = u },
           requestId: `bench-${benchmarkCase.id}-${run}`,
+          caseId: benchmarkCase.id,
+          run,
         })
         records.push(recordFromResult({ benchmarkCase, run, options, latencyMs: now() - started, usage, result }))
       } catch (error) {

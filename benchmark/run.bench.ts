@@ -15,7 +15,9 @@ jest.mock('server-only', () => ({}), { virtual: true })
 
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
-import { analyzeWithOpenAI } from '@/lib/services/openai/openAIAnalysisService'
+import { analyzeWithOpenAI, getAnalysisPromptVersion } from '@/lib/services/openai/openAIAnalysisService'
+import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
+import { createRecorder, stableStringify } from '@/evaluation/recording'
 import { validateImageFile } from '@/lib/services/analysisService'
 import { resolveModelConfig } from '@/lib/services/openai/modelConfig'
 import {
@@ -109,7 +111,12 @@ describe('Verdict model benchmark', () => {
     // Service logs are content-free, but keep the console to aggregates only.
     jest.spyOn(console, 'info').mockImplementation(() => undefined)
 
-    const outcome = await runCases(prepared, options, (input) => analyzeWithOpenAI({
+    // Capture the outputs so this run can be replayed for free (`npm run eval`).
+    // Outputs for photos of real people are withheld by the recorder.
+    const promptVersion = await getAnalysisPromptVersion()
+    const recorder = createRecorder({ options, promptVersion, schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION, cases: manifest.cases, recordedAt: new Date().toISOString() })
+
+    const outcome = await runCases(prepared, options, recorder.wrap((input) => analyzeWithOpenAI({
       photo: input.photo,
       garment: input.garment,
       occasion: input.occasion,
@@ -117,19 +124,21 @@ describe('Verdict model benchmark', () => {
       requestId: input.requestId,
       onUsage: input.onUsage,
       runOverrides: { model: input.options.model, reasoningEffort: input.options.reasoningEffort, maxOutputTokens: input.options.maxOutputTokens },
-    }))
+      analysisMode: 'benchmark',
+    })))
 
     const summary = summarize(outcome.records, manifest.cases)
     const resultsDir = path.join(ROOT, 'benchmark', 'results')
     mkdirSync(resultsDir, { recursive: true })
     const stamp = new Date().toISOString().replace(/[:.]/g, '-')
     const base = path.join(resultsDir, `${stamp}-${options.model}-${options.reasoningEffort ?? 'default'}`)
-    writeFileSync(`${base}.json`, JSON.stringify({ options, summary, stoppedEarly: outcome.stoppedEarly, records: outcome.records }, null, 2))
+    writeFileSync(`${base}.json`, JSON.stringify({ options, prompt_version: promptVersion, schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION, summary, stoppedEarly: outcome.stoppedEarly, records: outcome.records }, null, 2))
     writeFileSync(`${base}.review.csv`, reviewSheet(outcome.records))
+    writeFileSync(`${base}.recording.json`, stableStringify(recorder.recording()))
 
     out(JSON.stringify(summary, null, 2))
     if (outcome.stoppedEarly) out(outcome.stopReason ?? 'Stopped early.')
-    out(`Results: ${path.relative(ROOT, base)}.json and .review.csv`)
+    out(`Results: ${path.relative(ROOT, base)}.json, .review.csv and .recording.json`)
     out(`Timeout for this model: ${resolveModelConfig(options.model)!.operations.analysis.timeoutMs} ms (for the latency criterion).`)
   }, 2 * 60 * 60 * 1000)
 })

@@ -162,7 +162,15 @@ const aiStyleProfileFailureSchema = z
 // Discriminated union — the full AI response shape
 // ---------------------------------------------------------------------------
 
-const aiStyleProfileResultSchema = z.discriminatedUnion('status', [
+/**
+ * Version of the Style DNA output contract. The number matches the
+ * `schema_version` literal inside the schema. Bump both together;
+ * tests/versioning/schemaVersions.test.ts fails until the recorded fingerprint
+ * is updated as well.
+ */
+export const PROFILE_OUTPUT_SCHEMA_VERSION = 'profile-output/1.0'
+
+export const aiStyleProfileResultSchema = z.discriminatedUnion('status', [
   completeAIStyleProfileSchema,
   aiStyleProfileFailureSchema,
 ])

@@ -114,3 +114,27 @@ Expanding the occasion list to include "Startup Interview", "Networking Event", 
 - Deterministic verdict calculation, weights, thresholds, and report dimensions
 - Existing multipart upload and Style DNA privacy model
 - No retailer API, scraping, affiliate links, or saved shopping data
+
+---
+
+## Unreleased - Stage 1 Camera Capture and Image Preparation
+
+### Added
+
+- Camera capture through native file inputs: front camera for the personal photo and Style DNA, rear camera for the garment, each with a separate gallery/file picker
+- Preview, retake and remove for every photo
+- Browser image preparation (`lib/images/prepareImageForUpload.ts`): orientation, 1,536 px long edge, JPEG re-encode on a white background, about 1 MB per image, 4.0 MB request budget
+- Upload helper (`lib/services/uploadRequest.ts`): double-submit protection, 70-second client timeout, no automatic retries, distinct errors for offline, network failure and HTTP 400, 413, 429 and 503
+- Component tests with React Testing Library
+
+### Changed
+
+- Photos are always re-encoded before upload, so EXIF metadata (including GPS position) is no longer sent
+- Source photos up to 25 MB are accepted in the browser; the server limit of 10 MB per uploaded image is unchanged
+- HEIC/HEIF photos are refused with a specific message instead of a generic one
+
+### Preserved
+
+- Deterministic verdict calculation, prompts, schemas, model configuration and spend guard
+- Server-side upload validation
+- Desktop drag and drop and file selection

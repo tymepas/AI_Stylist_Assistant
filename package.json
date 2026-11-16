@@ -8,10 +8,12 @@
         "dev:webpack": "next dev --hostname 0.0.0.0 --port 3000",
         "build": "next build",
         "start": "next start",
+        "audit:check": "node scripts/security/audit-check.cjs",
         "test": "jest --config jest.config.ts",
         "test:phase3": "jest --config jest.config.ts --testPathPattern tests/phase3",
         "typecheck": "tsc --noEmit",
-        "benchmark": "jest --config jest.benchmark.config.ts --runInBand"
+        "benchmark": "jest --config jest.benchmark.config.ts --runInBand",
+        "eval": "jest --config jest.evaluation.config.ts --runInBand"
     },
     "dependencies": {
         "@hookform/resolvers": "5.1.1",
@@ -55,7 +57,7 @@
         "lodash": "4.18.1",
         "lucide-react": "0.516.0",
         "mongodb": "6.6.0",
-        "next": "15.5.16",
+        "next": "15.5.29",
         "next-themes": "0.4.6",
         "react": "18.3.1",
         "react-day-picker": "9.7.0",
@@ -63,6 +65,7 @@
         "react-hook-form": "7.58.1",
         "react-resizable-panels": "3.0.3",
         "recharts": "2.15.3",
+        "sharp": "0.35.5",
         "sonner": "2.0.5",
         "swr": "2.3.8",
         "tailwind-merge": "3.3.1",
@@ -73,6 +76,9 @@
     },
     "devDependencies": {
         "@jest/globals": "^30.4.1",
+        "@testing-library/dom": "^10.4.2",
+        "@testing-library/react": "^16.3.3",
+        "@testing-library/user-event": "^14.6.12",
         "@types/jest": "^30.0.0",
         "@types/lodash": "4.17.24",
         "@types/node": "^26.1.1",
