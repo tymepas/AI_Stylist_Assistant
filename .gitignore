@@ -92,3 +92,6 @@ credentials.json
 benchmark/data/
 benchmark/results/
 benchmark/cases.json
+
+# Local dev server logs
+next-dev.*.log
