@@ -143,7 +143,7 @@ The workflow is separate from the test workflow and is not a required status che
 
 **Open items, reviewed 2026-11-17.**
 - Production: `zod` GHSA-mrhx-c7xc-m3w5 (high) is the only exception left. It is fixed only in Zod 4 and is accepted with a mitigation until 2027-02-14; the migration is a separate task.
-- Development only, not enforced: `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249 (moderate) and `deepmerge` GHSA-gcqx-w48m-w2h4 (low), all installed through Jest 30. The newest Jest release still depends on an affected `glob`, so there is no update to take yet. They run only in the test runner, on this repository's own files.
+- Development only, not enforced: `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249 (moderate), both installed through Jest 30. The newest Jest release still depends on an affected `glob`, so there is no update to take yet. They run only in the test runner, on this repository's own files. `deepmerge` GHSA-gcqx-w48m-w2h4 was withdrawn in the GitHub Advisory Database on 2026-11-16 and is not an open item.
 
 `sharp` is a direct dependency pinned to an exact version, shared with Next.js as a single copy. The application does not import it yet; `tests/dependencies/sharpDependency.test.ts` checks that the pinned binary loads on each CI Node version.
 
