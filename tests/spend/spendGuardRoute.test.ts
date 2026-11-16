@@ -213,7 +213,9 @@ describe('limits', () => {
     }))
 
     const first = analyze({ 'x-vercel-forwarded-for': '203.0.113.1' })
-    for (let i = 0; i < 100 && store.leases.size === 0; i += 1) await new Promise((r) => setImmediate(r))
+    // The upload is decoded and re-encoded before the reservation, so wait on the clock, not on a tick count.
+    const deadline = Date.now() + 10_000
+    while (store.leases.size === 0 && Date.now() < deadline) await new Promise((r) => setImmediate(r))
     expect(store.leases.size).toBe(1)
     const second = await analyze({ 'x-vercel-forwarded-for': '203.0.113.2' })
     expect(second.status).toBe(429)

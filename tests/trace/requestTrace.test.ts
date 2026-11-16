@@ -20,7 +20,7 @@ import { getAnalysisPromptVersion } from '@/lib/services/openai/openAIAnalysisSe
 import { setSpendStoreForTesting } from '@/lib/spend/spendGuard'
 import { abortError, allRated, dimension, makePng, openAIResponse } from '../helpers/fixtures'
 import { installMemorySpendStore } from '../helpers/memorySpendStore'
-import { captureLogs, PNG_BASE64_PREFIX } from '../logging/logTestUtils'
+import { captureLogs, JPEG_BASE64_PREFIX, PNG_BASE64_PREFIX } from '../logging/logTestUtils'
 import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
 
 const originalEnv = { ...process.env }
@@ -154,7 +154,7 @@ describe('request trace in OpenAI mode', () => {
     await analyze()
 
     const text = logs.text()
-    for (const fragment of [OCCASION, 'PRIVATE-STYLE-MARKER', 'MODEL-REASON-MARKER', PNG_BASE64_PREFIX, 'sk-test-fake-key', 'Rate each dimension']) {
+    for (const fragment of [OCCASION, 'PRIVATE-STYLE-MARKER', 'MODEL-REASON-MARKER', PNG_BASE64_PREFIX, JPEG_BASE64_PREFIX, 'sk-test-fake-key', 'Rate each dimension']) {
       expect(text).not.toContain(fragment)
     }
   })

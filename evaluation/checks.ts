@@ -201,9 +201,10 @@ function checkConsistency(runs: RunDetail[]): CheckResult {
  *
  * For every complete run this recomputes the verdict with the production code
  * and then changes everything the model wrote EXCEPT the ratings: the reasons,
- * the stated confidence and the shopping advisor block. None of those may move
- * the band or the score. It also confirms that an output carrying its own
- * verdict fields is rejected by the output schema.
+ * the stated confidence, the shopping advisor block and the per-item notes of a
+ * multi-item outfit. None of those may move the band or the score. It also
+ * confirms that an output carrying its own verdict fields is rejected by the
+ * output schema.
  */
 function checkVerdictIntegrity(benchmarkCase: BenchmarkCase, runs: RunDetail[]): CheckResult {
   if (benchmarkCase.expected.must_be_rejected) {
@@ -220,8 +221,8 @@ function checkVerdictIntegrity(benchmarkCase: BenchmarkCase, runs: RunDetail[]):
   const problems: string[] = []
   for (const run of complete) {
     const dimensions = run.dimensions as RawOpenAIDimensions
-    const verdictOf = (value: RawOpenAIDimensions, advisor?: Parameters<typeof buildCompleteAnalysisResult>[1]) => {
-      const result = buildCompleteAnalysisResult(value, advisor)
+    const verdictOf = (value: RawOpenAIDimensions, advisor?: Parameters<typeof buildCompleteAnalysisResult>[1], extras?: Parameters<typeof buildCompleteAnalysisResult>[2]) => {
+      const result = buildCompleteAnalysisResult(value, advisor, extras)
       return `${result.overall_recommendation}|${result.verdict_score}`
     }
     const recorded = `${run.band}|${run.score}`
@@ -246,6 +247,11 @@ function checkVerdictIntegrity(benchmarkCase: BenchmarkCase, runs: RunDetail[]):
       }],
     }
     if (verdictOf(dimensions, advisor) !== recorded) problems.push('changing the shopping advisor output changed the verdict')
+    const outfitComponents = {
+      availability: 'available' as const,
+      items: [1, 2, 3].map((item) => ({ item, garment_type: 'top' as const, assessment: 'Works well' as const, note: 'Present only to prove that per-item notes cannot move the verdict.' })),
+    }
+    if (verdictOf(dimensions, undefined, { garmentMode: 'outfit_items', outfitComponents }) !== recorded) problems.push('changing the outfit item notes changed the verdict')
   }
   return problems.length > 0 ? fail('verdict_integrity', unique(problems).join('; ')) : pass('verdict_integrity')
 }

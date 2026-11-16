@@ -8,7 +8,7 @@ const shoppingMatchLevelSchema = z.enum([
   'Possible Match',
 ])
 
-const shoppingGarmentCategorySchema = z.enum([
+export const shoppingGarmentCategorySchema = z.enum([
   'top',
   'bottom',
   'outerwear',

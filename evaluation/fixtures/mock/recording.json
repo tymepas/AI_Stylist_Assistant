@@ -5,7 +5,7 @@
   "reasoning_effort": "low",
   "max_output_tokens": 4000,
   "prompt_version": "000000000000",
-  "schema_version": "analysis-output/1",
+  "schema_version": "analysis-output/2",
   "dataset_fingerprint": "090a6fc97da0",
   "entries": [
     {

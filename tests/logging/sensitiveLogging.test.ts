@@ -14,7 +14,7 @@ import { POST } from '@/app/api/[[...path]]/route'
 import { analyzeWithOpenAI } from '@/lib/services/openai/openAIAnalysisService'
 import { generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileService'
 import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
-import { captureLogs, dimensions, makePng, openAIResponse, PNG_BASE64_PREFIX, type LogCapture } from './logTestUtils'
+import { captureLogs, dimensions, JPEG_BASE64_PREFIX, makePng, openAIResponse, PNG_BASE64_PREFIX, type LogCapture } from './logTestUtils'
 import { setSpendStoreForTesting } from '@/lib/spend/spendGuard'
 import { installMemorySpendStore } from '../helpers/memorySpendStore'
 
@@ -26,7 +26,8 @@ const FORBIDDEN = [
   FAKE_KEY,
   'sk-test-a2', // any prefix of the key
   'MARKER', // planted in occasion, style profile, model output and errors
-  PNG_BASE64_PREFIX, // image bytes
+  PNG_BASE64_PREFIX, // image bytes as uploaded
+  JPEG_BASE64_PREFIX, // image bytes as re-encoded and sent to the provider
   'data:image',
   'base64,',
   'SYSTEM PROMPT', // memory/SYSTEM_PROMPT.md heading

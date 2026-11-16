@@ -14,11 +14,12 @@ import { compareReports, evaluateRecording, renderMarkdown, serializeReport } fr
 import { loadCases, loadRecording, mockFixturePaths } from '@/evaluation/load'
 import { resolveEvaluationPlan } from '@/evaluation/modes'
 import { createRecorder, datasetFingerprint, RECORDABLE_SOURCES, RECORDING_FORMAT, recordingSchema, stableStringify, type Recording } from '@/evaluation/recording'
+import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 import { OpenAIAnalysisError } from '@/lib/services/openai/openAIErrors'
 import { allRated, makePng } from '../helpers/fixtures'
 
 const OPTIONS: RunOptions = { model: 'gpt-6.1-terra', reasoningEffort: 'low', maxOutputTokens: 4_000, runsPerCase: 2, maxUsd: 5 }
-const CURRENT = { promptVersion: 'aaaaaaaaaaaa', schemaVersion: 'analysis-output/1' }
+const CURRENT = { promptVersion: 'aaaaaaaaaaaa', schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION }
 const USAGE = { input_tokens: 5000, output_tokens: 600, total_tokens: 5600, cached_tokens: 0, reasoning_tokens: 100 }
 
 function makeCases(): BenchmarkCase[] {

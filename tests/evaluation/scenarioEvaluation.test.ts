@@ -125,12 +125,12 @@ describe('scenario evaluation', () => {
   })
 
   it('identifies the prompt version, the schema version and the dataset', () => {
-    expect(report.subject).toMatchObject({ prompt_version: '000000000000', schema_version: 'analysis-output/1' })
+    expect(report.subject).toMatchObject({ prompt_version: '000000000000', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION })
     expect(report.evaluated_with).toMatchObject({ prompt_version: 'aaaaaaaaaaaa', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION })
     expect(report.dataset.fingerprint).toMatch(/^[0-9a-f]{12}$/)
     const markdown = renderMarkdown(report)
     expect(markdown).toMatch(/Prompt version: 000000000000/)
-    expect(markdown).toMatch(/Schema version: analysis-output\/1/)
+    expect(markdown).toContain(`Schema version: ${ANALYSIS_OUTPUT_SCHEMA_VERSION}`)
     expect(markdown).toContain(report.dataset.fingerprint)
   })
 

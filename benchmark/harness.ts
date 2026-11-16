@@ -25,7 +25,7 @@ import {
 } from '@/lib/services/openai/modelConfig'
 import { computeCostMicroUsd } from '@/lib/services/openai/modelConfig'
 import { effectiveMaxOutputTokens, effectiveReasoningEffort } from '@/lib/services/openai/responsesClient'
-import { GARMENT_MODES, MAX_GARMENT_IMAGES, garmentCountProblem } from '@/lib/constants/garmentModes'
+import { GARMENT_MODES, MAX_GARMENT_IMAGES, garmentCountProblem, type GarmentMode } from '@/lib/constants/garmentModes'
 
 // ---------------------------------------------------------------------------
 // Manifest
@@ -264,9 +264,12 @@ export function evaluateGate(env: Record<string, string | undefined>): GateResul
   return { mode: 'live', options }
 }
 
-/** Worst-case cost of one analysis call with these options, in micro-USD. */
-export function maxCostPerCallMicroUsd(options: RunOptions): number {
-  return estimateMaxCostMicroUsd(resolveModelConfig(options.model)!, 'analysis', 2, options.maxOutputTokens)
+/**
+ * Worst-case cost of one analysis call with these options, in micro-USD.
+ * `imageCount` is the personal photo plus the garment images: 2 for one garment image, up to 4.
+ */
+export function maxCostPerCallMicroUsd(options: RunOptions, imageCount = 2): number {
+  return estimateMaxCostMicroUsd(resolveModelConfig(options.model)!, 'analysis', imageCount, options.maxOutputTokens)
 }
 
 // ---------------------------------------------------------------------------
@@ -488,11 +491,17 @@ export interface PreparedCase {
   benchmarkCase: BenchmarkCase
   photo: File
   garment: File
+  /** Further garment images of a multi-image case, in manifest order. */
+  extraGarments?: File[]
 }
 
 export type AnalyzeFn = (input: {
   photo: File
   garment: File
+  /** Further garment images; absent or empty for a single garment image. */
+  extraGarments?: File[]
+  /** Absent means one garment image. */
+  garmentMode?: GarmentMode
   occasion: string
   styleProfile: StyleProfile
   options: RunOptions
@@ -516,11 +525,12 @@ export interface RunOutcome {
 export async function runCases(prepared: PreparedCase[], options: RunOptions, analyze: AnalyzeFn, now: () => number = Date.now): Promise<RunOutcome> {
   const records: RunRecord[] = []
   const capMicroUsd = Math.floor(options.maxUsd * 1_000_000)
-  const worstCase = maxCostPerCallMicroUsd(options)
   let spentMicroUsd = 0
 
   for (let run = 1; run <= options.runsPerCase; run += 1) {
-    for (const { benchmarkCase, photo, garment } of prepared) {
+    for (const { benchmarkCase, photo, garment, extraGarments = [] } of prepared) {
+      // The personal photo plus every garment image of this case.
+      const worstCase = maxCostPerCallMicroUsd(options, 2 + extraGarments.length)
       if (spentMicroUsd + worstCase > capMicroUsd) {
         return { records, stoppedEarly: true, stopReason: `Stopped before exceeding BENCHMARK_MAX_USD (${options.maxUsd}).` }
       }
@@ -530,6 +540,8 @@ export async function runCases(prepared: PreparedCase[], options: RunOptions, an
         const result = await analyze({
           photo,
           garment,
+          extraGarments,
+          garmentMode: benchmarkCase.garment_mode ?? 'single',
           occasion: benchmarkCase.occasion,
           styleProfile: benchmarkCase.style_profile,
           options,

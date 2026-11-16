@@ -9,6 +9,7 @@ import { ANALYSIS_OUTPUT_SCHEMA_VERSION, validateRawOpenAIAnalysis } from './ope
 import { OpenAIAnalysisError } from './openAIErrors'
 import { resolveModelConfig, type NormalizedUsage, type SupportedModelId } from './modelConfig'
 import { fingerprint, IMAGE_PLACEHOLDER } from './promptVersion'
+import { MAX_GARMENT_IMAGES, garmentCountProblem, type GarmentMode } from '@/lib/constants/garmentModes'
 import { callResponsesApi, type InputContentPart, type RunOverrides } from './responsesClient'
 
 export { OpenAIAnalysisError } from './openAIErrors'
@@ -16,7 +17,12 @@ export type { OpenAIAnalysisErrorCode } from './openAIErrors'
 
 interface AnalyzeWithOpenAIInput {
   photo: File
+  /** The garment image, or the first of several. */
   garment: File
+  /** Further garment images (at most two more). Only with a multi-image garment mode. */
+  extraGarments?: File[]
+  /** How the garment images relate to each other. Chosen by the user, never inferred. Defaults to one garment image. */
+  garmentMode?: GarmentMode
   occasion: string
   styleProfile: StyleProfile
   /** Phase 3 — optional AI-generated style profile for richer context injection. */
@@ -55,10 +61,47 @@ async function fileToDataUrl(file: File): Promise<string> {
  * to reference them explicitly in its output text.
  * Spec: specs/phase3/07_AI_ANALYSIS_SPEC.md § "Additional Context Provided to the AI"
  */
+/** The garment images of one request: how they relate and how many there are. */
+export interface GarmentContext {
+  mode: GarmentMode
+  count: number
+}
+
+/**
+ * Extra instruction lines for requests with several garment images. A request
+ * with one garment image gets none, so its prompt is exactly what it was before
+ * multiple images existed.
+ */
+function garmentModeLines(garments: GarmentContext | undefined): { context: string[]; format: string[] } {
+  if (!garments || garments.mode === 'single') return { context: [], format: [] }
+  const count = garments.count
+  if (garments.mode === 'same_garment_views') {
+    return {
+      context: [
+        `Garment images: the ${count} garment images show different views of ONE garment, for example front, back and side. Use them together as evidence about a single item. Do not treat them as separate garments or as an outfit.`,
+        'If the garment images do not appear to show the same item, say so in the affected reasons and lower the confidence of those dimensions.',
+      ],
+      format: [],
+    }
+  }
+  // Kept short on purpose: the whole prompt text must stay within maxTextInputTokens, the bound the
+  // spend reservation is computed from (tests/core/garmentModes.test.ts measures the worst case).
+  return {
+    context: [
+      `Garment images: the ${count} garment images show ${count} DIFFERENT items worn together as one outfit. Rate every dimension for the combined outfit as a whole.`,
+    ],
+    format: [
+      'For this request, add "outfit_components" to the "complete" shape: one object per garment image, in image order: {"item":1,"garment_type":"","assessment":"","note":""}. garment_type uses the list above; assessment is Works well|Works|Needs attention|Unable to tell (how the item works within the outfit for the occasion); note is one sentence.',
+      'outfit_components is advisory only and never replaces or changes the six ratings. The rules for reasons apply to it too.',
+    ],
+  }
+}
+
 export function buildUserContext(
   occasion: string,
   styleProfile: StyleProfile,
-  aiStyleProfile?: AIStyleProfile
+  aiStyleProfile?: AIStyleProfile,
+  garments?: GarmentContext
 ): string {
   const lines = [
     'Analyze the person image and garment image together for the supplied context.',
@@ -102,6 +145,9 @@ export function buildUserContext(
     }
   }
 
+  const garmentLines = garmentModeLines(garments)
+  lines.push(...garmentLines.context)
+
   lines.push(
     'For status "complete", return exactly this raw JSON shape and no additional fields:',
     '{"status":"complete","dimensions":{"occasion":{"rating":"","reason":"","confidence":""},"color":{"rating":"","reason":"","confidence":""},"formality":{"rating":"","reason":"","confidence":""},"seasonality":{"rating":"","reason":"","confidence":""},"style":{"rating":"","reason":"","confidence":""},"style_preference_match":{"rating":"","reason":"","confidence":""}},"shopping_advisor":{"recommendations":[]}}',
@@ -112,19 +158,41 @@ export function buildUserContext(
     'For status "unable_to_analyze", return exactly: {"status":"unable_to_analyze","reason":"","confidence":"Low","next_step":""}.',
     'Return one JSON object only.',
   )
+  // Mode-specific format lines go just before the closing line, which stays last.
+  if (garmentLines.format.length > 0) lines.splice(lines.length - 1, 0, ...garmentLines.format)
 
   return lines.join('\n')
 }
 
-/** The user message of an analysis request. The same builder is used for the real call and for the prompt version. */
-export function buildAnalysisContent(userContext: string, photoDataUrl: string, garmentDataUrl: string): InputContentPart[] {
-  return [
+function garmentImageLabel(mode: GarmentMode, index: number, count: number): string {
+  if (mode === 'same_garment_views') return `Garment image ${index + 1} of ${count} (a view of the same garment):`
+  return `Garment image ${index + 1} of ${count} (outfit item ${index + 1}):`
+}
+
+/**
+ * The user message of an analysis request. The same builder is used for the real call and for the prompt version.
+ * With one garment image the message is exactly what it was before multiple images existed.
+ */
+export function buildAnalysisContent(
+  userContext: string,
+  photoDataUrl: string,
+  garmentDataUrls: string | readonly string[],
+  garmentMode: GarmentMode = 'single'
+): InputContentPart[] {
+  const garments = typeof garmentDataUrls === 'string' ? [garmentDataUrls] : garmentDataUrls
+  const content: InputContentPart[] = [
     { type: 'input_text', text: userContext },
     { type: 'input_text', text: 'Person image:' },
     { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
-    { type: 'input_text', text: 'Garment image:' },
-    { type: 'input_image', image_url: garmentDataUrl, detail: 'high' },
   ]
+  if (garmentMode === 'single') {
+    content.push({ type: 'input_text', text: 'Garment image:' }, { type: 'input_image', image_url: garments[0], detail: 'high' })
+    return content
+  }
+  garments.forEach((dataUrl, index) => {
+    content.push({ type: 'input_text', text: garmentImageLabel(garmentMode, index, garments.length) }, { type: 'input_image', image_url: dataUrl, detail: 'high' })
+  })
+  return content
 }
 
 // Placeholder inputs for fingerprinting. Every optional context line is switched
@@ -142,20 +210,28 @@ const TEMPLATE_AI_PROFILE = {
  * Fingerprint of the analysis prompt template: the system prompt plus the user
  * message as built with and without Style DNA context, with placeholders in
  * place of user data and images.
+ *
+ * Each garment mode has its own template, and so its own version. The version
+ * for one garment image is computed exactly as before, so it did not change when
+ * the multi-image modes were added. The multi-image templates are fingerprinted
+ * with the largest number of garment images.
  */
-export function computeAnalysisPromptVersion(instructions: string): string {
-  const withoutProfile = buildAnalysisContent(buildUserContext(TEMPLATE_OCCASION, TEMPLATE_STYLE_PROFILE), IMAGE_PLACEHOLDER, IMAGE_PLACEHOLDER)
+export function computeAnalysisPromptVersion(instructions: string, garmentMode: GarmentMode = 'single'): string {
+  const garments: GarmentContext | undefined = garmentMode === 'single' ? undefined : { mode: garmentMode, count: MAX_GARMENT_IMAGES }
+  const images = garmentMode === 'single' ? IMAGE_PLACEHOLDER : Array.from({ length: MAX_GARMENT_IMAGES }, () => IMAGE_PLACEHOLDER)
+  const withoutProfile = buildAnalysisContent(buildUserContext(TEMPLATE_OCCASION, TEMPLATE_STYLE_PROFILE, undefined, garments), IMAGE_PLACEHOLDER, images, garmentMode)
   const withProfile = buildAnalysisContent(
-    buildUserContext(TEMPLATE_OCCASION, TEMPLATE_STYLE_PROFILE, TEMPLATE_AI_PROFILE),
+    buildUserContext(TEMPLATE_OCCASION, TEMPLATE_STYLE_PROFILE, TEMPLATE_AI_PROFILE, garments),
     IMAGE_PLACEHOLDER,
-    IMAGE_PLACEHOLDER
+    images,
+    garmentMode
   )
   return fingerprint([instructions, JSON.stringify(withoutProfile), JSON.stringify(withProfile)])
 }
 
 /** Version of the analysis prompt currently on disk, for benchmark and evaluation records. */
-export async function getAnalysisPromptVersion(): Promise<string> {
-  return computeAnalysisPromptVersion(await loadSystemPrompt())
+export async function getAnalysisPromptVersion(garmentMode: GarmentMode = 'single'): Promise<string> {
+  return computeAnalysisPromptVersion(await loadSystemPrompt(), garmentMode)
 }
 
 function logConfigIssue(requestId: string | undefined, configIssue: ConfigIssue): void {
@@ -170,6 +246,8 @@ function logConfigIssue(requestId: string | undefined, configIssue: ConfigIssue)
 export async function analyzeWithOpenAI({
   photo,
   garment,
+  extraGarments = [],
+  garmentMode = 'single',
   occasion,
   styleProfile,
   aiStyleProfile,
@@ -207,27 +285,31 @@ export async function analyzeWithOpenAI({
     )
   }
 
+  // The mode and the number of images must agree. The API route validates this first; this is the last line of defence.
+  const garments = [garment, ...extraGarments]
+  if (garmentCountProblem(garmentMode, garments.length) !== null) {
+    throw new OpenAIAnalysisError('api_error', 'The garment images do not fit the selected garment mode.')
+  }
+
   let photoDataUrl: string
-  let garmentDataUrl: string
+  let garmentDataUrls: string[]
   try {
-    [photoDataUrl, garmentDataUrl] = await Promise.all([
-      fileToDataUrl(photo),
-      fileToDataUrl(garment),
-    ])
+    [photoDataUrl, ...garmentDataUrls] = await Promise.all([fileToDataUrl(photo), ...garments.map(fileToDataUrl)])
   } catch {
     throw new OpenAIAnalysisError('api_error', 'The uploaded images could not be prepared.')
   }
+  const garmentContext: GarmentContext | undefined = garmentMode === 'single' ? undefined : { mode: garmentMode, count: garments.length }
 
   return callResponsesApi({
     operation: 'analysis',
     apiKey,
     modelConfig,
     instructions,
-    content: buildAnalysisContent(buildUserContext(occasion, styleProfile, aiStyleProfile), photoDataUrl, garmentDataUrl),
+    content: buildAnalysisContent(buildUserContext(occasion, styleProfile, aiStyleProfile, garmentContext), photoDataUrl, garmentDataUrls, garmentMode),
     validate: validateRawOpenAIAnalysis,
     outcomeOf: (result) => result.status,
     requestId,
-    promptVersion: computeAnalysisPromptVersion(instructions),
+    promptVersion: computeAnalysisPromptVersion(instructions, garmentMode),
     schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION,
     analysisMode,
     overrides: runOverrides,

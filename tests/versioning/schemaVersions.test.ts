@@ -10,12 +10,15 @@
 import { z } from 'zod'
 import { aiStyleProfileResultSchema, PROFILE_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/aiStyleProfileSchema'
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION, rawOpenAIAnalysisSchema } from '@/lib/services/openai/openAIAnalysisSchema'
+import { outfitComponentsPayloadSchema } from '@/lib/services/openai/outfitComponentsSchema'
 import { shoppingAdvisorPayloadSchema } from '@/lib/services/openai/shoppingRecommendationSchema'
 import { describeSchema, schemaFingerprint } from '../helpers/zodFingerprint'
 
 /** version → fingerprint. Add a new line when a schema changes; never edit an old one. */
 const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   'analysis-output/1': '2e81c731e418',
+  // Adds the optional outfit_components block (several outfit items) and its schema.
+  'analysis-output/2': '2bf1446af120',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {
@@ -25,8 +28,8 @@ const PROFILE_FINGERPRINTS: Record<string, string> = {
 const HOW_TO_FIX = 'The schema changed. Bump the version constant next to the schema and record the new fingerprint in this file.'
 
 describe('output schema versions', () => {
-  it('the analysis output version matches the analysis and shopping schemas', () => {
-    const actual = schemaFingerprint(rawOpenAIAnalysisSchema, shoppingAdvisorPayloadSchema)
+  it('the analysis output version matches the analysis, shopping and outfit component schemas', () => {
+    const actual = schemaFingerprint(rawOpenAIAnalysisSchema, shoppingAdvisorPayloadSchema, outfitComponentsPayloadSchema)
     expect({ version: ANALYSIS_OUTPUT_SCHEMA_VERSION, fingerprint: actual, note: HOW_TO_FIX }).toEqual({
       version: ANALYSIS_OUTPUT_SCHEMA_VERSION,
       fingerprint: ANALYSIS_FINGERPRINTS[ANALYSIS_OUTPUT_SCHEMA_VERSION],

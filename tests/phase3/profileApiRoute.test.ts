@@ -8,19 +8,13 @@ import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals
 jest.mock('server-only', () => ({}), { virtual: true })
 
 import { POST } from '@/app/api/[[...path]]/route'
+import { realPng } from '../helpers/realImages'
 
 const originalEnv = { ...process.env }
 
+// A real, decodable picture: the API decodes every upload, so a header-only file would be rejected.
 function makeValidPng(): File {
-  const buffer = new ArrayBuffer(33)
-  const bytes = new Uint8Array(buffer)
-  const view = new DataView(buffer)
-  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
-  view.setUint32(8, 13)
-  bytes.set([0x49, 0x48, 0x44, 0x52], 12)
-  view.setUint32(16, 800)
-  view.setUint32(20, 800)
-  return new File([buffer], 'profile.png', { type: 'image/png' })
+  return realPng(800, 800, 'profile.png')
 }
 
 async function postProfile(formData = new FormData()) {

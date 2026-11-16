@@ -31,6 +31,9 @@ const completeAnalysisSchema = z.object({
   dimensions: dimensionsSchema,
   // Advisory output is validated separately so it cannot invalidate core analysis.
   shopping_advisor: z.unknown().optional(),
+  // Per-item notes for an outfit of several garment images. Advisory, validated
+  // separately for the same reason (lib/services/openai/outfitComponentsSchema.ts).
+  outfit_components: z.unknown().optional(),
 }).strict()
 
 const unableToAnalyzeSchema = z.object({
@@ -42,11 +45,15 @@ const unableToAnalyzeSchema = z.object({
 
 /**
  * Version of the analysis output contract (this schema together with the
- * shopping recommendation schema). Bump it whenever either schema changes;
- * tests/versioning/schemaVersions.test.ts fails until the version and its
- * recorded fingerprint are updated together.
+ * shopping recommendation and outfit component schemas). Bump it whenever one
+ * of them changes; tests/versioning/schemaVersions.test.ts fails until the
+ * version and its recorded fingerprint are updated together.
+ *
+ * - analysis-output/1: ratings plus the optional shopping advisor.
+ * - analysis-output/2: adds the optional `outfit_components` block for outfits
+ *   made of several garment images. Every /1 output is still a valid /2 output.
  */
-export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/1'
+export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/2'
 
 export const rawOpenAIAnalysisSchema = z.discriminatedUnion('status', [
   completeAnalysisSchema,

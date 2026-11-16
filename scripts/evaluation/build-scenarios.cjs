@@ -167,8 +167,15 @@ const CASES = [
   { id: 'sc-views-not-the-same-item', scenario: 'garment_views', category: 'ambiguous_detail', occasion: 'Business Lunch', description: 'Photos given as views of one garment appear to show two different items; the evidence is contradictory.', g: 'item shown in conflicting photos', r: 'GUGGUG', c: 'LLLLLM', bands: [], profile: 'minimal', mode: 'same_garment_views', extra: 1, uncertainty: { unrated: ['color', 'style'], max_high_confidence_dimensions: 0 }, notes: { style: 'The photos do not appear to show the same item, so the look as a whole cannot be judged.' } },
 
   // --- Several items forming one outfit ---------------------------------------------------
-  { id: 'sc-outfit-shirt-trousers-jacket', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Client Meeting', description: 'Shirt, trousers and jacket photographed separately; a coherent business outfit.', g: 'shirt, trousers and jacket', r: 'EGEGEG', bands: [HR, R], profile: 'classic', mode: 'outfit_items', extra: 2 },
-  { id: 'sc-outfit-blazer-with-sport-shorts', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Business Lunch', description: 'A blazer combined with athletic shorts; the items do not belong to the same level of formality.', g: 'blazer and athletic shorts', r: 'FGPGPG', bands: [CA, NR], profile: 'minimal', mode: 'outfit_items', extra: 1, notes: { style: 'The two items pull in different directions: one is tailored and the other is sportswear.' } },
+  { id: 'sc-outfit-shirt-trousers-jacket', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Client Meeting', description: 'Shirt, trousers and jacket photographed separately; a coherent business outfit.', g: 'shirt, trousers and jacket', r: 'EGEGEG', bands: [HR, R], profile: 'classic', mode: 'outfit_items', extra: 2, components: [
+    { item: 1, garment_type: 'top', assessment: 'Works well', note: 'The shirt sets a suitably formal base for a client meeting.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Works well', note: 'The trousers match the formality of the other two items.' },
+    { item: 3, garment_type: 'outerwear', assessment: 'Works', note: 'The jacket completes the outfit, in a slightly different tone from the trousers.' },
+  ] },
+  { id: 'sc-outfit-blazer-with-sport-shorts', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Business Lunch', description: 'A blazer combined with athletic shorts; the items do not belong to the same level of formality.', g: 'blazer and athletic shorts', r: 'FGPGPG', bands: [CA, NR], profile: 'minimal', mode: 'outfit_items', extra: 1, notes: { style: 'The two items pull in different directions: one is tailored and the other is sportswear.' }, components: [
+    { item: 1, garment_type: 'outerwear', assessment: 'Works', note: 'The blazer on its own is in keeping with a business lunch.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Needs attention', note: 'The athletic shorts are far more casual than the blazer and the occasion.' },
+  ] },
 
   // --- Ambiguous or unsupported visual detail -------------------------------------------------
   { id: 'sc-ambig-fabric-weight-unknown', scenario: 'ambiguous_detail', category: 'ambiguous_detail', occasion: 'Winter Event', description: 'The thickness of the coat cannot be determined from the photo.', g: 'long coat', r: 'GGGFGG', c: 'HHHLHH', bands: [R, HR, CA], profile: 'classic', uncertainty: { low_confidence_or_unrated: ['seasonality'] }, notes: { seasonality: 'The thickness of the coat cannot be told from the photo, so its suitability for cold weather is uncertain.' } },
@@ -242,6 +249,8 @@ function buildOutput(definition) {
   if (definition.abstain) return { status: 'unable_to_analyze', reason: definition.abstain.reason, confidence: 'Low', next_step: definition.abstain.next_step }
   const output = { status: 'complete', dimensions: dimensions(definition.r, definition.c ?? 'HHHHHH', definition.g, definition.occasion, definition.notes) }
   if (definition.advisor) output.shopping_advisor = definition.advisor
+  // Per-item notes exist only for outfits of several items. They are advisory and never reach the verdict.
+  if (definition.components) output.outfit_components = definition.components
   return output
 }
 
@@ -282,7 +291,7 @@ function build() {
     reasoning_effort: 'low',
     max_output_tokens: 4000,
     prompt_version: '000000000000',
-    schema_version: 'analysis-output/1',
+    schema_version: 'analysis-output/2',
     dataset_fingerprint: datasetFingerprint(cases),
     entries,
   }

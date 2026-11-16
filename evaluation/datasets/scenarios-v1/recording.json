@@ -5,7 +5,7 @@
   "reasoning_effort": "low",
   "max_output_tokens": 4000,
   "prompt_version": "000000000000",
-  "schema_version": "analysis-output/1",
+  "schema_version": "analysis-output/2",
   "dataset_fingerprint": "356564d74840",
   "entries": [
     {
@@ -2786,7 +2786,21 @@
             "reason": "The blazer and athletic shorts is broadly in line with the stated style preferences.",
             "confidence": "High"
           }
-        }
+        },
+        "outfit_components": [
+          {
+            "item": 1,
+            "garment_type": "outerwear",
+            "assessment": "Works",
+            "note": "The blazer on its own is in keeping with a business lunch."
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "assessment": "Needs attention",
+            "note": "The athletic shorts are far more casual than the blazer and the occasion."
+          }
+        ]
       }
     },
     {
@@ -2827,7 +2841,21 @@
             "reason": "The blazer and athletic shorts is broadly in line with the stated style preferences.",
             "confidence": "High"
           }
-        }
+        },
+        "outfit_components": [
+          {
+            "item": 1,
+            "garment_type": "outerwear",
+            "assessment": "Works",
+            "note": "The blazer on its own is in keeping with a business lunch."
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "assessment": "Needs attention",
+            "note": "The athletic shorts are far more casual than the blazer and the occasion."
+          }
+        ]
       }
     },
     {
@@ -2868,7 +2896,27 @@
             "reason": "The shirt, trousers and jacket is broadly in line with the stated style preferences.",
             "confidence": "High"
           }
-        }
+        },
+        "outfit_components": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "assessment": "Works well",
+            "note": "The shirt sets a suitably formal base for a client meeting."
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "assessment": "Works well",
+            "note": "The trousers match the formality of the other two items."
+          },
+          {
+            "item": 3,
+            "garment_type": "outerwear",
+            "assessment": "Works",
+            "note": "The jacket completes the outfit, in a slightly different tone from the trousers."
+          }
+        ]
       }
     },
     {
@@ -2909,7 +2957,27 @@
             "reason": "The shirt, trousers and jacket is broadly in line with the stated style preferences.",
             "confidence": "High"
           }
-        }
+        },
+        "outfit_components": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "assessment": "Works well",
+            "note": "The shirt sets a suitably formal base for a client meeting."
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "assessment": "Works well",
+            "note": "The trousers match the formality of the other two items."
+          },
+          {
+            "item": 3,
+            "garment_type": "outerwear",
+            "assessment": "Works",
+            "note": "The jacket completes the outfit, in a slightly different tone from the trousers."
+          }
+        ]
       }
     },
     {

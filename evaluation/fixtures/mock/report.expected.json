@@ -643,7 +643,7 @@
     "prompt_version": "aaaaaaaaaaaa",
     "same_prompt_as_recording": false,
     "same_schema_as_recording": true,
-    "schema_version": "analysis-output/1"
+    "schema_version": "analysis-output/2"
   },
   "interpretation": "Hand-written fixture outputs. This report checks that the evaluation harness and the deterministic verdict code behave as intended. It says nothing about model quality.",
   "metrics": {
@@ -765,7 +765,7 @@
     "model": "gpt-6.1-terra",
     "prompt_version": "000000000000",
     "reasoning_effort": "low",
-    "schema_version": "analysis-output/1"
+    "schema_version": "analysis-output/2"
   },
   "summary": {
     "failed": 6,
