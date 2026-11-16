@@ -1,158 +1,243 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import Image from 'next/image'
-import { AnimatePresence, motion } from 'framer-motion'
-import { toast } from 'sonner'
-import { X, UploadCloud, CheckCircle2 } from 'lucide-react'
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent, type MouseEvent } from 'react'
+import { AlertCircle, Camera, ImagePlus, LoaderCircle, RefreshCw, UploadCloud, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { validateImageMeta } from '@/lib/services/analysisService'
+import {
+  imagePreparationMessage,
+  prepareImageForUpload,
+  type BelowMinimumPolicy,
+} from '@/lib/images/prepareImageForUpload'
 
 interface UploadCardProps {
   label: string
   description: string
+  /** The prepared image held by the parent, or null. */
   file: File | null
+  /** Which camera a phone should open: 'user' (front) for selfies, 'environment' (rear) for garments. */
+  captureMode: 'user' | 'environment'
+  /** What to do with a photo under 512 px on either side. Default: enlarge it just enough. */
+  belowMinimum?: BelowMinimumPolicy
+  /** Receives the prepared JPEG. The original file is never passed on. */
   onFileSelect: (file: File) => void
   onRemove: () => void
+  disabled?: boolean
 }
 
-export default function UploadCard({ label, description, file, onFileSelect, onRemove }: UploadCardProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+// The capture attribute only does something on phones and tablets; on a desktop
+// it would open the same file dialog as the gallery button.
+const TOUCH_ONLY = 'hidden [@media(pointer:coarse)]:inline-flex'
+const POINTER_ONLY = 'hidden [@media(pointer:fine)]:block'
+
+/**
+ * Photo picker with a camera button and a separate gallery/file button.
+ *
+ * Uses native file inputs only. A chosen photo is prepared in the browser
+ * (oriented, resized, re-encoded as JPEG) and held in memory; nothing is
+ * uploaded or stored until the parent submits it.
+ */
+export default function UploadCard({
+  label,
+  description,
+  file,
+  captureMode,
+  belowMinimum,
+  onFileSelect,
+  onRemove,
+  disabled = false,
+}: UploadCardProps) {
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
+  const preparationRef = useRef<AbortController | null>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [isPreparing, setIsPreparing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [justUploaded, setJustUploaded] = useState(false)
 
-  function handleFiles(files: FileList | null) {
-    if (!files || files.length === 0) return
-    const selected = files[0]
-
-    const check = validateImageMeta({ name: selected.name, type: selected.type, size: selected.size })
-    if (!check.valid) {
-      toast.error(check.message ?? 'That file cannot be used.')
-      if (inputRef.current) inputRef.current.value = ''
+  // One object URL per file, revoked when the file changes or the card unmounts.
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(null)
       return
     }
+    const url = URL.createObjectURL(file)
+    setPreviewUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [file])
 
-    if (previewUrl) URL.revokeObjectURL(previewUrl)
-    setPreviewUrl(URL.createObjectURL(selected))
-    onFileSelect(selected)
-    setJustUploaded(true)
-    setTimeout(() => setJustUploaded(false), 1600)
-  }
+  // Stop any preparation still running when the card goes away.
+  useEffect(() => () => preparationRef.current?.abort(), [])
 
-  function handleRemove(e: React.MouseEvent | React.KeyboardEvent) {
-    e.stopPropagation()
-    if (previewUrl) URL.revokeObjectURL(previewUrl)
-    setPreviewUrl(null)
-    onRemove()
-    if (inputRef.current) inputRef.current.value = ''
-  }
+  async function handleSelected(selected: File | undefined) {
+    if (!selected || disabled) return
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      inputRef.current?.click()
+    preparationRef.current?.abort()
+    const controller = new AbortController()
+    preparationRef.current = controller
+
+    setError(null)
+    // The previous photo is replaced, never silently kept while a new one is prepared.
+    if (file) onRemove()
+    setIsPreparing(true)
+
+    try {
+      const prepared = await prepareImageForUpload(selected, { belowMinimum, signal: controller.signal })
+      if (!controller.signal.aborted) onFileSelect(prepared.file)
+    } catch (preparationError) {
+      if (!controller.signal.aborted) setError(imagePreparationMessage(preparationError))
+    } finally {
+      if (preparationRef.current === controller) {
+        preparationRef.current = null
+        setIsPreparing(false)
+      }
     }
   }
 
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const selected = event.target.files?.[0]
+    // Reset so choosing or retaking the same photo fires another change event.
+    event.target.value = ''
+    void handleSelected(selected)
+  }
+
+  function openCamera(event: MouseEvent) {
+    event.stopPropagation()
+    cameraInputRef.current?.click()
+  }
+
+  function openGallery(event?: MouseEvent) {
+    event?.stopPropagation()
+    galleryInputRef.current?.click()
+  }
+
+  function handleRemove(event: MouseEvent) {
+    event.stopPropagation()
+    preparationRef.current?.abort()
+    preparationRef.current = null
+    setIsPreparing(false)
+    setError(null)
+    onRemove()
+  }
+
+  function handleDrop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault()
+    setIsDragging(false)
+    void handleSelected(event.dataTransfer.files?.[0])
+  }
+
+  const hasPreview = Boolean(file && previewUrl) && !isPreparing
+  const isEmpty = !hasPreview && !isPreparing
+  const controlsDisabled = disabled || isPreparing
+
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-label={file ? `${label} uploaded. Press Enter to replace.` : `Upload ${label}`}
-      onClick={() => inputRef.current?.click()}
-      onKeyDown={handleKeyDown}
-      onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
-      onDragLeave={() => setIsDragging(false)}
-      onDrop={(e) => { e.preventDefault(); setIsDragging(false); handleFiles(e.dataTransfer.files) }}
-      className={cn(
-        'group focus-ring relative flex min-h-[240px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center transition-all duration-300',
-        isDragging ? 'scale-[1.01] border-primary bg-primary/5 shadow-lg shadow-primary/10' : 'hover:border-primary/50 hover:bg-card'
-      )}
-    >
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="hidden"
-        aria-hidden="true"
-        tabIndex={-1}
-        onChange={(e) => handleFiles(e.target.files)}
-      />
-      <AnimatePresence mode="wait">
-        {file && previewUrl ? (
-          <motion.div
-            key="preview"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
-            className="relative w-full"
-          >
-            <div className="relative h-44 w-full overflow-hidden rounded-xl">
-              <Image src={previewUrl} alt={`${label} preview`} fill className="object-cover" unoptimized />
-              <AnimatePresence>
-                {justUploaded && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 flex items-center justify-center bg-background/60"
-                  >
-                    <motion.div
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 18 }}
-                      className="flex items-center gap-1.5 rounded-full bg-emerald-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-lg"
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> Uploaded
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+    <div>
+      <div
+        data-testid="upload-card"
+        aria-busy={isPreparing}
+        onClick={isEmpty && !disabled ? () => openGallery() : undefined}
+        onDragOver={(event) => { event.preventDefault(); if (!disabled) setIsDragging(true) }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={handleDrop}
+        className={cn(
+          'group relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center transition-all duration-300',
+          isEmpty && !disabled && 'cursor-pointer hover:border-primary/50 hover:bg-card',
+          isDragging && 'scale-[1.01] border-primary bg-primary/5 shadow-lg shadow-primary/10'
+        )}
+      >
+        {/* Camera: `capture` asks a phone to open its camera directly. */}
+        <input
+          ref={cameraInputRef}
+          data-testid="upload-camera-input"
+          type="file"
+          accept="image/*"
+          capture={captureMode}
+          className="sr-only"
+          aria-label={`Take a photo for ${label}`}
+          tabIndex={-1}
+          disabled={disabled}
+          onClick={(event) => event.stopPropagation()}
+          onChange={handleInputChange}
+        />
+        {/* Gallery or files: no `capture`, so the device's picker opens. */}
+        <input
+          ref={galleryInputRef}
+          data-testid="upload-gallery-input"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          aria-label={`Choose a photo for ${label}`}
+          tabIndex={-1}
+          disabled={disabled}
+          onClick={(event) => event.stopPropagation()}
+          onChange={handleInputChange}
+        />
+
+        {isPreparing && (
+          <div role="status" aria-live="polite" className="flex flex-col items-center">
+            <LoaderCircle className="h-7 w-7 animate-spin text-primary" aria-hidden="true" />
+            <p className="mt-3 text-sm font-medium text-foreground">Preparing your photo…</p>
+            <p className="mt-1 text-xs text-muted-foreground">This happens on your device. Nothing is uploaded yet.</p>
+            <Button type="button" size="sm" variant="ghost" className="focus-ring mt-3" onClick={handleRemove}>
+              Cancel
+            </Button>
+          </div>
+        )}
+
+        {hasPreview && file && previewUrl && (
+          <div className="w-full">
+            <div className="relative h-44 w-full overflow-hidden rounded-xl bg-secondary/40">
+              {/* A plain <img>: the source is an in-memory blob URL, not a remote image. */}
+              <img src={previewUrl} alt={`${label} preview`} className="h-full w-full object-cover" />
             </div>
             <p className="mt-3 max-w-full truncate text-xs text-muted-foreground">{file.name}</p>
-            <button
-              onClick={handleRemove}
-              onKeyDown={(e) => e.key === 'Enter' && handleRemove(e)}
-              aria-label={`Remove ${label}`}
-              className="focus-ring absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-md transition-transform hover:scale-110"
-              type="button"
-            >
-              <X className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex flex-col items-center"
-          >
-            <motion.div
-              animate={isDragging ? { scale: 1.1 } : { scale: 1 }}
-              className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary transition-colors group-hover:bg-primary/10"
-            >
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              <Button type="button" size="sm" variant="outline" className={cn('focus-ring', TOUCH_ONLY)} disabled={controlsDisabled} onClick={openCamera}>
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" /> Retake
+              </Button>
+              <Button type="button" size="sm" variant="outline" className="focus-ring" disabled={controlsDisabled} onClick={openGallery}>
+                <ImagePlus className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" /> Choose another
+              </Button>
+              <Button type="button" size="sm" variant="ghost" className="focus-ring" disabled={disabled} onClick={handleRemove} aria-label={`Remove ${label}`}>
+                <X className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" /> Remove
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isEmpty && (
+          <div className="flex flex-col items-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary transition-colors group-hover:bg-primary/10">
               <UploadCloud className="h-6 w-6 text-primary" aria-hidden="true" />
-            </motion.div>
+            </div>
             <p className="font-medium text-foreground">{label}</p>
             <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-            <p className="mt-1.5 text-xs text-muted-foreground/70">Drag and drop, or click to browse</p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              <Button type="button" size="sm" className={cn('focus-ring', TOUCH_ONLY)} disabled={controlsDisabled} onClick={openCamera}>
+                <Camera className="mr-1.5 h-4 w-4" aria-hidden="true" /> Take photo
+              </Button>
+              <Button type="button" size="sm" variant="outline" className="focus-ring" disabled={controlsDisabled} onClick={openGallery}>
+                <ImagePlus className="mr-1.5 h-4 w-4" aria-hidden="true" /> Choose from gallery
+              </Button>
+            </div>
+            <p className={cn('mt-2 text-xs text-muted-foreground/70', POINTER_ONLY)}>or drag and drop a photo here</p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
-              {['JPEG', 'PNG', 'WEBP'].map((t) => (
-                <span key={t} className="rounded-full border border-border bg-secondary/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                  {t}
+              {['JPEG', 'PNG', 'WEBP', 'Up to 25MB'].map((chip) => (
+                <span key={chip} className="rounded-full border border-border bg-secondary/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  {chip}
                 </span>
               ))}
-              <span className="rounded-full border border-border bg-secondary/50 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                Up to 10MB
-              </span>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
+
+      {error && (
+        <p role="alert" className="mt-3 flex items-start gap-2 text-left text-sm text-destructive">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          {error}
+        </p>
+      )}
     </div>
   )
 }

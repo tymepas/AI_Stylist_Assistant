@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ImageOff, HelpCircle, LucideIcon, ArrowLeft, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react'
+import { ImageOff, HelpCircle, LucideIcon, ArrowLeft, ArrowRight, Sparkles, CheckCircle2, WifiOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import UploadCard from '@/components/fashion/UploadCard'
@@ -14,6 +14,9 @@ import StepIndicator from '@/components/fashion/StepIndicator'
 import StepTips from '@/components/fashion/StepTips'
 import { OCCASION_GROUPS } from '@/lib/constants/options'
 import { validateImageMeta } from '@/lib/services/analysisService'
+import { utf8ByteLength } from '@/lib/services/requestLimits'
+import { postFormData, type UploadFailureKind } from '@/lib/services/uploadRequest'
+import { isWithinRequestBudget } from '@/lib/images/prepareImageForUpload'
 import { emptyProfile, getProfile } from '@/lib/services/styleProfileService'
 import { getProfile as getAIStyleProfile } from '@/lib/services/aiStyleProfileService'
 import type { AIStyleProfile } from '@/types/schema'
@@ -31,7 +34,6 @@ const STEPS = [{ label: 'Your Photo' }, { label: 'Garment' }, { label: 'Occasion
 
 const PHOTO_TIPS = ['Use natural, even lighting', 'Face the camera directly, torso visible', 'Avoid heavy filters or busy backgrounds']
 const GARMENT_TIPS = ['Lay flat or hang the garment', 'Capture the full item in frame', 'Use a plain, uncluttered background']
-const MIN_ANALYSIS_DIMENSION = 512
 
 function formatStyleDNADate(value: string): string {
   const date = new Date(value)
@@ -43,37 +45,15 @@ function toImageMeta(file: File): ImageMeta {
   return { name: file.name, type: file.type, size: file.size }
 }
 
-/** Returns the original File unless its shorter side needs upscaling for analysis. */
-async function prepareImageForAnalysis(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file)
+function iconForFailure(kind: UploadFailureKind): LucideIcon | undefined {
+  if (kind === 'invalid_request' || kind === 'payload_too_large') return ImageOff
+  if (kind === 'offline' || kind === 'network') return WifiOff
+  return undefined
+}
 
-  try {
-    if (bitmap.width >= MIN_ANALYSIS_DIMENSION && bitmap.height >= MIN_ANALYSIS_DIMENSION) {
-      return file
-    }
-
-    const scale = Math.max(MIN_ANALYSIS_DIMENSION / bitmap.width, MIN_ANALYSIS_DIMENSION / bitmap.height)
-    const width = Math.ceil(bitmap.width * scale)
-    const height = Math.ceil(bitmap.height * scale)
-    const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('Unable to prepare image.')
-    context.imageSmoothingEnabled = true
-    context.imageSmoothingQuality = 'high'
-    context.drawImage(bitmap, 0, 0, width, height)
-
-    const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob(resolve, file.type, file.type === 'image/png' ? undefined : 0.92)
-    })
-    if (!blob) throw new Error('Unable to prepare image.')
-
-    return new File([blob], file.name, { type: blob.type, lastModified: file.lastModified })
-  } finally {
-    bitmap.close()
-  }
+function isAnalysisResult(value: unknown): value is AnalysisResult {
+  const status = (value as { status?: unknown } | null)?.status
+  return status === 'complete' || status === 'unable_to_analyze'
 }
 
 /** Generates a stable object URL for a file and revokes the previous one. */
@@ -103,6 +83,10 @@ export default function AnalysisPage() {
   const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
   const [aiStyleProfile, setAIStyleProfile] = useState<AIStyleProfile | null>(null)
   const [profilePromptDismissed, setProfilePromptDismissed] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  // A ref as well as state: two submissions in the same tick both read the current value.
+  const submittingRef = useRef(false)
+  const requestRef = useRef<AbortController | null>(null)
 
   const photoThumbnailUrl = useObjectURL(photo)
 
@@ -112,7 +96,12 @@ export default function AnalysisPage() {
     setProfilePromptDismissed(window.localStorage.getItem('verdict_profile_prompt_dismissed') === 'true')
   }, [])
 
+  // Leaving the page stops waiting for an in-flight analysis.
+  useEffect(() => () => requestRef.current?.abort(), [])
+
   async function handleAnalyze() {
+    if (submittingRef.current) return
+
     if (!photo || !garment || !occasion) {
       setErrorInfo({
         title: 'Missing Information',
@@ -122,59 +111,68 @@ export default function AnalysisPage() {
       return
     }
 
-    const photoMeta = toImageMeta(photo)
-    const garmentMeta = toImageMeta(garment)
-
-    const photoCheck = validateImageMeta(photoMeta)
+    // Both files were already prepared in the browser (resized, re-encoded as JPEG).
+    const photoCheck = validateImageMeta(toImageMeta(photo))
     if (!photoCheck.valid) {
       setErrorInfo({ title: 'Invalid Upload', message: `Personal photo: ${photoCheck.message}`, icon: ImageOff })
       setStage('error')
       return
     }
-    const garmentCheck = validateImageMeta(garmentMeta)
+    const garmentCheck = validateImageMeta(toImageMeta(garment))
     if (!garmentCheck.valid) {
       setErrorInfo({ title: 'Invalid Upload', message: `Garment photo: ${garmentCheck.message}`, icon: ImageOff })
       setStage('error')
       return
     }
 
+    const styleProfileJson = JSON.stringify(getProfile() ?? emptyProfile)
+    const storedAIProfile = getAIStyleProfile()
+    const aiStyleProfileJson = storedAIProfile ? JSON.stringify(storedAIProfile) : null
+    const textBytes = utf8ByteLength(occasion) + utf8ByteLength(styleProfileJson) + (aiStyleProfileJson ? utf8ByteLength(aiStyleProfileJson) : 0)
+
+    // The hosting platform rejects request bodies above 4.5 MB before our API runs.
+    if (!isWithinRequestBudget([photo.size, garment.size], textBytes)) {
+      setErrorInfo({
+        title: 'Photos Too Large',
+        message: 'Your photos are too large to send together. Please choose smaller photos and try again.',
+        icon: ImageOff,
+      })
+      setStage('error')
+      return
+    }
+
+    submittingRef.current = true
+    setIsSubmitting(true)
     setStage('loading')
+    const controller = new AbortController()
+    requestRef.current = controller
 
     try {
-
-      const analysisPhoto = await prepareImageForAnalysis(photo)
-      const analysisGarment = await prepareImageForAnalysis(garment)
-
-      const analysisPhotoCheck = validateImageMeta(toImageMeta(analysisPhoto))
-      if (!analysisPhotoCheck.valid) throw new Error(`Personal photo: ${analysisPhotoCheck.message}`)
-      const analysisGarmentCheck = validateImageMeta(toImageMeta(analysisGarment))
-      if (!analysisGarmentCheck.valid) throw new Error(`Garment photo: ${analysisGarmentCheck.message}`)
-
       const formData = new FormData()
       formData.append('occasion', occasion)
-      formData.append('photo', analysisPhoto)
-      formData.append('garment', analysisGarment)
-      formData.append('styleProfile', JSON.stringify(getProfile() ?? emptyProfile))
-      const storedAIProfile = getAIStyleProfile()
-      if (storedAIProfile) formData.append('aiStyleProfile', JSON.stringify(storedAIProfile))
+      // Generic file names: the original name can be personal and the server does not need it.
+      formData.append('photo', photo, 'photo.jpg')
+      formData.append('garment', garment, 'garment.jpg')
+      formData.append('styleProfile', styleProfileJson)
+      if (aiStyleProfileJson) formData.append('aiStyleProfile', aiStyleProfileJson)
 
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        body: formData,
-      })
+      // One request, no automatic retry: every attempt is rate limited and may be billable.
+      const outcome = await postFormData('/api/analyze', formData, { signal: controller.signal })
+      if (controller.signal.aborted) return
 
-      if (!response.ok) {
-        const errBody = await response.json().catch(() => ({}))
-        setErrorInfo({
-          title: errBody.error === 'missing_image' ? 'Missing Information' : 'Invalid Upload',
-          message: errBody.message ?? 'Something went wrong while validating your upload.',
-          icon: ImageOff,
-        })
+      if (!outcome.ok) {
+        setErrorInfo({ title: outcome.title, message: outcome.message, icon: iconForFailure(outcome.kind) })
         setStage('error')
         return
       }
 
-      const data: AnalysisResult = await response.json()
+      if (!isAnalysisResult(outcome.data)) {
+        setErrorInfo({ title: 'Something Went Wrong', message: 'We received an unexpected response. Please try again.' })
+        setStage('error')
+        return
+      }
+
+      const data = outcome.data
 
       if (data.status === 'unable_to_analyze') {
         setErrorInfo({
@@ -188,12 +186,16 @@ export default function AnalysisPage() {
 
       setResult(data)
       setStage('result')
-    } catch (err) {
+    } catch {
       setErrorInfo({
         title: 'Something Went Wrong',
-        message: 'We could not reach the analysis service. Please check your connection and try again.',
+        message: 'We could not send your photos. Please try again.',
       })
       setStage('error')
+    } finally {
+      submittingRef.current = false
+      requestRef.current = null
+      setIsSubmitting(false)
     }
   }
 
@@ -279,6 +281,7 @@ export default function AnalysisPage() {
                 <UploadCard
                   label="Current Photo"
                   description="A clear, current photo of yourself"
+                  captureMode="user"
                   file={photo}
                   onFileSelect={setPhoto}
                   onRemove={() => setPhoto(null)}
@@ -300,6 +303,7 @@ export default function AnalysisPage() {
                 <UploadCard
                   label="Clothing Image"
                   description="The garment you're deciding on"
+                  captureMode="environment"
                   file={garment}
                   onFileSelect={setGarment}
                   onRemove={() => setGarment(null)}
@@ -389,7 +393,7 @@ export default function AnalysisPage() {
                 <Button size="lg" variant="ghost" className="focus-ring" onClick={() => setFormStep(2)}>
                   <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" /> Back
                 </Button>
-                <Button size="lg" className="focus-ring" disabled={!occasion} onClick={handleAnalyze}>
+                <Button size="lg" className="focus-ring" disabled={!occasion || isSubmitting} onClick={handleAnalyze}>
                   <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" /> Analyze
                 </Button>
               </div>

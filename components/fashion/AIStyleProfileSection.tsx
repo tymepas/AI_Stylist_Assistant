@@ -1,13 +1,13 @@
 'use client'
 
-import { ChangeEvent, DragEvent, type ComponentType, useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
-import { AlertCircle, CheckCircle2, ImagePlus, LoaderCircle, RefreshCw, ShieldCheck, Sparkles, Trash2, UploadCloud, X } from 'lucide-react'
+import { type ComponentType, useEffect, useRef, useState } from 'react'
+import { AlertCircle, CheckCircle2, ImagePlus, LoaderCircle, RefreshCw, ShieldCheck, Sparkles, Trash2 } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import AIProfileCard from '@/components/fashion/AIProfileCard'
-import { validateImageMeta } from '@/lib/services/analysisService'
+import UploadCard from '@/components/fashion/UploadCard'
+import { postFormData } from '@/lib/services/uploadRequest'
 import { clearProfile, getProfile, saveProfile } from '@/lib/services/aiStyleProfileService'
 import { validateAIStyleProfile } from '@/lib/services/openai/aiStyleProfileSchema'
 import type { AIStyleProfile, AIStyleProfileFailure } from '@/types/schema'
@@ -25,7 +25,6 @@ const ProfileDialogFooter = DialogFooter as ComponentType<any>
 const ProfileDialogHeader = DialogHeader as ComponentType<any>
 const ProfileDialogTitle = DialogTitle as ComponentType<any>
 
-const MIN_DIMENSION = 512
 const STYLE_DNA_LOADING_MESSAGES = [
   'Understanding your style...',
   'Identifying your coloring...',
@@ -40,44 +39,22 @@ function formatGeneratedAt(value: string): string {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
 }
 
-function getFriendlyError(status: number, body: { error?: string; message?: string }): string {
-  if (body.message) return body.message
-  if (status === 504) return 'The analysis took too long. Please try again.'
-  if (status === 429) return 'The analysis service is busy right now. Please wait a moment and try again.'
-  return 'We could not generate your style profile. Please try again.'
-}
-
-async function validatePhoto(file: File): Promise<string | null> {
-  const meta = validateImageMeta({ name: file.name, type: file.type, size: file.size })
-  if (!meta.valid) return meta.message ?? 'Please choose a valid image.'
-
-  try {
-    const image = await createImageBitmap(file)
-    try {
-      if (image.width < MIN_DIMENSION || image.height < MIN_DIMENSION) {
-        return 'Image must be at least 512×512 pixels. Please choose a different photo.'
-      }
-    } finally {
-      image.close()
-    }
-  } catch {
-    return 'The uploaded file does not appear to be a valid image. Please choose a different photo.'
-  }
-
-  return null
-}
-
 export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfileSectionProps) {
   const [profile, setProfile] = useState<AIStyleProfile | null>(null)
   const [view, setView] = useState<View>('empty')
+  // The prepared (resized, re-encoded) photo. Held in memory only until submitted.
   const [photo, setPhoto] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
   const [regenerateOpen, setRegenerateOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  // A ref as well as state: two submissions in the same tick both read the current value.
+  const submittingRef = useRef(false)
+  const requestRef = useRef<AbortController | null>(null)
+
+  // Leaving the page stops waiting for an in-flight request.
+  useEffect(() => () => requestRef.current?.abort(), [])
 
   useEffect(() => {
     const stored = getProfile()
@@ -97,29 +74,15 @@ export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfil
     return () => window.clearInterval(interval)
   }, [view])
 
-  useEffect(() => {
-    if (!photo) {
-      setPreviewUrl(null)
-      return
-    }
-    const url = URL.createObjectURL(photo)
-    setPreviewUrl(url)
-    return () => URL.revokeObjectURL(url)
-  }, [photo])
-
-  async function selectPhoto(file: File | undefined) {
-    if (!file) return
+  function handlePhotoSelected(file: File) {
     setError(null)
-    const validationMessage = await validatePhoto(file)
-    if (validationMessage) {
-      setPhoto(null)
-      setView('upload')
-      setError(validationMessage)
-      if (inputRef.current) inputRef.current.value = ''
-      return
-    }
     setPhoto(file)
     setView('confirm')
+  }
+
+  function handlePhotoRemoved() {
+    setPhoto(null)
+    setView('upload')
   }
 
   function beginUpload() {
@@ -129,23 +92,32 @@ export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfil
   }
 
   async function generate() {
-    if (!photo || view === 'loading') return
+    if (!photo || submittingRef.current) return
+    submittingRef.current = true
+    setIsSubmitting(true)
     setView('loading')
     setError(null)
+    const controller = new AbortController()
+    requestRef.current = controller
 
     try {
       const formData = new FormData()
-      formData.append('photo', photo)
-      const response = await fetch('/api/generate-profile', { method: 'POST', body: formData })
-      const body = await response.json().catch(() => ({})) as AIStyleProfile | AIStyleProfileFailure | { error?: string; message?: string }
+      // Generic file name: the original name can be personal and the server does not need it.
+      formData.append('photo', photo, 'photo.jpg')
 
-      if (!response.ok) {
-        setError(getFriendlyError(response.status, body as { error?: string; message?: string }))
+      // One request, no automatic retry: every attempt is rate limited and may be billable.
+      const outcome = await postFormData('/api/generate-profile', formData, { signal: controller.signal })
+      if (controller.signal.aborted) return
+
+      if (!outcome.ok) {
+        setError(outcome.message)
         setView('error')
         return
       }
 
-      if ((body as AIStyleProfileFailure).status === 'unable_to_generate') {
+      const body = outcome.data as AIStyleProfile | AIStyleProfileFailure | null
+
+      if ((body as AIStyleProfileFailure | null)?.status === 'unable_to_generate') {
         const failure = body as AIStyleProfileFailure
         setError(`${failure.reason} ${failure.next_step}`)
         setView('error')
@@ -162,13 +134,18 @@ export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfil
       setView('generated')
       setPhoto(null)
     } catch {
-      setError('We could not reach the analysis service. Please check your connection and try again.')
+      // The response was not a valid Style DNA, or it could not be saved on this device.
+      setError('We could not generate your style profile. Please try again.')
       setView('error')
+    } finally {
+      submittingRef.current = false
+      requestRef.current = null
+      setIsSubmitting(false)
     }
   }
 
   function retry() {
-    if (photo) generate()
+    if (photo) void generate()
     else beginUpload()
   }
 
@@ -176,7 +153,6 @@ export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfil
     setPhoto(null)
     setError(null)
     setView('upload')
-    if (inputRef.current) inputRef.current.value = ''
   }
 
   function confirmDelete() {
@@ -192,14 +168,6 @@ export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfil
 
   return (
     <section aria-labelledby="ai-style-profile-heading" className="rounded-2xl border border-border bg-card p-6">
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="sr-only"
-        onChange={(event: ChangeEvent<HTMLInputElement>) => void selectPhoto(event.target.files?.[0])}
-      />
-
       <AnimatePresence mode="wait" initial={false}>
         {(view === 'empty' || view === 'upload' || view === 'confirm') && (
           <motion.div key="setup" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
@@ -215,40 +183,31 @@ export default function AIStyleProfileSection({ onProfileChange }: AIStyleProfil
 
             {view === 'empty' && <Button className="focus-ring mt-6" onClick={beginUpload}><Sparkles className="h-4 w-4" aria-hidden="true" /> Build Style DNA</Button>}
 
-            {view === 'upload' && (
+            {(view === 'upload' || view === 'confirm') && (
               <div className="mt-6">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => inputRef.current?.click()}
-                  onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); inputRef.current?.click() } }}
-                  onDragOver={(event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDragging(true) }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={(event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDragging(false); void selectPhoto(event.dataTransfer.files[0]) }}
-                  aria-label="Upload a photo to build your Style DNA"
-                  className={`focus-ring flex min-h-52 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed p-6 text-center transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-border bg-secondary/20 hover:border-primary/50'}`}
-                >
-                  <UploadCloud className="h-7 w-7 text-primary" aria-hidden="true" />
-                  <p className="mt-3 font-medium text-foreground">Start with one clear photo</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Show your face and upper body in good, even lighting.</p>
-                  <p className="mt-3 text-xs text-muted-foreground">JPEG, PNG, WEBP · Max 10MB</p>
-                </div>
-                {error && <p role="alert" className="mt-3 flex items-start gap-2 text-sm text-destructive"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{error}</p>}
-                <button type="button" className="focus-ring mt-4 text-sm text-muted-foreground hover:text-foreground" onClick={() => { setError(null); setView('empty') }}>Cancel</button>
-              </div>
-            )}
+                {/* One card for both steps, so a retake keeps its state while the new photo is prepared. */}
+                <UploadCard
+                  label="Style DNA photo"
+                  description="Show your face and upper body in good, even lighting."
+                  captureMode="user"
+                  belowMinimum="reject"
+                  file={photo}
+                  onFileSelect={handlePhotoSelected}
+                  onRemove={handlePhotoRemoved}
+                  disabled={isSubmitting}
+                />
 
-            {view === 'confirm' && photo && previewUrl && (
-              <div className="mt-6 rounded-xl border border-border bg-secondary/20 p-4 sm:flex sm:items-center sm:gap-5">
-                <Image src={previewUrl} alt="Selected profile photo" width={112} height={112} unoptimized className="h-28 w-28 rounded-lg object-cover" />
-                <div className="mt-4 min-w-0 sm:mt-0">
-                  <p className="truncate text-sm font-medium text-foreground">{photo.name}</p>
-                  <p className="mt-2 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />Your photo is sent to our AI for analysis and is not stored on our servers.</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Button className="focus-ring" onClick={() => void generate()}>Build Style DNA</Button>
-                    <Button variant="ghost" className="focus-ring" onClick={chooseDifferentPhoto}>Choose a different photo</Button>
+                {view === 'confirm' && photo ? (
+                  <div className="mt-4">
+                    <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />Your photo is sent to our AI for analysis only when you press Build Style DNA, and is not stored on our servers.</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button className="focus-ring" disabled={isSubmitting} onClick={() => void generate()}>Build Style DNA</Button>
+                      <Button variant="ghost" className="focus-ring" disabled={isSubmitting} onClick={() => { setPhoto(null); setError(null); setView('empty') }}>Cancel</Button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <button type="button" className="focus-ring mt-4 text-sm text-muted-foreground hover:text-foreground" onClick={() => { setError(null); setView('empty') }}>Cancel</button>
+                )}
               </div>
             )}
           </motion.div>
