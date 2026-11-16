@@ -41,7 +41,7 @@ A decode failure returns 400 "not a valid image" and the model is never called.
 
 | Question | Finding |
 |---|---|
-| Already present? | Yes, version 0.34.5, as an optional dependency of Next.js (`package-lock.json`). Adding it to `dependencies` pins it and guarantees it is installed. |
+| Already present? | Only as an optional dependency of Next.js (`package-lock.json`). Add it to `dependencies` pinned to exactly 0.35.5, which guarantees it is installed. Do not use 0.34.5: it has published security advisories, all fixed by 0.35.5. |
 | Licence and cost | Apache-2.0, free. |
 | Size | About 0.6 MB of JavaScript plus a prebuilt native binary per platform (20 MB on Windows locally). It runs only on the server; the browser bundle is unaffected. |
 | Vercel compatibility | Vercel's Node.js runtime supports `sharp`, and Next.js uses it for its own image optimisation. Not verified on this project's deployment; the first Preview build would confirm it. |
