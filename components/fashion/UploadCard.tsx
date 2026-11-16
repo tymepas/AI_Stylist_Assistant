@@ -19,6 +19,14 @@ interface UploadCardProps {
   captureMode: 'user' | 'environment'
   /** What to do with a photo under 512 px on either side. Default: enlarge it just enough. */
   belowMinimum?: BelowMinimumPolicy
+  /** Size to aim for when preparing the photo. Lower when several photos share one request. */
+  targetBytes?: number
+  /** A smaller card, for a row of several photos. */
+  compact?: boolean
+  /** Refuses a prepared photo with a message (for example a duplicate). Return null to accept it. */
+  validatePrepared?: (file: File) => Promise<string | null> | string | null
+  /** Extra controls shown under the preview, for example to reorder photos. */
+  previewActions?: React.ReactNode
   /** Receives the prepared JPEG. The original file is never passed on. */
   onFileSelect: (file: File) => void
   onRemove: () => void
@@ -43,6 +51,10 @@ export default function UploadCard({
   file,
   captureMode,
   belowMinimum,
+  targetBytes,
+  compact = false,
+  validatePrepared,
+  previewActions,
   onFileSelect,
   onRemove,
   disabled = false,
@@ -82,8 +94,12 @@ export default function UploadCard({
     setIsPreparing(true)
 
     try {
-      const prepared = await prepareImageForUpload(selected, { belowMinimum, signal: controller.signal })
-      if (!controller.signal.aborted) onFileSelect(prepared.file)
+      const prepared = await prepareImageForUpload(selected, { belowMinimum, targetBytes, signal: controller.signal })
+      if (controller.signal.aborted) return
+      const refusal = validatePrepared ? await validatePrepared(prepared.file) : null
+      if (controller.signal.aborted) return
+      if (refusal) setError(refusal)
+      else onFileSelect(prepared.file)
     } catch (preparationError) {
       if (!controller.signal.aborted) setError(imagePreparationMessage(preparationError))
     } finally {
@@ -140,7 +156,8 @@ export default function UploadCard({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          'group relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center transition-all duration-300',
+          'group relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-card/40 text-center transition-all duration-300',
+          compact ? 'min-h-[200px] p-4' : 'min-h-[260px] p-6 sm:p-8',
           isEmpty && !disabled && 'cursor-pointer hover:border-primary/50 hover:bg-card',
           isDragging && 'scale-[1.01] border-primary bg-primary/5 shadow-lg shadow-primary/10'
         )}
@@ -186,9 +203,9 @@ export default function UploadCard({
 
         {hasPreview && file && previewUrl && (
           <div className="w-full">
-            <div className="relative h-44 w-full overflow-hidden rounded-xl bg-secondary/40">
+            <div className={cn('relative w-full overflow-hidden rounded-xl bg-secondary/40', compact ? 'h-36' : 'h-52 sm:h-60')}>
               {/* A plain <img>: the source is an in-memory blob URL, not a remote image. */}
-              <img src={previewUrl} alt={`${label} preview`} className="h-full w-full object-cover" />
+              <img src={previewUrl} alt={`${label} preview`} className="image-zoom h-full w-full object-cover" />
             </div>
             <p className="mt-3 max-w-full truncate text-xs text-muted-foreground">{file.name}</p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -202,6 +219,7 @@ export default function UploadCard({
                 <X className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" /> Remove
               </Button>
             </div>
+            {previewActions ? <div className="mt-3 flex flex-wrap items-center justify-center gap-2">{previewActions}</div> : null}
           </div>
         )}
 
@@ -210,8 +228,8 @@ export default function UploadCard({
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary transition-colors group-hover:bg-primary/10">
               <UploadCloud className="h-6 w-6 text-primary" aria-hidden="true" />
             </div>
-            <p className="font-medium text-foreground">{label}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            <p className={cn('font-display text-foreground', compact ? 'text-xl' : 'text-2xl')}>{label}</p>
+            <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-muted-foreground">{description}</p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <Button type="button" size="sm" className={cn('focus-ring', TOUCH_ONLY)} disabled={controlsDisabled} onClick={openCamera}>
                 <Camera className="mr-1.5 h-4 w-4" aria-hidden="true" /> Take photo
