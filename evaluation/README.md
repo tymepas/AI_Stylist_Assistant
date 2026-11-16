@@ -157,6 +157,8 @@ Every rate is `null` when there is nothing to measure.
 
 ## Labels
 
+A case may set `garment_mode` (`single`, `same_garment_views` or `outfit_items`) with one or two `extra_garments`; the number of images must fit the mode. It may also state `expected.uncertainty`, `expected.must_be_rejected`, `expected.occasion_terms` and `review` questions for a human reviewer.
+
 A case may carry `labels` (`garment_category`, `colour_family`, `pattern`, `formality`, `expected_uncertainty`) and `expected.dimension_ratings`. Labels describe what is visible in the case's images. They must be assigned by a person looking at those images, not copied from the brief the image was made from, and are scored only when `labels.verified` is `true`.
 
 ## Proposed dataset v1 (about 40 cases)

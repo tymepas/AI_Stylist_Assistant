@@ -138,3 +138,30 @@ Expanding the occasion list to include "Startup Interview", "Networking Event", 
 - Deterministic verdict calculation, prompts, schemas, model configuration and spend guard
 - Server-side upload validation
 - Desktop drag and drop and file selection
+
+---
+
+## Unreleased - Evaluation harness, image intake, garment modes and redesign
+
+### Added
+
+- Evaluation: a synthetic scenario dataset (54 cases), per-case checks with failure reasons, a report summary, latency and cost when measured, partial runs, regression classification against a committed baseline, and an explicit, protected baseline update (`evaluation/README.md`)
+- Server-side image intake with `sharp`: content validation, pixel and request size limits, orientation, metadata stripping and re-encoding, before any spend reservation or model call
+- Garment modes chosen by the user: one garment photo, two or three views of one garment, or two or three items of one outfit, with per-item notes for outfits
+- A six-step analysis journey: photo, garment mode, garment photos, occasion, optional style preferences, review
+- A design system (tokens, typography, motion with reduced-motion support) and redesigned dashboard, navigation, analysis journey, decision report, Shopping Advisor, history and settings
+
+### Changed
+
+- Output schema `analysis-output/2`: adds the optional `outfit_components` block. Every `/1` output is still valid
+- The decision report states when a verdict rests on few or uncertain ratings, and shows each dimension's weight
+- Fonts are self-hosted through `next/font`; the Google Fonts stylesheet import is removed
+- Privacy wording in history and settings now says what actually happens: photos are sent for analysis and not kept; reports are not saved
+
+### Preserved
+
+- `computeVerdict`, its weights, thresholds, bands and rounding (pinned exhaustively by `tests/evaluation/verdictIntegrity.test.ts`)
+- The system prompt files, the model configuration, spend limits and concurrency, and fail-closed behaviour without Redis
+- A single-garment request: same request, same prompt version, same response shape
+- Shopping Advisor as advice only, with its four qualitative match levels and the Myntra, Amazon and Ajio search links
+- Style DNA as optional
