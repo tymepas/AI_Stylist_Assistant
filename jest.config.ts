@@ -8,8 +8,8 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  // Every *.test.ts file under tests/ runs, so new suites are never silently skipped.
-  testMatch: ['<rootDir>/tests/**/*.test.ts'],
+  // Every *.test.ts and *.test.tsx file under tests/ runs, so new suites are never silently skipped.
+  testMatch: ['<rootDir>/tests/**/*.test.ts', '<rootDir>/tests/**/*.test.tsx'],
   // `next build` (output: 'standalone') copies package.json into .next/; ignoring it
   // prevents Jest module-name collisions when tests run after a local build.
   modulePathIgnorePatterns: ['<rootDir>/.next/'],
@@ -20,6 +20,8 @@ const config: Config = {
         tsconfig: {
           // Relax module resolution for tests — ts-jest handles the path aliases above
           moduleResolution: 'node',
+          // The app's tsconfig keeps JSX for Next.js to compile; component tests need it compiled.
+          jsx: 'react-jsx',
         },
       },
     ],

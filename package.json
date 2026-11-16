@@ -12,7 +12,8 @@
         "test": "jest --config jest.config.ts",
         "test:phase3": "jest --config jest.config.ts --testPathPattern tests/phase3",
         "typecheck": "tsc --noEmit",
-        "benchmark": "jest --config jest.benchmark.config.ts --runInBand"
+        "benchmark": "jest --config jest.benchmark.config.ts --runInBand",
+        "eval": "jest --config jest.evaluation.config.ts --runInBand"
     },
     "dependencies": {
         "@hookform/resolvers": "5.1.1",
@@ -76,6 +77,9 @@
     },
     "devDependencies": {
         "@jest/globals": "^30.4.1",
+        "@testing-library/dom": "^10.4.2",
+        "@testing-library/react": "^16.3.3",
+        "@testing-library/user-event": "^14.6.12",
         "@types/jest": "^30.0.0",
         "@types/lodash": "4.17.24",
         "@types/node": "^26.1.1",

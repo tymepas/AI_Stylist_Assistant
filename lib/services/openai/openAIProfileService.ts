@@ -3,10 +3,11 @@ import 'server-only'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { AIStyleProfile, AIStyleProfileFailure } from '@/types/schema'
-import { validateAIStyleProfileResult } from '@/lib/services/openai/aiStyleProfileSchema'
+import { PROFILE_OUTPUT_SCHEMA_VERSION, validateAIStyleProfileResult } from '@/lib/services/openai/aiStyleProfileSchema'
+import { fingerprint, IMAGE_PLACEHOLDER } from '@/lib/services/openai/promptVersion'
 import { OpenAIAnalysisError } from '@/lib/services/openai/openAIErrors'
 import { resolveModelConfig, type NormalizedUsage, type SupportedModelId } from '@/lib/services/openai/modelConfig'
-import { callResponsesApi, type RunOverrides } from '@/lib/services/openai/responsesClient'
+import { callResponsesApi, type InputContentPart, type RunOverrides } from '@/lib/services/openai/responsesClient'
 import { logEvent, type ConfigIssue } from '@/lib/observability/safeLogger'
 
 // ---------------------------------------------------------------------------
@@ -26,6 +27,22 @@ function loadProfileSystemPrompt(): Promise<string> {
 async function fileToDataUrl(file: File): Promise<string> {
   const bytes = Buffer.from(await file.arrayBuffer())
   return `data:${file.type};base64,${bytes.toString('base64')}`
+}
+
+/** The user message of a profile request. The same builder is used for the real call and for the prompt version. */
+export function buildProfileContent(photoDataUrl: string): InputContentPart[] {
+  return [
+    {
+      type: 'input_text',
+      text: 'Analyze the person in this photo and return only the JSON object described in your instructions. Set generated_at_utc to "".',
+    },
+    { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
+  ]
+}
+
+/** Fingerprint of the profile prompt template: the system prompt plus the fixed user message. */
+export function computeProfilePromptVersion(instructions: string): string {
+  return fingerprint([instructions, JSON.stringify(buildProfileContent(IMAGE_PLACEHOLDER))])
 }
 
 // Logging: safe, structured events only (lib/observability/safeLogger.ts).
@@ -110,18 +127,14 @@ export async function generateProfileWithOpenAI(
     apiKey,
     modelConfig,
     instructions,
-    content: [
-      {
-        type: 'input_text',
-        text: 'Analyze the person in this photo and return only the JSON object described in your instructions. Set generated_at_utc to "".',
-      },
-      { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
-    ],
+    content: buildProfileContent(photoDataUrl),
     // Validate against the full result schema (complete | unable_to_generate).
     // Never return raw AI output to the client (spec: 10_ERROR_HANDLING.md § FG-10).
     validate: validateAIStyleProfileResult,
     outcomeOf: (result) => result.status,
     requestId,
+    promptVersion: computeProfilePromptVersion(instructions),
+    schemaVersion: PROFILE_OUTPUT_SCHEMA_VERSION,
     overrides: runOverrides,
     onUsage,
   })

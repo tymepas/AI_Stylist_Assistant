@@ -40,7 +40,15 @@ const unableToAnalyzeSchema = z.object({
   next_step: z.string().trim().min(1),
 }).strict()
 
-const rawOpenAIAnalysisSchema = z.discriminatedUnion('status', [
+/**
+ * Version of the analysis output contract (this schema together with the
+ * shopping recommendation schema). Bump it whenever either schema changes;
+ * tests/versioning/schemaVersions.test.ts fails until the version and its
+ * recorded fingerprint are updated together.
+ */
+export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/1'
+
+export const rawOpenAIAnalysisSchema = z.discriminatedUnion('status', [
   completeAnalysisSchema,
   unableToAnalyzeSchema,
 ])

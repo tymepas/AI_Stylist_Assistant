@@ -1,5 +1,9 @@
+const { SECURITY_HEADERS } = require('./lib/security/securityHeaders');
+
 const nextConfig = {
   output: 'standalone',
+  // Do not advertise the framework in an X-Powered-By header.
+  poweredByHeader: false,
   outputFileTracingIncludes: {
     '/*': ['./memory/SYSTEM_PROMPT.md'],
   },
@@ -31,13 +35,9 @@ const nextConfig = {
     return [
       {
         source: "/(.*)",
-        headers: [
-          { key: "X-Frame-Options", value: "ALLOWALL" },
-          { key: "Content-Security-Policy", value: "frame-ancestors *;" },
-          { key: "Access-Control-Allow-Origin", value: process.env.CORS_ORIGINS || "*" },
-          { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, OPTIONS" },
-          { key: "Access-Control-Allow-Headers", value: "*" },
-        ],
+        // No Access-Control-* headers here: the API decides CORS per request
+        // (lib/security/originPolicy.ts), and pages need none.
+        headers: SECURITY_HEADERS,
       },
     ];
   },

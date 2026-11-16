@@ -59,9 +59,10 @@ BENCHMARK_MODEL=gpt-6.1-terra BENCHMARK_REASONING_EFFORT=low BENCHMARK_LIVE=I_AC
 
 ## 4. Review
 
-Each live run writes two files to `benchmark/results/`:
-- `<timestamp>-<model>-<effort>.json`: settings, summary metrics and every run record.
+Each live run writes three files to `benchmark/results/`:
+- `<timestamp>-<model>-<effort>.json`: settings, prompt and schema versions, summary metrics and every run record.
 - `<timestamp>-<model>-<effort>.review.csv`: a sheet for human review.
+- `<timestamp>-<model>-<effort>.recording.json`: the model outputs, for free replay with `npm run eval` (see `evaluation/README.md`). Outputs for `owned` and `approved_volunteer` photos are withheld.
 
 In the review sheet, a reviewer marks hallucinations against each case's
 `key_facts` and confirms or dismisses screening hits.

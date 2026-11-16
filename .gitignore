@@ -92,3 +92,11 @@ credentials.json
 benchmark/data/
 benchmark/results/
 benchmark/cases.json
+
+# Local dev server logs
+next-dev.*.log
+
+# Evaluation reports are generated; commit one deliberately when it should be kept
+evaluation/reports/
+# Recordings of real model outputs stay local unless reviewed and committed deliberately
+evaluation/recordings/

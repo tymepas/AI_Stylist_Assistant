@@ -1,0 +1,232 @@
+{
+  "cases": [
+    {
+      "acceptable_bands": [
+        "Not Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "fx-adversarial-shirt",
+      "category": "adversarial_text",
+      "meets_expectation": false,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "fx-clear-suit",
+      "category": "clear",
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "fx-false-abstain",
+      "category": "clear",
+      "meets_expectation": false,
+      "modal_outcome": "abstain",
+      "outcomes": [
+        "abstain",
+        "Recommended"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [
+        "Not Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "fx-hoodie-wedding",
+      "category": "clear",
+      "meets_expectation": true,
+      "modal_outcome": "Not Recommended",
+      "outcomes": [
+        "Not Recommended",
+        "Consider Alternatives"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [],
+      "case_id": "fx-insufficient",
+      "category": "insufficient_input",
+      "meets_expectation": true,
+      "modal_outcome": "abstain",
+      "outcomes": [
+        "abstain",
+        "Consider Alternatives"
+      ],
+      "should_abstain": true
+    },
+    {
+      "acceptable_bands": [],
+      "case_id": "fx-invalid-output",
+      "category": "blur",
+      "meets_expectation": null,
+      "modal_outcome": "error",
+      "outcomes": [
+        "error",
+        "error"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [
+        "Not Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "fx-plain-shirt",
+      "category": "clear",
+      "meets_expectation": true,
+      "modal_outcome": "Not Recommended",
+      "outcomes": [
+        "Not Recommended",
+        "Not Recommended"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [],
+      "case_id": "fx-prohibited",
+      "category": "clear",
+      "meets_expectation": null,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "should_abstain": false
+    },
+    {
+      "acceptable_bands": [],
+      "case_id": "fx-withheld",
+      "category": "single_garment",
+      "meets_expectation": null,
+      "modal_outcome": null,
+      "outcomes": [
+        "withheld",
+        "withheld"
+      ],
+      "should_abstain": false
+    }
+  ],
+  "dataset": {
+    "cases": 9,
+    "cases_with_verified_labels": 2,
+    "fingerprint": "090a6fc97da0",
+    "matches_recording": true
+  },
+  "evaluated_with": {
+    "prompt_version": "aaaaaaaaaaaa",
+    "same_prompt_as_recording": false,
+    "same_schema_as_recording": true,
+    "schema_version": "analysis-output/1"
+  },
+  "interpretation": "Hand-written fixture outputs. This report checks that the evaluation harness and the deterministic verdict code behave as intended. It says nothing about model quality.",
+  "metrics": {
+    "abstention": {
+      "abstained_runs": 2,
+      "expected_runs": 2,
+      "false_abstention_rate": 0.0714,
+      "precision": 0.5,
+      "recall": 0.5
+    },
+    "adversarial": {
+      "graded_runs": 2,
+      "runs_outside_acceptable_bands": 2,
+      "twin_outcome_change_rate": 1,
+      "twin_pairs": 1
+    },
+    "application": {
+      "verdict_recomputation_matches": true
+    },
+    "attribute_accuracy": {
+      "reason": "The model output has no garment, colour or pattern fields, so recognition cannot be scored against labels yet.",
+      "status": "not_available"
+    },
+    "cases": 8,
+    "confidence": {
+      "accuracy_by_confidence": {
+        "High": {
+          "correct_rate": 1,
+          "ratings": 9
+        },
+        "Low": {
+          "correct_rate": null,
+          "ratings": 0
+        },
+        "Medium": {
+          "correct_rate": 0.6667,
+          "ratings": 3
+        }
+      },
+      "distribution": {
+        "High": 59,
+        "Low": 7,
+        "Medium": 6
+      },
+      "stability_by_confidence": {
+        "High": {
+          "pairs": 25,
+          "stable_rate": 1
+        },
+        "Low": {
+          "pairs": 1,
+          "stable_rate": 0
+        },
+        "Medium": {
+          "pairs": 4,
+          "stable_rate": 0
+        }
+      }
+    },
+    "runs": 16,
+    "screening": {
+      "runs_with_forbidden_claims": 1,
+      "runs_with_prohibited_hits": 1
+    },
+    "stability": {
+      "band_flip_case_rate": 0.125,
+      "cases_with_repeats": 8,
+      "dimension_rating_agreement_rate": 0.8333,
+      "mean_score_range": 0.16,
+      "same_outcome_case_rate": 0.5
+    },
+    "structured_output": {
+      "error_codes": {
+        "invalid_response": 1,
+        "timeout": 1
+      },
+      "invalid_runs": 2,
+      "valid_rate": 0.875
+    },
+    "verdict_band": {
+      "agreement_rate": 0.7778,
+      "graded_runs": 9
+    },
+    "withheld_runs": 2
+  },
+  "mode": "mock",
+  "provenance": "synthetic_fixture",
+  "report_format": "verdict-evaluation-report/1",
+  "subject": {
+    "max_output_tokens": 4000,
+    "model": "gpt-6.1-terra",
+    "prompt_version": "000000000000",
+    "reasoning_effort": "low",
+    "schema_version": "analysis-output/1"
+  }
+}
