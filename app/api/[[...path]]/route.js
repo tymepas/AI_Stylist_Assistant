@@ -33,6 +33,7 @@ export async function OPTIONS(request) {
 async function handleRoute(request, { params }) {
   // Server-generated id that correlates the log events of one request.
   const requestId = createRequestId()
+  const startedAt = Date.now()
   const { path = [] } = await params
   const route = `/${path.join('/')}`
   const method = request.method
@@ -40,7 +41,23 @@ async function handleRoute(request, { params }) {
   const origin = evaluateOrigin(request.headers)
   const handleCORS = (response) => {
     applyCorsHeaders(response.headers, origin)
+    // Lets a user quote the id when reporting a problem. It is random, is not
+    // stored anywhere, and no endpoint looks anything up by it.
+    response.headers.set('X-Request-Id', requestId)
     return response
+  }
+
+  // Mock mode never reaches the model client, so it gets its own trace event.
+  const logMockCompleted = (operation, outcome) => {
+    logEvent('info', 'api_request_completed', {
+      request_id: requestId,
+      endpoint: route,
+      operation,
+      analysis_mode: 'mock',
+      outcome,
+      http_status: 200,
+      duration_ms: Date.now() - startedAt,
+    })
   }
 
   // A browser on another site can send a multipart POST without a preflight, so
@@ -100,6 +117,7 @@ async function handleRoute(request, { params }) {
         const mockProfile = await getMockProfile()
         // Application sets generated_at_utc (spec: 06_API_SPECIFICATION.md)
         mockProfile.generated_at_utc = new Date().toISOString()
+        logMockCompleted('profile', mockProfile.status)
         return handleCORS(NextResponse.json(mockProfile))
       }
 
@@ -199,6 +217,7 @@ async function handleRoute(request, { params }) {
             Boolean(aiStyleProfileCheck.profile)
           )
         }
+        logMockCompleted('analysis', mockAnalysis.status)
         return handleCORS(NextResponse.json(mockAnalysis))
       }
 

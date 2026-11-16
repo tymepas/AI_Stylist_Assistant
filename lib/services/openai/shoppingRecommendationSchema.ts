@@ -38,7 +38,7 @@ const shoppingRecommendationSchema = z.object({
   match_level: shoppingMatchLevelSchema,
 }).strict()
 
-const shoppingAdvisorPayloadSchema = z.object({
+export const shoppingAdvisorPayloadSchema = z.object({
   recommendations: z.array(shoppingRecommendationSchema).min(1).max(3),
 }).strict()
 

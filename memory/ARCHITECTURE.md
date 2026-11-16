@@ -76,6 +76,43 @@ Server code logs through `lib/observability/safeLogger.ts`, which emits one JSON
 
 Never logged: API keys, uploaded images, prompts, model output text (it can describe a person's appearance), validation messages or received values, request bodies, error messages or stack traces. Each API request gets a server-generated `request_id` so its events can be correlated.
 
+## Request trace
+
+Every API request gets a random `request_id`. It is returned to the client in an `X-Request-Id` response header and written on every log event of that request. It is not stored anywhere and no endpoint looks anything up by it, so it cannot be used to retrieve user data.
+
+The trace of one analysis is the set of events sharing its `request_id`:
+
+| Field | Event | Meaning |
+|---|---|---|
+| `request_id` | all | Correlates the events of one request |
+| `model`, `reasoning_effort` | `openai_request_*` | Allowlisted model id and the effort actually sent |
+| `prompt_version` | `openai_request_*` | Fingerprint of the prompt template that was sent |
+| `schema_version` | `openai_request_*` | Version of the schema the output is validated against |
+| `analysis_mode` | `openai_request_*`, `api_request_completed` | `openai`, `benchmark` or `mock` |
+| `outcome` | `openai_request_completed`, `api_request_completed` | Result status, for example `complete` or `unable_to_analyze` |
+| `duration_ms` | `openai_request_completed`, `openai_request_failed`, `api_request_completed` | Provider latency, or total latency in mock mode |
+| token counts, `cost_micro_usd` | `openai_request_completed`, `openai_request_failed` | Reported usage and the cost computed from it, when the provider reported usage |
+| `validation` | `openai_request_*` | `passed`, `failed` (schema mismatch) or `not_run` (the provider failed first) |
+| `error_code`, `http_status` | `openai_request_failed` | Failure category |
+| reservation and settlement | `spend_reserved`, `spend_settled`, `spend_rejected` | Budget accounting for the same request |
+
+Mock mode never reaches the model client, so it writes one `api_request_completed` event with the mode, outcome, status and latency.
+
+## Prompt and schema versions
+
+- **Prompt version** (`lib/services/openai/promptVersion.ts`): the first 12 hex characters of a SHA-256 over the system prompt file and the user message, as produced by the same builder functions that produce the real request. User values and images are replaced by fixed placeholders first, so the version identifies the template and never depends on a user. Line endings are normalised, so a Windows checkout and the Linux deployment report the same version. Editing `memory/SYSTEM_PROMPT.md`, `memory/STYLE_PROFILE_SYSTEM_PROMPT.md` or any fixed instruction line changes the version automatically. `tests/versioning/promptVersion.test.ts` records the current versions, so a prompt change is visible in review.
+- **Schema version**: `ANALYSIS_OUTPUT_SCHEMA_VERSION` (`analysis-output/1`, covering the analysis and shopping recommendation schemas) and `PROFILE_OUTPUT_SCHEMA_VERSION` (`profile-output/1.0`). `tests/versioning/schemaVersions.test.ts` pairs each version with a fingerprint of the schema's structure and fails if a schema changes without a version bump.
+
+## Client disconnects
+
+A client that disconnects does not cancel the model call. This is deliberate:
+
+- Aborting leaves the cost unknown, and an unknown outcome keeps the full worst-case reservation charged. Letting the call finish settles the reservation to the real cost, which is lower.
+- There is no evidence that aborting a non-streaming request stops the provider from billing it.
+- The function still ends within the route's `maxDuration`, and the reservation is always settled in a `finally` block. If the function is killed, the lease expires after 90 seconds and stays charged in full. A reservation is never left open indefinitely.
+
+`tests/trace/requestTrace.test.ts` pins this behaviour. The browser stops waiting after 70 seconds (`lib/services/uploadRequest.ts`); that does not affect the server.
+
 ## Model configuration
 
 `lib/services/openai/modelConfig.ts` is the single allowlist of models: `gpt-4.1` and `gpt-6.1-terra`. Any other `OPENAI_MODEL` value is rejected before a request is made (`config_issue: unsupported_model`); the value itself is never logged.
