@@ -18,9 +18,9 @@ interface AuditResult {
   ok: boolean
   problems: string[]
   unreviewed: Array<{ id: string | null; package: string }>
-  expired: Array<{ id: string | null }>
-  excepted: Array<{ id: string | null; decision: string }>
-  belowThreshold: Array<{ id: string | null }>
+  expired: Array<{ id: string | null; package: string }>
+  excepted: Array<{ id: string | null; package: string; decision: string }>
+  belowThreshold: Array<{ id: string | null; package: string }>
   unusedExceptions: Array<{ id: string; package: string }>
   counts: Record<string, number>
 }
@@ -148,6 +148,146 @@ describe('evaluateAudit', () => {
   })
 })
 
+describe('one advisory reported for two packages', () => {
+  // Regression: advisories used to be de-duplicated by id alone. When the excepted
+  // package came first in the report, the same advisory on a second package was
+  // dropped and the check passed.
+  const both = (first: string, second: string) =>
+    report({ name: first, via: [advisory(HIGH_A, first, 'high')] }, { name: second, via: [advisory(HIGH_A, second, 'high')] })
+
+  it.each([
+    ['excepted package listed first', 'left-pad', 'right-pad'],
+    ['excepted package listed second', 'right-pad', 'left-pad'],
+  ])('fails for the package without an exception: %s', (_label, first, second) => {
+    const result = policy.evaluateAudit(both(first, second), file(exception()), TODAY)
+
+    expect(result.ok).toBe(false)
+    expect(result.unreviewed.map((item) => [item.package, item.id])).toEqual([['right-pad', HIGH_A]])
+    expect(result.excepted.map((item) => [item.package, item.id])).toEqual([['left-pad', HIGH_A]])
+    expect(result.counts).toEqual({ high: 2 })
+  })
+
+  it('gives the same result whatever order the report lists the packages in', () => {
+    const forward = policy.evaluateAudit(both('left-pad', 'right-pad'), file(exception()), TODAY)
+    const reverse = policy.evaluateAudit(both('right-pad', 'left-pad'), file(exception()), TODAY)
+    expect(reverse).toEqual(forward)
+  })
+
+  it('passes only when each package has its own exception', () => {
+    const result = policy.evaluateAudit(both('left-pad', 'right-pad'), file(exception(), exception({ package: 'right-pad' })), TODAY)
+    expect(result.ok).toBe(true)
+    expect(result.excepted.map((item) => item.package)).toEqual(['left-pad', 'right-pad'])
+  })
+
+  it('applies expiry to each package separately', () => {
+    const result = policy.evaluateAudit(
+      both('left-pad', 'right-pad'),
+      file(exception(), exception({ package: 'right-pad', reviewed: '2026-09-01', expires: '2026-10-01' })),
+      TODAY
+    )
+    expect(result.ok).toBe(false)
+    expect(result.excepted.map((item) => item.package)).toEqual(['left-pad'])
+    expect(result.expired.map((item) => item.package)).toEqual(['right-pad'])
+  })
+
+  it('does not let an exception for a package that is no longer reported cover another package', () => {
+    const result = policy.evaluateAudit(report({ name: 'right-pad', via: [advisory(HIGH_A, 'right-pad', 'high')] }), file(exception()), TODAY)
+    expect(result.ok).toBe(false)
+    expect(result.unreviewed.map((item) => item.package)).toEqual(['right-pad'])
+    expect(result.unusedExceptions).toEqual([{ id: HIGH_A, package: 'left-pad' }])
+  })
+
+  it('treats a moderate advisory on one package and a high one on another independently', () => {
+    const mixed = report({ name: 'left-pad', via: [advisory(HIGH_A, 'left-pad', 'moderate')] }, { name: 'right-pad', via: [advisory(HIGH_A, 'right-pad', 'high')] })
+    const result = policy.evaluateAudit(mixed, file(), TODAY)
+    expect(result.ok).toBe(false)
+    expect(result.belowThreshold.map((item) => item.package)).toEqual(['left-pad'])
+    expect(result.unreviewed.map((item) => item.package)).toEqual(['right-pad'])
+  })
+})
+
+describe('duplicate and malformed audit records', () => {
+  it('counts the same package and advisory once, however many entries repeat it', () => {
+    const shared = advisory(HIGH_A, 'left-pad', 'high')
+    const repeated = report({ name: 'left-pad', via: [shared, shared] }, { name: 'wrapper-one', via: [shared, 'left-pad'] }, { name: 'wrapper-two', via: ['left-pad', shared] })
+    const result = policy.evaluateAudit(repeated, file(exception()), TODAY)
+    expect(result.counts).toEqual({ high: 1 })
+    expect(result.ok).toBe(true)
+    expect(result.excepted).toHaveLength(1)
+  })
+
+  it('uses the entry name when an advisory record does not name its package', () => {
+    const unnamed = { title: 'unnamed', url: `https://github.com/advisories/${HIGH_A}`, severity: 'high' }
+    const result = policy.evaluateAudit(report({ name: 'right-pad', via: [unnamed] }), file(exception()), TODAY)
+    expect(result.ok).toBe(false)
+    expect(result.unreviewed).toEqual([expect.objectContaining({ package: 'right-pad', id: HIGH_A })])
+  })
+
+  it('treats a missing or unknown severity as critical', () => {
+    for (const severity of [undefined, null, '', 'HIGH', 'severe', 7]) {
+      const record = { name: 'left-pad', title: 't', url: `https://github.com/advisories/${HIGH_A}`, severity }
+      const result = policy.evaluateAudit(report({ name: 'left-pad', via: [record] }), file(), TODAY)
+      expect(result.ok).toBe(false)
+      expect(result.counts).toEqual({ critical: 1 })
+    }
+  })
+
+  it('fails on an advisory with no usable identifier, even when the package has exceptions', () => {
+    for (const record of [{ name: 'left-pad', severity: 'high' }, { name: 'left-pad', severity: 'high', url: 'not a url' }, { name: 'left-pad', severity: 'high', url: 'https://github.com/advisories/GHSA-bad' }]) {
+      const result = policy.evaluateAudit(report({ name: 'left-pad', via: [record] }), file(exception()), TODAY)
+      expect(result.ok).toBe(false)
+      expect(result.unreviewed).toEqual([expect.objectContaining({ package: 'left-pad', id: null })])
+    }
+  })
+
+  it('keeps two unidentified advisories on one package apart', () => {
+    const first = { name: 'left-pad', severity: 'high', title: 'First problem' }
+    const second = { name: 'left-pad', severity: 'high', title: 'Second problem' }
+    const result = policy.evaluateAudit(report({ name: 'left-pad', via: [first, second] }), file(), TODAY)
+    expect(result.unreviewed).toHaveLength(2)
+  })
+
+  it('fails when an audit record cannot be read, rather than skipping it', () => {
+    const broken: Array<[string, unknown]> = [
+      ['no advisory list', { vulnerabilities: { 'left-pad': { name: 'left-pad' } } }],
+      ['advisory list is not a list', { vulnerabilities: { 'left-pad': { name: 'left-pad', via: 'left-pad' } } }],
+      ['record is null', { vulnerabilities: { 'left-pad': null } }],
+      ['advisory is null', { vulnerabilities: { 'left-pad': { name: 'left-pad', via: [null] } } }],
+      ['advisory is a number', { vulnerabilities: { 'left-pad': { name: 'left-pad', via: [42] } } }],
+      ['advisory is a list', { vulnerabilities: { 'left-pad': { name: 'left-pad', via: [[advisory(HIGH_A, 'left-pad', 'high')]] } } }],
+    ]
+    for (const [label, audit] of broken) {
+      const result = policy.evaluateAudit(audit, file(exception()), TODAY)
+      expect({ label, ok: result.ok }).toEqual({ label, ok: false })
+      expect(result.problems.join(' ')).toMatch(/audit record for "left-pad"/)
+    }
+  })
+
+  it('still evaluates the readable records when one record is unreadable', () => {
+    const audit = { vulnerabilities: { broken: null, 'right-pad': { name: 'right-pad', via: [advisory(HIGH_B, 'right-pad', 'high')] } } }
+    const result = policy.evaluateAudit(audit, file(), TODAY)
+    expect(result.ok).toBe(false)
+    expect(result.problems).toHaveLength(1)
+    expect(result.unreviewed.map((item) => item.package)).toEqual(['right-pad'])
+  })
+
+  it('fails when the vulnerabilities section is a list instead of a map', () => {
+    const result = policy.evaluateAudit({ vulnerabilities: [] }, file(), TODAY)
+    expect(result.ok).toBe(false)
+    expect(result.problems[0]).toMatch(/did not complete/)
+  })
+
+  it('ignores a malformed exception entry for matching, and reports it as a problem', () => {
+    const audit = report({ name: 'left-pad', via: [advisory(HIGH_A, 'left-pad', 'high')] })
+    for (const bad of [null, 'left-pad', { advisories: [HIGH_A] }, { package: 42, advisories: [HIGH_A] }]) {
+      const result = policy.evaluateAudit(audit, file(bad), TODAY)
+      expect(result.ok).toBe(false)
+      expect(result.problems.length).toBeGreaterThan(0)
+      expect(result.unreviewed.map((item) => item.package)).toEqual(['left-pad'])
+    }
+  })
+})
+
 describe('validateExceptions', () => {
   it('accepts a complete exception', () => {
     expect(policy.validateExceptions(file(exception()))).toEqual([])
@@ -180,8 +320,14 @@ describe('validateExceptions', () => {
     expect(policy.validateExceptions(file(exception({ expires: '2027-05-16' }))).join(' ')).toMatch(/at most 180 days/)
   })
 
-  it('rejects the same advisory listed twice', () => {
-    expect(policy.validateExceptions(file(exception(), exception({ package: 'other' }))).join(' ')).toMatch(/listed more than once/)
+  it('rejects the same advisory listed twice for one package', () => {
+    expect(policy.validateExceptions(file(exception(), exception())).join(' ')).toMatch(/listed more than once for this package/)
+    expect(policy.validateExceptions(file(exception({ advisories: [HIGH_A, HIGH_A] }))).join(' ')).toMatch(/listed more than once for this package/)
+  })
+
+  it('allows the same advisory to be excepted separately for two packages', () => {
+    // One advisory can affect two packages; each needs its own reviewed entry.
+    expect(policy.validateExceptions(file(exception(), exception({ package: 'right-pad' })))).toEqual([])
   })
 
   it('rejects a file without an exceptions array', () => {

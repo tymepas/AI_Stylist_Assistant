@@ -60,7 +60,7 @@ function main() {
   const result = evaluateAudit(audit.report, exceptions, today)
 
   line(`Dependency audit, production dependencies, ${today}`)
-  line(`Advisories reported: ${Object.entries(result.counts).map(([severity, count]) => `${count} ${severity}`).join(', ') || 'none'}`)
+  line(`Advisories reported, counted per package: ${Object.entries(result.counts).map(([severity, count]) => `${count} ${severity}`).join(', ') || 'none'}`)
   line(`Policy: ${FAILING_SEVERITIES.join(' and ')} advisories fail unless listed in security/audit-exceptions.json.`)
 
   const section = (title, items, format) => {
@@ -72,7 +72,7 @@ function main() {
 
   section('UNREVIEWED: not covered by an exception', result.unreviewed, describe)
   section('EXPIRED exceptions: decide again or fix', result.expired, (item) => `${describe(item)}  (expired ${item.expires})`)
-  section('Problems in the exceptions file', result.problems, (item) => item)
+  section('Problems in the audit report or the exceptions file', result.problems, (item) => item)
   section('Covered by a time-limited exception', result.excepted, (item) => `${describe(item)}  [${item.decision}, until ${item.expires}]`)
   section('Below the failing threshold (reported only)', result.belowThreshold, describe)
   section('Exceptions no longer needed: remove them', result.unusedExceptions, (item) => `${item.package}  ${item.id}`)

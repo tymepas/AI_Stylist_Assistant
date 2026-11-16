@@ -51,9 +51,9 @@ GPT-4.1 requests are byte-for-byte what they were before. All calls go through `
 
 `npm run audit:check` (`scripts/security/audit-check.cjs`) runs `npm audit` for production dependencies and applies the policy in `scripts/security/audit-policy.cjs`. The `Dependency audit` workflow runs it on every pull request, on every push to `main`, and weekly, because an advisory can be published for a dependency that has not changed.
 
-- **Fails on** any high or critical advisory that is not listed in `security/audit-exceptions.json`, on an expired exception, on an invalid exceptions file, and when the audit itself cannot be completed.
+- **Fails on** any high or critical advisory that is not listed in `security/audit-exceptions.json`, on an expired exception, on an invalid exceptions file, on an audit record that cannot be read, and when the audit itself cannot be completed.
 - **Reports without failing:** moderate and low advisories, and exceptions that are no longer needed.
-- **Exceptions** name individual advisories (never a whole package), state a reason and a plan, and expire after at most 180 days. A new advisory for a package that already has an exception still fails.
+- **Exceptions** name individual advisories (never a whole package), state a reason and a plan, and expire after at most 180 days. A new advisory for a package that already has an exception still fails. Each package and advisory pair is judged on its own: when one advisory is reported for two packages, an exception for one never covers the other.
 - **Not covered:** development-only dependencies (test and build tooling that is not deployed) are not enforced. Run `npm audit` without `--omit=dev` to see them.
 
 A passing check means no unreviewed high or critical advisory is known for the production dependency tree on that day. It does not mean the dependencies are free of vulnerabilities, and it only knows what has been published.
