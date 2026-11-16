@@ -2,35 +2,6 @@
   "description": "Advisories that the dependency audit check tolerates for a limited time. Each entry names individual advisories, gives a reason and expires. An entry is a decision made by the person who merges the change that adds it. See memory/ARCHITECTURE.md, 'Dependency audit'.",
   "exceptions": [
     {
-      "package": "axios",
-      "advisories": [
-        "GHSA-3pq3-5fj3-cg6v",
-        "GHSA-542g-h47m-68v8",
-        "GHSA-gcfj-64vw-6mp9",
-        "GHSA-m8m8-qj5v-23w3",
-        "GHSA-mghh-pgcx-3jjj",
-        "GHSA-x97p-jq2g-jp4f"
-      ],
-      "decision": "pending_fix",
-      "reason": "axios is not imported by any application, test, benchmark or build file in this repository (verified by search on 2026-11-16). It is a leftover of the project template. The advisories concern axios request handling, which never runs here.",
-      "plan": "Remove the unused dependency in a separate change, or update it to 1.21.1 or later if a use appears.",
-      "reviewed": "2026-11-16",
-      "expires": "2026-12-16"
-    },
-    {
-      "package": "follow-redirects",
-      "advisories": [
-        "GHSA-8r9p-f939-6h3c",
-        "GHSA-mrwp-f3q8-3g9p",
-        "GHSA-q3jh-wrc6-jgq8"
-      ],
-      "decision": "pending_fix",
-      "reason": "follow-redirects is installed only as a dependency of axios, which is not imported anywhere in this repository, so its redirect handling never runs here.",
-      "plan": "Goes away when axios is removed or updated.",
-      "reviewed": "2026-11-16",
-      "expires": "2026-12-16"
-    },
-    {
       "package": "postcss",
       "advisories": [
         "GHSA-6g55-p6wh-862q",
