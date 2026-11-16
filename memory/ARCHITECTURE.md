@@ -165,3 +165,17 @@ GPT-4.1 requests are byte-for-byte what they were before. All calls go through `
 ## Benchmark
 
 `benchmark/` compares models on the production code path. It defaults to a dry run with networking disabled; billable runs need an explicit opt-in phrase and a spend cap. See `benchmark/README.md`.
+
+## Evaluation
+
+`evaluation/` scores model output without calling a model. See `evaluation/README.md`.
+
+| Mode | Input | Calls a model |
+|---|---|---|
+| Mock | Hand-written fixture outputs, committed in `evaluation/fixtures/mock/`; runs in `npm test` and CI | Never |
+| Replay | A recording written by an earlier live benchmark run | Never |
+| Live | `npm run benchmark` with its opt-in phrase and spend cap; writes a recording | Yes |
+
+`npm run eval` has no live mode and disables network access, so it cannot fall back to a billable call. A recording ties each output to the model, prompt version, schema version and a fingerprint of the manifest. Outputs for photos of real people are never stored. Reports are JSON with sorted keys and no timestamps or model text, so they can be compared with a diff.
+
+Metrics are reported in three groups: model output (validity, abstention, stability across runs, confidence), Verdict's own deterministic code, and end-to-end results (verdict band agreement, sensitivity to adversarial text). Attribute accuracy is reported as not available, because the model output has no garment, colour or pattern fields.

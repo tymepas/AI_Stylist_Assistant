@@ -11,7 +11,8 @@
         "test": "jest --config jest.config.ts",
         "test:phase3": "jest --config jest.config.ts --testPathPattern tests/phase3",
         "typecheck": "tsc --noEmit",
-        "benchmark": "jest --config jest.benchmark.config.ts --runInBand"
+        "benchmark": "jest --config jest.benchmark.config.ts --runInBand",
+        "eval": "jest --config jest.evaluation.config.ts --runInBand"
     },
     "dependencies": {
         "@hookform/resolvers": "5.1.1",
