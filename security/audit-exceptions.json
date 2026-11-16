@@ -2,41 +2,6 @@
   "description": "Advisories that the dependency audit check tolerates for a limited time. Each entry names individual advisories, gives a reason and expires. An entry is a decision made by the person who merges the change that adds it. See memory/ARCHITECTURE.md, 'Dependency audit'.",
   "exceptions": [
     {
-      "package": "postcss",
-      "advisories": [
-        "GHSA-6g55-p6wh-862q",
-        "GHSA-r28c-9q8g-f849"
-      ],
-      "decision": "pending_fix",
-      "reason": "PostCSS runs only during the build, on this repository's own stylesheets. No user-supplied CSS or source map reaches it at runtime. Next.js 15.5.29 pins its own copy at 8.4.31; a patched copy there needs Next.js 16.",
-      "plan": "Update the root copy with a patch-level lockfile change in a separate pull request. Re-check the copy inside Next.js with each 15.5.x backport release.",
-      "reviewed": "2026-11-16",
-      "expires": "2026-12-16"
-    },
-    {
-      "package": "nanoid",
-      "advisories": [
-        "GHSA-28wg-ghj8-5hjv",
-        "GHSA-2v37-7h3g-55p8"
-      ],
-      "decision": "pending_fix",
-      "reason": "nanoid is not imported by any file in this repository. It is installed only as a dependency of PostCSS and is used during the build, so no user input reaches it.",
-      "plan": "Update with a patch-level lockfile change in a separate pull request.",
-      "reviewed": "2026-11-16",
-      "expires": "2026-12-16"
-    },
-    {
-      "package": "source-map-js",
-      "advisories": [
-        "GHSA-68fv-2mgg-jv7q"
-      ],
-      "decision": "pending_fix",
-      "reason": "source-map-js is installed only as a dependency of PostCSS and parses source maps produced by this repository's own build. No user-supplied source map reaches it.",
-      "plan": "Update with a patch-level lockfile change in a separate pull request.",
-      "reviewed": "2026-11-16",
-      "expires": "2026-12-16"
-    },
-    {
       "package": "zod",
       "advisories": [
         "GHSA-mrhx-c7xc-m3w5"

@@ -139,6 +139,12 @@ A passing check means no unreviewed high or critical advisory is known for the p
 
 The workflow is separate from the test workflow and is not a required status check unless it is added to the branch protection rules for `main`.
 
+**PostCSS override.** Next.js 15.5.x declares an exact, unpatched PostCSS (8.4.31) and no 15.5.x release ships a patched one. `package.json` therefore pins `postcss` to an exact patched version in `devDependencies` and uses an npm `overrides` entry (`next > postcss: $postcss`) so that Next.js loads that same single copy. This repository is installed with npm (`package-lock.json`, `npm ci` in CI), so `overrides` is what takes effect; the `resolutions` block is read only by Yarn and is kept on the same PostCSS version so it cannot bring an old copy back. `tests/dependencies/patchedDependencies.test.ts` fails if the override is lost, if a second PostCSS copy returns, or once Next.js declares a patched PostCSS itself, at which point the override should be removed.
+
+**Open items, reviewed 2026-11-17.**
+- Production: `zod` GHSA-mrhx-c7xc-m3w5 (high) is the only exception left. It is fixed only in Zod 4 and is accepted with a mitigation until 2027-02-14; the migration is a separate task.
+- Development only, not enforced: `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249 (moderate) and `deepmerge` GHSA-gcqx-w48m-w2h4 (low), all installed through Jest 30. The newest Jest release still depends on an affected `glob`, so there is no update to take yet. They run only in the test runner, on this repository's own files.
+
 `sharp` is a direct dependency pinned to an exact version, shared with Next.js as a single copy. The application does not import it yet; `tests/dependencies/sharpDependency.test.ts` checks that the pinned binary loads on each CI Node version.
 
 ## Spending protection
