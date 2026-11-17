@@ -3,11 +3,13 @@
  * no network.
  */
 
-import { readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { manifestSchema, type BenchmarkCase } from '@/benchmark/harness'
 import { evaluateRecording, type CurrentVersions, type EvaluationMode, type EvaluationOptions, type EvaluationReport } from './evaluate'
 import { recordingSchema, type Recording } from './recording'
+import { parseReferenceSet, type ReferenceSet } from './reference'
 
 export const MOCK_FIXTURE_DIR = path.join('evaluation', 'fixtures', 'mock')
 
@@ -19,16 +21,50 @@ export function loadRecording(file: string): Recording {
   return recordingSchema.parse(JSON.parse(readFileSync(file, 'utf8')))
 }
 
-export function evaluateFiles(input: { casesPath: string; recordingPath: string; current: CurrentVersions; mode: EvaluationMode; options?: EvaluationOptions }): EvaluationReport {
-  return evaluateRecording(loadRecording(input.recordingPath), loadCases(input.casesPath), input.current, input.mode, input.options)
+/**
+ * Reads a reference set and checks it against the manifest it belongs to.
+ * Throws a ReferenceSetError that lists every problem: an invalid reference is
+ * never skipped quietly, because a skipped reference would look like a missing one.
+ */
+export function loadReferenceSet(file: string, cases: BenchmarkCase[]): ReferenceSet {
+  return parseReferenceSet(JSON.parse(readFileSync(file, 'utf8')), cases)
+}
+
+/**
+ * Compares the recorded SHA-256 of every referenced image with the file in
+ * `imageDir`. Returns one line per image that is missing or has changed since
+ * it was reviewed. Images are read only to be hashed; nothing is sent anywhere.
+ */
+export function referenceImageProblems(set: ReferenceSet, imageDir: string): string[] {
+  const problems: string[] = []
+  for (const reference of set.references) {
+    for (const image of reference.images) {
+      if (image.sha256 === undefined) continue
+      const file = path.join(imageDir, image.path)
+      if (!existsSync(file)) {
+        problems.push(`Reference ${reference.case_id}: image "${image.id}" is not in the image directory`)
+        continue
+      }
+      const actual = createHash('sha256').update(readFileSync(file)).digest('hex')
+      if (actual !== image.sha256) problems.push(`Reference ${reference.case_id}: image "${image.id}" is not the file that was reviewed (its SHA-256 differs)`)
+    }
+  }
+  return problems
+}
+
+export function evaluateFiles(input: { casesPath: string; recordingPath: string; referencesPath?: string | null; current: CurrentVersions; mode: EvaluationMode; options?: EvaluationOptions }): EvaluationReport {
+  const cases = loadCases(input.casesPath)
+  const references = input.referencesPath ? loadReferenceSet(input.referencesPath, cases) : undefined
+  return evaluateRecording(loadRecording(input.recordingPath), cases, input.current, input.mode, { ...input.options, references })
 }
 
 /** The committed mock fixtures, relative to the repository root. */
-export function mockFixturePaths(root: string): { casesPath: string; recordingPath: string; expectedReportPath: string } {
+export function mockFixturePaths(root: string): { casesPath: string; recordingPath: string; referencesPath: string; expectedReportPath: string } {
   const dir = path.join(root, MOCK_FIXTURE_DIR)
   return {
     casesPath: path.join(dir, 'cases.json'),
     recordingPath: path.join(dir, 'recording.json'),
+    referencesPath: path.join(dir, 'references.json'),
     expectedReportPath: path.join(dir, 'report.expected.json'),
   }
 }
@@ -36,14 +72,21 @@ export function mockFixturePaths(root: string): { casesPath: string; recordingPa
 /**
  * The committed datasets the evaluation command can run without any input file.
  *
- * - `selftest`: nine hand-written fixtures, several of them wrong on purpose.
- *   They exercise the harness; their expected report is a snapshot, not a baseline.
+ * - `selftest`: nine hand-written fixtures, several of them wrong on purpose,
+ *   with a few synthetic references. They exercise the harness; their expected
+ *   report is a snapshot, not a baseline.
  * - `scenarios-v1`: synthetic fashion scenarios with reference outputs. Its
- *   committed baseline is what regressions are measured against.
+ *   committed baseline is what regressions are measured against. It has no
+ *   reference set: its outputs ARE the expectations, so scoring them against
+ *   themselves would measure nothing.
+ *
+ * The golden dataset (`evaluation/datasets/golden-v1/`) is not listed here. It
+ * holds real images and real model outputs, so it is always evaluated by
+ * replaying a recording (see evaluation/HUMAN_REVIEW.md).
  */
 export const DATASETS = {
-  selftest: { dir: MOCK_FIXTURE_DIR, baseline: null },
-  'scenarios-v1': { dir: path.join('evaluation', 'datasets', 'scenarios-v1'), baseline: path.join('evaluation', 'baselines', 'scenarios-v1.json') },
+  selftest: { dir: MOCK_FIXTURE_DIR, baseline: null, references: true },
+  'scenarios-v1': { dir: path.join('evaluation', 'datasets', 'scenarios-v1'), baseline: path.join('evaluation', 'baselines', 'scenarios-v1.json'), references: false },
 } as const
 
 export type DatasetId = keyof typeof DATASETS
@@ -52,11 +95,12 @@ export function isDatasetId(value: string): value is DatasetId {
   return Object.prototype.hasOwnProperty.call(DATASETS, value)
 }
 
-export function datasetPaths(root: string, id: DatasetId): { casesPath: string; recordingPath: string; baselinePath: string | null } {
+export function datasetPaths(root: string, id: DatasetId): { casesPath: string; recordingPath: string; referencesPath: string | null; baselinePath: string | null } {
   const dataset = DATASETS[id]
   return {
     casesPath: path.join(root, dataset.dir, 'cases.json'),
     recordingPath: path.join(root, dataset.dir, 'recording.json'),
+    referencesPath: dataset.references ? path.join(root, dataset.dir, 'references.json') : null,
     baselinePath: dataset.baseline === null ? null : path.join(root, dataset.baseline),
   }
 }

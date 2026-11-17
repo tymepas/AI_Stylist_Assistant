@@ -7,6 +7,8 @@
  *   node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --cases sc-office-tailored,sc-wedding-hoodie
  *   node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --scenarios wedding,party
  *   node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --update-baseline
+ *   node scripts/evaluation/run-eval.cjs --mode replay --manifest <cases.json> --recording <recording.json> --references <references.json>
+ *   node scripts/evaluation/run-eval.cjs --mode check-references --manifest <cases.json> --references <references.json> --images <directory>
  *
  * It only sets environment variables for evaluation/run.eval.ts and starts
  * Jest. It never sets an opt-in for live model calls: the evaluation runner has
@@ -18,6 +20,12 @@ const path = require('node:path')
 
 const FLAGS = {
   '--dataset': 'EVAL_DATASET',
+  '--mode': 'EVAL_MODE',
+  '--manifest': 'EVAL_CASES',
+  '--recording': 'EVAL_RECORDING',
+  '--references': 'EVAL_REFERENCES',
+  '--images': 'EVAL_IMAGES',
+  '--baseline': 'EVAL_BASELINE',
   '--cases': 'EVAL_CASE_IDS',
   '--categories': 'EVAL_CATEGORIES',
   '--scenarios': 'EVAL_SCENARIOS',

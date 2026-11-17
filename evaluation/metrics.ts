@@ -24,6 +24,8 @@ export interface RunDetail {
   band?: Band
   score?: number
   dimensions?: RawOpenAIDimensions
+  /** The per-item notes exactly as the model returned them, unvalidated. Present only when the output carried the block. */
+  outfit_components?: unknown
   prohibited_hits: string[]
   forbidden_claim_hits: string[]
 }

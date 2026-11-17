@@ -1,0 +1,83 @@
+{
+  "format": "verdict-reference-set/1",
+  "dataset": "golden-v1",
+  "dataset_version": "0.1.0",
+  "references": [
+    {
+      "case_id": "gv-example-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "gv-example-single/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "gv-example-single/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Corporate Interview",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-example-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "gv-example-views/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "gv-example-views/garment-1.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "gv-example-views/garment-2.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Corporate Interview",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-example-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "gv-example-outfit/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "gv-example-outfit/garment-1.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "gv-example-outfit/garment-2.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Business Lunch",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    }
+  ]
+}

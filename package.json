@@ -16,7 +16,10 @@
         "eval": "jest --config jest.evaluation.config.ts --runInBand",
         "eval:scenarios": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v1",
         "eval:baseline": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --update-baseline",
-        "eval:build-dataset": "node scripts/evaluation/build-scenarios.cjs"
+        "eval:build-dataset": "node scripts/evaluation/build-scenarios.cjs",
+        "eval:replay": "node scripts/evaluation/run-eval.cjs --mode replay",
+        "eval:references": "node scripts/evaluation/run-eval.cjs --mode check-references",
+        "eval:review-stubs": "node scripts/evaluation/review-stubs.cjs"
     },
     "dependencies": {
         "@hookform/resolvers": "5.1.1",
