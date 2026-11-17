@@ -41,7 +41,11 @@ export default function ProfilePage() {
   }
 
   function handleSave() {
-    saveProfile({ preferredStyles, favoriteColors, occasionPreferences })
+    // The browser can refuse to store anything (private browsing, blocked storage, a full quota). Say so instead of claiming success.
+    if (!saveProfile({ preferredStyles, favoriteColors, occasionPreferences })) {
+      toast.error('Your browser did not allow these preferences to be saved on this device.')
+      return
+    }
     toast.success('Style profile saved')
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 2000)

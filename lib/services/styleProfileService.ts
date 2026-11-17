@@ -1,3 +1,4 @@
+import { readStorage, removeStorage, writeStorage } from '@/lib/services/browserStorage'
 import { StyleProfile, AIStyleProfile } from '@/types/schema'
 
 export const STORAGE_KEY = 'verdict_style_profile'
@@ -8,25 +9,42 @@ export const emptyProfile: StyleProfile = {
   occasionPreferences: [],
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+}
+
+/**
+ * A stored value is used only when it is what this module writes: three lists
+ * of strings. Anything else (an older shape, a value another script wrote, a
+ * half-written entry) is treated as no saved profile, and only the three known
+ * lists are carried over.
+ */
+export function toStyleProfile(value: unknown): StyleProfile | null {
+  if (!value || typeof value !== 'object') return null
+  const candidate = value as Record<string, unknown>
+  if (!isStringArray(candidate.preferredStyles) || !isStringArray(candidate.favoriteColors) || !isStringArray(candidate.occasionPreferences)) return null
+  return { preferredStyles: candidate.preferredStyles, favoriteColors: candidate.favoriteColors, occasionPreferences: candidate.occasionPreferences }
+}
+
+/** The saved preferences, or null when there are none, they cannot be read or they are not in the expected shape. Never throws. */
 export function getProfile(): StyleProfile | null {
-  if (typeof window === 'undefined') return null
-  const raw = window.localStorage.getItem(STORAGE_KEY)
+  const raw = readStorage(STORAGE_KEY)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as StyleProfile
+    return toStyleProfile(JSON.parse(raw))
   } catch {
     return null
   }
 }
 
-export function saveProfile(profile: StyleProfile): void {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile))
+/** Saves the preferences on this device. False when the browser refused to store them. Never throws. */
+export function saveProfile(profile: StyleProfile): boolean {
+  return writeStorage(STORAGE_KEY, JSON.stringify(profile))
 }
 
-export function clearProfile(): void {
-  if (typeof window === 'undefined') return
-  window.localStorage.removeItem(STORAGE_KEY)
+/** Removes the saved preferences. False when the browser refused. Never throws. */
+export function clearProfile(): boolean {
+  return removeStorage(STORAGE_KEY)
 }
 
 export function isProfileComplete(profile: StyleProfile | null): boolean {
