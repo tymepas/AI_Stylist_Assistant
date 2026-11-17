@@ -177,7 +177,7 @@ describe('a figure that was measured and is gone counts as worse', () => {
     const partial = evaluateRecording(fixtureRecording(data.cases, 'model', withoutNotes), data.cases, CURRENT, 'replay', { references: data.references, selection: { caseIds: ['q-outfit-01'] } })
     expect(classifyMetricChanges(base, partial).lost).toEqual([])
     // Another reference set.
-    const reversioned = evaluateRecording(fixtureRecording(data.cases, 'model', withoutNotes), data.cases, CURRENT, 'replay', { references: { ...data.references, dataset_version: '2.0.0' } })
+    const reversioned = evaluateRecording(fixtureRecording(data.cases, 'model', withoutNotes), data.cases, CURRENT, 'replay', { references: corrected(data.references) })
     const changes = classifyMetricChanges(base, reversioned)
     expect(changes.lost).not.toContain(lost)
     // A figure that does not depend on references is still comparable, and still lost.
@@ -188,12 +188,17 @@ describe('a figure that was measured and is gone counts as worse', () => {
 
   it('says how many figures were not compared when a baseline is replaced after the references changed', () => {
     const data = dataset(ids, 10)
-    const decision = assessBaselineUpdate(evaluate(data), evaluateRecording(fixtureRecording(data.cases, 'model', degrade), data.cases, CURRENT, 'replay', { references: { ...data.references, dataset_version: '2.0.0' } }))
+    const decision = assessBaselineUpdate(evaluate(data), evaluateRecording(fixtureRecording(data.cases, 'model', degrade), data.cases, CURRENT, 'replay', { references: corrected(data.references) }))
     // Nothing can be concluded at metric level, so the update is judged at case level only, and says so.
     expect(decision.allowed).toBe(true)
     expect((decision as { notes: string[] }).notes.some((line) => /^Metrics not compared: \d+ figure\(s\)/.test(line))).toBe(true)
   })
 })
+
+/** Another reference set: a first review was corrected, and the version was bumped as the guide asks. */
+function corrected<T extends { dataset_version: string; references: Array<Record<string, unknown>> }>(set: T): T {
+  return { ...set, dataset_version: '2.0.0', references: set.references.map((reference, index) => (index === 0 ? { ...reference, review_notes: 'Corrected after a second look.' } : reference)) }
+}
 
 describe('a replay applies the checks of the validator', () => {
   let dir: string

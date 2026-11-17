@@ -211,6 +211,13 @@ The workflow is separate from the test workflow and is not a required status che
 
 **Open items, reviewed 2026-11-17.**
 - Production: `zod` GHSA-mrhx-c7xc-m3w5 (high) is the only exception left. It is fixed only in Zod 4 and is accepted with a mitigation until 2027-02-14; the migration is a separate task.
+- Production, **open and unresolved: the audit check fails on it, on `main` as well.** `picomatch` GHSA-fc5q-39xc-vjpf (high, regular expression denial of service through a crafted glob *pattern*; every version up to 4.0.7, the latest, is affected and there is no patched release). No exception is recorded and nothing was overridden, upgraded or suppressed: the check is left failing until a decision is made. Facts as investigated on 2026-11-17:
+  - Installed: 2.3.2 and 4.0.5. Paths: `tailwindcss` 3.4.1 → `chokidar` → `anymatch` / `readdirp`; `tailwindcss` → `micromatch` (also through `fast-glob`); `tailwindcss` → `sucrase` → `tinyglobby` (and its `fdir`). Jest carries further copies, development only.
+  - `tailwindcss` is a development dependency. The chain counts as production because `tailwindcss-animate`, which names `tailwindcss` as a peer, is listed under `dependencies`. It is loaded only by `tailwind.config.js`, at build time.
+  - No application or script file imports any of these packages, and none is traced into the production server output. The only patterns are the four fixed `content` globs in `tailwind.config.js`; no path was found by which user input becomes a pattern.
+  - The advisory was published on 2026-10-19 and reviewed by GitHub on 2026-11-17 at 15:56 UTC, which is when the check started to fail. The last run on `main` before that passed.
+  - **Not covered by the audit:** Next.js 15.5.29 ships its own bundled copy (`next/dist/compiled/picomatch`) with no version recorded, and that copy is in the server output. A pattern of the advisory's shape does show exponential matching time in it. Next uses it for `images.remotePatterns` and `localPatterns`; this project's patterns are fixed in `next.config.js` (two literal hostnames and `/**`), matched hostile inputs of a million characters in under 3 ms in a local timing test, and with `images.unoptimized: true` the image route answers 404 before any matching (Production answers 404 on `/_next/image`). **Limitation:** the exact version of the bundled copy could not be established, and the timing test is evidence, not a proof.
+  - Ways to resolve it, none taken: a reviewed, time-limited exception; moving `tailwindcss-animate` to `devDependencies`, which changes how the advisory is classified and not whether the package is affected; an upgrade to Tailwind 4, the only automatic fix npm offers.
 - Development only, not enforced: `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249 (moderate), both installed through Jest 30. The newest Jest release still depends on an affected `glob`, so there is no update to take yet. They run only in the test runner, on this repository's own files. `deepmerge` GHSA-gcqx-w48m-w2h4 was withdrawn in the GitHub Advisory Database on 2026-11-16 and is not an open item.
 
 `sharp` is a direct dependency pinned to an exact version, shared with Next.js as a single copy. It is used by the server-side image intake; `tests/dependencies/sharpDependency.test.ts` checks that the pinned binary loads on each CI Node version.
@@ -288,3 +295,27 @@ Rules that hold:
 - Review images are never committed. They live in git-ignored `benchmark/data/`; the committed reference file holds ratings, garment facts and image hashes.
 - Colour, pattern and single-garment identification cannot be measured: the model output has no field for them. Garment identification covers the `garment_type` of outfit items only.
 - The golden dataset is empty until real images have been reviewed. Until then every figure about model quality is unavailable.
+
+### Phase 4, Milestone 0: preparation for a first measured baseline
+
+Preparation for the first measurement of the model on real images. It adds no production code and changes no prompt, output schema, model setting, verdict or spend safeguard. No model was called.
+
+| Piece | Where | What it does |
+|---|---|---|
+| Synthetic Style DNA in a manifest | `benchmark/harness.ts`, `scripts/evaluation/style-dna-personas.cjs` | A case may send an invented Style DNA profile, checked with the production validator. Only `source: "synthetic"` is accepted, and a test fails if a committed profile is not one from the persona library |
+| Composition | `benchmark/harness.ts` (`describeComposition`) | Cases and images counted apart, cases per garment mode against a minimum of ten, cases with Style DNA. Shown by the dry run, the validator and every report |
+| Second reviews | `evaluation/reference.ts`, `scripts/evaluation/second-review.cjs` | A second person rates the same case blind. Both reviews are kept; a difference is recorded, never resolved by editing a rating |
+| Agreement between reviewers | `evaluation/quality.ts`, `evaluation/readiness.ts` | How often two reviewers agree per dimension, every case they differ on, and how often the model lies within their range |
+| Shopping Advisor figures | `evaluation/quality.ts` | With Style DNA: usable block and mistargeted recommendations. Without: unrequested recommendations. Advisory only; the verdict integrity check still proves the block cannot move the verdict |
+| `scenarios-v2` | `evaluation/datasets/scenarios-v2/`, `evaluation/baselines/scenarios-v2.json` | The 54 cases of `scenarios-v1` unchanged, plus 25: at least ten cases per garment mode and twelve with Style DNA. Synthetic, with its own baseline |
+| Golden case plan | `evaluation/datasets/golden-v1/cases.template.json` | 45 planned cases (21 single, 12 multi-view, 12 outfit, two reserve cases in each multi-image mode), ten comparison pairs, fourteen with Style DNA. No image, no rating. `CASE_MATRIX.md` lists every case |
+
+Rules added:
+
+- A rating is one reviewer's judgement. Reports say how far reviewers agree with each other, and say so plainly when no case has a second review.
+- Sample sizes count cases, never images.
+- Synthetic results stay apart from image-reviewed results: neither scenario dataset has a reference set, and a synthetic expectation cannot carry a reviewer or a second review.
+- Style DNA is a condition on a case, not a garment mode, and the two conditions are never mixed silently. A figure that combines them is labelled pooled; each condition gets its own figure where ten cases stand behind it, and that figure is unavailable otherwise. A comparison group may not mix them.
+- Adding a second review, or bumping the hand-kept dataset version, does not switch off metric comparison: reference-dependent figures are compared on the first reviews (`scoring_fingerprint`).
+- "Measured" is a status about sample size. The scenario baselines hold hand-written outputs and measure nothing about a model.
+- A live run of the plan would reserve $5.11 at three runs per case and $3.41 at two. That is a sum of reservations from configured bounds, not a guaranteed maximum: the per-image token bound is an assumption. It has not been run and needs its own approval (`evaluation/LIVE_VALIDATION_PLAN.md`).

@@ -220,13 +220,41 @@ describe('reports that cannot be compared metric by metric', () => {
   it('is inconclusive for reference-based metrics when the reference set changed', () => {
     const cases = fixtureCases('image_review')
     const references = fixtureReferences('image_review')
-    const edited = { ...references, dataset_version: '1.1.0' }
+    // A first review was corrected: the figures of the two reports are no longer scored against the same thing.
+    const edited = { ...references, dataset_version: '1.1.0', references: references.references.map((reference, index) => (index === 0 ? { ...reference, review_notes: 'Corrected after a second look.' } : reference)) }
     const base = evaluateRecording(fixtureRecording(cases, 'model'), cases, CURRENT, 'replay', { references })
     const candidate = evaluateRecording(fixtureRecording(cases, 'model', degrade), cases, CURRENT, 'replay', { references: edited })
     const changes = classifyMetricChanges(base, candidate)
     expect(base.references.fingerprint).not.toBe(candidate.references.fingerprint)
+    expect(base.references.scoring_fingerprint).not.toBe(candidate.references.scoring_fingerprint)
     expect(classOf(changes, 'agreement.image_reviewed.occasion.exact_rate')).toBe('inconclusive')
     expect(classOf(changes, 'validity.valid_output_rate')).toBe('no_meaningful_change')
+  })
+
+  it('still compares when only the hand-kept version number changed: no review changed, so the figures mean the same', () => {
+    // dataset_version is typed by hand. A bump with every first review unchanged cannot move a figure, so
+    // it must not switch the comparison off: a comparison that is switched off hides a regression.
+    const cases = fixtureCases('image_review')
+    const references = fixtureReferences('image_review')
+    const base = evaluateRecording(fixtureRecording(cases, 'model'), cases, CURRENT, 'replay', { references })
+    const candidate = evaluateRecording(fixtureRecording(cases, 'model', degrade), cases, CURRENT, 'replay', { references: { ...references, dataset_version: '1.1.0' } })
+    expect(base.references.fingerprint).not.toBe(candidate.references.fingerprint)
+    expect(base.references.scoring_fingerprint).toBe(candidate.references.scoring_fingerprint)
+    const changes = classifyMetricChanges(base, candidate)
+    expect(classOf(changes, 'agreement.image_reviewed.occasion.exact_rate')).toBe('regression')
+    expect(changes.has_regression).toBe(true)
+  })
+
+  it('falls back to the full fingerprint for a report written before the scoring fingerprint existed', () => {
+    const cases = fixtureCases('image_review')
+    const references = fixtureReferences('image_review')
+    const older = evaluateRecording(fixtureRecording(cases, 'model'), cases, CURRENT, 'replay', { references })
+    delete (older.references as { scoring_fingerprint?: unknown }).scoring_fingerprint
+    const same = evaluateRecording(fixtureRecording(cases, 'model', degrade), cases, CURRENT, 'replay', { references })
+    const reversioned = evaluateRecording(fixtureRecording(cases, 'model', degrade), cases, CURRENT, 'replay', { references: { ...references, dataset_version: '1.1.0' } })
+    // Same full fingerprint: compared, as it always was. A different one: not compared, as it always was.
+    expect(classOf(classifyMetricChanges(older, same), 'agreement.image_reviewed.occasion.exact_rate')).toBe('regression')
+    expect(classOf(classifyMetricChanges(older, reversioned), 'agreement.image_reviewed.occasion.exact_rate')).toBe('inconclusive')
   })
 })
 

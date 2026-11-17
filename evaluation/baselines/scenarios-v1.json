@@ -3528,6 +3528,49 @@
       "status": "pass"
     }
   ],
+  "composition": {
+    "cases": 54,
+    "cases_by_mode": {
+      "outfit_items": 2,
+      "same_garment_views": 3,
+      "single": 49
+    },
+    "cases_by_source": {
+      "approved_volunteer": 0,
+      "owned": 0,
+      "public_license": 0,
+      "synthetic": 54
+    },
+    "images": {
+      "distinct_files": 115,
+      "garment_images": 61,
+      "garment_images_by_mode": {
+        "outfit_items": 5,
+        "same_garment_views": 7,
+        "single": 49
+      },
+      "personal_photos": 54,
+      "total": 115
+    },
+    "mode_balance": {
+      "balanced": false,
+      "short_by": {
+        "outfit_items": 8,
+        "same_garment_views": 7,
+        "single": 0
+      },
+      "target_per_mode": 10
+    },
+    "style_dna": {
+      "cases": 0,
+      "cases_by_mode": {
+        "outfit_items": 0,
+        "same_garment_views": 0,
+        "single": 0
+      },
+      "personas": []
+    }
+  },
   "dataset": {
     "cases": 54,
     "cases_with_verified_labels": 0,
@@ -3591,6 +3634,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.brief_derived.color.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.brief_derived.coverage": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3631,6 +3685,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.brief_derived.formality.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.brief_derived.occasion.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3657,6 +3722,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.occasion.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -3691,6 +3767,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.brief_derived.seasonality.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.brief_derived.style.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3717,6 +3804,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -3751,6 +3849,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.brief_derived.style_preference_match.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.image_reviewed.color.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3777,6 +3886,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.color.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -3821,6 +3941,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.image_reviewed.formality.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.image_reviewed.occasion.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3847,6 +3978,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.occasion.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -3881,6 +4023,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.image_reviewed.seasonality.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.image_reviewed.style.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3907,6 +4060,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -3941,6 +4105,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.image_reviewed.style_preference_match.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.synthetic.color.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -3967,6 +4142,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: no synthetic references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.synthetic.color.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -4011,6 +4197,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.synthetic.formality.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.synthetic.occasion.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -4037,6 +4234,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: no synthetic references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.synthetic.occasion.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -4071,6 +4279,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.synthetic.seasonality.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.synthetic.style.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -4101,6 +4320,17 @@
       "status": "unavailable",
       "value": null
     },
+    "agreement.synthetic.style.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "agreement.synthetic.style_preference_match.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -4127,6 +4357,17 @@
       "n": 0,
       "needs_references": true,
       "reason": "Unavailable: no synthetic references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.synthetic.style_preference_match.within_reviewer_range_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "needs_second_reviews": true,
+      "reason": "Unavailable: no case of this tier was rated by a second reviewer",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -4678,6 +4919,38 @@
       "status": "measured",
       "value": 0.9592
     },
+    "shopping_advisor.availability_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no case with a Style DNA profile produced ratings",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "shopping_advisor.mistargeted_recommendation_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no case with a Style DNA profile produced ratings",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "shopping_advisor.unrequested_recommendation_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 50,
+      "needs_references": false,
+      "se": 0.0198,
+      "status": "measured",
+      "style_dna_condition": "without_style_dna",
+      "value": 0.02
+    },
     "stability.rating.color": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -4836,7 +5109,8 @@
   "mode": "mock",
   "next_steps": [
     "These are hand-written fixture outputs. To learn anything about a model, replay a recording from an approved live benchmark run.",
-    "Add human-reviewed cases with real images (evaluation/HUMAN_REVIEW.md). Until then accuracy on real images is unavailable."
+    "Add human-reviewed cases with real images (evaluation/HUMAN_REVIEW.md). Until then accuracy on real images is unavailable.",
+    "Fewer than 10 cases in: same_garment_views (3), outfit_items (2). A garment mode with no case has no figure at all; one with fewer than 10 stays \"too few to conclude\". Images do not count: an outfit of three items is one case."
   ],
   "performance": {
     "cost": {
@@ -6186,6 +6460,596 @@
       "pattern_identification": "The output has no pattern field. Pattern is covered only by the grounding proxy (key facts with attribute \"pattern\").",
       "single_garment_identification": "The output names a garment type only for the items of an outfit. A single garment, and views of one garment, carry none."
     },
+    "reviewer_agreement": {
+      "brief_derived": {
+        "cases": 0,
+        "dimensions": {
+          "color": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "formality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "occasion": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "seasonality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style_preference_match": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "disagreements": [],
+        "model_within_reviewer_range": {
+          "color": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "formality": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "occasion": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "seasonality": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "style": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "style_preference_match": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        }
+      },
+      "image_reviewed": {
+        "cases": 0,
+        "dimensions": {
+          "color": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "formality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "occasion": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "seasonality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style_preference_match": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "disagreements": [],
+        "model_within_reviewer_range": {
+          "color": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "formality": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "occasion": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "seasonality": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "style": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "style_preference_match": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        }
+      },
+      "synthetic": {
+        "cases": 0,
+        "dimensions": {
+          "color": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "formality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "occasion": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "seasonality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style_preference_match": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mean_distance": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "disagreements": [],
+        "model_within_reviewer_range": {
+          "color": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "formality": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "occasion": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "seasonality": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "style": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "style_preference_match": {
+            "n": 0,
+            "reason": "Unavailable: no case of this tier was rated by a second reviewer",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        }
+      }
+    },
+    "shopping_advisor": {
+      "availability_rate": {
+        "n": 0,
+        "reason": "Unavailable: no case with a Style DNA profile produced ratings",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "cases_with_style_dna": 0,
+      "cases_without_style_dna": 50,
+      "mistargeted_recommendation_rate": {
+        "n": 0,
+        "reason": "Unavailable: no case with a Style DNA profile produced ratings",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "unrequested_recommendation_rate": {
+        "n": 50,
+        "se": 0.0198,
+        "status": "measured",
+        "value": 0.02
+      }
+    },
     "stability_by_dimension": {
       "color": {
         "n": 50,
@@ -6224,6 +7088,12 @@
         "value": 1
       }
     },
+    "style_dna": {
+      "cases_with_style_dna": 0,
+      "cases_without_style_dna": 54,
+      "mixed": false,
+      "reading": "No evaluated case sends a Style DNA profile. Every figure describes cases without one; nothing is pooled."
+    },
     "thresholds": {
       "min_sample": 10,
       "noise_floor_bands": 0.25,
@@ -6242,12 +7112,15 @@
     "dataset": null,
     "dataset_version": null,
     "fingerprint": null,
+    "image_cases_with_second_review": 0,
     "image_reviewers": [],
     "image_reviews_from": null,
     "image_reviews_to": null,
+    "image_second_reviewers": [],
+    "scoring_fingerprint": null,
     "status": "none"
   },
-  "report_format": "verdict-evaluation-report/3",
+  "report_format": "verdict-evaluation-report/4",
   "selection": {
     "cases_evaluated": 54,
     "filters": {

@@ -26,6 +26,8 @@ export interface RunDetail {
   dimensions?: RawOpenAIDimensions
   /** The per-item notes exactly as the model returned them, unvalidated. Present only when the output carried the block. */
   outfit_components?: unknown
+  /** The shopping advisor block exactly as the model returned it, unvalidated. Present only when the output carried one. */
+  shopping_advisor?: unknown
   prohibited_hits: string[]
   forbidden_claim_hits: string[]
 }

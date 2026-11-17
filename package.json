@@ -17,7 +17,11 @@
         "eval": "jest --config jest.evaluation.config.ts --runInBand",
         "eval:scenarios": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v1",
         "eval:baseline": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --update-baseline",
+        "eval:scenarios:v2": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v2",
+        "eval:baseline:v2": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v2 --update-baseline",
         "eval:build-dataset": "node scripts/evaluation/build-scenarios.cjs",
+        "eval:build-golden-plan": "node scripts/evaluation/build-golden-plan.cjs",
+        "eval:second-review": "node scripts/evaluation/second-review.cjs",
         "eval:replay": "node scripts/evaluation/run-eval.cjs --mode replay",
         "eval:references": "node scripts/evaluation/run-eval.cjs --mode check-references",
         "eval:review-stubs": "node scripts/evaluation/review-stubs.cjs"

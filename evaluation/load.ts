@@ -98,6 +98,10 @@ export function mockFixturePaths(root: string): { casesPath: string; recordingPa
  *   reference set: its outputs ARE the expectations, so scoring them against
  *   themselves would measure nothing.
  *
+ * - `scenarios-v2`: every case of `scenarios-v1`, unchanged, plus cases that
+ *   bring each garment mode to at least ten and add synthetic Style DNA. It has
+ *   its own baseline; `scenarios-v1` and its baseline are kept as they were.
+ *
  * The golden dataset (`evaluation/datasets/golden-v1/`) is not listed here. It
  * holds real images and real model outputs, so it is always evaluated by
  * replaying a recording (see evaluation/HUMAN_REVIEW.md).
@@ -105,6 +109,7 @@ export function mockFixturePaths(root: string): { casesPath: string; recordingPa
 export const DATASETS = {
   selftest: { dir: MOCK_FIXTURE_DIR, baseline: null, references: true },
   'scenarios-v1': { dir: path.join('evaluation', 'datasets', 'scenarios-v1'), baseline: path.join('evaluation', 'baselines', 'scenarios-v1.json'), references: false },
+  'scenarios-v2': { dir: path.join('evaluation', 'datasets', 'scenarios-v2'), baseline: path.join('evaluation', 'baselines', 'scenarios-v2.json'), references: false },
 } as const
 
 export type DatasetId = keyof typeof DATASETS

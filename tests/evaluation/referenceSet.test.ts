@@ -420,15 +420,19 @@ describe('committed reference files', () => {
     const manifest = JSON.parse(readFileSync(path.join(dir, 'cases.template.json'), 'utf8')) as { cases: unknown[] }
     const cases = manifestSchema.parse(manifest).cases
     const template = loadReferenceSet(path.join(dir, 'references.template.json'), cases)
-    expect(template.references.map(tierOf)).toEqual(['unreviewed', 'unreviewed', 'unreviewed'])
+    // A plan, not a review: every reference is an empty stub.
+    expect(new Set(template.references.map(tierOf))).toEqual(new Set(['unreviewed']))
+    expect(template.references).toHaveLength(cases.length)
     expect(new Set(cases.map((benchmarkCase) => benchmarkCase.garment_mode ?? 'single'))).toEqual(new Set(['single', 'same_garment_views', 'outfit_items']))
+    // Apart from the comparison group of a planned pair, a stub is exactly what the reviewer's own command writes.
     const generated = stubs.plan(manifest, { format: REFERENCE_SET_FORMAT, dataset: 'golden-v1', dataset_version: '0.1.0', references: [] }).stubs
-    expect(template.references).toEqual(generated)
+    expect(template.references.map(({ comparison_group: _group, ...stub }) => stub)).toEqual(generated)
   })
 
   it('leave the golden dataset empty until real images have been reviewed', () => {
     const dir = path.join(root, 'evaluation', 'datasets', 'golden-v1')
-    expect(readdirSync(dir).sort()).toEqual(['README.md', 'cases.template.json', 'references.template.json'])
+    // The plan, its empty review stubs and the generated case matrix. No real manifest, no reviews, no image.
+    expect(readdirSync(dir).sort()).toEqual(['CASE_MATRIX.md', 'README.md', 'cases.template.json', 'references.template.json'])
   })
 })
 

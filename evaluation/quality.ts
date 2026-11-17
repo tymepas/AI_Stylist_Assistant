@@ -16,6 +16,26 @@
  * 4. MULTI-IMAGE  — do the three garment modes behave differently, and are the
  *                   per-item notes of an outfit complete and correct?
  *
+ * Two further sections say how far the figures above can be leaned on:
+ *
+ * 5. REVIEWERS    — where a case was rated by two people, how often do THEY
+ *                   agree? A rating is a judgement, not a fact. Agreement
+ *                   between a model and one reviewer cannot mean more than
+ *                   agreement between two reviewers does.
+ * 6. ADVISOR      — with a Style DNA profile, is the advisory block usable?
+ *                   Without one, is it left empty as instructed?
+ *
+ * STYLE DNA IS A CONDITION ON A CASE, NOT A GARMENT MODE. A profile changes
+ * what the model is told, so a figure that combines cases with and without one
+ * mixes two conditions. Such figures are never mixed silently:
+ * - every figure that combines both conditions is labelled as POOLED;
+ * - next to it, the same figure is computed for each condition on its own,
+ *   wherever that condition has at least MIN_SAMPLE cases behind the figure;
+ * - where it has fewer, the separate figure is `unavailable`, with the reason.
+ *   It is not shown as a value that "may not be concluded from": a number
+ *   from four cases of one condition, next to a pooled number from twelve,
+ *   invites exactly the comparison it cannot support.
+ *
  * Every figure is reported once per reference TIER (see reference.ts). Only the
  * `image_reviewed` tier is evidence about accuracy on real images, and only
  * when the outputs came from a model. Without such references that tier reads
@@ -38,8 +58,9 @@ import type { RawOpenAIConfidence, RawOpenAIDimensions, RawOpenAIRating } from '
 import { DIMENSION_KEYS, type Band, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { GARMENT_MODES, type GarmentMode } from '@/lib/constants/garmentModes'
 import { validateOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
-import type { EvaluationMetrics, RunDetail } from './metrics'
-import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
+import { validateShoppingRecommendations } from '@/lib/services/openai/shoppingRecommendationSchema'
+import { computeMetrics, type EvaluationMetrics, type RunDetail } from './metrics'
+import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, reviewerRatings, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
 
 // ---------------------------------------------------------------------------
 // Thresholds
@@ -327,6 +348,186 @@ function pooledAgreement(scored: ScoredCase[], reason: string): PooledAgreement 
     exact_rate: rateMetric(perCase.map((entry) => entry.exact), reason),
     within_one_rate: rateMetric(perCase.map((entry) => entry.within_one), reason),
     mae: meanMetric(perCase.map((entry) => entry.mae).filter((value): value is number => value !== null), reason),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Reviewers: how far two people agree with each other
+// ---------------------------------------------------------------------------
+
+export interface ReviewerDisagreement {
+  case_id: string
+  /** Dimensions on which two reviewers of the case gave different ratings. */
+  dimensions: DimensionKey[]
+  /** Of those, the ones that are FAR APART: two or more bands apart, or one reviewer rated what another could not judge. */
+  severe: DimensionKey[]
+}
+
+export interface ReviewerAgreementBlock {
+  /** Cases of this tier that were rated by a second person as well. */
+  cases: number
+  /**
+   * Per dimension, over those cases: how often two reviewers gave the same
+   * rating, a rating within one band, and how far apart they were. A case
+   * contributes one value: the share of its reviewer pairs that agree.
+   *
+   * The distance covers only pairs in which both reviewers gave a rating. A
+   * pair in which one could not judge has no distance; it shows in the two
+   * rates and in the list of disagreements instead.
+   */
+  dimensions: Record<DimensionKey, { exact_rate: Metric; within_one_rate: Metric; mean_distance: Metric }>
+  /** Every case on which reviewers differ. For people to read: none of these is an error in a review. */
+  disagreements: ReviewerDisagreement[]
+  /**
+   * Per dimension, over cases with a second review and a scored output: how
+   * often the model's rating is one that a reviewer gave, or lies between two
+   * reviewers' ratings. Where reviewers differ, a rating inside their range
+   * cannot be called wrong.
+   */
+  model_within_reviewer_range: Record<DimensionKey, Metric>
+}
+
+const NO_SECOND_REVIEW = 'Unavailable: no case of this tier was rated by a second reviewer'
+
+/** Where two or more people rated one case: the dimensions they differ on. Null when the case has no second review. */
+export function reviewerDisagreement(reference: CaseReference): ReviewerDisagreement | null {
+  if ((reference.second_reviews ?? []).length === 0) return null
+  const dimensions: DimensionKey[] = []
+  const severe: DimensionKey[] = []
+  for (const key of DIMENSION_KEYS) {
+    const pairs = pairsOf(reviewerRatings(reference, key))
+    if (pairs.some((pair) => !pair.exact)) dimensions.push(key)
+    if (pairs.some((pair) => pair.severe)) severe.push(key)
+  }
+  return { case_id: reference.case_id, dimensions, severe }
+}
+
+/** Every pair of ratings given to one dimension of one case, compared. */
+function pairsOf(ratings: ReferenceRating[]): RatingComparison[] {
+  const pairs: RatingComparison[] = []
+  for (let a = 0; a < ratings.length; a += 1) for (let b = a + 1; b < ratings.length; b += 1) pairs.push(compareRating(ratings[a], ratings[b]))
+  return pairs
+}
+
+/** True when the rating is one a reviewer gave, or lies between the lowest and the highest band reviewers gave. */
+function withinReviewerRange(rating: RawOpenAIRating, given: ReferenceRating[]): boolean {
+  if ((given as string[]).includes(rating)) return true
+  if (rating === UNRATED) return false
+  const bands = given.filter((entry) => entry !== UNRATED).map((entry) => BAND[entry])
+  return bands.length > 0 && BAND[rating] >= Math.min(...bands) && BAND[rating] <= Math.max(...bands)
+}
+
+/**
+ * Reviewer agreement needs no model output: it describes the reviews. Only the
+ * last figure, the model against the range of the reviewers, uses the outputs.
+ */
+function reviewerAgreementOf(references: CaseReference[], scored: ScoredCase[], outputReason: string): ReviewerAgreementBlock {
+  const reviewedTwice = references.filter((reference) => (reference.second_reviews ?? []).length > 0)
+  const scoredTwice = scored.filter((entry) => (entry.reference.second_reviews ?? []).length > 0)
+  const rangeReason = reviewedTwice.length === 0 ? NO_SECOND_REVIEW : outputReason
+
+  const dimensions = Object.fromEntries(DIMENSION_KEYS.map((key) => {
+    const exact: number[] = []
+    const withinOne: number[] = []
+    const distances: number[] = []
+    for (const reference of reviewedTwice) {
+      const pairs = pairsOf(reviewerRatings(reference, key))
+      if (pairs.length === 0) continue
+      exact.push(share(pairs, (pair) => pair.exact))
+      withinOne.push(share(pairs, (pair) => pair.within_one))
+      const rated = pairs.map((pair) => pair.distance).filter((distance): distance is number => distance !== null)
+      if (rated.length > 0) distances.push(mean(rated))
+    }
+    // With second reviews present, an empty distance means that no pair has two ratings (for example both said "Unable to Evaluate").
+    return [key, { exact_rate: rateMetric(exact, NO_SECOND_REVIEW), within_one_rate: rateMetric(withinOne, NO_SECOND_REVIEW), mean_distance: meanMetric(distances, reviewedTwice.length === 0 ? NO_SECOND_REVIEW : 'Unavailable: in no twice-reviewed case did two reviewers both give a rating for this dimension') }]
+  })) as ReviewerAgreementBlock['dimensions']
+
+  const modelWithinRange = Object.fromEntries(DIMENSION_KEYS.map((key) => {
+    const values: number[] = []
+    for (const { reference, runs } of scoredTwice) {
+      const given = reviewerRatings(reference, key)
+      if (given.length > 0) values.push(share(runs, (run) => withinReviewerRange(run.dimensions[key].rating, given)))
+    }
+    return [key, rateMetric(values, rangeReason)]
+  })) as Record<DimensionKey, Metric>
+
+  return {
+    cases: reviewedTwice.length,
+    dimensions,
+    disagreements: reviewedTwice
+      .map((reference) => reviewerDisagreement(reference) as ReviewerDisagreement)
+      .filter((entry) => entry.dimensions.length > 0)
+      .sort((a, b) => a.case_id.localeCompare(b.case_id)),
+    model_within_reviewer_range: modelWithinRange,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Shopping Advisor (advisory only; nothing here reaches the verdict)
+// ---------------------------------------------------------------------------
+
+export interface ShoppingAdvisorBlock {
+  /** Cases that send a Style DNA profile and have at least one complete run. */
+  cases_with_style_dna: number
+  /** Cases without Style DNA that have at least one complete run. */
+  cases_without_style_dna: number
+  /**
+   * Per case with Style DNA: the share of its complete runs whose advisor block
+   * passes the production validation, which is when the application shows it.
+   */
+  availability_rate: Metric
+  /**
+   * Per case with Style DNA and a valid block: the share of its recommendations
+   * that address only dimensions the same run rated Excellent. The prompt asks
+   * for alternatives that address weak dimensions. A run that rated all six
+   * dimensions Excellent is left out: it has no weak dimension to address, and
+   * the prompt still asks it for at least one alternative.
+   */
+  mistargeted_recommendation_rate: Metric
+  /**
+   * Per case without Style DNA: the share of its complete runs that returned
+   * recommendations anyway. The prompt asks for an empty list, and the
+   * application discards whatever arrives.
+   */
+  unrequested_recommendation_rate: Metric
+}
+
+function validAdvisor(run: CompleteRun): Array<{ addresses: string[] }> | null {
+  try {
+    return validateShoppingRecommendations(run.shopping_advisor)
+  } catch {
+    return null
+  }
+}
+
+function shoppingAdvisorOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDetail[]>): ShoppingAdvisorBlock {
+  const availability: number[] = []
+  const mistargeted: number[] = []
+  const unrequested: number[] = []
+  for (const benchmarkCase of cases) {
+    const runs = completeRuns(runsByCase.get(benchmarkCase.id) ?? [])
+    if (runs.length === 0) continue
+    if (benchmarkCase.style_dna) {
+      const blocks = runs.map((run) => ({ run, recommendations: validAdvisor(run) }))
+      availability.push(share(blocks, (block) => block.recommendations !== null))
+      const targets = blocks
+        .filter(({ run }) => DIMENSION_KEYS.some((key) => run.dimensions[key].rating !== 'Excellent'))
+        .flatMap(({ run, recommendations }) => (recommendations ?? []).map((recommendation) => recommendation.addresses.every((key) => run.dimensions[key as DimensionKey]?.rating === 'Excellent')))
+      if (targets.length > 0) mistargeted.push(share(targets, (missed) => missed))
+    } else {
+      unrequested.push(share(runs, (run) => {
+        const list = (run.shopping_advisor as { recommendations?: unknown } | null | undefined)?.recommendations
+        return Array.isArray(list) && list.length > 0
+      }))
+    }
+  }
+  const noStyleDna = 'Unavailable: no case with a Style DNA profile produced ratings'
+  return {
+    cases_with_style_dna: availability.length,
+    cases_without_style_dna: unrequested.length,
+    availability_rate: rateMetric(availability, noStyleDna),
+    mistargeted_recommendation_rate: rateMetric(mistargeted, availability.length === 0 ? noStyleDna : 'Unavailable: no run with Style DNA returned a valid advisor block next to a dimension rated below Excellent'),
+    unrequested_recommendation_rate: rateMetric(unrequested, 'Unavailable: no case without Style DNA produced ratings'),
   }
 }
 
@@ -716,12 +917,55 @@ export interface QualityReport {
   calibration: Record<ScoredTier, CalibrationBlock>
   garment_identification: Record<ScoredTier, GarmentIdentificationBlock>
   multi_image: MultiImageBlock
+  /** How far two reviewers of the same case agree with each other. The context every agreement figure above is read in. */
+  reviewer_agreement: Record<ScoredTier, ReviewerAgreementBlock>
+  /** The advisory block, with and without Style DNA. It never reaches the verdict. */
+  shopping_advisor: ShoppingAdvisorBlock
+  /** Whether the evaluated cases mix both Style DNA conditions, and how the figures of this report relate to that. */
+  style_dna: StyleDnaSummary
   /** Per dimension: share of repeated cases that got the same rating on every run. */
   stability_by_dimension: Record<DimensionKey, Metric>
   /** What the current output cannot support, so that a missing figure is never read as a measured one. */
   not_measurable: Record<string, string>
   /** Cases whose manifest lists `expected.key_facts` as plain text. Those are for a reviewer; only the facts of a reference are scored. */
   cases_with_unscored_manifest_facts: number
+}
+
+// ---------------------------------------------------------------------------
+// Style DNA as a condition
+// ---------------------------------------------------------------------------
+
+export const STYLE_DNA_CONDITIONS = ['with_style_dna', 'without_style_dna'] as const
+export type StyleDnaCondition = (typeof STYLE_DNA_CONDITIONS)[number]
+
+const CONDITION_WORDS: Record<StyleDnaCondition, string> = { with_style_dna: 'with Style DNA', without_style_dna: 'without Style DNA' }
+
+export interface StyleDnaSummary {
+  /** True when the evaluated cases include cases that send a Style DNA profile and cases that do not. */
+  mixed: boolean
+  cases_with_style_dna: number
+  cases_without_style_dna: number
+  /** How to read the figures of this report with respect to the condition. A fixed sentence, never model text. */
+  reading: string
+}
+
+export const STYLE_DNA_READING = {
+  mixed: 'This report mixes cases with and without a Style DNA profile. Every figure that combines them is marked as pooled. Separate figures for each condition are in the metric index under "style_dna.with_style_dna." and "style_dna.without_style_dna."; one built from fewer than the minimum sample is unavailable, not shown as a value.',
+  without: 'No evaluated case sends a Style DNA profile. Every figure describes cases without one; nothing is pooled.',
+  with: 'Every evaluated case sends a Style DNA profile. Every figure describes cases with one; nothing is pooled.',
+  none: 'No case was evaluated.',
+} as const
+
+function styleDnaSummaryOf(cases: BenchmarkCase[]): StyleDnaSummary {
+  const withProfile = cases.filter((benchmarkCase) => benchmarkCase.style_dna !== undefined).length
+  const without = cases.length - withProfile
+  const mixed = withProfile > 0 && without > 0
+  return {
+    mixed,
+    cases_with_style_dna: withProfile,
+    cases_without_style_dna: without,
+    reading: mixed ? STYLE_DNA_READING.mixed : cases.length === 0 ? STYLE_DNA_READING.none : withProfile > 0 ? STYLE_DNA_READING.with : STYLE_DNA_READING.without,
+  }
 }
 
 export const NOT_MEASURABLE: Record<string, string> = {
@@ -781,7 +1025,10 @@ export function computeQuality(
     calibration: perTier((tier) => calibrationOf(scoredByTier[tier], reasonByTier[tier])),
     garment_identification: perTier((tier) => garmentIdentificationOf(scoredByTier[tier], reasonByTier[tier])),
     multi_image: multiImageOf(cases, runsByCase, references, scoredByTier, reasonByTier),
+    reviewer_agreement: perTier((tier) => reviewerAgreementOf(referenceCases[tier].map((benchmarkCase) => (references.get(benchmarkCase.id) as ResolvedReference).reference), scoredByTier[tier], reasonByTier[tier])),
+    shopping_advisor: shoppingAdvisorOf(cases, runsByCase),
     stability_by_dimension: stability,
+    style_dna: styleDnaSummaryOf(cases),
     not_measurable: NOT_MEASURABLE,
     cases_with_unscored_manifest_facts: cases.filter((benchmarkCase) => benchmarkCase.expected.key_facts.length > 0).length,
   }
@@ -797,6 +1044,12 @@ export interface IndexedMetric extends Metric {
   kind: 'rate' | 'bands'
   /** True when the figure depends on the reference set, so it is comparable only between reports that used the same one. */
   needs_references: boolean
+  /** Present, and true, only for a figure that uses second reviews: it is comparable only when those are the same as well. */
+  needs_second_reviews?: true
+  /** Present, and true, when the figure combines cases with and without a Style DNA profile. Absent when the report holds one condition only. */
+  pooled_over_style_dna?: true
+  /** Present when the figure describes one Style DNA condition only. */
+  style_dna_condition?: StyleDnaCondition
 }
 
 export type MetricIndex = Record<string, IndexedMetric>
@@ -809,8 +1062,23 @@ export type MetricIndex = Record<string, IndexedMetric>
  */
 export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityReport): MetricIndex {
   const index: MetricIndex = {}
-  const add = (name: string, metric: Metric, direction: IndexedMetric['direction'], kind: IndexedMetric['kind'], needsReferences: boolean) => {
-    index[name] = { ...metric, direction, kind, needs_references: needsReferences }
+  // The advisor figures are condition-specific by definition: two exist only with a profile, one only without.
+  const ADVISOR_CONDITION: Record<string, StyleDnaCondition> = {
+    'shopping_advisor.availability_rate': 'with_style_dna',
+    'shopping_advisor.mistargeted_recommendation_rate': 'with_style_dna',
+    'shopping_advisor.unrequested_recommendation_rate': 'without_style_dna',
+  }
+  const add = (name: string, metric: Metric, direction: IndexedMetric['direction'], kind: IndexedMetric['kind'], needsReferences: boolean, needsSecondReviews = false) => {
+    const condition = ADVISOR_CONDITION[name]
+    index[name] = {
+      ...metric,
+      direction,
+      kind,
+      needs_references: needsReferences,
+      ...(needsSecondReviews ? { needs_second_reviews: true as const } : {}),
+      // Never pooled silently: in a report that mixes both conditions, every combined figure says so.
+      ...(condition ? { style_dna_condition: condition } : quality.style_dna.mixed ? { pooled_over_style_dna: true as const } : {}),
+    }
   }
 
   add('validity.valid_output_rate', quality.by_case.valid_output_rate, 'higher_is_better', 'rate', false)
@@ -828,6 +1096,8 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
       add(`agreement.${tier}.${key}.exact_rate`, agreement.dimensions[key].exact_rate, 'higher_is_better', 'rate', true)
       add(`agreement.${tier}.${key}.within_one_rate`, agreement.dimensions[key].within_one_rate, 'higher_is_better', 'rate', true)
       add(`agreement.${tier}.${key}.mae`, agreement.dimensions[key].mae, 'lower_is_better', 'bands', true)
+      // Reviewer-to-reviewer agreement is not indexed: it describes the reviews, not the outputs, so it cannot regress.
+      add(`agreement.${tier}.${key}.within_reviewer_range_rate`, quality.reviewer_agreement[tier].model_within_reviewer_range[key], 'higher_is_better', 'rate', true, true)
     }
 
     const grounding = quality.grounding[tier]
@@ -855,8 +1125,67 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
     add(`multi_image.${mode}.repeat_rating_stability`, quality.multi_image.modes[mode].repeat_rating_stability, 'higher_is_better', 'rate', false)
   }
   add('multi_image.outfit_items.completeness_rate', quality.multi_image.outfit_items.completeness_rate, 'higher_is_better', 'rate', false)
+  add('shopping_advisor.availability_rate', quality.shopping_advisor.availability_rate, 'higher_is_better', 'rate', false)
+  add('shopping_advisor.mistargeted_recommendation_rate', quality.shopping_advisor.mistargeted_recommendation_rate, 'lower_is_better', 'rate', false)
+  add('shopping_advisor.unrequested_recommendation_rate', quality.shopping_advisor.unrequested_recommendation_rate, 'lower_is_better', 'rate', false)
   add('multi_image.comparison_groups.cross_mode_rating_consistency', quality.multi_image.comparison_groups.cross_mode_rating_consistency, 'higher_is_better', 'rate', true)
   add('multi_image.comparison_groups.mean_band_shift', quality.multi_image.comparison_groups.mean_band_shift, 'lower_is_better', 'bands', true)
 
+  return index
+}
+
+// ---------------------------------------------------------------------------
+// Separate figures for each Style DNA condition
+// ---------------------------------------------------------------------------
+
+/** The name of a figure computed for one Style DNA condition only. */
+export function styleDnaMetricName(condition: StyleDnaCondition, name: string): string {
+  return `style_dna.${condition}.${name}`
+}
+
+/**
+ * Every figure of the metric index, computed again for the cases with a Style
+ * DNA profile only and for the cases without one only. Empty when the evaluated
+ * cases hold one condition, because then nothing is pooled and the ordinary
+ * figures already describe that condition.
+ *
+ * The figures are produced by the same code as the pooled ones, run on the
+ * cases of one condition: there is no second definition of any metric that
+ * could drift from the first. Everything that holds for a pooled figure holds
+ * here too: the unit is a case, tiers are never merged, and hand-written
+ * outputs are never scored against human reviews.
+ *
+ * One rule is stricter. A pooled figure built from fewer than MIN_SAMPLE cases
+ * is shown and marked `insufficient_sample`. A separate figure built from
+ * fewer is `unavailable`: it has no value at all.
+ */
+export function buildStyleDnaIndex(
+  details: RunDetail[],
+  cases: BenchmarkCase[],
+  references: Map<string, ResolvedReference>,
+  outputs: 'model' | 'synthetic_fixture',
+): MetricIndex {
+  const groups: Record<StyleDnaCondition, BenchmarkCase[]> = {
+    with_style_dna: cases.filter((benchmarkCase) => benchmarkCase.style_dna !== undefined),
+    without_style_dna: cases.filter((benchmarkCase) => benchmarkCase.style_dna === undefined),
+  }
+  if (groups.with_style_dna.length === 0 || groups.without_style_dna.length === 0) return {}
+
+  const index: MetricIndex = {}
+  for (const condition of STYLE_DNA_CONDITIONS) {
+    const subset = groups[condition]
+    const ids = new Set(subset.map((benchmarkCase) => benchmarkCase.id))
+    const subsetDetails = details.filter((detail) => ids.has(detail.case_id))
+    const subsetIndex = buildMetricIndex(computeMetrics(subsetDetails, subset), computeQuality(subsetDetails, subset, references, outputs))
+    for (const name of Object.keys(subsetIndex).sort()) {
+      // The advisor figures are already specific to one condition in the main index.
+      if (name.startsWith('shopping_advisor.')) continue
+      const metric = subsetIndex[name]
+      const separate: IndexedMetric = metric.status === 'insufficient_sample'
+        ? { ...metric, status: 'unavailable', reason: `Unavailable: only ${metric.n} unit(s) ${CONDITION_WORDS[condition]} stand behind this figure; a separate figure needs at least ${MIN_SAMPLE}. See the pooled figure "${name}".`, value: null, n: 0, se: null }
+        : metric
+      index[styleDnaMetricName(condition, name)] = { ...separate, style_dna_condition: condition }
+    }
+  }
   return index
 }

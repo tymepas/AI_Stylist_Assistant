@@ -26,6 +26,14 @@
  * These rules cannot stop someone from typing a false statement into a file.
  * They make sure it has to be a deliberate, attributable one.
  *
+ * A RATING IS ONE PERSON'S JUDGEMENT, NOT A FACT. Whether a jacket is "Good"
+ * or "Fair" for an occasion is a matter two careful people can differ on. A
+ * reference may therefore carry SECOND REVIEWS: the same case rated again by
+ * another person, independently. They are stored next to the first review and
+ * never merged into it, so every disagreement stays on record, and the report
+ * can say how far reviewers agree with each other before it says how far a
+ * model agrees with one of them.
+ *
  * This module performs no file or network access.
  */
 
@@ -111,6 +119,22 @@ const dimensionRatingsSchema = z
   })
   .strict()
 
+/**
+ * The same case rated again by another person, without sight of the first
+ * review or of any model output. A second review is never used to "correct"
+ * the first: both are kept, and where they differ that is a recorded
+ * disagreement, not an error in either.
+ */
+const secondReviewSchema = z
+  .object({
+    reviewer: z.object({ id: identifier(40) }).strict(),
+    reviewed_on: z.string().refine(isCalendarDate, 'reviewed_on must be a real date written as YYYY-MM-DD'),
+    dimension_ratings: dimensionRatingsSchema,
+    /** What the reviewers concluded when they discussed a difference. The ratings above stay as they were given. */
+    notes: z.string().max(500).optional(),
+  })
+  .strict()
+
 const garmentItemSchema = z
   .object({
     /** Number of the garment image this entry describes, starting at 1. */
@@ -166,12 +190,15 @@ const referenceSchema = z
     unverifiable_terms: z.array(term).max(12).optional(),
     /** Cases that show the same garment for the same occasion and differ only in how it was photographed. */
     comparison_group: identifier(40).optional(),
+    /** Independent reviews of the same case by other people. See secondReviewSchema. */
+    second_reviews: z.array(secondReviewSchema).min(1).max(4).optional(),
     review_notes: z.string().max(500).optional(),
   })
   .strict()
 
 export type CaseReference = z.infer<typeof referenceSchema>
 export type KeyFact = NonNullable<CaseReference['key_facts']>[number]
+export type SecondReview = NonNullable<CaseReference['second_reviews']>[number]
 
 function duplicates(values: Array<string | number>): Array<string | number> {
   const seen = new Set<string | number>()
@@ -197,6 +224,19 @@ export function referenceProblems(reference: CaseReference): string[] {
     if (realImage) problems.push('a synthetic expectation cannot name a real image source')
     if (reference.reviewer) problems.push('a synthetic expectation carries no reviewer')
     if (reference.reviewed_on) problems.push('a synthetic expectation carries no review date')
+  }
+
+  // A second review is a second human judgement, complete in itself and by someone else.
+  const second = reference.second_reviews ?? []
+  if (second.length > 0) {
+    if (basis !== 'image_review' && basis !== 'brief') problems.push('only a human review (basis image_review or brief) can carry a second review')
+    else if (status !== 'complete') problems.push('a second review is added only to a finished first review (status "complete")')
+    for (const id of duplicates(second.map((review) => review.reviewer.id))) problems.push(`second reviewer "${id}" appears twice`)
+    for (const review of second) {
+      if (review.reviewer.id === reference.reviewer?.id) problems.push(`second reviewer "${review.reviewer.id}" is also the first reviewer; a second review is by another person`)
+      const unrated = DIMENSION_KEYS.filter((key) => review.dimension_ratings[key] === undefined)
+      if (unrated.length > 0) problems.push(`the second review by "${review.reviewer.id}" rates all six dimensions; missing: ${unrated.join(', ')}`)
+    }
   }
 
   if (status !== 'complete') return problems
@@ -305,14 +345,44 @@ export function manifestProblems(set: ReferenceSet, cases: BenchmarkCase[]): str
   for (const group of [...occasionsByGroup.keys()].sort()) {
     if ((occasionsByGroup.get(group) as Set<string>).size > 1) problems.push(`Comparison group ${group}: its cases have different occasions. A group holds the same garment for the same occasion`)
   }
+
+  // A group compares image modes and nothing else. Its cases must be sent with the same style preferences and the
+  // same Style DNA condition (the same persona, or none): otherwise a difference between them could come from either.
+  const conditionsByGroup = new Map<string, { preferences: Set<string>; styleDna: Set<string> }>()
+  for (const reference of set.references) {
+    const benchmarkCase = byId.get(reference.case_id)
+    if (!reference.comparison_group || !benchmarkCase) continue
+    const seen = conditionsByGroup.get(reference.comparison_group) ?? { preferences: new Set<string>(), styleDna: new Set<string>() }
+    seen.preferences.add(JSON.stringify(sortKeys(benchmarkCase.style_profile)))
+    seen.styleDna.add(benchmarkCase.style_dna?.persona ?? '(none)')
+    conditionsByGroup.set(reference.comparison_group, seen)
+  }
+  for (const group of [...conditionsByGroup.keys()].sort()) {
+    const seen = conditionsByGroup.get(group) as { preferences: Set<string>; styleDna: Set<string> }
+    if (seen.styleDna.size > 1) problems.push(`Comparison group ${group}: its cases differ in Style DNA (${[...seen.styleDna].sort().join(', ')}). Every case of a group is sent with the same profile, or with none`)
+    if (seen.preferences.size > 1) problems.push(`Comparison group ${group}: its cases have different style preferences. A group differs only in how the garment was photographed`)
+  }
   return problems
 }
 
 /** Reviews dated after `today` (YYYY-MM-DD). Kept out of the schema so that validation never depends on the clock. */
 export function futureDatedProblems(set: ReferenceSet, today: string): string[] {
-  return set.references
-    .filter((reference) => reference.reviewed_on !== undefined && reference.reviewed_on > today)
-    .map((reference) => `Reference ${reference.case_id}: reviewed_on is in the future`)
+  return set.references.flatMap((reference) => [
+    ...(reference.reviewed_on !== undefined && reference.reviewed_on > today ? [`Reference ${reference.case_id}: reviewed_on is in the future`] : []),
+    ...(reference.second_reviews ?? [])
+      .filter((review) => review.reviewed_on > today)
+      .map((review) => `Reference ${reference.case_id}: the second review by "${review.reviewer.id}" is dated in the future`),
+  ])
+}
+
+/**
+ * Every rating a case received for one dimension, the first review first.
+ * Empty when the first review does not rate the dimension.
+ */
+export function reviewerRatings(reference: CaseReference, key: DimensionKey): ReferenceRating[] {
+  const first = reference.dimension_ratings?.[key]?.rating
+  if (first === undefined) return []
+  return [first, ...(reference.second_reviews ?? []).flatMap((review) => (review.dimension_ratings[key] ? [review.dimension_ratings[key].rating] : []))]
 }
 
 export class ReferenceSetError extends Error {
@@ -347,6 +417,24 @@ export function referenceSetFingerprint(set: ReferenceSet): string {
   return fingerprint([JSON.stringify(sortKeys({ dataset: set.dataset, dataset_version: set.dataset_version, references: ordered }))])
 }
 
+/**
+ * Identifies what the reference-dependent figures are scored against: every
+ * first review, and nothing else. Second reviews and the hand-kept
+ * `dataset_version` are left out, because neither changes a single agreement,
+ * grounding or calibration figure. Two reports with the same scoring
+ * fingerprint can therefore be compared metric by metric even when a second
+ * review was added in between. Without this, adding a second review would make
+ * every such comparison "inconclusive" and a real regression would go unseen.
+ *
+ * The figures that do use second reviews are compared on the full fingerprint.
+ */
+export function referenceScoringFingerprint(set: ReferenceSet): string {
+  const ordered = [...set.references]
+    .sort((a, b) => a.case_id.localeCompare(b.case_id))
+    .map((reference) => Object.fromEntries(Object.entries(reference).filter(([key]) => key !== 'second_reviews')))
+  return fingerprint([JSON.stringify(sortKeys({ dataset: set.dataset, references: ordered }))])
+}
+
 export interface ResolvedReference {
   reference: CaseReference
   tier: ReferenceTier
@@ -368,6 +456,8 @@ export interface ReferenceSummary {
   dataset: string | null
   dataset_version: string | null
   fingerprint: string | null
+  /** The first reviews only (see referenceScoringFingerprint). What figures that ignore second reviews are compared on. */
+  scoring_fingerprint: string | null
   /** Cases of the evaluated selection, by the tier of their reference. */
   cases_by_tier: Record<ReferenceTier, number>
   cases_without_reference: number
@@ -375,6 +465,9 @@ export interface ReferenceSummary {
   image_reviewers: string[]
   image_reviews_from: string | null
   image_reviews_to: string | null
+  /** Image-reviewed cases that were also rated by a second person, and who those people are. */
+  image_cases_with_second_review: number
+  image_second_reviewers: string[]
 }
 
 export function summarizeReferences(set: ReferenceSet | undefined, cases: BenchmarkCase[]): ReferenceSummary {
@@ -388,11 +481,14 @@ export function summarizeReferences(set: ReferenceSet | undefined, cases: Benchm
     dataset: set?.dataset ?? null,
     dataset_version: set?.dataset_version ?? null,
     fingerprint: set ? referenceSetFingerprint(set) : null,
+    scoring_fingerprint: set ? referenceScoringFingerprint(set) : null,
     cases_by_tier: counts,
     cases_without_reference: cases.length - resolved.size,
     image_reviewers: [...new Set(reviewed.map((reference) => reference.reviewer?.id as string))].sort(),
     image_reviews_from: dates[0] ?? null,
     image_reviews_to: dates[dates.length - 1] ?? null,
+    image_cases_with_second_review: reviewed.filter((reference) => (reference.second_reviews ?? []).length > 0).length,
+    image_second_reviewers: [...new Set(reviewed.flatMap((reference) => (reference.second_reviews ?? []).map((review) => review.reviewer.id)))].sort(),
   }
 }
 

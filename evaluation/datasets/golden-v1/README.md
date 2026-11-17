@@ -4,16 +4,78 @@ Real images, rated by a person, for measuring a model against. **It is empty.**
 No case has been reviewed yet, so every accuracy figure reads
 `Unavailable: insufficient human-reviewed ground truth`.
 
+What is committed is a **plan**: which cases a balanced benchmark needs. It
+holds no image, no rating and no expected verdict band. Each brief says what
+kind of image to look for, which is a sourcing criterion and not a rating.
+
 | File | What it is | In Git |
 |---|---|---|
-| `cases.template.json` | Example manifest: one case per garment mode. Not real cases | Yes |
-| `references.template.json` | The review stubs `review-stubs.cjs` generates for the template. All unreviewed | Yes |
+| `cases.template.json` | The case plan: 45 planned cases, each a brief of what its images should show. Written by `npm run eval:build-golden-plan` | Yes |
+| `references.template.json` | One empty review stub per planned case. All unreviewed | Yes |
+| `CASE_MATRIX.md` | Every planned case in one table: garment mode, images, Style DNA, expected abstention, whether it gives ratings, and whether its results are reported separately or pooled. Written by the same command | Yes |
 | `cases.json` | The real manifest. Create it by copying the template | Yes, once it exists |
 | `references.json` | The real reviews: ratings, garment facts, key facts, image hashes. Text only | Yes, once it exists |
 | `benchmark/data/golden-v1/` | The images | **Never.** Git-ignored |
 | `benchmark/results/*.recording.json` | Model outputs from an approved live run | No. Git-ignored |
 
 How to add cases, the review rubric and every command: `evaluation/HUMAN_REVIEW.md`.
+
+## What the plan contains
+
+| | Cases | Garment images |
+|---|---|---|
+| One garment photo | 21 | 21 |
+| Several views of one garment | 12, two of them reserve cases | 28 |
+| Items of one outfit | 12, two of them reserve cases | 29 |
+| **Total** | **45** | **78**, plus 45 personal photos: 123 image slots, 103 different files |
+
+Cases and images are counted apart on purpose. Every sample size in a report
+counts cases; an outfit of three items is one case.
+
+- **Ten cases or more in each garment mode**, the minimum for a figure about a
+  mode to count as measured, **and two reserve cases in each multi-image mode**
+  (`gv-g11-views`, `gv-g12-views`, `gv-o11-outfit`, `gv-o12-outfit`). A reserve
+  is an ordinary case without Style DNA; it is there so that one case without
+  a complete output does not cost its mode its figures.
+- **Ten comparison pairs.** Garments `g01` to `g10` each appear as a single
+  photo and as two or three views, with the same personal photo and occasion.
+  A pair points at the same files.
+- **Fourteen cases send an invented Style DNA profile**: six single, four
+  multi-view and four outfits, so that the Shopping Advisor is exercised.
+  Style DNA is a condition on a case, not a garment mode: each of these cases
+  is counted in exactly one mode. Four of the fourteen are the second half of
+  a pair, so they are ten different photo-and-garment combinations. Only
+  aesthetic-only personas are used: they leave colouring and proportions empty
+  and so cannot contradict a real photo. No personal profile is part of this
+  data, and the manifest refuses any profile not marked `synthetic`.
+- **Eleven further single-photo cases** (`gv-s01` to `gv-s11`, named neutrally
+  so that an id does not tell a reviewer what to expect): two borderline fits,
+  three with poor image quality, two with ambiguous detail, two with text in
+  the image and two with insufficient input.
+- **Every case is `public_license`**, the only source whose model output a
+  recording stores.
+
+The plan is a starting point. Rewrite a brief to fit the image you find, or
+remove an entry; the validator says which garment mode then falls short.
+
+## What the plan does not give
+
+- **Margin for the comparison pairs.** There are exactly ten, and a reserve
+  case has no single-photo twin. One pair without a complete output on both
+  sides puts "one photo against several" back to "too few to conclude".
+- **Independent cases throughout.** The two cases of a pair share photo, garment
+  and occasion. The 43 cases that can give ratings are 33 different
+  combinations.
+- **Separate Style DNA figures for every garment mode.** A report gives each
+  condition its own figure where ten cases of that condition stand behind it:
+  here, all cases without Style DNA (29), all cases with it (14) and
+  single-garment cases without it (13). The multi-image modes have eight cases
+  without and four with, so their figures exist only pooled, and are labelled
+  as pooled. `CASE_MATRIX.md` shows this case by case.
+
+What it would take to go further is costed in
+`evaluation/LIVE_VALIDATION_PLAN.md` ("Options that cost more"). None of it is
+part of the plan as committed.
 
 ## Why the images are kept out of Git
 
