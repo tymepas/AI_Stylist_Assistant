@@ -213,6 +213,55 @@ describe('views of one garment', () => {
   })
 })
 
+describe('replacing one of several photos', () => {
+  async function withTwoViews(user: User) {
+    await toModeStep(user)
+    await user.click(screen.getByTestId('garment-mode-same_garment_views'))
+    await next(user)
+    await addGarment(user, 1, 'front.jpg', 'Garment view 1')
+    await addGarment(user, 2, 'back.jpg', 'Garment view 2')
+  }
+
+  it('keeps every photo when the replacement is refused as a duplicate, and says so', async () => {
+    const user = userEvent.setup()
+    await withTwoViews(user)
+
+    // Try to replace the second view with the photo that is already the first view.
+    await user.upload(slot(2).getByTestId('upload-gallery-input'), syntheticFile('front.jpg'))
+    const alert = await slot(2).findByRole('alert')
+    expect(alert.textContent).toMatch(/same photo as garment view 1/)
+    expect(alert.textContent).toContain('Your current photo was kept.')
+
+    expect(screen.getByTestId('garment-count').textContent).toBe('2 of 3 photos added')
+    const body = await finish(user)
+    const texts = await Promise.all((body.getAll('garment') as File[]).map(readText))
+    expect(texts.map((text) => text.replace(/\.+$/, ''))).toEqual(['prepared:front', 'prepared:back'])
+  })
+
+  it('keeps the current photo when the replacement cannot be prepared', async () => {
+    const user = userEvent.setup()
+    await withTwoViews(user)
+
+    prepareMock.mockRejectedValueOnce(new Error('simulated decode failure'))
+    await user.upload(slot(1).getByTestId('upload-gallery-input'), syntheticFile('broken.jpg'))
+    expect((await slot(1).findByRole('alert')).textContent).toContain('Your current photo was kept.')
+    expect(await screen.findByAltText('Garment view 1 preview')).toBeTruthy()
+    expect(screen.getByTestId('garment-count').textContent).toBe('2 of 3 photos added')
+  })
+
+  it('does not leave a message about one photo under a different photo after reordering', async () => {
+    const user = userEvent.setup()
+    await withTwoViews(user)
+    await user.upload(slot(2).getByTestId('upload-gallery-input'), syntheticFile('front.jpg'))
+    await slot(2).findByRole('alert')
+
+    await user.click(screen.getByRole('button', { name: 'Move Garment view 2 earlier' }))
+
+    await waitFor(() => expect(slot(2).queryByRole('alert')).toBeNull())
+    expect(slot(1).queryByRole('alert')).toBeNull()
+  })
+})
+
 describe('items of one outfit', () => {
   async function toUploader(user: User) {
     await toModeStep(user)

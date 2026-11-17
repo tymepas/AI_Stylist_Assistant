@@ -27,6 +27,12 @@ interface UploadCardProps {
   validatePrepared?: (file: File) => Promise<string | null> | string | null
   /** Extra controls shown under the preview, for example to reorder photos. */
   previewActions?: React.ReactNode
+  /**
+   * Keep the current photo until its replacement has been prepared and accepted. Used where the card is
+   * one of several: removing first would shift the other photos, and a refused replacement would lose a photo.
+   * Default (false): the current photo is removed as soon as another one is chosen.
+   */
+  keepPreviousOnReplace?: boolean
   /** Receives the prepared JPEG. The original file is never passed on. */
   onFileSelect: (file: File) => void
   onRemove: () => void
@@ -55,6 +61,7 @@ export default function UploadCard({
   compact = false,
   validatePrepared,
   previewActions,
+  keepPreviousOnReplace = false,
   onFileSelect,
   onRemove,
   disabled = false,
@@ -78,6 +85,12 @@ export default function UploadCard({
     return () => URL.revokeObjectURL(url)
   }, [file])
 
+  // A message about an earlier attempt does not belong to a different photo: when the photo shown in this
+  // card changes (replaced, or moved here by reordering), the message is cleared.
+  useEffect(() => {
+    if (file) setError(null)
+  }, [file])
+
   // Stop any preparation still running when the card goes away.
   useEffect(() => () => preparationRef.current?.abort(), [])
 
@@ -89,8 +102,9 @@ export default function UploadCard({
     preparationRef.current = controller
 
     setError(null)
-    // The previous photo is replaced, never silently kept while a new one is prepared.
-    if (file) onRemove()
+    // The previous photo is replaced, never silently kept while a new one is prepared. Where the card is one of
+    // several, the previous photo stays until the new one is accepted, and a failure says that it was kept.
+    if (file && !keepPreviousOnReplace) onRemove()
     setIsPreparing(true)
 
     try {
@@ -98,16 +112,34 @@ export default function UploadCard({
       if (controller.signal.aborted) return
       const refusal = validatePrepared ? await validatePrepared(prepared.file) : null
       if (controller.signal.aborted) return
-      if (refusal) setError(refusal)
+      if (refusal) setError(withKeptNote(refusal))
       else onFileSelect(prepared.file)
     } catch (preparationError) {
-      if (!controller.signal.aborted) setError(imagePreparationMessage(preparationError))
+      if (!controller.signal.aborted) setError(withKeptNote(imagePreparationMessage(preparationError)))
     } finally {
       if (preparationRef.current === controller) {
         preparationRef.current = null
         setIsPreparing(false)
       }
     }
+  }
+
+  /** Tells the user that the photo already in this slot is still there after a failed replacement. */
+  function withKeptNote(message: string): string {
+    return file && keepPreviousOnReplace ? `${message} Your current photo was kept.` : message
+  }
+
+  /** Stops a preparation in progress. With `keepPreviousOnReplace` the current photo is untouched. */
+  function handleCancel(event: MouseEvent) {
+    if (!keepPreviousOnReplace) {
+      handleRemove(event)
+      return
+    }
+    event.stopPropagation()
+    preparationRef.current?.abort()
+    preparationRef.current = null
+    setIsPreparing(false)
+    setError(null)
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -195,7 +227,7 @@ export default function UploadCard({
             <LoaderCircle className="h-7 w-7 animate-spin text-primary" aria-hidden="true" />
             <p className="mt-3 text-sm font-medium text-foreground">Preparing your photo…</p>
             <p className="mt-1 text-xs text-muted-foreground">This happens on your device. Nothing is uploaded yet.</p>
-            <Button type="button" size="sm" variant="ghost" className="focus-ring mt-3" onClick={handleRemove}>
+            <Button type="button" size="sm" variant="ghost" className="focus-ring mt-3" onClick={handleCancel}>
               Cancel
             </Button>
           </div>

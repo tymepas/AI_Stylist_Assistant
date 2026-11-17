@@ -123,6 +123,7 @@ export default function GarmentUploader({ mode, garments, onChange, disabled = f
                 file={file}
                 targetBytes={targetBytes}
                 validatePrepared={refuseDuplicate(index)}
+                keepPreviousOnReplace
                 onFileSelect={(selected) => setAt(index, selected)}
                 onRemove={() => removeAt(index)}
                 disabled={disabled}

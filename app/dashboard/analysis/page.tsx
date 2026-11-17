@@ -502,13 +502,14 @@ export default function AnalysisPage() {
                   </div>
                   <Button size="sm" variant="ghost" className="focus-ring" onClick={() => setFormStep(STEP.photo)} aria-label="Change your photo">Change</Button>
                 </div>
-                <div className="flex items-center gap-4 p-4">
+                {/* Wraps on a phone: three thumbnails leave no room for the text beside them. */}
+                <div className="flex flex-wrap items-center gap-4 p-4">
                   <div className="flex shrink-0 gap-2">
                     {garments.map((garment, index) => (
                       <Thumbnail key={index} file={garment} alt={`${garmentLabel(garmentMode, index)}, as it will be sent`} className="h-24 w-16 sm:w-20" />
                     ))}
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-[10rem] flex-1">
                     <dt className="eyebrow">Garment photos</dt>
                     <dd className="mt-1 text-sm text-foreground">{GARMENT_MODE_LABELS[garmentMode].title} · {garments.length} {garments.length === 1 ? 'photo' : 'photos'}</dd>
                     {garmentProblem ? <dd className="mt-1 text-sm text-destructive">{garmentProblem}</dd> : null}
