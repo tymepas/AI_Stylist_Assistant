@@ -13,7 +13,10 @@
         "test:phase3": "jest --config jest.config.ts --testPathPattern tests/phase3",
         "typecheck": "tsc --noEmit",
         "benchmark": "jest --config jest.benchmark.config.ts --runInBand",
-        "eval": "jest --config jest.evaluation.config.ts --runInBand"
+        "eval": "jest --config jest.evaluation.config.ts --runInBand",
+        "eval:scenarios": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v1",
+        "eval:baseline": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --update-baseline",
+        "eval:build-dataset": "node scripts/evaluation/build-scenarios.cjs"
     },
     "dependencies": {
         "@hookform/resolvers": "5.1.1",

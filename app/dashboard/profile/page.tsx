@@ -48,12 +48,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mx-auto max-w-3xl space-y-8">
+    <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="mx-auto max-w-3xl space-y-10">
       <motion.div variants={fadeUp}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">Style Profile</h2>
-            <p className="mt-1 text-muted-foreground">Your preferences and Style DNA make each recommendation feel more personal.</p>
+            <p className="eyebrow">Style profile</p>
+            <h2 className="mt-2 font-display text-5xl text-foreground">What you like to wear</h2>
+            <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">Optional. Your preferences and Style DNA make one dimension, style preference match, more personal. An analysis works without them.</p>
           </div>
           <div className="flex min-w-[140px] flex-col gap-1.5">
             <div className="flex items-center justify-between text-xs text-muted-foreground"><span>Profile readiness</span><span>{completion.completedSections} of {completion.totalSections} ready</span></div>
@@ -69,9 +70,9 @@ export default function ProfilePage() {
       <div className="border-t border-border" />
 
       <motion.section variants={fadeUp} aria-labelledby="style-preferences-heading" className="space-y-6">
-        <h3 id="style-preferences-heading" className="font-medium text-foreground">Style Preferences</h3>
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h4 className="font-medium text-foreground">Preferred Style</h4>
+        <h3 id="style-preferences-heading" className="font-display text-4xl text-foreground">Style Preferences</h3>
+        <div className="surface-quiet p-6">
+          <h4 className="font-display text-2xl text-foreground">Preferred Style</h4>
           <p className="mt-1 text-sm text-muted-foreground">Select as many as apply.</p>
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Preferred style">
             {STYLE_OPTIONS.map((style) => {
@@ -81,8 +82,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h4 className="font-medium text-foreground">Favorite Colors</h4>
+        <div className="surface-quiet p-6">
+          <h4 className="font-display text-2xl text-foreground">Favorite Colors</h4>
           <p className="mt-1 text-sm text-muted-foreground">Pick the tones you gravitate toward.</p>
           <div className="mt-4 flex flex-wrap gap-4" role="group" aria-label="Favorite colors">
             {COLOR_OPTIONS.map((color) => {
@@ -92,8 +93,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h4 className="font-medium text-foreground">Occasion Preferences</h4>
+        <div className="surface-quiet p-6">
+          <h4 className="font-display text-2xl text-foreground">Occasion Preferences</h4>
           <p className="mt-1 text-sm text-muted-foreground">What do you usually shop for?</p>
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Occasion preferences">
             {OCCASION_OPTIONS.map((occasion) => {

@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server'
-import { getMockAnalysis, parseStyleProfile, validateImageFile } from '@/lib/services/analysisService'
+import { getMockAnalysis, parseStyleProfile } from '@/lib/services/analysisService'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
 import { buildShoppingAdvisor } from '@/lib/services/shoppingAdvisorService'
+import { buildOutfitComponents } from '@/lib/services/outfitComponentsService'
+import {
+  aggregateSizeProblem,
+  declaredSizeProblem,
+  findDuplicateGarment,
+  garmentLabel,
+  intakeImage,
+  isUploadedFile,
+  mockOutfitComponents,
+  readGarmentUploads,
+} from '@/lib/services/uploadIntake'
 import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/openAIAnalysisService'
 // Phase 3 — AI Style Profile
 import { parseAIStyleProfile } from '@/lib/services/aiStyleProfileService'
@@ -82,25 +93,29 @@ async function handleRoute(request, { params }) {
     // Error states: specs/phase3/10_ERROR_HANDLING.md § FG-01 through FG-14
     // ------------------------------------------------------------------
     if (route === '/generate-profile' && method === 'POST') {
+      // Refused before the body is read: an oversized request costs nothing.
+      const profileTooLarge = declaredSizeProblem(request.headers)
+      if (profileTooLarge) return handleCORS(NextResponse.json(profileTooLarge.body, { status: profileTooLarge.status }))
+
       const formData = await request.formData().catch(() => null)
-      const photo = formData?.get('photo')
+      const uploadedPhoto = formData?.get('photo')
 
       // FG-01 — no photo provided
-      if (!formData || !isUploadedFile(photo)) {
+      if (!formData || !isUploadedFile(uploadedPhoto)) {
         return handleCORS(NextResponse.json(
           { error: 'missing_image', message: 'Please upload a photo to generate your profile.' },
           { status: 400 }
         ))
       }
 
-      // FG-02, FG-03, FG-04, FG-05 — image validation (type, size, format, dimensions)
-      const photoCheck = await validateImageFile(photo)
-      if (!photoCheck.valid) {
-        return handleCORS(NextResponse.json(
-          { error: 'invalid_upload', message: photoCheck.message },
-          { status: 400 }
-        ))
-      }
+      const profileSizeProblem = aggregateSizeProblem([uploadedPhoto])
+      if (profileSizeProblem) return handleCORS(NextResponse.json(profileSizeProblem.body, { status: profileSizeProblem.status }))
+
+      // FG-02, FG-03, FG-04, FG-05 — image validation (type, size, format, dimensions),
+      // then decoding and re-encoding. Only the re-encoded JPEG is used from here on.
+      const profilePhoto = await intakeImage(uploadedPhoto, '', 'photo.jpg')
+      if (!profilePhoto.ok) return handleCORS(NextResponse.json(profilePhoto.problem.body, { status: profilePhoto.problem.status }))
+      const photo = profilePhoto.file
 
       const profileMode = process.env.ANALYSIS_MODE?.trim().toLowerCase() || 'mock'
 
@@ -151,15 +166,19 @@ async function handleRoute(request, { params }) {
     // No database is used for this route. ANALYSIS_MODE selects mock or OpenAI.
     // ------------------------------------------------------------------
     if (route === '/analyze' && method === 'POST') {
+      // Refused before the body is read: an oversized request costs nothing.
+      const analysisTooLarge = declaredSizeProblem(request.headers)
+      if (analysisTooLarge) return handleCORS(NextResponse.json(analysisTooLarge.body, { status: analysisTooLarge.status }))
+
       const formData = await request.formData().catch(() => null)
       const occasion = formData?.get('occasion')
-      const photo = formData?.get('photo')
-      const garment = formData?.get('garment')
+      const uploadedPhoto = formData?.get('photo')
+      const uploadedGarment = formData?.get('garment')
       const styleProfile = formData?.get('styleProfile')
       // Phase 3 — optional AI Style Profile (graceful degradation on invalid)
       const aiStyleProfileRaw = formData?.get('aiStyleProfile')
 
-      if (!formData || typeof occasion !== 'string' || !occasion || !isUploadedFile(photo) || !isUploadedFile(garment)) {
+      if (!formData || typeof occasion !== 'string' || !occasion || !isUploadedFile(uploadedPhoto) || !isUploadedFile(uploadedGarment)) {
         return handleCORS(NextResponse.json(
           {
             error: 'missing_image',
@@ -177,18 +196,36 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      const photoCheck = await validateImageFile(photo)
-      if (!photoCheck.valid) {
-        return handleCORS(NextResponse.json(
-          { error: 'invalid_upload', message: `Personal photo: ${photoCheck.message}` },
-          { status: 400 }
-        ))
+      // One to three garment images and an explicit garment mode. A request without
+      // a mode is a single-garment request, as before multiple images existed.
+      const garmentUploads = readGarmentUploads(formData)
+      if (!garmentUploads.ok) return handleCORS(NextResponse.json(garmentUploads.problem.body, { status: garmentUploads.problem.status }))
+      const garmentMode = garmentUploads.mode
+
+      const sizeProblem = aggregateSizeProblem([uploadedPhoto, ...garmentUploads.garments])
+      if (sizeProblem) return handleCORS(NextResponse.json(sizeProblem.body, { status: sizeProblem.status }))
+
+      // Every image is validated, decoded and re-encoded before anything else uses it.
+      // Only the re-encoded JPEGs are used from here on; the uploaded bytes are not.
+      const photoIntake = await intakeImage(uploadedPhoto, 'Personal photo', 'photo.jpg')
+      if (!photoIntake.ok) return handleCORS(NextResponse.json(photoIntake.problem.body, { status: photoIntake.problem.status }))
+      const photo = photoIntake.file
+
+      const garments = []
+      for (let index = 0; index < garmentUploads.garments.length; index += 1) {
+        const garmentIntake = await intakeImage(
+          garmentUploads.garments[index],
+          garmentLabel(index, garmentUploads.garments.length),
+          garmentUploads.garments.length === 1 ? 'garment.jpg' : `garment-${index + 1}.jpg`
+        )
+        if (!garmentIntake.ok) return handleCORS(NextResponse.json(garmentIntake.problem.body, { status: garmentIntake.problem.status }))
+        garments.push(garmentIntake.file)
       }
 
-      const garmentCheck = await validateImageFile(garment)
-      if (!garmentCheck.valid) {
+      const duplicate = await findDuplicateGarment(garmentUploads.garments)
+      if (duplicate !== null) {
         return handleCORS(NextResponse.json(
-          { error: 'invalid_upload', message: `Garment photo: ${garmentCheck.message}` },
+          { error: 'invalid_upload', message: `Garment photo ${duplicate} is the same file as an earlier garment photo. Please remove it or choose a different photo.` },
           { status: 400 }
         ))
       }
@@ -216,6 +253,9 @@ async function handleRoute(request, { params }) {
             mockAnalysis.shopping_advisor,
             Boolean(aiStyleProfileCheck.profile)
           )
+          // A single-garment response is exactly what it always was.
+          if (garmentMode !== 'single') mockAnalysis.garment_mode = garmentMode
+          if (garmentMode === 'outfit_items') mockAnalysis.outfit_components = mockOutfitComponents(garments.length)
         }
         logMockCompleted('analysis', mockAnalysis.status)
         return handleCORS(NextResponse.json(mockAnalysis))
@@ -228,14 +268,17 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      const analysisSpend = await reserveSpend({ operation: 'analysis', request, imageCount: 2, requestId })
+      // The reservation covers every image that will be sent: the personal photo and one to three garment images.
+      const analysisSpend = await reserveSpend({ operation: 'analysis', request, imageCount: 1 + garments.length, requestId })
       if (!analysisSpend.allowed) return handleCORS(createSpendRejectionResponse(analysisSpend.rejection))
 
       let analysisError
       try {
         const rawAnalysis = await analyzeWithOpenAI({
           photo,
-          garment,
+          garment: garments[0],
+          extraGarments: garments.slice(1),
+          garmentMode,
           occasion,
           styleProfile: styleProfileCheck.profile,
           // Phase 3: pass AI profile as optional context; undefined when absent
@@ -244,10 +287,15 @@ async function handleRoute(request, { params }) {
           onUsage: analysisSpend.ticket.onUsage,
         })
 
+        // The verdict is computed by the application from the ratings. The garment mode and
+        // the per-item notes are attached to the result afterwards and never reach that calculation.
         const result = rawAnalysis.status === 'complete'
           ? buildCompleteAnalysisResult(
             rawAnalysis.dimensions,
-            buildShoppingAdvisor(rawAnalysis.shopping_advisor, Boolean(aiStyleProfileCheck.profile))
+            buildShoppingAdvisor(rawAnalysis.shopping_advisor, Boolean(aiStyleProfileCheck.profile)),
+            garmentMode === 'single'
+              ? {}
+              : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length) }
           )
           : rawAnalysis
 
@@ -295,10 +343,6 @@ async function handleRoute(request, { params }) {
 
 // Export all HTTP methods
 export const GET = handleRoute
-
-function isUploadedFile(value) {
-  return value && typeof value !== 'string' && typeof value.arrayBuffer === 'function'
-}
 
 /** 429 or 503 from the spend guard, with Retry-After when retrying can help. */
 function createSpendRejectionResponse(rejection) {

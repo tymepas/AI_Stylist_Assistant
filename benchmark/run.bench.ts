@@ -19,6 +19,7 @@ import { analyzeWithOpenAI, getAnalysisPromptVersion } from '@/lib/services/open
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 import { createRecorder, stableStringify } from '@/evaluation/recording'
 import { validateImageFile } from '@/lib/services/analysisService'
+import { ImageNormalizationError, normalizeImage } from '@/lib/images/normalizeImage'
 import { resolveModelConfig } from '@/lib/services/openai/modelConfig'
 import {
   evaluateGate,
@@ -58,15 +59,21 @@ async function prepare(cases: BenchmarkCase[], dataDir: string): Promise<{ prepa
   const problems: string[] = []
   for (const benchmarkCase of cases) {
     const files: File[] = []
-    for (const relative of [benchmarkCase.photo, benchmarkCase.garment]) {
+    const relatives = [benchmarkCase.photo, benchmarkCase.garment, ...(benchmarkCase.extra_garments ?? [])]
+    for (const relative of relatives) {
       const full = path.join(dataDir, relative)
       if (!existsSync(full)) { problems.push(`${benchmarkCase.id}: missing ${relative}`); continue }
       const file = new File([readFileSync(full)], path.basename(full), { type: MIME[path.extname(full).toLowerCase()] })
       const check = await validateImageFile(file)
       if (!check.valid) { problems.push(`${benchmarkCase.id}: ${relative} rejected (${check.message})`); continue }
-      files.push(file)
+      // The same server-side normalisation as the API route, so the model receives exactly what production sends.
+      try {
+        files.push((await normalizeImage(file, `image-${files.length + 1}.jpg`)).file)
+      } catch (error) {
+        problems.push(`${benchmarkCase.id}: ${relative} rejected (${error instanceof ImageNormalizationError ? error.message : 'could not be processed'})`)
+      }
     }
-    if (files.length === 2) prepared.push({ benchmarkCase, photo: files[0], garment: files[1] })
+    if (files.length === relatives.length) prepared.push({ benchmarkCase, photo: files[0], garment: files[1], extraGarments: files.slice(2) })
   }
   return { prepared, problems }
 }
@@ -119,6 +126,8 @@ describe('Verdict model benchmark', () => {
     const outcome = await runCases(prepared, options, recorder.wrap((input) => analyzeWithOpenAI({
       photo: input.photo,
       garment: input.garment,
+      extraGarments: input.extraGarments,
+      garmentMode: input.garmentMode,
       occasion: input.occasion,
       styleProfile: input.styleProfile,
       requestId: input.requestId,

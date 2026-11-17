@@ -67,3 +67,21 @@ For `status: "complete"`, the raw model response also includes an optional advis
 The model returns an empty `recommendations` array when Style DNA context is absent. The application validates this section separately from the six evaluation dimensions. Invalid shopping data never invalidates an otherwise valid outfit analysis.
 
 Shopping advice is advisory only. It must not calculate or estimate a verdict score, recommendation, price, stock, retailer, URL, affiliate link, material quality, brand, durability, or comfort.
+## Outfit item notes (analysis-output/2)
+
+Only when the request's garment mode is `outfit_items` (two or three different items worn together), the raw model response for `status: "complete"` may also include:
+
+```json
+"outfit_components": [
+  {
+    "item": 1,
+    "garment_type": "top | bottom | outerwear | dress | footwear | accessory | suiting | traditional_wear",
+    "assessment": "Works well | Works | Needs attention | Unable to tell",
+    "note": ""
+  }
+]
+```
+
+There must be exactly one entry per garment image, each image described once; `item` is the image number starting at 1. The application validates this block separately from the six dimensions. A missing or invalid block makes the notes unavailable and changes nothing else. The notes are advisory: they never change a rating, the score or the verdict, and they are ignored in every other garment mode.
+
+The six dimensions are unchanged in every mode. With several garment images they describe the single garment seen from several views, or the outfit as a whole.

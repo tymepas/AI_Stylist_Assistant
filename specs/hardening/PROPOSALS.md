@@ -1,6 +1,6 @@
 # Hardening proposals awaiting approval
 
-Three changes that were investigated but not implemented, because each needs a decision first. Nothing in this file is implemented.
+Three changes that were investigated and held back because each needed a decision first. **Proposal 1 has since been approved and implemented**; see "Server-side image intake" in `memory/ARCHITECTURE.md`, which describes the code as built. Proposals 2 and 3 are not implemented.
 
 | # | Proposal | Why it needs approval |
 |---|---|---|
@@ -10,7 +10,7 @@ Three changes that were investigated but not implemented, because each needs a d
 
 ---
 
-## 1. Server-side image normalisation
+## 1. Server-side image normalisation (implemented)
 
 ### Current state (verified)
 

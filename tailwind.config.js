@@ -17,7 +17,21 @@ module.exports = {
         }
       },
       extend: {
+        fontFamily: {
+          sans: ['var(--font-sans)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+          display: ['var(--font-display)', 'Iowan Old Style', 'Palatino Linotype', 'Georgia', 'serif'],
+        },
+        boxShadow: {
+          soft: 'var(--shadow-soft)',
+          lift: 'var(--shadow-lift)',
+        },
         colors: {
+          verdict: {
+            high: 'hsl(var(--verdict-high))',
+            good: 'hsl(var(--verdict-good))',
+            caution: 'hsl(var(--verdict-caution))',
+            low: 'hsl(var(--verdict-low))',
+          },
           border: 'hsl(var(--border))',
           input: 'hsl(var(--input))',
           ring: 'hsl(var(--ring))',

@@ -1,6 +1,7 @@
-import { ArrowUpRight, CheckCircle2, Search } from 'lucide-react'
+import { ArrowUpRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getRetailSearchLinks } from '@/lib/services/retailSearchService'
+import { cn } from '@/lib/utils'
 import type { Dimensions, ShoppingRecommendation } from '@/types/schema'
 
 interface ShoppingRecommendationCardProps {
@@ -17,48 +18,63 @@ const OUTCOME_LABELS: Record<keyof Dimensions, string> = {
   style_preference_match: 'Closer Style Preference Match',
 }
 
-const MATCH_STYLES: Record<ShoppingRecommendation['match_level'], string> = {
-  'Excellent Match': 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
-  'Strong Match': 'border-blue-500/30 bg-blue-500/10 text-blue-400',
-  'Good Match': 'border-amber-500/30 bg-amber-500/10 text-amber-400',
-  'Possible Match': 'border-slate-500/30 bg-slate-500/10 text-slate-300',
+/** The four qualitative match levels. A label, never a number: the advisor does not score. */
+const MATCH_LABELS: Record<ShoppingRecommendation['match_level'], { label: string; className: string }> = {
+  'Excellent Match': { label: 'Excellent match', className: 'border-primary/40 bg-primary/10 text-primary' },
+  'Strong Match': { label: 'Strong match', className: 'border-primary/25 text-primary/90' },
+  'Good Match': { label: 'Good match', className: 'border-border text-foreground/80' },
+  'Possible Match': { label: 'Possible match', className: 'border-border/70 text-muted-foreground' },
+}
+
+const GARMENT_TYPE_LABELS: Record<ShoppingRecommendation['garment_type'], string> = {
+  top: 'Top',
+  bottom: 'Bottom',
+  outerwear: 'Outerwear',
+  dress: 'Dress',
+  footwear: 'Footwear',
+  accessory: 'Accessory',
+  suiting: 'Suiting',
+  traditional_wear: 'Traditional wear',
 }
 
 export default function ShoppingRecommendationCard({ recommendation, occasion }: ShoppingRecommendationCardProps) {
   const retailerLinks = getRetailSearchLinks(recommendation, occasion)
+  const match = MATCH_LABELS[recommendation.match_level]
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-5 shadow-sm shadow-black/5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h4 className="text-base font-semibold text-foreground">{recommendation.title}</h4>
-          <p className="mt-1 text-sm text-muted-foreground">{recommendation.color_direction} · {recommendation.style_direction}</p>
-        </div>
-        <span className={`rounded-full border px-2.5 py-1 text-xs font-medium ${MATCH_STYLES[recommendation.match_level]}`}>
-          {recommendation.match_level}
+    <article className="surface card-hover flex h-full flex-col p-6">
+      <div className="flex items-start justify-between gap-3">
+        <p className="eyebrow">{GARMENT_TYPE_LABELS[recommendation.garment_type]}</p>
+        <span className={cn('shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium', match.className)} aria-label={`Match level: ${match.label}`}>
+          {match.label}
         </span>
       </div>
+      <h4 className="mt-3 font-display text-2xl text-foreground">{recommendation.title}</h4>
+      <p className="mt-1.5 text-sm text-muted-foreground">{recommendation.color_direction} · {recommendation.style_direction}</p>
 
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{recommendation.rationale}</p>
+      <div className="mt-5">
+        <p className="eyebrow">Why it is suggested</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-foreground/85">{recommendation.rationale}</p>
+      </div>
 
-      <div className="mt-5 rounded-xl border border-primary/15 bg-primary/[0.04] p-3.5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Expected Outcome</p>
+      <div className="mt-5">
+        <p className="eyebrow">Expected Outcome</p>
         <ul className="mt-2 space-y-1.5">
           {recommendation.addresses.map((dimension) => (
             <li key={dimension} className="flex items-center gap-2 text-sm text-foreground/90">
-              <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
+              <Check className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
               {OUTCOME_LABELS[dimension]}
             </li>
           ))}
         </ul>
+        <p className="mt-2 text-xs text-muted-foreground">A direction to explore, not a guaranteed result.</p>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2" aria-label={`Retail search options for ${recommendation.title}`}>
+      <div className="mt-auto flex flex-wrap gap-2 pt-6" aria-label={`Retail search options for ${recommendation.title}`}>
         {retailerLinks.map((retailer) => (
           <Button key={retailer.id} asChild size="sm" variant="outline" className="focus-ring">
             <a href={retailer.href} target="_blank" rel="noopener noreferrer" aria-label={`${retailer.label} for ${recommendation.title}`}>
-              <Search className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-              {retailer.label}<ArrowUpRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+              {retailer.label}<ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
             </a>
           </Button>
         ))}

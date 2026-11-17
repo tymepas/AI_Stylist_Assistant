@@ -13,10 +13,10 @@ const EXAMPLE_DIMENSIONS = [
 ]
 
 const RATING_DOT: Record<string, string> = {
-  Excellent: 'bg-emerald-400',
-  Good: 'bg-blue-400',
-  Fair: 'bg-amber-400',
-  Poor: 'bg-red-400',
+  Excellent: 'bg-verdict-high',
+  Good: 'bg-verdict-good',
+  Fair: 'bg-verdict-caution',
+  Poor: 'bg-verdict-low',
 }
 
 export default function ExampleReportPreview() {
@@ -26,18 +26,18 @@ export default function ExampleReportPreview() {
       whileInView={{ opacity: 1, y: 0, rotate: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-2xl shadow-black/40 sm:p-8"
+      className="surface relative mx-auto w-full max-w-md overflow-hidden p-6 sm:p-8"
       aria-hidden="true"
     >
-      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-verdict-high/10 blur-3xl" />
       <div className="relative flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Example Decision Report</p>
-          <h3 className="mt-1.5 text-2xl font-semibold text-emerald-400">Highly Recommended</h3>
+          <p className="eyebrow">Example decision report</p>
+          <h3 className="mt-2 font-display text-4xl text-verdict-high">Highly Recommended</h3>
         </div>
-        <div className="flex h-16 w-16 flex-col items-center justify-center rounded-2xl bg-emerald-500/10">
-          <span className="text-xl font-semibold text-emerald-400">4.7</span>
-          <span className="text-[10px] text-muted-foreground">/ 5</span>
+        <div className="flex flex-col items-end">
+          <span className="font-display text-3xl text-verdict-high">4.7</span>
+          <span className="text-[10px] text-muted-foreground">of 5, calculated</span>
         </div>
       </div>
 
@@ -56,7 +56,7 @@ export default function ExampleReportPreview() {
         ))}
       </div>
 
-      <div className="relative mt-5 flex items-center gap-2 rounded-xl bg-emerald-500/5 px-3 py-2.5 text-xs text-emerald-300/90">
+      <div className="relative mt-5 flex items-center gap-2 rounded-xl bg-verdict-high/[0.07] px-3 py-2.5 text-xs text-foreground/85">
         <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
         You can move forward with this purchase with confidence.
       </div>

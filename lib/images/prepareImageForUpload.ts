@@ -24,6 +24,10 @@ export const MIN_DIMENSION_PX = 512
 export const TARGET_IMAGE_BYTES = 1_000_000
 /** A prepared image above this is rejected rather than uploaded. */
 export const MAX_PREPARED_IMAGE_BYTES = 1_800_000
+/** Target per garment photo when an analysis has several: a personal photo and three of these fit one request. */
+export const MULTI_GARMENT_TARGET_BYTES = 700_000
+/** A target below this would cost too much detail; lower requests are raised to it. */
+export const MIN_TARGET_IMAGE_BYTES = 300_000
 /**
  * Largest source file that is decoded. Phone cameras regularly exceed the 10 MB
  * server limit; the server only ever sees the much smaller prepared image.
@@ -324,6 +328,11 @@ export const browserEnvironment: ImagePreparationEnvironment = {
 export interface PrepareImageOptions {
   /** What to do with a source under 512 px on either side. Default: 'upscale'. */
   belowMinimum?: BelowMinimumPolicy
+  /**
+   * Size to aim for, in bytes. Only ever lowers the default (TARGET_IMAGE_BYTES): several garment
+   * photos must share one request, so each of them aims lower. Never below MIN_TARGET_IMAGE_BYTES.
+   */
+  targetBytes?: number
   /** Cancels preparation, for example when the user picks another photo. */
   signal?: AbortSignal
   environment?: ImagePreparationEnvironment
@@ -337,6 +346,12 @@ export interface PreparedImage {
   quality: number
   sourceWidth: number
   sourceHeight: number
+}
+
+/** The size to aim for: the default, or a lower value within the allowed range. */
+export function resolveTargetBytes(requested: number | undefined): number {
+  if (requested === undefined || !Number.isFinite(requested)) return TARGET_IMAGE_BYTES
+  return Math.min(TARGET_IMAGE_BYTES, Math.max(MIN_TARGET_IMAGE_BYTES, Math.floor(requested)))
 }
 
 function throwIfAborted(signal: AbortSignal | undefined): void {
@@ -355,6 +370,7 @@ function preparedFileName(originalName: string): string {
 export async function prepareImageForUpload(file: File, options: PrepareImageOptions = {}): Promise<PreparedImage> {
   const { signal } = options
   const environment = options.environment ?? browserEnvironment
+  const targetBytes = resolveTargetBytes(options.targetBytes)
   throwIfAborted(signal)
 
   if (!file || file.size <= 0) throw new ImagePreparationError('empty_file')
@@ -401,12 +417,12 @@ export async function prepareImageForUpload(file: File, options: PrepareImageOpt
         // A browser that cannot encode JPEG silently falls back to PNG.
         if (blob.type !== OUTPUT_TYPE) throw new ImagePreparationError('encode_failed')
         if (!smallest || blob.size < smallest.blob.size) smallest = { blob, width: size.width, height: size.height, quality }
-        if (blob.size <= TARGET_IMAGE_BYTES) break
+        if (blob.size <= targetBytes) break
       }
 
       surface.release()
       surface = null
-      if (smallest && smallest.blob.size <= TARGET_IMAGE_BYTES) break
+      if (smallest && smallest.blob.size <= targetBytes) break
       size = shrinkDimensions(size.width, size.height)
     }
 

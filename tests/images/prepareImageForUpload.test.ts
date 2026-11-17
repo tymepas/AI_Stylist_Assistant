@@ -22,6 +22,9 @@ import {
   shrinkDimensions,
   sniffImageFormat,
   TARGET_IMAGE_BYTES,
+  MIN_TARGET_IMAGE_BYTES,
+  MULTI_GARMENT_TARGET_BYTES,
+  resolveTargetBytes,
   VERCEL_REQUEST_LIMIT_BYTES,
   type DecodedImage,
   type ImagePreparationEnvironment,
@@ -268,6 +271,32 @@ describe('prepareImageForUpload', () => {
     expect(prepared.file.size).toBe(980_000)
     expect(env.surfaces).toHaveLength(1)
     expect(env.surfaces[0].qualities).toEqual([0.86, 0.78, 0.7])
+  })
+
+  it('aims lower when asked to, so several garment photos fit one request', async () => {
+    const sizes: Record<number, number> = { 0.86: 980_000, 0.78: 860_000, 0.7: 690_000, 0.62: 600_000 }
+    const usual = fakeEnvironment({ width: 4000, height: 3000 }, (_w, _h, quality) => sizes[quality])
+    const shared = fakeEnvironment({ width: 4000, height: 3000 }, (_w, _h, quality) => sizes[quality])
+
+    // The default target (1 MB) is met at the first quality; the lower target needs two more steps.
+    expect((await prepareImageForUpload(makeFile(JPEG_HEADER), { environment: usual })).file.size).toBe(980_000)
+    const prepared = await prepareImageForUpload(makeFile(JPEG_HEADER), { environment: shared, targetBytes: MULTI_GARMENT_TARGET_BYTES })
+    expect(prepared.file.size).toBe(690_000)
+    expect(shared.surfaces[0].qualities).toEqual([0.86, 0.78, 0.7])
+  })
+
+  it('never aims higher than the default or lower than the floor, whatever is requested', () => {
+    expect(resolveTargetBytes(undefined)).toBe(TARGET_IMAGE_BYTES)
+    expect(resolveTargetBytes(Number.NaN)).toBe(TARGET_IMAGE_BYTES)
+    expect(resolveTargetBytes(TARGET_IMAGE_BYTES * 5)).toBe(TARGET_IMAGE_BYTES)
+    expect(resolveTargetBytes(MULTI_GARMENT_TARGET_BYTES)).toBe(MULTI_GARMENT_TARGET_BYTES)
+    expect(resolveTargetBytes(1)).toBe(MIN_TARGET_IMAGE_BYTES)
+    expect(resolveTargetBytes(-50)).toBe(MIN_TARGET_IMAGE_BYTES)
+  })
+
+  it('lets a personal photo and three garment photos fit one request at their targets', () => {
+    expect(isWithinRequestBudget([TARGET_IMAGE_BYTES, MULTI_GARMENT_TARGET_BYTES, MULTI_GARMENT_TARGET_BYTES, MULTI_GARMENT_TARGET_BYTES], 12_000)).toBe(true)
+    expect(isWithinRequestBudget([TARGET_IMAGE_BYTES, TARGET_IMAGE_BYTES, TARGET_IMAGE_BYTES, TARGET_IMAGE_BYTES], 12_000)).toBe(false)
   })
 
   it('reduces dimensions when no quality reaches the target, then stops as soon as one fits', async () => {

@@ -1,6 +1,7 @@
 import { computeVerdict } from '@/lib/services/analysisService'
 import type { RawOpenAIDimensions } from '@/types/openai'
-import type { CompleteAnalysisResult, OverallRecommendation, ShoppingAdvisor } from '@/types/schema'
+import type { GarmentMode } from '@/lib/constants/garmentModes'
+import type { CompleteAnalysisResult, OutfitComponents, OverallRecommendation, ShoppingAdvisor } from '@/types/schema'
 
 const DIMENSION_LABELS: Record<keyof RawOpenAIDimensions, string> = {
   occasion: 'Occasion compatibility',
@@ -28,13 +29,23 @@ function buildThingsToConsider(dimensions: RawOpenAIDimensions): string[] {
     : ['No major conflicts were identified across the evaluated dimensions.']
 }
 
+/** Advisory extras attached to a result. None of them is read by the verdict calculation. */
+export interface AnalysisResultExtras {
+  garmentMode?: GarmentMode
+  outfitComponents?: OutfitComponents
+}
+
 export function buildCompleteAnalysisResult(
   dimensions: RawOpenAIDimensions,
-  shopping_advisor: ShoppingAdvisor = { availability: 'unavailable', recommendations: [] }
+  shopping_advisor: ShoppingAdvisor = { availability: 'unavailable', recommendations: [] },
+  extras: AnalysisResultExtras = {}
 ): CompleteAnalysisResult {
+  // The verdict is computed from the six ratings and from nothing else.
   const verdict = computeVerdict(dimensions)
 
   return {
+    ...(extras.garmentMode ? { garment_mode: extras.garmentMode } : {}),
+    ...(extras.outfitComponents && extras.outfitComponents.availability !== 'not_applicable' ? { outfit_components: extras.outfitComponents } : {}),
     status: 'complete',
     dimensions,
     things_to_consider: buildThingsToConsider(dimensions),

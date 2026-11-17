@@ -13,10 +13,14 @@ import type { RawOpenAIAnalysisResult } from '@/types/openai'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
 import { validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
 import { modelText, scanText, type Band, type BenchmarkCase } from '@/benchmark/harness'
+import { BLOCKING_CHECKS, PROXY_CHECKS, checkStatus, evaluateCase, type BlockingCheckId, type CaseStatus, type CheckResult, type ProxyCheckId } from './checks'
 import { computeMetrics, modalOutcome, outcomeSignature, type EvaluationMetrics, type RunDetail } from './metrics'
+import { computePerformance, type PerformanceReport } from './performance'
 import { datasetFingerprint, stableStringify, type Recording } from './recording'
+import { describeSelection, selectCases, type CaseSelection, type SelectionReport } from './selection'
 
-export const REPORT_FORMAT = 'verdict-evaluation-report/1'
+/** /2 adds per-case checks, the summary, the selection and performance. /1 reports have none of them. */
+export const REPORT_FORMAT = 'verdict-evaluation-report/2'
 
 export type EvaluationMode = 'mock' | 'replay'
 
@@ -35,6 +39,35 @@ export interface CaseReport {
   modal_outcome: string | null
   /** Whether the modal outcome is what the case expects; null when the case states no expectation. */
   meets_expectation: boolean | null
+  /** What the scenario is about; null for cases that do not say. */
+  scenario: BenchmarkCase['scenario'] | null
+  /** `fail` when any blocking check failed, `not_applicable` when nothing could be judged. */
+  status: CaseStatus
+  checks: CheckResult[]
+  /** One line per failed blocking check. Names dimensions, bands and categories only, never model text. */
+  failure_reasons: string[]
+  /** Proxy checks that did not hold. For human review; they never fail a case. */
+  proxy_flags: string[]
+}
+
+export interface EvaluationSummary {
+  total_cases: number
+  passed: number
+  failed: number
+  not_applicable: number
+  /** passed / (passed + failed); null when no case could be judged. */
+  pass_rate: number | null
+  /** Failed cases per blocking check. One case can fail several checks. */
+  failures_by_check: Record<BlockingCheckId, number>
+  failures_by_category: Record<string, number>
+  failures_by_scenario: Record<string, number>
+  safety_failures: number
+  unsupported_claim_failures: number
+  schema_failures: number
+  uncertainty_failures: number
+  verdict_integrity_failures: number
+  /** Cases flagged by a proxy check. Proxies are rough textual signals for human review, not measurements of fashion quality. */
+  proxy_flags: Record<ProxyCheckId, number>
 }
 
 export interface EvaluationReport {
@@ -63,8 +96,18 @@ export interface EvaluationReport {
     cases_with_verified_labels: number
     matches_recording: boolean
   }
+  /** Which cases were evaluated. A partial report can never become a baseline. */
+  selection: SelectionReport
+  summary: EvaluationSummary
+  /** Latency and cost, only when they were measured. Unavailable for synthetic fixtures. */
+  performance: PerformanceReport
   metrics: EvaluationMetrics
   cases: CaseReport[]
+}
+
+export interface EvaluationOptions {
+  /** Evaluate only some cases. The report is then marked partial. */
+  selection?: CaseSelection
 }
 
 const INTERPRETATION: Record<Recording['provenance'], string> = {
@@ -122,15 +165,51 @@ function meetsExpectation(benchmarkCase: BenchmarkCase, modalValue: string | und
   return (benchmarkCase.expected.acceptable_bands as string[]).includes(modalValue)
 }
 
-export function evaluateRecording(recording: Recording, cases: BenchmarkCase[], current: CurrentVersions, mode: EvaluationMode): EvaluationReport {
+function count<T extends string>(keys: readonly T[], of: (key: T) => number): Record<T, number> {
+  return Object.fromEntries(keys.map((key) => [key, of(key)])) as Record<T, number>
+}
+
+function tally(values: string[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const value of values) counts[value] = (counts[value] ?? 0) + 1
+  return counts
+}
+
+export function summarizeCases(cases: CaseReport[]): EvaluationSummary {
+  const failed = cases.filter((entry) => entry.status === 'fail')
+  const passed = cases.filter((entry) => entry.status === 'pass').length
+  const failuresByCheck = count(BLOCKING_CHECKS, (check) => cases.filter((entry) => checkStatus(entry, check) === 'fail').length)
+  return {
+    total_cases: cases.length,
+    passed,
+    failed: failed.length,
+    not_applicable: cases.length - passed - failed.length,
+    pass_rate: passed + failed.length === 0 ? null : Math.round((passed / (passed + failed.length)) * 10_000) / 10_000,
+    failures_by_check: failuresByCheck,
+    failures_by_category: tally(failed.map((entry) => entry.category)),
+    failures_by_scenario: tally(failed.map((entry) => entry.scenario ?? 'unspecified')),
+    safety_failures: failuresByCheck.safety,
+    unsupported_claim_failures: failuresByCheck.unsupported_claims,
+    schema_failures: failuresByCheck.schema_validity,
+    uncertainty_failures: failuresByCheck.uncertainty,
+    verdict_integrity_failures: failuresByCheck.verdict_integrity,
+    proxy_flags: count(PROXY_CHECKS, (check) => cases.filter((entry) => checkStatus(entry, check) === 'fail').length),
+  }
+}
+
+export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[], current: CurrentVersions, mode: EvaluationMode, options: EvaluationOptions = {}): EvaluationReport {
+  // The fingerprint always describes the WHOLE dataset, so a partial report still says which dataset it came from.
+  const fingerprint = datasetFingerprint(allCases)
+  const cases = selectCases(allCases, options.selection)
+  const selectedIds = new Set(cases.map((benchmarkCase) => benchmarkCase.id))
   const details = detailsFromRecording(recording, cases)
-  const fingerprint = datasetFingerprint(cases)
 
   const caseReports: CaseReport[] = [...cases]
     .sort((a, b) => a.id.localeCompare(b.id))
     .map((benchmarkCase) => {
       const runs = details.filter((detail) => detail.case_id === benchmarkCase.id)
       const modalValue = modalOutcome(runs)
+      const evaluation = evaluateCase(benchmarkCase, runs)
       return {
         case_id: benchmarkCase.id,
         category: benchmarkCase.category,
@@ -139,6 +218,11 @@ export function evaluateRecording(recording: Recording, cases: BenchmarkCase[], 
         outcomes: runs.map((run) => (run.outcome === 'withheld' ? 'withheld' : outcomeSignature(run))),
         modal_outcome: modalValue ?? null,
         meets_expectation: meetsExpectation(benchmarkCase, modalValue),
+        scenario: benchmarkCase.scenario ?? null,
+        status: evaluation.status,
+        checks: evaluation.checks,
+        failure_reasons: evaluation.failure_reasons,
+        proxy_flags: evaluation.proxy_flags,
       }
     })
 
@@ -162,10 +246,13 @@ export function evaluateRecording(recording: Recording, cases: BenchmarkCase[], 
     },
     dataset: {
       fingerprint,
-      cases: cases.length,
-      cases_with_verified_labels: cases.filter((benchmarkCase) => benchmarkCase.labels?.verified).length,
+      cases: allCases.length,
+      cases_with_verified_labels: allCases.filter((benchmarkCase) => benchmarkCase.labels?.verified).length,
       matches_recording: fingerprint === recording.dataset_fingerprint,
     },
+    selection: describeSelection(options.selection, cases.length),
+    summary: summarizeCases(caseReports),
+    performance: computePerformance(recording, recording.entries.filter((entry) => selectedIds.has(entry.case_id))),
     metrics: computeMetrics(details, cases),
     cases: caseReports,
   }
@@ -252,9 +339,37 @@ function show(value: number | null): string {
   return value === null ? 'n/a' : String(value)
 }
 
+function showMicroUsd(value: number | null): string {
+  return value === null ? 'n/a' : `$${(value / 1_000_000).toFixed(6)}`
+}
+
+function showCounts(counts: Record<string, number>): string {
+  return Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => `${key} ${value}`).join(', ') || 'none'
+}
+
 /** A short Markdown summary of a report. Contains aggregates only, never model text. */
 export function renderMarkdown(report: EvaluationReport): string {
-  const { metrics, subject } = report
+  const { metrics, subject, summary, performance } = report
+  const failing = report.cases.filter((entry) => entry.status === 'fail')
+  const flagged = report.cases.filter((entry) => entry.proxy_flags.length > 0)
+  const caseLines = [
+    '## Cases',
+    '',
+    `- Total: ${summary.total_cases} (passed ${summary.passed}, failed ${summary.failed}, not applicable ${summary.not_applicable})`,
+    `- Pass rate: ${show(summary.pass_rate)}${report.selection.partial ? ' — PARTIAL RUN: only the selected cases were evaluated; this report cannot become a baseline' : ''}`,
+    `- Safety failures: ${summary.safety_failures}; unsupported-claim failures: ${summary.unsupported_claim_failures}; schema failures: ${summary.schema_failures}`,
+    `- Uncertainty failures: ${summary.uncertainty_failures}; verdict integrity failures: ${summary.verdict_integrity_failures}`,
+    `- Failures by category: ${showCounts(summary.failures_by_category)}`,
+    `- Failures by scenario: ${showCounts(summary.failures_by_scenario)}`,
+    `- Latency: ${performance.latency.status === 'recorded' ? `p50 ${performance.latency.p50_ms} ms, p95 ${performance.latency.p95_ms} ms over ${performance.latency.runs} runs` : `unavailable (${performance.latency.reason})`}`,
+    `- Cost: ${performance.cost.status === 'recorded' ? `${showMicroUsd(performance.cost.total_micro_usd)} total, ${showMicroUsd(performance.cost.median_micro_usd_per_run)} median per run over ${performance.cost.runs_with_usage} runs` : `unavailable (${performance.cost.reason})`}`,
+    `- Proxy flags for human review (not failures, not a measure of fashion quality): occasion ${summary.proxy_flags.proxy_occasion}, explanation ${summary.proxy_flags.proxy_explanation}`,
+    '',
+    ...(failing.length > 0 ? ['| Failing case | Reason |', '|---|---|', ...failing.flatMap((entry) => entry.failure_reasons.map((reason) => `| ${entry.case_id} | ${reason} |`)), ''] : []),
+    ...(flagged.length > 0 ? ['| Case flagged for review | Proxy |', '|---|---|', ...flagged.flatMap((entry) => entry.proxy_flags.map((flag) => `| ${entry.case_id} | ${flag} |`)), ''] : []),
+    '## Metrics',
+    '',
+  ]
   const lines = [
     `# Evaluation report (${report.mode})`,
     '',
@@ -266,6 +381,7 @@ export function renderMarkdown(report: EvaluationReport): string {
     `- Dataset: ${report.dataset.fingerprint}, ${report.dataset.cases} cases, ${report.dataset.cases_with_verified_labels} with verified labels${report.dataset.matches_recording ? '' : ' — DIFFERS from the dataset the recording was made with'}`,
     `- Runs scored: ${metrics.runs} (${metrics.withheld_runs} withheld)`,
     '',
+    ...caseLines,
     '| Group | Metric | Value |',
     '|---|---|---|',
     `| Model | Valid structured output rate | ${show(metrics.structured_output.valid_rate)} |`,

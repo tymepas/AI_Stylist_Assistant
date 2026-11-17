@@ -19,6 +19,20 @@ interface UploadCardProps {
   captureMode: 'user' | 'environment'
   /** What to do with a photo under 512 px on either side. Default: enlarge it just enough. */
   belowMinimum?: BelowMinimumPolicy
+  /** Size to aim for when preparing the photo. Lower when several photos share one request. */
+  targetBytes?: number
+  /** A smaller card, for a row of several photos. */
+  compact?: boolean
+  /** Refuses a prepared photo with a message (for example a duplicate). Return null to accept it. */
+  validatePrepared?: (file: File) => Promise<string | null> | string | null
+  /** Extra controls shown under the preview, for example to reorder photos. */
+  previewActions?: React.ReactNode
+  /**
+   * Keep the current photo until its replacement has been prepared and accepted. Used where the card is
+   * one of several: removing first would shift the other photos, and a refused replacement would lose a photo.
+   * Default (false): the current photo is removed as soon as another one is chosen.
+   */
+  keepPreviousOnReplace?: boolean
   /** Receives the prepared JPEG. The original file is never passed on. */
   onFileSelect: (file: File) => void
   onRemove: () => void
@@ -43,6 +57,11 @@ export default function UploadCard({
   file,
   captureMode,
   belowMinimum,
+  targetBytes,
+  compact = false,
+  validatePrepared,
+  previewActions,
+  keepPreviousOnReplace = false,
   onFileSelect,
   onRemove,
   disabled = false,
@@ -66,6 +85,12 @@ export default function UploadCard({
     return () => URL.revokeObjectURL(url)
   }, [file])
 
+  // A message about an earlier attempt does not belong to a different photo: when the photo shown in this
+  // card changes (replaced, or moved here by reordering), the message is cleared.
+  useEffect(() => {
+    if (file) setError(null)
+  }, [file])
+
   // Stop any preparation still running when the card goes away.
   useEffect(() => () => preparationRef.current?.abort(), [])
 
@@ -77,21 +102,44 @@ export default function UploadCard({
     preparationRef.current = controller
 
     setError(null)
-    // The previous photo is replaced, never silently kept while a new one is prepared.
-    if (file) onRemove()
+    // The previous photo is replaced, never silently kept while a new one is prepared. Where the card is one of
+    // several, the previous photo stays until the new one is accepted, and a failure says that it was kept.
+    if (file && !keepPreviousOnReplace) onRemove()
     setIsPreparing(true)
 
     try {
-      const prepared = await prepareImageForUpload(selected, { belowMinimum, signal: controller.signal })
-      if (!controller.signal.aborted) onFileSelect(prepared.file)
+      const prepared = await prepareImageForUpload(selected, { belowMinimum, targetBytes, signal: controller.signal })
+      if (controller.signal.aborted) return
+      const refusal = validatePrepared ? await validatePrepared(prepared.file) : null
+      if (controller.signal.aborted) return
+      if (refusal) setError(withKeptNote(refusal))
+      else onFileSelect(prepared.file)
     } catch (preparationError) {
-      if (!controller.signal.aborted) setError(imagePreparationMessage(preparationError))
+      if (!controller.signal.aborted) setError(withKeptNote(imagePreparationMessage(preparationError)))
     } finally {
       if (preparationRef.current === controller) {
         preparationRef.current = null
         setIsPreparing(false)
       }
     }
+  }
+
+  /** Tells the user that the photo already in this slot is still there after a failed replacement. */
+  function withKeptNote(message: string): string {
+    return file && keepPreviousOnReplace ? `${message} Your current photo was kept.` : message
+  }
+
+  /** Stops a preparation in progress. With `keepPreviousOnReplace` the current photo is untouched. */
+  function handleCancel(event: MouseEvent) {
+    if (!keepPreviousOnReplace) {
+      handleRemove(event)
+      return
+    }
+    event.stopPropagation()
+    preparationRef.current?.abort()
+    preparationRef.current = null
+    setIsPreparing(false)
+    setError(null)
   }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -140,7 +188,8 @@ export default function UploadCard({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          'group relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-card/50 p-6 text-center transition-all duration-300',
+          'group relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border bg-card/40 text-center transition-all duration-300',
+          compact ? 'min-h-[200px] p-4' : 'min-h-[260px] p-6 sm:p-8',
           isEmpty && !disabled && 'cursor-pointer hover:border-primary/50 hover:bg-card',
           isDragging && 'scale-[1.01] border-primary bg-primary/5 shadow-lg shadow-primary/10'
         )}
@@ -178,7 +227,7 @@ export default function UploadCard({
             <LoaderCircle className="h-7 w-7 animate-spin text-primary" aria-hidden="true" />
             <p className="mt-3 text-sm font-medium text-foreground">Preparing your photo…</p>
             <p className="mt-1 text-xs text-muted-foreground">This happens on your device. Nothing is uploaded yet.</p>
-            <Button type="button" size="sm" variant="ghost" className="focus-ring mt-3" onClick={handleRemove}>
+            <Button type="button" size="sm" variant="ghost" className="focus-ring mt-3" onClick={handleCancel}>
               Cancel
             </Button>
           </div>
@@ -186,9 +235,9 @@ export default function UploadCard({
 
         {hasPreview && file && previewUrl && (
           <div className="w-full">
-            <div className="relative h-44 w-full overflow-hidden rounded-xl bg-secondary/40">
+            <div className={cn('relative w-full overflow-hidden rounded-xl bg-secondary/40', compact ? 'h-36' : 'h-52 sm:h-60')}>
               {/* A plain <img>: the source is an in-memory blob URL, not a remote image. */}
-              <img src={previewUrl} alt={`${label} preview`} className="h-full w-full object-cover" />
+              <img src={previewUrl} alt={`${label} preview`} className="image-zoom h-full w-full object-cover" />
             </div>
             <p className="mt-3 max-w-full truncate text-xs text-muted-foreground">{file.name}</p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -202,6 +251,7 @@ export default function UploadCard({
                 <X className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" /> Remove
               </Button>
             </div>
+            {previewActions ? <div className="mt-3 flex flex-wrap items-center justify-center gap-2">{previewActions}</div> : null}
           </div>
         )}
 
@@ -210,8 +260,8 @@ export default function UploadCard({
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary transition-colors group-hover:bg-primary/10">
               <UploadCloud className="h-6 w-6 text-primary" aria-hidden="true" />
             </div>
-            <p className="font-medium text-foreground">{label}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            <p className={cn('font-display text-foreground', compact ? 'text-xl' : 'text-2xl')}>{label}</p>
+            <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-muted-foreground">{description}</p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <Button type="button" size="sm" className={cn('focus-ring', TOUCH_ONLY)} disabled={controlsDisabled} onClick={openCamera}>
                 <Camera className="mr-1.5 h-4 w-4" aria-hidden="true" /> Take photo

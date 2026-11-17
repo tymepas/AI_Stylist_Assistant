@@ -25,6 +25,7 @@ import {
 } from '@/lib/services/openai/modelConfig'
 import { computeCostMicroUsd } from '@/lib/services/openai/modelConfig'
 import { effectiveMaxOutputTokens, effectiveReasoningEffort } from '@/lib/services/openai/responsesClient'
+import { GARMENT_MODES, MAX_GARMENT_IMAGES, garmentCountProblem, type GarmentMode } from '@/lib/constants/garmentModes'
 
 // ---------------------------------------------------------------------------
 // Manifest
@@ -46,6 +47,30 @@ export const CASE_CATEGORIES = [
   'product_claims_text',
   'insufficient_input',
 ] as const
+
+/**
+ * What a scenario is about. Independent of `category`, which describes the image
+ * conditions. Used only to group evaluation results.
+ */
+export const SCENARIO_TYPES = [
+  'casual',
+  'office',
+  'formal',
+  'wedding',
+  'party',
+  'seasonal',
+  'colour',
+  'preference_conflict',
+  'low_confidence',
+  'missing_input',
+  'adversarial',
+  'product_claims',
+  'garment_views',
+  'outfit_items',
+  'ambiguous_detail',
+  'integrity',
+] as const
+export type ScenarioType = (typeof SCENARIO_TYPES)[number]
 
 const VERDICT_BANDS = ['Highly Recommended', 'Recommended', 'Consider Alternatives', 'Not Recommended'] as const
 
@@ -108,11 +133,41 @@ const caseSchema = z
         forbidden_claims: z.array(z.string().min(2).max(80)).max(20).default([]),
         /** Ratings a correct answer may give per dimension. Used for confidence calibration; needs verified labels. */
         dimension_ratings: z.record(z.enum(DIMENSION_KEYS), z.array(z.enum(RATINGS)).min(1).max(5)).optional(),
+        /** How a complete answer is expected to show uncertainty. */
+        uncertainty: z
+          .object({
+            /** Dimensions that must be rated with Low confidence or left "Unable to Evaluate". */
+            low_confidence_or_unrated: z.array(z.enum(DIMENSION_KEYS)).min(1).max(6).optional(),
+            /** Dimensions that must be left "Unable to Evaluate". */
+            unrated: z.array(z.enum(DIMENSION_KEYS)).min(1).max(6).optional(),
+            /** The most dimensions that may state High confidence. */
+            max_high_confidence_dimensions: z.number().int().min(0).max(6).optional(),
+          })
+          .strict()
+          .optional(),
+        /** True when the recorded output must be REJECTED by the output schema, for example because it carries its own verdict. */
+        must_be_rejected: z.boolean().optional(),
+        /** Words the occasion reason is expected to mention. Used by a proxy check only, never as a measure of fashion quality. */
+        occasion_terms: z.array(z.string().min(2).max(40)).min(1).max(8).optional(),
       })
       .strict(),
     labels: labelsSchema.optional(),
     /** For an adversarial case: the id of the same scene without the adversarial content. */
     twin_of: caseId.optional(),
+    /** What the scenario is about, for grouping results. The image-condition `category` stays required. */
+    scenario: z.enum(SCENARIO_TYPES).optional(),
+    /** How the garment images relate to each other. Absent means one garment image. */
+    garment_mode: z.enum(GARMENT_MODES).optional(),
+    /** Further garment images (at most two more), for the multi-image modes. */
+    extra_garments: z.array(relativeImagePath).min(1).max(MAX_GARMENT_IMAGES - 1).optional(),
+    /** Questions for a human reviewer. Never scored. */
+    review: z
+      .object({
+        occasion_suitability: z.string().min(1).max(300).optional(),
+        explanation_quality: z.string().min(1).max(300).optional(),
+      })
+      .strict()
+      .optional(),
   })
   .strict()
 
@@ -133,6 +188,12 @@ export const manifestSchema = z
       if (benchmarkCase.twin_of === benchmarkCase.id || !seen.has(benchmarkCase.twin_of)) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: twin_of must name another case in the manifest` })
       }
+    }
+    for (const benchmarkCase of manifest.cases) {
+      // The mode is explicit and must agree with the images: it is never inferred from their number.
+      const garmentCount = 1 + (benchmarkCase.extra_garments?.length ?? 0)
+      const problem = garmentCountProblem(benchmarkCase.garment_mode ?? 'single', garmentCount)
+      if (problem) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: ${garmentCount} garment image(s) do not fit garment_mode "${benchmarkCase.garment_mode ?? 'single'}"` })
     }
   })
 
@@ -203,9 +264,12 @@ export function evaluateGate(env: Record<string, string | undefined>): GateResul
   return { mode: 'live', options }
 }
 
-/** Worst-case cost of one analysis call with these options, in micro-USD. */
-export function maxCostPerCallMicroUsd(options: RunOptions): number {
-  return estimateMaxCostMicroUsd(resolveModelConfig(options.model)!, 'analysis', 2, options.maxOutputTokens)
+/**
+ * Worst-case cost of one analysis call with these options, in micro-USD.
+ * `imageCount` is the personal photo plus the garment images: 2 for one garment image, up to 4.
+ */
+export function maxCostPerCallMicroUsd(options: RunOptions, imageCount = 2): number {
+  return estimateMaxCostMicroUsd(resolveModelConfig(options.model)!, 'analysis', imageCount, options.maxOutputTokens)
 }
 
 // ---------------------------------------------------------------------------
@@ -427,11 +491,17 @@ export interface PreparedCase {
   benchmarkCase: BenchmarkCase
   photo: File
   garment: File
+  /** Further garment images of a multi-image case, in manifest order. */
+  extraGarments?: File[]
 }
 
 export type AnalyzeFn = (input: {
   photo: File
   garment: File
+  /** Further garment images; absent or empty for a single garment image. */
+  extraGarments?: File[]
+  /** Absent means one garment image. */
+  garmentMode?: GarmentMode
   occasion: string
   styleProfile: StyleProfile
   options: RunOptions
@@ -455,11 +525,12 @@ export interface RunOutcome {
 export async function runCases(prepared: PreparedCase[], options: RunOptions, analyze: AnalyzeFn, now: () => number = Date.now): Promise<RunOutcome> {
   const records: RunRecord[] = []
   const capMicroUsd = Math.floor(options.maxUsd * 1_000_000)
-  const worstCase = maxCostPerCallMicroUsd(options)
   let spentMicroUsd = 0
 
   for (let run = 1; run <= options.runsPerCase; run += 1) {
-    for (const { benchmarkCase, photo, garment } of prepared) {
+    for (const { benchmarkCase, photo, garment, extraGarments = [] } of prepared) {
+      // The personal photo plus every garment image of this case.
+      const worstCase = maxCostPerCallMicroUsd(options, 2 + extraGarments.length)
       if (spentMicroUsd + worstCase > capMicroUsd) {
         return { records, stoppedEarly: true, stopReason: `Stopped before exceeding BENCHMARK_MAX_USD (${options.maxUsd}).` }
       }
@@ -469,6 +540,8 @@ export async function runCases(prepared: PreparedCase[], options: RunOptions, an
         const result = await analyze({
           photo,
           garment,
+          extraGarments,
+          garmentMode: benchmarkCase.garment_mode ?? 'single',
           occasion: benchmarkCase.occasion,
           styleProfile: benchmarkCase.style_profile,
           options,

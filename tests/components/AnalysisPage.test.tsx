@@ -1,8 +1,9 @@
 /**
  * @jest-environment jsdom
  *
- * Outfit analysis flow: camera hints per step, no upload before Analyze is
- * pressed, one request for a double press, and loading and error states.
+ * Outfit analysis flow with one garment photo: camera hints per step, no upload
+ * before Analyze is pressed, one request for a double press, and loading and
+ * error states. Several garment photos are covered in GarmentJourney.test.tsx.
  * `fetch` is a mock and image preparation is mocked; no model is ever called.
  */
 
@@ -108,21 +109,34 @@ beforeEach(() => {
   }))
 })
 
-/** Walks the three steps and returns the Analyze button, without pressing it. */
+/**
+ * Walks the journey for one garment photo (photo, garment mode, garment, occasion,
+ * optional preferences, review) and returns the Analyze button, without pressing it.
+ */
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
   render(<AnalysisPage />)
+  const next = () => user.click(screen.getByRole('button', { name: /continue/i }))
 
   expect(screen.getByTestId('upload-camera-input').getAttribute('capture')).toBe('user')
   await user.upload(screen.getByTestId('upload-gallery-input'), syntheticFile('selfie-original.png', 'image/png', 50_000))
   await screen.findByAltText('Current Photo preview')
-  await user.click(screen.getByRole('button', { name: /continue/i }))
+  await next()
+
+  // The garment mode is always chosen by the user; nothing is preselected.
+  await user.click(screen.getByTestId('garment-mode-single'))
+  await next()
 
   expect(screen.getByTestId('upload-camera-input').getAttribute('capture')).toBe('environment')
   await user.upload(screen.getByTestId('upload-gallery-input'), syntheticFile('garment-original.webp', 'image/webp', 60_000))
   await screen.findByAltText('Clothing Image preview')
-  await user.click(screen.getByRole('button', { name: /continue/i }))
+  await next()
 
   await user.selectOptions(screen.getByTestId('occasion-select'), OCCASION)
+  await next()
+
+  // Style preferences are optional: continue without choosing any.
+  await next()
+
   return screen.getByRole('button', { name: /analyze/i }) as HTMLButtonElement
 }
 
@@ -186,6 +200,9 @@ describe('AnalysisPage submission', () => {
     const garment = body.get('garment') as File
     expect([photo.name, photo.type, photo.size]).toEqual(['photo.jpg', 'image/jpeg', PHOTO_BYTES])
     expect([garment.name, garment.type, garment.size]).toEqual(['garment.jpg', 'image/jpeg', GARMENT_BYTES])
+    // Exactly one garment file, and the mode the user chose is sent explicitly.
+    expect(body.getAll('garment')).toHaveLength(1)
+    expect(body.get('garmentMode')).toBe('single')
     expect(JSON.parse(String(body.get('styleProfile')))).toEqual({ preferredStyles: [], favoriteColors: [], occasionPreferences: [] })
     expect(body.has('aiStyleProfile')).toBe(false)
   })

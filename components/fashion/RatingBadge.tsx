@@ -1,78 +1,85 @@
-import { Rating, Confidence } from '@/types/schema'
+import { BAND_FLOORS, MAX_SCORE } from '@/lib/services/evidenceSummary'
+import { BAND_TONE, RATING_STEPS, RATING_TONE } from '@/lib/constants/verdictTones'
 import { cn } from '@/lib/utils'
-
-const RATING_STYLES: Record<Rating, string> = {
-  Excellent: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  Good: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  Fair: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-  Poor: 'bg-red-500/10 text-red-400 border-red-500/30',
-  'Unable to Evaluate': 'bg-slate-500/10 text-slate-400 border-slate-500/30',
-}
+import type { Confidence, OverallRecommendation, Rating } from '@/types/schema'
 
 export function RatingBadge({ rating }: { rating: Rating }) {
+  const tone = RATING_TONE[rating]
   return (
-    <span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium', RATING_STYLES[rating])}>
+    <span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium', tone.soft, tone.text, tone.border)}>
       {rating}
     </span>
   )
 }
 
-const CONFIDENCE_LEVELS: Record<Confidence, number> = { High: 3, Medium: 2, Low: 1 }
-const CONFIDENCE_COLORS: Record<Confidence, string> = {
-  High: 'bg-emerald-400',
-  Medium: 'bg-amber-400',
-  Low: 'bg-red-400',
-}
-
-/** Small visual confidence meter (bars) + label. Replaces plain text-only confidence tag. */
-export function ConfidenceMeter({ confidence }: { confidence: Confidence }) {
-  const active = CONFIDENCE_LEVELS[confidence]
+/**
+ * A rating as four segments. The word next to it is the rating; the segments
+ * only make a list of ratings quick to scan. "Unable to Evaluate" is shown as
+ * four empty, dashed segments, never as a low rating.
+ */
+export function RatingMeter({ rating, delayClass = '' }: { rating: Rating; delayClass?: string }) {
+  const filled = RATING_STEPS[rating]
+  const tone = RATING_TONE[rating]
   return (
-    <div className="flex items-center gap-2" role="img" aria-label={`${confidence} confidence`}>
-      <div className="flex items-end gap-0.5" aria-hidden="true">
-        {[1, 2, 3].map((bar) => (
-          <span
-            key={bar}
-            className={cn(
-              'w-1 rounded-full transition-colors',
-              bar === 1 ? 'h-1.5' : bar === 2 ? 'h-2.5' : 'h-3.5',
-              bar <= active ? CONFIDENCE_COLORS[confidence] : 'bg-border'
-            )}
-          />
-        ))}
-      </div>
-      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{confidence} confidence</span>
-    </div>
+    <span className="flex items-center gap-1" aria-hidden="true">
+      {[1, 2, 3, 4].map((step) => (
+        <span key={step} className={cn('h-1.5 w-6 overflow-hidden rounded-full', filled === 0 ? 'border border-dashed border-border' : 'bg-secondary')}>
+          {step <= filled ? <span className={cn('animate-meter block h-full w-full rounded-full', tone.fill, delayClass)} /> : null}
+        </span>
+      ))}
+    </span>
   )
 }
 
-/** Circular gauge for the verdict_score (out of 5). Purely presentational, value is passed in unchanged. */
-export function ScoreGauge({ score, colorClass }: { score: number; colorClass: string }) {
-  const percent = Math.max(0, Math.min(1, score / 5))
-  const radius = 42
-  const circumference = 2 * Math.PI * radius
-  const offset = circumference * (1 - percent)
+const CONFIDENCE_DOTS: Record<Confidence, number> = { High: 3, Medium: 2, Low: 1 }
+
+/** How sure the analysis says it is about one rating. Low confidence is called out, not hidden. */
+export function ConfidenceMeter({ confidence }: { confidence: Confidence }) {
+  const active = CONFIDENCE_DOTS[confidence]
+  const low = confidence === 'Low'
+  return (
+    <span className="inline-flex items-center gap-2" role="img" aria-label={`${confidence} confidence`}>
+      <span className="flex items-center gap-1" aria-hidden="true">
+        {[1, 2, 3].map((dot) => (
+          <span key={dot} className={cn('h-1.5 w-1.5 rounded-full', dot <= active ? (low ? 'bg-verdict-caution' : 'bg-foreground/70') : 'bg-border')} />
+        ))}
+      </span>
+      <span className={cn('text-[0.6875rem] font-medium uppercase tracking-[0.14em]', low ? 'text-verdict-caution' : 'text-muted-foreground')}>{confidence} confidence</span>
+    </span>
+  )
+}
+
+/**
+ * Where the calculated score sits on the 0 to 5 scale, with the three band
+ * boundaries marked. It shows the score the application calculated, exactly as
+ * calculated, and which band that puts it in. It is a position on a scale, not
+ * a gauge of certainty.
+ */
+export function ScoreScale({ score, band }: { score: number; band: OverallRecommendation }) {
+  const tone = BAND_TONE[band]
+  const percent = Math.max(0, Math.min(100, (score / MAX_SCORE) * 100))
+  const boundaries = BAND_FLOORS.filter((entry) => entry.floor > 0)
 
   return (
-    <div className="relative flex h-28 w-28 items-center justify-center" role="img" aria-label={`Score ${score.toFixed(1)} out of 5`}>
-      <svg width="112" height="112" viewBox="0 0 112 112" className="-rotate-90" aria-hidden="true">
-        <circle cx="56" cy="56" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-border/60" />
-        <circle
-          cx="56"
-          cy="56"
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          className={cn('transition-all duration-700 ease-out', colorClass)}
-        />
-      </svg>
-      <div className="absolute flex flex-col items-center">
-        <span className={cn('text-2xl font-semibold', colorClass)}>{score.toFixed(1)}</span>
-        <span className="text-[10px] text-muted-foreground">out of 5</span>
+    <div role="img" aria-label={`Calculated score ${score.toFixed(1)} out of ${MAX_SCORE}, in the ${band} band`}>
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="eyebrow">Calculated score</span>
+        <span className="text-sm text-muted-foreground">
+          <span className={cn('font-display text-3xl', tone.text)}>{score.toFixed(1)}</span> of {MAX_SCORE}
+        </span>
+      </div>
+      <div className="relative mt-3 h-2 rounded-full bg-secondary" aria-hidden="true">
+        <div className="h-full overflow-hidden rounded-full" style={{ width: `${percent}%` }}>
+          <div className={cn('animate-meter h-full w-full rounded-full', tone.fill)} />
+        </div>
+        {boundaries.map((entry) => (
+          <span key={entry.band} className="absolute top-1/2 h-4 w-px -translate-y-1/2 bg-foreground/35" style={{ left: `${(entry.floor / MAX_SCORE) * 100}%` }} />
+        ))}
+      </div>
+      <div className="relative mt-2 h-4 text-[0.625rem] text-muted-foreground" aria-hidden="true">
+        {boundaries.map((entry) => (
+          <span key={entry.band} className="absolute -translate-x-1/2" style={{ left: `${(entry.floor / MAX_SCORE) * 100}%` }}>{entry.floor}</span>
+        ))}
       </div>
     </div>
   )

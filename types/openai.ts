@@ -27,6 +27,8 @@ export interface RawOpenAICompleteAnalysis {
   dimensions: RawOpenAIDimensions
   /** Optional untrusted extension; validated separately from core analysis. */
   shopping_advisor?: unknown
+  /** Optional untrusted per-item notes for a multi-item outfit; validated separately. */
+  outfit_components?: unknown
 }
 
 export interface RawOpenAIUnableToAnalyze {

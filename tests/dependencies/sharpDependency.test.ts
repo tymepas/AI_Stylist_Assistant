@@ -5,8 +5,9 @@
  * a single copy, and that its native binary loads and works on the platform the
  * tests run on (Windows locally, Linux x64 in CI on Node 22 and 24).
  *
- * The application does not use sharp yet. Server-side image processing is a
- * separate change; nothing here is application behaviour.
+ * The application uses sharp for server-side image intake
+ * (lib/images/normalizeImage.ts, covered by tests/images/normalizeImage.test.ts).
+ * This file only checks the dependency itself.
  */
 
 import { readFileSync } from 'node:fs'

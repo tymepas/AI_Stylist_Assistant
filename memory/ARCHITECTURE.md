@@ -1,6 +1,6 @@
 # Architecture
 
-Frontend → Input Validation → Single Multimodal AI Call → Core JSON Validation → Verdict Calculation (app code) → Independent Shopping Advisor Validation → Decision Report UI
+Frontend → Input Validation → Server Image Intake (decode, re-encode, strip metadata) → Single Multimodal AI Call → Core JSON Validation → Verdict Calculation (app code) → Independent Validation of Advisory Blocks (shopping advisor, outfit item notes) → Decision Report UI
 
 ## Stack
 Next.js, TypeScript, Tailwind, shadcn/ui, Framer Motion.
@@ -26,7 +26,7 @@ Photos are sent to the model provider for analysis and not persisted beyond the 
 
 ## Camera capture and browser image preparation
 
-Photos are chosen with native file inputs only (`components/fashion/UploadCard.tsx`): one with a `capture` hint (front camera for the personal photo and Style DNA, rear camera for the garment) and a separate gallery/file input. There is no `getUserMedia` and no camera SDK.
+Photos are chosen with native file inputs only (`components/fashion/UploadCard.tsx`): one with a `capture` hint (front camera for the personal photo and Style DNA, rear camera for the garment) and a separate gallery/file input. Every garment slot has both. With several garment photos, each is prepared to a smaller target (about 0.7 MB) so that they fit one request together with the personal photo. There is no `getUserMedia` and no camera SDK.
 
 Every chosen photo is prepared in the browser by `lib/images/prepareImageForUpload.ts` before it can be submitted:
 
@@ -41,7 +41,58 @@ Every chosen photo is prepared in the browser by `lib/images/prepareImageForUplo
 
 Images are held in memory only: nothing is written to localStorage, sessionStorage or IndexedDB, preview object URLs are revoked when replaced, removed or unmounted, and nothing is uploaded until the user submits. Files are sent under generic names (`photo.jpg`, `garment.jpg`).
 
-Uploads go through `lib/services/uploadRequest.ts`: one request per submission, no automatic retry, a 70-second client timeout (above the route's 60-second `maxDuration`), and distinct messages for offline, network failure and HTTP 400, 413, 429 and 503. Server-side validation in `lib/services/analysisService.ts` is unchanged and still applies to every request.
+Uploads go through `lib/services/uploadRequest.ts`: one request per submission, no automatic retry, a 70-second client timeout (above the route's 60-second `maxDuration`), and distinct messages for offline, network failure and HTTP 400, 413, 429 and 503. Server-side validation in `lib/services/analysisService.ts` still applies to every request, and the server then decodes and re-encodes every image itself (see "Server-side image intake").
+
+## Server-side image intake
+
+Every uploaded image passes through `lib/services/uploadIntake.ts` and `lib/images/normalizeImage.ts` before anything else uses it, on both `/api/analyze` and `/api/generate-profile`, in mock mode as well as live mode. All of it runs before any spend reservation or model call, so a rejected upload costs nothing.
+
+| Step | Behaviour |
+|---|---|
+| Request size | A declared `Content-Length` above 4.5 MB is refused with 413 before the body is read. The images of a parsed request are summed against the same limit, so a request without a usable header is checked too. |
+| Header check | The existing header validation: JPEG, PNG or WEBP, at most 10 MB, at least 512 px on each side. |
+| Content check | The leading bytes decide the format. A file whose content does not match its declared type is refused, as is any other format, whatever name or type it claims. |
+| Pixel limits | At most 8,192 px on a side and 16 megapixels, checked from the header before any pixel is decoded, and enforced again by the decoder (`limitInputPixels`). |
+| Decode | `sharp` with `failOn: 'error'`: a truncated or corrupt file is refused, not partly decoded. First frame only. A 10-second timeout. |
+| Normalise | EXIF orientation applied; long edge reduced to 1,536 px, never enlarged; transparency flattened onto white; re-encoded as JPEG at quality 85. |
+| Metadata | Nothing is carried over: EXIF, GPS, ICC and XMP are all dropped. |
+
+Only the re-encoded JPEG is passed on. The uploaded bytes are never sent to the model provider. Processing is in memory: no temporary file is written, `sharp`'s cache is off, one decode runs at a time per process, and neither the input nor the output is logged. A failure in the image library is answered with 400 and no model call.
+
+The browser still prepares every photo first (see above), so for photos from the Verdict frontend the server step resizes nothing and re-encodes once. It exists for clients that call the API directly, which could otherwise send metadata, a decompression bomb or bytes that are not an image. The benchmark runner applies the same normalisation, so a benchmark sends the model exactly what production sends.
+
+`sharp` is a native module. `output: 'standalone'` traces it and its platform binary into the deployment; the first Preview build of a change in this area is what confirms that on Vercel.
+
+## Garment modes: one garment, several views, or an outfit
+
+An analysis has one personal photo and one to three garment photos. How the garment photos relate is the **garment mode** (`lib/constants/garmentModes.ts`), and it is always chosen by the user:
+
+| Mode | Garment photos | Meaning |
+|---|---|---|
+| `single` | exactly 1 | One photo of the garment. The original behaviour. |
+| `same_garment_views` | 2 or 3 | Different views of ONE garment (front, back, side). Combined evidence about a single item. |
+| `outfit_items` | 2 or 3 | DIFFERENT items worn together (shirt, trousers, jacket). The six ratings are for the outfit as a whole. |
+
+Rules that hold everywhere (API, UI, evaluation manifest, benchmark):
+
+- **The mode is never inferred** from the number of photos, and a photo is never dropped to make a request fit. A count that does not fit the mode is an error with a message; in the UI, switching to one garment photo while several are added asks first.
+- **Backward compatible.** `POST /api/analyze` takes the field `garment` one to three times and `garmentMode`. A request without `garmentMode` is a `single` request and gets exactly the response it always did (no `garment_mode` field). The same garment file twice is refused.
+- **Prompt.** A `single` request sends the same message as before multiple images existed, so its prompt version is unchanged. Each multi-image mode adds a few instruction lines to the user message and labels every garment image by position and role; each has its own recorded prompt version (`tests/core/garmentModes.test.ts`). `memory/SYSTEM_PROMPT.md` is not changed. The added lines are kept short enough that the whole prompt text stays within `maxTextInputTokens`, the bound the spend reservation is computed from.
+- **Spend.** The reservation covers every image actually sent (the personal photo plus one to three garment photos). Limits, budgets and concurrency are unchanged.
+- **Per-item notes.** In `outfit_items` mode the model may return `outfit_components`: one note per item with a qualitative label (Works well, Works, Needs attention, Unable to tell). It is validated separately (`lib/services/openai/outfitComponentsSchema.ts`), exactly like the shopping advisor: a missing or malformed block leaves the analysis untouched, and nothing in it reaches `computeVerdict`. This is `analysis-output/2`; every `/1` output is still valid.
+- **Not validated against a live model.** The multi-image modes were built and tested with mocks and synthetic fixtures only. How well a model follows the new instructions is unknown until an approved live benchmark is run and replayed.
+
+## Evidence summary and the decision report
+
+`lib/services/evidenceSummary.ts` describes how much a verdict rests on: which weighted dimensions were rated, which were left "Unable to Evaluate", and which have Low confidence. It is display only. The report (`components/fashion/DecisionReport.tsx`) uses it to state, next to the verdict, when the verdict rests on few or uncertain ratings, and to show no score when nothing that counts could be evaluated. It never changes a rating, the score or the band.
+
+The report also shows each dimension's weight and the band boundaries on the score scale. Those are display copies of the values inside `computeVerdict`; `tests/core/evidenceSummary.test.ts` derives the real values from `computeVerdict` and fails if a copy disagrees.
+
+## Design system
+
+Tokens live in `app/globals.css` and are exposed through `tailwind.config.js`: one warm dark palette, a single champagne accent, and four muted verdict tones (`verdict-high`, `-good`, `-caution`, `-low`) shared by bands and ratings through `lib/constants/verdictTones.ts`. Text is Inter and headings are Instrument Serif, both self-hosted by `next/font` (no request to a font CDN from the browser).
+
+Motion is CSS first (entrances, verdict reveal, meters, skeletons, progress). Framer Motion remains for step transitions and existing pages; no animation library was added. Reduced motion is handled in one place: a `prefers-reduced-motion` block in `globals.css` switches off every CSS animation and transition, and `MotionConfig reducedMotion="user"` in `app/providers.js` does the same for Framer Motion. No content depends on an animation having run.
 
 ## API origin policy and security headers
 
@@ -101,7 +152,7 @@ Mock mode never reaches the model client, so it writes one `api_request_complete
 ## Prompt and schema versions
 
 - **Prompt version** (`lib/services/openai/promptVersion.ts`): the first 12 hex characters of a SHA-256 over the system prompt file and the user message, as produced by the same builder functions that produce the real request. User values and images are replaced by fixed placeholders first, so the version identifies the template and never depends on a user. Line endings are normalised, so a Windows checkout and the Linux deployment report the same version. Editing `memory/SYSTEM_PROMPT.md`, `memory/STYLE_PROFILE_SYSTEM_PROMPT.md` or any fixed instruction line changes the version automatically. `tests/versioning/promptVersion.test.ts` records the current versions, so a prompt change is visible in review.
-- **Schema version**: `ANALYSIS_OUTPUT_SCHEMA_VERSION` (`analysis-output/1`, covering the analysis and shopping recommendation schemas) and `PROFILE_OUTPUT_SCHEMA_VERSION` (`profile-output/1.0`). `tests/versioning/schemaVersions.test.ts` pairs each version with a fingerprint of the schema's structure and fails if a schema changes without a version bump.
+- **Schema version**: `ANALYSIS_OUTPUT_SCHEMA_VERSION` (`analysis-output/2`, covering the analysis, shopping recommendation and outfit component schemas; `/2` added the optional `outfit_components` block) and `PROFILE_OUTPUT_SCHEMA_VERSION` (`profile-output/1.0`). `tests/versioning/schemaVersions.test.ts` pairs each version with a fingerprint of the schema's structure and fails if a schema changes without a version bump.
 
 ## Client disconnects
 
@@ -143,9 +194,9 @@ The workflow is separate from the test workflow and is not a required status che
 
 **Open items, reviewed 2026-11-17.**
 - Production: `zod` GHSA-mrhx-c7xc-m3w5 (high) is the only exception left. It is fixed only in Zod 4 and is accepted with a mitigation until 2027-02-14; the migration is a separate task.
-- Development only, not enforced: `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249 (moderate) and `deepmerge` GHSA-gcqx-w48m-w2h4 (low), all installed through Jest 30. The newest Jest release still depends on an affected `glob`, so there is no update to take yet. They run only in the test runner, on this repository's own files.
+- Development only, not enforced: `glob` GHSA-3g3m-2fjr-6pw4 and `minimatch` GHSA-g3hv-75wg-m249 (moderate), both installed through Jest 30. The newest Jest release still depends on an affected `glob`, so there is no update to take yet. They run only in the test runner, on this repository's own files. `deepmerge` GHSA-gcqx-w48m-w2h4 was withdrawn in the GitHub Advisory Database on 2026-11-16 and is not an open item.
 
-`sharp` is a direct dependency pinned to an exact version, shared with Next.js as a single copy. The application does not import it yet; `tests/dependencies/sharpDependency.test.ts` checks that the pinned binary loads on each CI Node version.
+`sharp` is a direct dependency pinned to an exact version, shared with Next.js as a single copy. It is used by the server-side image intake; `tests/dependencies/sharpDependency.test.ts` checks that the pinned binary loads on each CI Node version.
 
 ## Spending protection
 

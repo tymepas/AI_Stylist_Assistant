@@ -3,6 +3,7 @@
  * Captures every console method so nothing can slip through an unspied channel.
  */
 
+import { realPng } from '../helpers/realImages'
 import { jest } from '@jest/globals'
 
 const METHODS = ['log', 'info', 'warn', 'error', 'debug', 'trace'] as const
@@ -33,16 +34,9 @@ export function captureLogs(): LogCapture {
   }
 }
 
+/** A real, decodable picture: the API decodes every upload, so a header-only file would be rejected. */
 export function makePng(width = 800, height = 800): File {
-  const buffer = new ArrayBuffer(33)
-  const bytes = new Uint8Array(buffer)
-  const view = new DataView(buffer)
-  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
-  view.setUint32(8, 13)
-  bytes.set([0x49, 0x48, 0x44, 0x52], 12)
-  view.setUint32(16, width)
-  view.setUint32(20, height)
-  return new File([buffer], 'photo.png', { type: 'image/png' })
+  return realPng(width, height, 'photo.png')
 }
 
 export function openAIResponse(modelOutput: unknown, extra: Record<string, unknown> = {}): Response {
@@ -69,3 +63,5 @@ export function dimensions(reason?: string) {
 
 /** Base64 of the PNG signature: present in any inline PNG data URL. */
 export const PNG_BASE64_PREFIX = 'iVBORw0KGgo'
+/** Uploads are re-encoded as JPEG before they are sent on, so this is how image bytes would look if they leaked. */
+export const JPEG_BASE64_PREFIX = '/9j/4'

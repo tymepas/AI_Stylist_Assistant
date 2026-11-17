@@ -1,13 +1,25 @@
 /**
  * Shared builders for characterisation tests.
- * Images are minimal byte sequences that satisfy the header parsers in
- * lib/services/analysisService.ts; they are not decodable pictures.
+ *
+ * `makePng` returns a real, decodable picture: the API decodes and re-encodes
+ * every upload, so a file with only a valid header is rejected by the route.
+ * `makeHeaderOnlyPng`, `makeJpeg` and the WEBP builders are minimal byte
+ * sequences that satisfy the header parsers in lib/services/analysisService.ts
+ * and nothing more; they are for unit tests of those parsers and for proving
+ * that the route refuses them.
  */
 
 import type { RawOpenAIDimensions } from '@/types/openai'
 import type { Rating } from '@/types/schema'
+import { realPng } from './realImages'
 
-export function makePng(width = 800, height = 800, name = 'image.png'): File {
+/** A real PNG of one flat colour. `shade` changes the bytes, for tests that need two different pictures. */
+export function makePng(width = 800, height = 800, name = 'image.png', shade = 128): File {
+  return realPng(width, height, name, shade)
+}
+
+/** 33 bytes: a PNG signature and an IHDR chunk, with no image data. Passes the header check only. */
+export function makeHeaderOnlyPng(width = 800, height = 800, name = 'image.png'): File {
   const buffer = new ArrayBuffer(33)
   const bytes = new Uint8Array(buffer)
   const view = new DataView(buffer)

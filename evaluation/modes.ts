@@ -40,3 +40,26 @@ export function resolveEvaluationPlan(env: Record<string, string | undefined>): 
   const baselinePath = env.EVAL_BASELINE?.trim()
   return { mode: 'replay', recordingPath, casesPath, baselinePath: baselinePath || undefined }
 }
+
+/**
+ * Which committed dataset a mock run uses, and whether its baseline may be
+ * replaced. Replacing a baseline is always an explicit request
+ * (EVAL_UPDATE_BASELINE=1); the rules that can still refuse it are in regression.ts.
+ */
+export type DatasetRunOptions =
+  | { ok: true; dataset: string; updateBaseline: boolean; acceptRegressions: boolean }
+  | { ok: false; reason: string }
+
+export function resolveDatasetOptions(env: Record<string, string | undefined>, knownDatasets: readonly string[], acceptPhrase: string): DatasetRunOptions {
+  const dataset = (env.EVAL_DATASET ?? knownDatasets[0]).trim()
+  if (!knownDatasets.includes(dataset)) return { ok: false, reason: `EVAL_DATASET must be one of: ${knownDatasets.join(', ')}.` }
+
+  const update = (env.EVAL_UPDATE_BASELINE ?? '').trim()
+  if (update !== '' && update !== '1') return { ok: false, reason: 'EVAL_UPDATE_BASELINE must be "1" or unset.' }
+
+  const accept = (env.EVAL_ACCEPT_REGRESSIONS ?? '').trim()
+  if (accept !== '' && accept !== acceptPhrase) return { ok: false, reason: `EVAL_ACCEPT_REGRESSIONS must be exactly "${acceptPhrase}" or unset.` }
+  if (accept !== '' && update !== '1') return { ok: false, reason: 'EVAL_ACCEPT_REGRESSIONS only applies together with EVAL_UPDATE_BASELINE=1.' }
+
+  return { ok: true, dataset, updateBaseline: update === '1', acceptRegressions: accept === acceptPhrase }
+}

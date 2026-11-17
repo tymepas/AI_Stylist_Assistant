@@ -1,3 +1,5 @@
+import type { GarmentMode } from '@/lib/constants/garmentModes'
+
 // Types mirror AI_OUTPUT_SCHEMA.md and specs/phase3/05_STYLE_PROFILE_SCHEMA.md exactly.
 // Treat those documents as the source of truth.
 
@@ -42,6 +44,27 @@ export interface CompleteAnalysisResult {
   overall_recommendation: OverallRecommendation
   verdict_score: number
   shopping_advisor: ShoppingAdvisor
+  /** How the garment images related to each other. Absent in results from before multiple garment images existed. */
+  garment_mode?: GarmentMode
+  /** Per-item notes for an outfit of several items. Advisory only; never part of the verdict. */
+  outfit_components?: OutfitComponents
+}
+
+/** How one item works within a multi-item outfit. A qualitative label, not a rating, a score or a verdict. */
+export type OutfitComponentAssessment = 'Works well' | 'Works' | 'Needs attention' | 'Unable to tell'
+
+export interface OutfitComponent {
+  /** Number of the garment image this entry describes, starting at 1. */
+  item: number
+  garment_type: ShoppingGarmentCategory
+  assessment: OutfitComponentAssessment
+  note: string
+}
+
+export interface OutfitComponents {
+  /** `not_applicable` unless the garment mode is `outfit_items`; `unavailable` when the model output was missing or invalid. */
+  availability: 'available' | 'unavailable' | 'not_applicable'
+  items: OutfitComponent[]
 }
 
 export interface UnableToAnalyzeResult {
