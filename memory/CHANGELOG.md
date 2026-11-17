@@ -278,9 +278,10 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 
 ### Changed
 
-- System prompt rewritten: every rule stated once, the output shapes the code enforces given directly (it no longer refers to a schema document the model never received), all three image modes described, and every garment image numbered. The prompt text stays within the 8,000-token text bound (worst case 7,905 bytes). New prompt versions: single `e5ea8ad7c9ff`, views `9d13c5a01b5c`, outfit `0aea6b2a2286`
+- System prompt rewritten: every rule stated once, the output shapes the code enforces given directly (it no longer refers to a schema document the model never received), all three image modes described, and every garment image numbered. The prompt text stays within the 8,000-token text bound (worst case 7,827 bytes). New prompt versions: single `8dd94dba7564`, views `cc0b04509e09`, outfit `9be41c46ccc1`
 - `memory/AI_OUTPUT_SCHEMA.md` rewritten to match the enforced schemas
 - `scenarios-v1` and `scenarios-v2` baselines refreshed for the new prompt version and report format; no figure and no case outcome changed
+- After two independent reviews: the prompt states every limit the schema enforces and where `views` and `outfit_components` go; a top-level `views` no longer fails the six ratings; mock observations report nothing as observed; claim screening misses fewer claims and refuses fewer ordinary descriptions; problem rates leave out runs whose block was missing; the blocking check does not judge recordings made before /3
 
 ### Unchanged
 

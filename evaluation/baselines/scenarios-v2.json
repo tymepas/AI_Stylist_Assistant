@@ -5621,7 +5621,7 @@
     "matches_recording": true
   },
   "evaluated_with": {
-    "prompt_version": "e5ea8ad7c9ff",
+    "prompt_version": "8dd94dba7564",
     "same_prompt_as_recording": false,
     "same_schema_as_recording": false,
     "schema_version": "analysis-output/3"

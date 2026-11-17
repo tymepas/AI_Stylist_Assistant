@@ -109,6 +109,19 @@ function imageProblems(entry: z.infer<typeof imageObservationSchema>): Observati
 }
 
 /**
+ * An empty garment name means "no name", the same as null. Only that one
+ * equivalence is applied; nothing else in the block is rewritten.
+ */
+function normaliseEmptyNames(raw: unknown): unknown {
+  if (!raw || typeof raw !== 'object' || !Array.isArray((raw as { images?: unknown }).images)) return raw
+  const block = raw as { images: unknown[] }
+  return {
+    ...block,
+    images: block.images.map((entry) => (entry && typeof entry === 'object' && (entry as { garment?: unknown }).garment === '' ? { ...entry, garment: null } : entry)),
+  }
+}
+
+/**
  * Validates the block against what was actually sent: one entry for each
  * garment image, numbered 1 to the number of images, and a `views` entry
  * exactly when the images are views of one garment. Returns every problem
@@ -116,7 +129,7 @@ function imageProblems(entry: z.infer<typeof imageObservationSchema>): Observati
  * are none.
  */
 export function inspectObservations(raw: unknown, context: ObservationContext): ObservationInspection {
-  const parsed = observationsPayloadSchema.safeParse(raw)
+  const parsed = observationsPayloadSchema.safeParse(normaliseEmptyNames(raw))
   if (!parsed.success) return { value: null, problems: ['schema'], schemaError: parsed.error }
   const block = parsed.data
   const problems = new Set<ObservationProblem>()
@@ -184,7 +197,7 @@ export function resolveCite(cite: string, observations: Observations | null): Re
   const observation = observations.images.find((entry) => entry.image === image)
   if (!observation) return null
   const kind = match[2]
-  if (kind === 'type') return observation.identification === 'not_visible' ? null : { image, field: 'type', observation }
+  if (kind === 'type') return observation.identification === 'not_visible' || observation.category === 'unclear' ? null : { image, field: 'type', observation }
   if (kind === 'colour') return observation.colour_status === 'not_visible' ? null : { image, field: 'colour', observation }
   if (kind === 'pattern') return observation.pattern === 'unclear' ? null : { image, field: 'pattern', observation }
   const detail = Number(match[3])

@@ -105,7 +105,8 @@ export default function VisualObservations({ observations, evidence, garmentMode
   if (!observations) return null
   const evidenceUnavailable = evidence?.availability === 'unavailable'
 
-  if (observations.availability !== 'available') {
+  // A result that does not have the validated shape is treated as unavailable, never half-rendered.
+  if (observations.availability !== 'available' || !Array.isArray(observations.images) || observations.images.length === 0) {
     return (
       <section aria-labelledby="observed-heading" data-testid="observations-unavailable" className="surface-quiet p-6 sm:p-8">
         <p className="eyebrow">Observed in your photos</p>

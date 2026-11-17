@@ -38,6 +38,9 @@ const completeAnalysisSchema = z.object({
   // separately for the same reason (observationsSchema.ts, ratingEvidenceSchema.ts).
   observations: z.unknown().optional(),
   evidence: z.unknown().optional(),
+  // `views` belongs inside `observations`. A model that puts it at the top level must not lose the six
+  // ratings for it: it is accepted here and ignored, so the observations are then refused (views_missing).
+  views: z.unknown().optional(),
 }).strict()
 
 const unableToAnalyzeSchema = z.object({
@@ -65,7 +68,7 @@ export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/3'
 
 /** Schema versions whose outputs are expected to carry `observations` and `evidence`. */
 export function schemaHasVisualEvidence(version: string): boolean {
-  const match = /^analysis-output\/(\d+)$/.exec(version)
+  const match = /^analysis-output\/(\d+)(\.\d+)*$/.exec(version)
   return match !== null && Number(match[1]) >= 3
 }
 

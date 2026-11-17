@@ -99,6 +99,18 @@ describe('the analysis route with observations and evidence', () => {
     expect(outfitBody.overall_recommendation).toBe(viewsBody.overall_recommendation)
   })
 
+  it('keeps the six ratings when the model puts views at the top level instead of inside observations', async () => {
+    const dimensions = allRated('Good')
+    jest.spyOn(global, 'fetch').mockImplementation(async () => respond({ status: 'complete', observations: { images: [image(1), image(2)] }, views: { same_garment: 'yes' }, dimensions, evidence: evidenceFor(dimensions) }))
+    captureLogs()
+    const response = await post(analyzeForm(2, 'same_garment_views'))
+    const body = await response.json()
+    expect(response.status).toBe(200)
+    expect(body).toMatchObject({ status: 'complete', overall_recommendation: 'Recommended', dimensions })
+    expect(body.observations.availability).toBe('unavailable')
+    expect(body).not.toHaveProperty('views')
+  })
+
   it('still refuses an output that carries its own verdict, whatever the new blocks contain', () => {
     const dimensions = allRated('Good')
     expect(() => validateRawOpenAIAnalysis({ status: 'complete', dimensions, observations: { images: [image(1)] }, evidence: evidenceFor(dimensions), overall_recommendation: 'Highly Recommended' })).toThrow()

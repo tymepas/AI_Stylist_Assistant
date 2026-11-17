@@ -22,7 +22,7 @@ const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   // Adds the optional outfit_components block (several outfit items) and its schema.
   'analysis-output/2': '2bf1446af120',
   // Adds the optional observations and evidence blocks (Phase 4 Milestone 1) and their schemas.
-  'analysis-output/3': '50d64a1397d2',
+  'analysis-output/3': 'b9820a1fc5e0',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {

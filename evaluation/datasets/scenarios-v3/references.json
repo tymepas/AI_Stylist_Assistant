@@ -654,6 +654,134 @@
       "views_same_garment": "yes"
     },
     {
+      "case_id": "v3-views-dna-coat",
+      "images": [],
+      "garment_description": "Synthetic brief: charcoal coat seen from two sides",
+      "occasion": "Winter Event",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-knit",
+      "images": [],
+      "garment_description": "Synthetic brief: cream knit seen from three sides",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-skirt",
+      "images": [],
+      "garment_description": "Synthetic brief: pleated pink skirt seen from two sides",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-bomber",
+      "images": [],
+      "garment_description": "Synthetic brief: olive bomber jacket seen from two sides",
+      "occasion": "Casual Outing",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
       "case_id": "v3-views-disagreement",
       "images": [],
       "garment_description": "Synthetic brief: garment whose two views disagree",

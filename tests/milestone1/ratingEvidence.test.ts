@@ -216,7 +216,8 @@ describe('mock mode', () => {
         expect(visual.observations.images).toHaveLength(count)
         for (const entry of visual.observations.images) {
           expect(entry.details).toEqual(['Mock example: no image was analysed'])
-          expect(entry.identification).toBe('uncertain')
+          // Nothing is reported as observed: no image was analysed.
+          expect(entry).toMatchObject({ identification: 'not_visible', category: 'unclear', colour_status: 'not_visible', pattern: 'unclear', garment: null })
         }
       }
     }

@@ -126,7 +126,7 @@ export interface StructuralBlock {
   observations_valid_rate: Metric
   /** Per case: share of its complete runs with valid evidence for all six dimensions. */
   evidence_complete_rate: Metric
-  /** Per case: share of runs citing an observation that does not exist or was not visible. */
+  /** Per case, over runs with usable observations and parsable evidence: share citing an observation that does not exist or was not visible. */
   invalid_citation_rate: Metric
   /** Per case: share of runs naming an input that was not sent (Style DNA or preferences). */
   unsupplied_source_rate: Metric
@@ -145,7 +145,7 @@ export interface StructuralBlock {
 }
 
 export interface ReferenceVisualBlock {
-  /** Cases of this tier whose reference records garment facts. */
+  /** Cases of this tier whose reference records garment facts or a same-garment answer, and that have scored runs. */
   cases: number
   /** Per case: share of identifiable items whose observed category equals the reviewer's garment type. */
   garment_category_accuracy: Metric
@@ -165,7 +165,7 @@ export interface ReferenceVisualBlock {
   supported_detail_rate: Metric
   /** Per case: share of model details that mention a detail the reviewer confirmed absent, or a term the case marks unverifiable. */
   contradicted_detail_rate: Metric
-  /** Views cases only: share of runs whose same-garment answer matches the reviewer's. */
+  /** Views cases only: share of runs answering yes or no whose answer matches the reviewer's. An "unclear" answer is an abstention and is left out. */
   same_garment_agreement_rate: Metric
 }
 
@@ -196,18 +196,32 @@ function perCase(cases: BenchmarkCase[], runsByCase: Map<string, CompleteRun[]>,
   return rateMetric(values, reason)
 }
 
+/** Observations that were present and had the right shape: only then can mapping, text or contradiction problems be seen. */
+function observationsParsed(inspection: RunInspection): boolean {
+  return inspection.observations !== null && !inspection.observations.problems.includes('schema')
+}
+
+/** Evidence that was present and had the right block shape. */
+function evidenceParsed(inspection: RunInspection): boolean {
+  return inspection.evidence !== null && inspection.evidence.blockProblems.length === 0
+}
+
 function structuralOf(cases: BenchmarkCase[], runsByCase: Map<string, CompleteRun[]>): StructuralBlock {
   const flag = (test: (inspection: RunInspection) => boolean) => (_: BenchmarkCase, __: CompleteRun, inspection: RunInspection) => (test(inspection) ? 1 : 0)
+  /** A problem rate over the runs where the problem could have been seen. Other runs are left out, never counted as clean. */
+  const problemRate = (judgeable: (inspection: RunInspection) => boolean, test: (inspection: RunInspection) => boolean) => (_: BenchmarkCase, __: CompleteRun, inspection: RunInspection) => (judgeable(inspection) ? (test(inspection) ? 1 : 0) : null)
   const mode = (wanted: GarmentMode) => (benchmarkCase: BenchmarkCase) => visualContextOf(benchmarkCase).mode === wanted
   return {
     observations_valid_rate: perCase(cases, runsByCase, flag((inspection) => inspection.validObservations !== null), NO_RUN),
     evidence_complete_rate: perCase(cases, runsByCase, flag((inspection) => inspection.validEvidence.availability === 'available'), NO_RUN),
-    invalid_citation_rate: perCase(cases, runsByCase, flag((inspection) => evidenceHas(inspection, 'invalid_citation')), NO_RUN),
-    unsupplied_source_rate: perCase(cases, runsByCase, flag((inspection) => evidenceHas(inspection, 'unsupplied_source')), NO_RUN),
-    support_conflict_rate: perCase(cases, runsByCase, flag((inspection) => evidenceHas(inspection, 'support_conflict')), NO_RUN),
-    unsupported_text_rate: perCase(cases, runsByCase, flag((inspection) => Boolean(inspection.observations?.problems.includes('unsupported_text')) || evidenceHas(inspection, 'unsupported_text')), NO_RUN),
-    image_mapping_error_rate: perCase(cases, runsByCase, flag((inspection) => (inspection.observations?.problems ?? []).some((problem) => problem === 'image_mapping' || problem === 'views_missing' || problem === 'views_unexpected')), NO_RUN),
-    view_contradiction_rate: perCase(cases, runsByCase, flag((inspection) => Boolean(inspection.observations?.problems.includes('views_contradiction'))), 'Unavailable: no complete run of a views case', mode('same_garment_views')),
+    // Only runs whose observations were usable: there a failed citation is a real citation error, not a
+    // knock-on effect of refused observations (that is counted under observations_valid_rate).
+    invalid_citation_rate: perCase(cases, runsByCase, problemRate((inspection) => evidenceParsed(inspection) && inspection.validObservations !== null, (inspection) => evidenceHas(inspection, 'invalid_citation')), 'Unavailable: no run with usable observations and parsable evidence'),
+    unsupplied_source_rate: perCase(cases, runsByCase, problemRate(evidenceParsed, (inspection) => evidenceHas(inspection, 'unsupplied_source')), 'Unavailable: no run with parsable evidence'),
+    support_conflict_rate: perCase(cases, runsByCase, problemRate(evidenceParsed, (inspection) => evidenceHas(inspection, 'support_conflict')), 'Unavailable: no run with parsable evidence'),
+    unsupported_text_rate: perCase(cases, runsByCase, problemRate((inspection) => observationsParsed(inspection) || evidenceParsed(inspection), (inspection) => Boolean(inspection.observations?.problems.includes('unsupported_text')) || evidenceHas(inspection, 'unsupported_text')), 'Unavailable: no run with a parsable block'),
+    image_mapping_error_rate: perCase(cases, runsByCase, problemRate(observationsParsed, (inspection) => (inspection.observations?.problems ?? []).some((problem) => problem === 'image_mapping' || problem === 'views_missing' || problem === 'views_unexpected')), 'Unavailable: no run with parsable observations'),
+    view_contradiction_rate: perCase(cases, runsByCase, problemRate(observationsParsed, (inspection) => Boolean(inspection.observations?.problems.includes('views_contradiction'))), 'Unavailable: no run of a views case with parsable observations', mode('same_garment_views')),
     outfit_identity_consistency_rate: perCase(cases, runsByCase, (benchmarkCase, run, inspection) => {
       if (!inspection.validObservations) return null
       let components: Array<{ item: number; garment_type: string }>
@@ -268,24 +282,33 @@ function observationFor(observations: Observations, item: number) {
   return observations.images.find((entry) => entry.image === item)
 }
 
+/** A reviewer term matches a detail when a word of the detail starts with it, so "lapel" matches "notched lapels". */
+function mentionsStem(detail: string, term: string): boolean {
+  const text = ` ${normaliseText(detail)}`
+  const stem = normaliseText(term)
+  return stem.length > 0 && (text.includes(` ${stem}`) || mentions(normaliseText(detail), term))
+}
+
 function detailShare(fact: GarmentFact, observations: Observations, terms: string[] | undefined): number | null {
   const observation = observationFor(observations, fact.item)
   if (!observation || observation.details.length === 0 || !terms || terms.length === 0) return null
-  return observation.details.filter((detail) => terms.some((term) => mentions(normaliseText(detail), term))).length / observation.details.length
+  return observation.details.filter((detail) => terms.some((term) => mentionsStem(detail, term))).length / observation.details.length
 }
 
 function referenceBlockOf(scored: ScoredEntry[], reason: string): ReferenceVisualBlock {
   const withFacts = scored.filter((entry) => (entry.reference.garment_facts?.items.length ?? 0) > 0)
+  const withViews = scored.filter((entry) => entry.reference.views_same_garment !== undefined && visualContextOf(entry.benchmarkCase).mode === 'same_garment_views')
   const sameGarment: number[] = []
   for (const entry of scored) {
     const expected = entry.reference.views_same_garment
     if (expected === undefined || visualContextOf(entry.benchmarkCase).mode !== 'same_garment_views') continue
-    const answers = entry.runs.map((run) => inspectRun(entry.benchmarkCase, run).validObservations?.views?.same_garment).filter((answer): answer is NonNullable<typeof answer> => answer !== undefined)
+    // "unclear" is an abstention, not an answer: it is left out rather than scored as a disagreement.
+    const answers = entry.runs.map((run) => inspectRun(entry.benchmarkCase, run).validObservations?.views?.same_garment).filter((answer): answer is 'yes' | 'no' => answer === 'yes' || answer === 'no')
     if (answers.length > 0) sameGarment.push(answers.filter((answer) => answer === expected).length / answers.length)
   }
 
   return {
-    cases: withFacts.length,
+    cases: new Set([...withFacts, ...withViews].map((entry) => entry.benchmarkCase.id)).size,
     garment_category_accuracy: itemMetric(withFacts, reason, (fact, observations) => {
       if (fact.identifiable === false || fact.garment_type === undefined) return null
       return observationFor(observations, fact.item)?.category === fact.garment_type ? 1 : 0

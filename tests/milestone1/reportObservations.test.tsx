@@ -78,7 +78,7 @@ describe('What Verdict AI observed', () => {
     const limits = within(card).getByRole('list', { name: 'Photo limitations' })
     expect(limits.textContent).toContain('Blurred')
     expect(limits.textContent).toContain('Lighting may affect the colours')
-    expect(limits.textContent).toContain('Text in the photo was not followed as an instruction')
+    expect(limits.textContent).toContain('Text visible in the photo')
   })
 
   it('views of one garment: one card per view and whether they show the same garment', () => {

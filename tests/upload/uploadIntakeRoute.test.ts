@@ -278,7 +278,7 @@ describe('views of one garment', () => {
       'Garment image 2 of 3 (view):',
       'Garment image 3 of 3 (view):',
     ])
-    expect(content[0].text).toMatch(/^Image mode: same_garment_views\. Garment images 1 to 3 are views of ONE garment; include views\./)
+    expect(content[0].text).toMatch(/^Image mode: same_garment_views\. Garment images 1 to 3 are views of ONE garment; include observations\.views\./)
     expect(content[0].text).not.toMatch(/outfit_components/)
   })
 

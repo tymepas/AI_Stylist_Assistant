@@ -31,9 +31,9 @@ const firstLine = (text: string): string => lines(text)[0]
 // line of a mode changes its version; update the value here so the change is visible in review.
 // Changed in Phase 4 Milestone 1 (analysis-output/3, observations and evidence). Before: single 3c78bd7bbd3b,
 // views 26de11106f0a, outfit ff754a0c0e59. A recording made with one of those can never carry these.
-const SINGLE_PROMPT_VERSION = 'e5ea8ad7c9ff'
-const VIEWS_PROMPT_VERSION = '9d13c5a01b5c'
-const OUTFIT_PROMPT_VERSION = '0aea6b2a2286'
+const SINGLE_PROMPT_VERSION = '8dd94dba7564'
+const VIEWS_PROMPT_VERSION = 'cc0b04509e09'
+const OUTFIT_PROMPT_VERSION = '9be41c46ccc1'
 
 describe('garment mode rules', () => {
   it('has exactly three modes and at most three garment images', () => {
@@ -85,17 +85,17 @@ describe('prompt context per garment mode', () => {
 
   it('tells the model that several views show one garment, and asks for the views entry', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'same_garment_views', count: 2 })
-    expect(firstLine(text)).toBe('Image mode: same_garment_views. Garment images 1 to 2 are views of ONE garment; include views.')
+    expect(firstLine(text)).toBe('Image mode: same_garment_views. Garment images 1 to 2 are views of ONE garment; include observations.views.')
     expect(text).not.toContain('outfit_components')
     expect(SYSTEM_PROMPT).toContain('same_garment_views: views of ONE garment. Use them together as evidence about one item, never as separate garments.')
-    expect(SYSTEM_PROMPT).toContain('same_garment_views only: views {"same_garment":"yes|no|unclear","conflicts":""}; explain conflicts unless yes.')
+    expect(SYSTEM_PROMPT).toContain('same_garment_views only: observations.views {"same_garment":"yes|no|unclear","conflicts":""}; explain conflicts (max 100 chars) unless yes.')
   })
 
   it('tells the model that several items form one outfit, and asks for advisory per-item notes', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'outfit_items', count: 3 })
     expect(firstLine(text)).toBe('Image mode: outfit_items. Garment images 1 to 3 are 3 DIFFERENT items worn together; include outfit_components.')
     expect(SYSTEM_PROMPT).toContain('outfit_items: DIFFERENT items worn together. Rate the outfit as a whole.')
-    expect(SYSTEM_PROMPT).toContain('outfit_items only: outfit_components, one per garment image in order')
+    expect(SYSTEM_PROMPT).toContain('outfit_items only: top-level outfit_components, one per garment image in order')
     expect(SYSTEM_PROMPT).toContain('Advisory blocks never change a rating.')
     for (const assessment of OUTFIT_COMPONENT_ASSESSMENTS) expect(SYSTEM_PROMPT).toContain(assessment)
   })
@@ -105,10 +105,10 @@ describe('prompt context per garment mode', () => {
       const text = buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE, garments)
       expect(text.endsWith('Return one JSON object only.')).toBe(true)
       // No rule is repeated in the message: the message holds the mode and the data only.
-      expect(text).not.toMatch(/shopping_advisor|recommendations|rating|confidence|observations|evidence/)
+      expect(text.replace('include observations.views.', '')).not.toMatch(/shopping_advisor|recommendations|rating|confidence|observations|evidence/)
     }
     expect(SYSTEM_PROMPT).toContain('You never decide the overall verdict: the application calculates it from your six ratings.')
-    expect(SYSTEM_PROMPT).toContain('Add no field beyond the shapes below: no verdict, score or recommendation.')
+    expect(SYSTEM_PROMPT).toContain('Add no other field: no verdict, score or recommendation.')
     expect(SYSTEM_PROMPT).toContain('No score estimate, retailers, links, price, stock, discounts, brand, material quality, durability or comfort.')
   })
 

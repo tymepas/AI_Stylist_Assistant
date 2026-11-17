@@ -67,7 +67,7 @@ function RatingEvidencePanel({ label, evidence, observations, mode }: { label: s
           <div>
             <p className="text-xs text-muted-foreground">Observed</p>
             <ul className="mt-1 space-y-0.5">
-              {cites.map((cite) => <li key={cite} className="break-words text-foreground">{cite}</li>)}
+              {cites.map((cite, index) => <li key={index} className="break-words text-foreground">{cite}</li>)}
             </ul>
           </div>
         ) : null}

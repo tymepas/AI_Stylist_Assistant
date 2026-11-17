@@ -160,6 +160,44 @@ describe('recordings made before observations and evidence existed', () => {
   })
 })
 
+describe('findings of the independent evaluation review', () => {
+  it('the blocking check does not judge a recording made before the blocks existed', () => {
+    const relabelled = evaluate((recording) => {
+      recording.schema_version = 'analysis-output/2'
+      for (const entry of recording.entries) {
+        const output = entry.output as Record<string, unknown>
+        delete output.observations
+        delete output.evidence
+      }
+    })
+    expect(relabelled.summary.failed).toBe(0)
+    expect(relabelled.cases.every((entry) => entry.checks.find((check) => check.check === 'visual_evidence')?.status === 'not_applicable')).toBe(true)
+  })
+
+  it('never reports missing blocks as an absence of problems', () => {
+    const stripped = evaluate((recording) => {
+      for (const entry of recording.entries) {
+        const output = entry.output as Record<string, unknown>
+        delete output.observations
+        delete output.evidence
+      }
+    })
+    const structural = stripped.quality.visual_evidence.structural
+    for (const metric of [structural.invalid_citation_rate, structural.image_mapping_error_rate, structural.view_contradiction_rate, structural.unsupported_text_rate, structural.support_conflict_rate, structural.unsupplied_source_rate]) {
+      expect(metric).toMatchObject({ status: 'unavailable', value: null })
+    }
+    expect(structural.observations_valid_rate.value).toBe(0)
+  })
+
+  it('counts a citation error only where the observations were usable, not as a knock-on of refused observations', () => {
+    const report = evaluate()
+    const flagged = report.cases.filter((entry) => entry.case_id === 'v3-single-invalid-citation')
+    expect(flagged).toHaveLength(1)
+    expect(report.quality.visual_evidence.structural.invalid_citation_rate.value).toBeGreaterThan(0)
+    expect(report.quality.visual_evidence.structural.invalid_citation_rate.n).toBeLessThan(report.dataset.cases)
+  })
+})
+
 describe('the committed baselines', () => {
   const current = async () => ({ promptVersion: await getAnalysisPromptVersion(), schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION })
 

@@ -408,7 +408,7 @@ function buildOutput(definition) {
  * image, and carry no reviewer: the evaluation reports them as synthetic, never as a human review.
  */
 function buildReferences(name, definitions) {
-  const references = definitions.filter((definition) => definition.facts).map((definition) => {
+  const references = definitions.filter((definition) => definition.facts || definition.viewsSame).map((definition) => {
     const ratings = dimensions(definition.r, definition.c ?? 'HHHHHH', definition.g, definition.occasion)
     return {
       case_id: definition.id,
@@ -419,7 +419,7 @@ function buildReferences(name, definitions) {
       status: 'complete',
       provenance: { image_source: 'synthetic' },
       dimension_ratings: Object.fromEntries(Object.entries(ratings).map(([key, value]) => [key, { rating: value.rating }])),
-      garment_facts: definition.facts,
+      ...(definition.facts ? { garment_facts: definition.facts } : {}),
       ...(definition.viewsSame ? { views_same_garment: definition.viewsSame } : {}),
     }
   })
@@ -474,7 +474,7 @@ function build(name = 'scenarios-v1') {
     'cases.json': `${JSON.stringify({ version: 1, cases }, null, 2)}\n`,
     'recording.json': `${JSON.stringify(recording, null, 2)}\n`,
   }
-  if (definitions.some((definition) => definition.facts)) files['references.json'] = `${JSON.stringify(buildReferences(name, definitions), null, 2)}\n`
+  if (definitions.some((definition) => definition.facts || definition.viewsSame)) files['references.json'] = `${JSON.stringify(buildReferences(name, definitions), null, 2)}\n`
   return files
 }
 

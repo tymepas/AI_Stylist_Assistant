@@ -48,7 +48,7 @@ export const LIMIT_LABELS: Record<ImageLimitation, string> = {
   blur: 'Blurred',
   low_resolution: 'Low resolution',
   angle: 'Unusual angle',
-  image_text: 'Text in the photo was not followed as an instruction',
+  image_text: 'Text visible in the photo',
   several_items: 'Several items in one photo',
 }
 
@@ -116,7 +116,7 @@ export function colourList(families: ColourFamily[]): string {
  */
 export function describeCite(cite: string, observations: Observations | undefined, mode: GarmentMode | undefined): string | null {
   const match = /^g([1-3])\.(type|colour|pattern|d([1-3]))$/.exec(cite)
-  if (!match || !observations || observations.availability !== 'available') return null
+  if (!match || !observations || observations.availability !== 'available' || !Array.isArray(observations.images)) return null
   const observation = observations.images.find((entry) => entry.image === Number(match[1]))
   if (!observation) return null
   const prefix = mode === 'same_garment_views' || mode === 'outfit_items' ? `${imageLabel(mode, observation.image)}: ` : ''
@@ -127,8 +127,10 @@ export function describeCite(cite: string, observations: Observations | undefine
       const families = [...observation.colours.dominant, ...observation.colours.secondary]
       return families.length === 0 ? null : `${prefix}colour ${colourList(families)}${observation.colour_status === 'uncertain' ? ' (uncertain)' : ''}`
     }
-    case 'pattern':
-      return `${prefix}${PATTERN_LABELS[observation.pattern].toLowerCase()} pattern`
+    case 'pattern': {
+      const label = PATTERN_LABELS[observation.pattern].toLowerCase()
+      return `${prefix}${label.endsWith('pattern') ? label : `${label} pattern`}`
+    }
     default: {
       const detail = observation.details[Number(match[3]) - 1]
       return detail ? `${prefix}${detail}` : null

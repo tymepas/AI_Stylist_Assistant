@@ -3091,7 +3091,7 @@
     "matches_recording": true
   },
   "evaluated_with": {
-    "prompt_version": "e5ea8ad7c9ff",
+    "prompt_version": "8dd94dba7564",
     "same_prompt_as_recording": false,
     "same_schema_as_recording": true,
     "schema_version": "analysis-output/3"
@@ -3684,7 +3684,7 @@
     "agreement.synthetic.color.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3694,7 +3694,7 @@
     "agreement.synthetic.color.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 17,
+      "n": 21,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3704,7 +3704,7 @@
     "agreement.synthetic.color.within_one_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3726,7 +3726,7 @@
     "agreement.synthetic.coverage": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3736,7 +3736,7 @@
     "agreement.synthetic.formality.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3746,7 +3746,7 @@
     "agreement.synthetic.formality.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 17,
+      "n": 21,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3756,7 +3756,7 @@
     "agreement.synthetic.formality.within_one_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3778,7 +3778,7 @@
     "agreement.synthetic.occasion.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3788,7 +3788,7 @@
     "agreement.synthetic.occasion.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 17,
+      "n": 21,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3798,7 +3798,7 @@
     "agreement.synthetic.occasion.within_one_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3820,7 +3820,7 @@
     "agreement.synthetic.seasonality.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3830,7 +3830,7 @@
     "agreement.synthetic.seasonality.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 16,
+      "n": 20,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3840,7 +3840,7 @@
     "agreement.synthetic.seasonality.within_one_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3862,7 +3862,7 @@
     "agreement.synthetic.style.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3872,7 +3872,7 @@
     "agreement.synthetic.style.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 16,
+      "n": 20,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3882,7 +3882,7 @@
     "agreement.synthetic.style.within_one_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3904,7 +3904,7 @@
     "agreement.synthetic.style_preference_match.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3914,7 +3914,7 @@
     "agreement.synthetic.style_preference_match.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 16,
+      "n": 20,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -3924,7 +3924,7 @@
     "agreement.synthetic.style_preference_match.within_one_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 18,
+      "n": 22,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -4023,7 +4023,7 @@
     "calibration.synthetic.high_confidence_error_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 15,
+      "n": 19,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -4033,7 +4033,7 @@
     "calibration.synthetic.high_confidence_severe_error_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 15,
+      "n": 19,
       "needs_references": true,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -4413,10 +4413,10 @@
     "multi_image.same_garment_views.agreement.synthetic.exact_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 4,
+      "n": 8,
       "needs_references": true,
       "pooled_over_style_dna": true,
-      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4424,10 +4424,10 @@
     "multi_image.same_garment_views.agreement.synthetic.mae": {
       "direction": "lower_is_better",
       "kind": "bands",
-      "n": 4,
+      "n": 8,
       "needs_references": true,
       "pooled_over_style_dna": true,
-      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 0
@@ -5224,7 +5224,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.color.exact_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.color.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5235,7 +5235,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.color.mae\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.color.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5246,7 +5246,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.color.within_one_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.color.within_one_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5269,7 +5269,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.coverage\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.coverage\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5280,7 +5280,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.formality.exact_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.formality.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5291,7 +5291,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.formality.mae\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.formality.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5302,7 +5302,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.formality.within_one_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.formality.within_one_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5325,7 +5325,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.occasion.exact_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.occasion.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5336,7 +5336,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.occasion.mae\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.occasion.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5347,7 +5347,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.occasion.within_one_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.occasion.within_one_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5370,7 +5370,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.seasonality.exact_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.seasonality.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5381,7 +5381,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.seasonality.mae\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.seasonality.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5392,7 +5392,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.seasonality.within_one_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.seasonality.within_one_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5415,7 +5415,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style.exact_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5426,7 +5426,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style.mae\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5437,7 +5437,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style.within_one_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style.within_one_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5460,7 +5460,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style_preference_match.exact_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style_preference_match.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5471,7 +5471,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style_preference_match.mae\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style_preference_match.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5482,7 +5482,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style_preference_match.within_one_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"agreement.synthetic.style_preference_match.within_one_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5582,7 +5582,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"calibration.synthetic.high_confidence_error_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"calibration.synthetic.high_confidence_error_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5593,7 +5593,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"calibration.synthetic.high_confidence_severe_error_rate\".",
+      "reason": "Unavailable: only 8 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"calibration.synthetic.high_confidence_severe_error_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5977,7 +5977,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.same_garment_views.agreement.synthetic.exact_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -5988,7 +5988,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.same_garment_views.agreement.synthetic.mae\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6577,7 +6577,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "reason": "Unavailable: only 4 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.synthetic.same_garment_agreement_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -8384,22 +8384,22 @@
     "style_dna.without_style_dna.visual_evidence.structural.image_mapping_error_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 31,
+      "n": 29,
       "needs_references": false,
-      "se": 0.0602,
+      "se": 0.064,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.129
+      "value": 0.1379
     },
     "style_dna.without_style_dna.visual_evidence.structural.invalid_citation_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 31,
+      "n": 19,
       "needs_references": false,
-      "se": 0.0875,
+      "se": 0.0512,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.3871
+      "value": 0.0526
     },
     "style_dna.without_style_dna.visual_evidence.structural.observations_valid_rate": {
       "direction": "higher_is_better",
@@ -8425,22 +8425,22 @@
     "style_dna.without_style_dna.visual_evidence.structural.support_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 31,
+      "n": 30,
       "needs_references": false,
-      "se": 0.0317,
+      "se": 0.0328,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.0323
+      "value": 0.0333
     },
     "style_dna.without_style_dna.visual_evidence.structural.unsupplied_source_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 31,
+      "n": 30,
       "needs_references": false,
-      "se": 0.0317,
+      "se": 0.0328,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.0323
+      "value": 0.0333
     },
     "style_dna.without_style_dna.visual_evidence.structural.unsupported_text_rate": {
       "direction": "lower_is_better",
@@ -8821,22 +8821,22 @@
     "visual_evidence.structural.image_mapping_error_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 43,
+      "n": 41,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.0443,
+      "se": 0.0463,
       "status": "measured",
-      "value": 0.093
+      "value": 0.0976
     },
     "visual_evidence.structural.invalid_citation_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 43,
+      "n": 31,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.0684,
+      "se": 0.0317,
       "status": "measured",
-      "value": 0.2791
+      "value": 0.0323
     },
     "visual_evidence.structural.observations_valid_rate": {
       "direction": "higher_is_better",
@@ -8862,22 +8862,22 @@
     "visual_evidence.structural.support_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 43,
+      "n": 42,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.023,
+      "se": 0.0235,
       "status": "measured",
-      "value": 0.0233
+      "value": 0.0238
     },
     "visual_evidence.structural.unsupplied_source_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 43,
+      "n": 42,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.023,
+      "se": 0.0235,
       "status": "measured",
-      "value": 0.0233
+      "value": 0.0238
     },
     "visual_evidence.structural.unsupported_text_rate": {
       "direction": "lower_is_better",
@@ -8964,10 +8964,10 @@
     "visual_evidence.synthetic.same_garment_agreement_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 4,
+      "n": 8,
       "needs_references": true,
       "pooled_over_style_dna": true,
-      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -9089,7 +9089,7 @@
     "These are hand-written fixture outputs. To learn anything about a model, replay a recording from an approved live benchmark run.",
     "Add human-reviewed cases with real images (evaluation/HUMAN_REVIEW.md). Until then accuracy on real images is unavailable.",
     "Observations are missing or invalid in part of the runs (usable 0.7442). The ratings and the verdict are unaffected; the report shows them as unavailable.",
-    "Some runs cite observations that do not exist or were not visible (0.2791). That evidence is dropped, never shown.",
+    "Where the observations were usable, some runs still cite an observation that does not exist or was not visible (0.0323). That evidence is dropped, never shown.",
     "12 of 43 cases send a Style DNA profile. Figures marked \"pooled\" combine cases with and without one. Read the separate figures for each condition next to them; where a condition has fewer than 10 cases behind a figure, its separate figure is unavailable and only the pooled one exists. Cases without Style DNA: single 17, same_garment_views 7, outfit_items 7."
   ],
   "performance": {
@@ -9417,9 +9417,9 @@
         "reference_cases": 0
       },
       "synthetic": {
-        "cases_with_output": 18,
+        "cases_with_output": 22,
         "coverage": {
-          "n": 18,
+          "n": 22,
           "se": 0,
           "status": "measured",
           "value": 1
@@ -9427,19 +9427,19 @@
         "dimensions": {
           "color": {
             "exact_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "mae": {
-              "n": 17,
+              "n": 21,
               "se": 0,
               "status": "measured",
               "value": 0
             },
             "within_one_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
@@ -9447,19 +9447,19 @@
           },
           "formality": {
             "exact_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "mae": {
-              "n": 17,
+              "n": 21,
               "se": 0,
               "status": "measured",
               "value": 0
             },
             "within_one_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
@@ -9467,19 +9467,19 @@
           },
           "occasion": {
             "exact_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "mae": {
-              "n": 17,
+              "n": 21,
               "se": 0,
               "status": "measured",
               "value": 0
             },
             "within_one_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
@@ -9487,19 +9487,19 @@
           },
           "seasonality": {
             "exact_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "mae": {
-              "n": 16,
+              "n": 20,
               "se": 0,
               "status": "measured",
               "value": 0
             },
             "within_one_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
@@ -9507,19 +9507,19 @@
           },
           "style": {
             "exact_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "mae": {
-              "n": 16,
+              "n": 20,
               "se": 0,
               "status": "measured",
               "value": 0
             },
             "within_one_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
@@ -9527,26 +9527,26 @@
           },
           "style_preference_match": {
             "exact_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "mae": {
-              "n": 16,
+              "n": 20,
               "se": 0,
               "status": "measured",
               "value": 0
             },
             "within_one_rate": {
-              "n": 18,
+              "n": 22,
               "se": 0,
               "status": "measured",
               "value": 1
             }
           }
         },
-        "reference_cases": 18
+        "reference_cases": 22
       }
     },
     "by_case": {
@@ -9729,13 +9729,13 @@
         "buckets": {
           "High": {
             "exact_rate": {
-              "n": 15,
+              "n": 19,
               "se": 0,
               "status": "measured",
               "value": 1
             },
             "within_one_rate": {
-              "n": 15,
+              "n": 19,
               "se": 0,
               "status": "measured",
               "value": 1
@@ -9782,13 +9782,13 @@
           "value": 0
         },
         "high_confidence_error_rate": {
-          "n": 15,
+          "n": 19,
           "se": 0,
           "status": "measured",
           "value": 0
         },
         "high_confidence_severe_error_rate": {
-          "n": 15,
+          "n": 19,
           "se": 0,
           "status": "measured",
           "value": 0
@@ -10269,22 +10269,22 @@
             },
             "synthetic": {
               "exact_rate": {
-                "n": 4,
-                "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+                "n": 8,
+                "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
                 "se": 0,
                 "status": "insufficient_sample",
                 "value": 1
               },
               "mae": {
-                "n": 4,
-                "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+                "n": 8,
+                "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
                 "se": 0,
                 "status": "insufficient_sample",
                 "value": 0
               },
               "within_one_rate": {
-                "n": 4,
-                "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+                "n": 8,
+                "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
                 "se": 0,
                 "status": "insufficient_sample",
                 "value": 1
@@ -11196,7 +11196,7 @@
           }
         },
         "synthetic": {
-          "cases": 18,
+          "cases": 22,
           "confident_misidentification_rate": {
             "n": 17,
             "se": 0,
@@ -11236,8 +11236,8 @@
             "value": 1
           },
           "same_garment_agreement_rate": {
-            "n": 4,
-            "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+            "n": 8,
+            "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
             "se": 0,
             "status": "insufficient_sample",
             "value": 1
@@ -11277,16 +11277,16 @@
           "value": 1
         },
         "image_mapping_error_rate": {
-          "n": 43,
-          "se": 0.0443,
+          "n": 41,
+          "se": 0.0463,
           "status": "measured",
-          "value": 0.093
+          "value": 0.0976
         },
         "invalid_citation_rate": {
-          "n": 43,
-          "se": 0.0684,
+          "n": 31,
+          "se": 0.0317,
           "status": "measured",
-          "value": 0.2791
+          "value": 0.0323
         },
         "observations_valid_rate": {
           "n": 43,
@@ -11302,16 +11302,16 @@
           "value": 0.9375
         },
         "support_conflict_rate": {
-          "n": 43,
-          "se": 0.023,
+          "n": 42,
+          "se": 0.0235,
           "status": "measured",
-          "value": 0.0233
+          "value": 0.0238
         },
         "unsupplied_source_rate": {
-          "n": 43,
-          "se": 0.023,
+          "n": 42,
+          "se": 0.0235,
           "status": "measured",
-          "value": 0.0233
+          "value": 0.0238
         },
         "unsupported_text_rate": {
           "n": 43,
@@ -11337,19 +11337,19 @@
     "cases_by_tier": {
       "brief_derived": 0,
       "image_reviewed": 0,
-      "synthetic": 18,
+      "synthetic": 22,
       "unreviewed": 0
     },
-    "cases_without_reference": 25,
+    "cases_without_reference": 21,
     "dataset": "scenarios-v3",
     "dataset_version": "1.0.0",
-    "fingerprint": "bdf856f6d095",
+    "fingerprint": "367b9da65181",
     "image_cases_with_second_review": 0,
     "image_reviewers": [],
     "image_reviews_from": null,
     "image_reviews_to": null,
     "image_second_reviewers": [],
-    "scoring_fingerprint": "0a0d3374dab5",
+    "scoring_fingerprint": "92a9db45cb53",
     "status": "loaded"
   },
   "report_format": "verdict-evaluation-report/5",

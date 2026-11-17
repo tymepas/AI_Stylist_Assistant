@@ -275,10 +275,11 @@ function checkVerdictIntegrity(benchmarkCase: BenchmarkCase, runs: RunDetail[]):
  * confirms that the verdict built with the validated blocks is the verdict
  * built without them. Reasons name blocks and codes only, never model text.
  */
-function checkVisualEvidence(benchmarkCase: BenchmarkCase, runs: RunDetail[]): CheckResult {
+function checkVisualEvidence(benchmarkCase: BenchmarkCase, runs: RunDetail[], carriesVisualEvidence: boolean): CheckResult {
   const expected = benchmarkCase.expected.visual_evidence
   const complete = runs.filter((run): run is RunDetail & { dimensions: RawOpenAIDimensions } => run.outcome === 'complete' && run.dimensions !== undefined)
-  if (!expected || complete.length === 0) return notApplicable('visual_evidence')
+  // A recording made with a schema from before the blocks existed is never judged as if it had left them out.
+  if (!expected || complete.length === 0 || !carriesVisualEvidence) return notApplicable('visual_evidence')
 
   const problems: string[] = []
   for (const run of complete) {
@@ -391,7 +392,7 @@ function checkExplanationProxy(runs: RunDetail[]): CheckResult {
  * Judges one case from its scored runs (withheld runs are left out by the caller).
  * A case with nothing to judge is `not_applicable`, never `pass`.
  */
-export function evaluateCase(benchmarkCase: BenchmarkCase, runs: RunDetail[]): CaseEvaluation {
+export function evaluateCase(benchmarkCase: BenchmarkCase, runs: RunDetail[], options: { carriesVisualEvidence?: boolean } = {}): CaseEvaluation {
   const scored = runs.filter((run) => run.outcome !== 'withheld')
   const checks: CheckResult[] = [
     checkSchemaValidity(benchmarkCase, scored),
@@ -401,7 +402,7 @@ export function evaluateCase(benchmarkCase: BenchmarkCase, runs: RunDetail[]): C
     checkExpectedOutcome(benchmarkCase, scored),
     checkConsistency(scored),
     checkVerdictIntegrity(benchmarkCase, scored),
-    checkVisualEvidence(benchmarkCase, scored),
+    checkVisualEvidence(benchmarkCase, scored, options.carriesVisualEvidence ?? true),
     checkOccasionProxy(benchmarkCase, scored),
     checkExplanationProxy(scored),
   ]

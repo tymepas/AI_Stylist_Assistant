@@ -88,7 +88,7 @@ function visualEvidenceSection(report: EvaluationReport): string[] {
     '',
     ...SCORED_TIERS.flatMap((tier) => {
       const block = visual.by_tier[tier]
-      if (block.cases === 0) return tier === 'image_reviewed' ? ['Observations against human-reviewed images: unavailable (no image-reviewed case records garment facts).', ''] : []
+      if (block.cases === 0) return tier === 'image_reviewed' ? [`Observations against human-reviewed images: ${block.garment_category_accuracy.reason ?? 'unavailable'}.`, ''] : []
       return [`### ${TIER_TITLES[tier]}`, '', ...table(['Figure', 'Value'], REFERENCE_LABELS.map(([key, label]) => [label, showMetric(block[key])]))]
     }),
   ]

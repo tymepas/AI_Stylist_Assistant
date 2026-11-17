@@ -243,13 +243,15 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   const cases = selectCases(allCases, options.selection)
   const selectedIds = new Set(cases.map((benchmarkCase) => benchmarkCase.id))
   const details = detailsFromRecording(recording, cases)
+  // Outputs recorded with a schema from before observations and evidence existed are never scored as if they had left them out.
+  const carriesVisualEvidence = schemaHasVisualEvidence(recording.schema_version)
 
   const caseReports: CaseReport[] = [...cases]
     .sort((a, b) => a.id.localeCompare(b.id))
     .map((benchmarkCase) => {
       const runs = details.filter((detail) => detail.case_id === benchmarkCase.id)
       const modalValue = modalOutcome(runs)
-      const evaluation = evaluateCase(benchmarkCase, runs)
+      const evaluation = evaluateCase(benchmarkCase, runs, { carriesVisualEvidence })
       return {
         case_id: benchmarkCase.id,
         category: benchmarkCase.category,
@@ -272,8 +274,6 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   const references = summarizeReferences(referenceSet, cases)
   const resolved = resolveReferences(referenceSet, cases)
   const outputs = recording.provenance === 'model' ? 'model' : 'synthetic_fixture'
-  // Outputs recorded with a schema from before observations and evidence existed are never scored as if they had left them out.
-  const carriesVisualEvidence = schemaHasVisualEvidence(recording.schema_version)
   const quality = computeQuality(details, cases, resolved, outputs, carriesVisualEvidence)
   const summary = summarizeCases(caseReports)
   const composition = describeComposition(allCases)
@@ -373,8 +373,8 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
     const usable = visual.structural.observations_valid_rate.value
     if (usable !== null && usable < 1) steps.push(`Observations are missing or invalid in part of the runs (usable ${usable}). The ratings and the verdict are unaffected; the report shows them as unavailable.`)
     const citations = visual.structural.invalid_citation_rate.value
-    if (citations !== null && citations > 0) steps.push(`Some runs cite observations that do not exist or were not visible (${citations}). That evidence is dropped, never shown.`)
-    if (visual.by_tier.image_reviewed.cases === 0 && provenance === 'model') steps.push('No image-reviewed case records garment facts (garment type, colour families, pattern, details), so observations cannot be compared with a human review yet.')
+    if (citations !== null && citations > 0) steps.push(`Where the observations were usable, some runs still cite an observation that does not exist or was not visible (${citations}). That evidence is dropped, never shown.`)
+    if (visual.by_tier.image_reviewed.cases === 0 && provenance === 'model') steps.push(`Observations cannot be compared with a human review yet: ${visual.by_tier.image_reviewed.garment_category_accuracy.reason ?? 'no image-reviewed case with garment facts has a scored run'}.`)
   }
 
   const advisor = quality.shopping_advisor

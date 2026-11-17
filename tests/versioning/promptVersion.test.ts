@@ -31,7 +31,7 @@ const PROFILE_PROMPT = readFileSync(path.join(process.cwd(), 'memory', 'STYLE_PR
  * value here in the same change so the new version is visible in the diff.
  */
 // Phase 4 Milestone 1 (observations and evidence, analysis-output/3). Was 3c78bd7bbd3b.
-const CURRENT_ANALYSIS_PROMPT_VERSION = 'e5ea8ad7c9ff'
+const CURRENT_ANALYSIS_PROMPT_VERSION = '8dd94dba7564'
 const CURRENT_PROFILE_PROMPT_VERSION = 'fce6c25bb5cf'
 
 const originalEnv = { ...process.env }

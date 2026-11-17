@@ -67,7 +67,7 @@ export interface GarmentContext {
 function garmentModeLine(garments: GarmentContext): string {
   if (garments.mode === 'single') return 'Image mode: single. Garment image 1 shows one garment.'
   const range = `Garment images 1 to ${garments.count}`
-  if (garments.mode === 'same_garment_views') return `Image mode: same_garment_views. ${range} are views of ONE garment; include views.`
+  if (garments.mode === 'same_garment_views') return `Image mode: same_garment_views. ${range} are views of ONE garment; include observations.views.`
   return `Image mode: outfit_items. ${range} are ${garments.count} DIFFERENT items worn together; include outfit_components.`
 }
 

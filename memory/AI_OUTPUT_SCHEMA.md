@@ -52,6 +52,9 @@ without a version bump; `tests/versioning/promptVersion.test.ts` and
   particular the model never returns `overall_recommendation`,
   `verdict_score`, `things_to_consider`, `analysis_based_on` or `next_step`:
   the application adds them after it has computed the verdict.
+- A top-level `views` key (where `observations.views` belongs) is tolerated
+  and ignored, so a misplaced entry can never cost the six ratings; the
+  observations are then refused for a missing `views` entry.
 - `observations`, `evidence`, `shopping_advisor` and `outfit_components` are
   optional in the schema. Each is validated on its own after the six ratings,
   and none of them is read by `computeVerdict`.
