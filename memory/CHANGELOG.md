@@ -158,6 +158,13 @@ Expanding the occasion list to include "Startup Interview", "Networking Event", 
 - Fonts are self-hosted through `next/font`; the Google Fonts stylesheet import is removed
 - Privacy wording in history and settings now says what actually happens: photos are sent for analysis and not kept; reports are not saved
 
+### Fixed
+
+- Mock mode with Style DNA lost the whole Shopping Advisor, so its "Why it is suggested" explanations never appeared (seen on Preview). The mock route passed the application-shaped advisor to the validator for model output, which rejected it
+- A Shopping Advisor or per-item outfit block that cannot be used is now stated in one labelled note instead of disappearing without a trace, and the drop is logged with schema paths only
+- The report leaves out a section that has nothing to show, and says so when a rating has no explanation, instead of showing a heading over an empty space
+- "Things to consider" and "What this is based on" stack at tablet width, where the sidebar leaves too little room for two columns
+
 ### Preserved
 
 - `computeVerdict`, its weights, thresholds, bands and rounding (pinned exhaustively by `tests/evaluation/verdictIntegrity.test.ts`)

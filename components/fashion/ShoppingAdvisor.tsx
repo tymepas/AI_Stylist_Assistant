@@ -15,9 +15,22 @@ interface ShoppingAdvisorProps {
  * and no verdict of its own and does not change the verdict above. It needs
  * Style DNA, which is optional; without it this section invites the user to add
  * one and everything else in the report works as usual.
+ *
+ * When Style DNA exists but no usable suggestion came back, the section says so
+ * in one short, labelled note. It never shows an empty card, and it never makes
+ * up a suggestion or a reason.
  */
 export default function ShoppingAdvisor({ advisor, occasion }: ShoppingAdvisorProps) {
-  if (advisor.availability === 'unavailable') return null
+  // `available` with nothing in it is the same situation for the reader: there is no advice to show.
+  if (advisor.availability === 'unavailable' || (advisor.availability === 'available' && advisor.recommendations.length === 0)) {
+    return (
+      <section className="surface-quiet p-6 sm:p-8" aria-labelledby="shopping-advisor-heading" data-testid="shopping-advisor-unavailable">
+        <p className="eyebrow">Advice, separate from your verdict</p>
+        <h3 id="shopping-advisor-heading" className="mt-1 font-display text-3xl text-foreground">Shopping Advisor</h3>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">No alternatives are available for this analysis. Your verdict and the six ratings above are complete and do not depend on them.</p>
+      </section>
+    )
+  }
 
   if (advisor.availability === 'requires_style_dna') {
     return (
