@@ -21,7 +21,7 @@ import { CASE_CATEGORIES, SCENARIO_TYPES, manifestSchema } from '@/benchmark/har
 import { evaluateRecording, renderMarkdown, serializeReport, type EvaluationReport } from '@/evaluation/evaluate'
 import { DATASETS, datasetPaths, loadCases, loadRecording, loadReport } from '@/evaluation/load'
 import { datasetFingerprint } from '@/evaluation/recording'
-import { classifyRegressions } from '@/evaluation/regression'
+import { classifyMetricChanges, classifyRegressions } from '@/evaluation/regression'
 import { OCCASION_OPTIONS } from '@/lib/constants/options'
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 
@@ -195,4 +195,38 @@ describe('committed baseline', () => {
     const results = (source: EvaluationReport) => source.cases.map((entry) => [entry.case_id, entry.status, entry.outcomes, entry.checks.map((check) => `${check.check}:${check.status}`)])
     expect(results(report)).toEqual(results(baseline))
   })
+
+  it('shows no metric-level regression either, and is in the current report format', () => {
+    const baseline = loadReport(paths.baselinePath as string)
+    expect(baseline.report_format).toBe(report.report_format)
+    const changes = classifyMetricChanges(baseline, report)
+    expect({ regressions: changes.regressions, improvements: changes.improvements }).toEqual({ regressions: [], improvements: [] })
+    const classOf = (name: string) => changes.comparisons.find((comparison) => comparison.metric === name)?.classification
+    // Figures built from fewer than ten units support no conclusion, not even "unchanged": the dataset has
+    // 4 abstention runs, 2 outfit cases and 3 multi-view cases.
+    expect(changes.comparisons.filter((comparison) => comparison.classification === 'inconclusive').map((comparison) => comparison.metric)).toEqual([
+      'abstention.recall',
+      'multi_image.outfit_items.completeness_rate',
+      'multi_image.outfit_items.repeat_rating_stability',
+      'multi_image.outfit_items.valid_output_rate',
+      'multi_image.same_garment_views.repeat_rating_stability',
+      'multi_image.same_garment_views.valid_output_rate',
+    ])
+    expect(classOf('validity.valid_output_rate')).toBe('no_meaningful_change')
+    expect(classOf('end_to_end.verdict_band_agreement_rate')).toBe('no_meaningful_change')
+    // The scenario dataset has no references: its outputs are the expectations, so nothing about agreement with a reviewer exists to compare.
+    expect(classOf('agreement.image_reviewed.occasion.exact_rate')).toBe('unavailable')
+    expect(report.quality.image_grounded_accuracy).toEqual({ status: 'unavailable', reason: 'Unavailable: insufficient human-reviewed ground truth', cases: 0 })
+  })
+
+  it('is byte-identical to the current report, so the committed file is exactly what the code produces', () => {
+    // After an intended change to the report, refresh it with: npm run eval:baseline
+    const committed = readFileSync(paths.baselinePath as string, 'utf8').replace(/\r\n/g, '\n')
+    expect(serializeReport(evaluateRecording(loadRecording(paths.recordingPath), loadCases(paths.casesPath), { promptVersion: baselinePromptVersion(committed), schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION }, 'mock'))).toBe(committed)
+  })
 })
+
+/** The prompt version the committed baseline was produced with: it is part of the report, and differs from the fixed one used in these tests. */
+function baselinePromptVersion(committed: string): string {
+  return (JSON.parse(committed) as EvaluationReport).evaluated_with.prompt_version
+}

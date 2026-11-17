@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "gv-example-single",
+      "category": "clear",
+      "description": "TEMPLATE, not a real case. One garment photo. Replace every field, then describe what the images show.",
+      "source": "public_license",
+      "photo": "gv-example-single/photo.jpg",
+      "garment": "gv-example-single/garment-1.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": { "preferredStyles": ["Classic"], "favoriteColors": ["Navy"], "occasionPreferences": [] },
+      "expected": {}
+    },
+    {
+      "id": "gv-example-views",
+      "category": "single_garment",
+      "description": "TEMPLATE, not a real case. Two views of the same garment as gv-example-single, for comparing one photo with several.",
+      "source": "public_license",
+      "photo": "gv-example-views/photo.jpg",
+      "garment": "gv-example-views/garment-1.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": { "preferredStyles": ["Classic"], "favoriteColors": ["Navy"], "occasionPreferences": [] },
+      "expected": {},
+      "garment_mode": "same_garment_views",
+      "extra_garments": ["gv-example-views/garment-2.jpg"]
+    },
+    {
+      "id": "gv-example-outfit",
+      "category": "multiple_garments",
+      "description": "TEMPLATE, not a real case. Two different items worn together.",
+      "source": "public_license",
+      "photo": "gv-example-outfit/photo.jpg",
+      "garment": "gv-example-outfit/garment-1.jpg",
+      "occasion": "Business Lunch",
+      "style_profile": { "preferredStyles": ["Business"], "favoriteColors": [], "occasionPreferences": [] },
+      "expected": {},
+      "garment_mode": "outfit_items",
+      "extra_garments": ["gv-example-outfit/garment-2.jpg"]
+    }
+  ]
+}

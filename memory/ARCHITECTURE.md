@@ -250,4 +250,24 @@ The workflow is separate from the test workflow and is not a required status che
 
 `npm run eval` has no live mode and disables network access, so it cannot fall back to a billable call. A recording ties each output to the model, prompt version, schema version and a fingerprint of the manifest. Outputs for photos of real people are never stored. Reports are JSON with sorted keys and no timestamps or model text, so they can be compared with a diff.
 
-Metrics are reported in three groups: model output (validity, abstention, stability across runs, confidence), Verdict's own deterministic code, and end-to-end results (verdict band agreement, sensitivity to adversarial text). Attribute accuracy is reported as not available, because the model output has no garment, colour or pattern fields.
+Metrics are reported in three groups: model output (validity, abstention, stability across runs, confidence), Verdict's own deterministic code, and end-to-end results (verdict band agreement, sensitivity to adversarial text).
+
+### Evaluation Framework 2.0
+
+An extension of the same harness. It adds no production code and changes no prompt, schema, model setting or verdict.
+
+| Piece | Where | What it does |
+|---|---|---|
+| Reference sets | `evaluation/reference.ts` | What a case is expected to produce, with provenance. Four tiers: image-reviewed, brief-derived, synthetic, unreviewed. Only image-reviewed references, scored against model outputs, are evidence about accuracy on real images |
+| Quality metrics | `evaluation/quality.ts` | Per-dimension exact agreement, agreement within one band and mean absolute error; explanation grounding (a labelled proxy); confidence calibration; image modes; outfit garment type accuracy |
+| Metric-level regression | `evaluation/regression.ts` | Improvement, no meaningful change, regression, inconclusive or unavailable, with a minimum sample of 10 and a documented noise margin. Baseline protection covers it |
+| Run records | `evaluation/runRecord.ts` | Run id, timestamps, versions, counts, cost and outcome in a separate file, so the report stays byte-reproducible |
+| Human review | `evaluation/HUMAN_REVIEW.md`, `evaluation/datasets/golden-v1/` | Rubric, review file format, stub generator and validator for adding reviewed cases without touching application code |
+
+Rules that hold:
+
+- Without image-reviewed references, accuracy on real images reads `Unavailable: insufficient human-reviewed ground truth`. It never reads 0.
+- Tiers are scored separately and never added together. There is no combined accuracy score.
+- Review images are never committed. They live in git-ignored `benchmark/data/`; the committed reference file holds ratings, garment facts and image hashes.
+- Colour, pattern and single-garment identification cannot be measured: the model output has no field for them. Garment identification covers the `garment_type` of outfit items only.
+- The golden dataset is empty until real images have been reviewed. Until then every figure about model quality is unavailable.

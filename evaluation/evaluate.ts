@@ -16,11 +16,17 @@ import { modelText, scanText, type Band, type BenchmarkCase } from '@/benchmark/
 import { BLOCKING_CHECKS, PROXY_CHECKS, checkStatus, evaluateCase, type BlockingCheckId, type CaseStatus, type CheckResult, type ProxyCheckId } from './checks'
 import { computeMetrics, modalOutcome, outcomeSignature, type EvaluationMetrics, type RunDetail } from './metrics'
 import { computePerformance, type PerformanceReport } from './performance'
+import { MIN_SAMPLE, buildMetricIndex, computeQuality, type MetricIndex, type QualityReport } from './quality'
 import { datasetFingerprint, stableStringify, type Recording } from './recording'
+import { parseReferenceSet, resolveReferences, summarizeReferences, type ReferenceSet, type ReferenceSummary } from './reference'
 import { describeSelection, selectCases, type CaseSelection, type SelectionReport } from './selection'
 
-/** /2 adds per-case checks, the summary, the selection and performance. /1 reports have none of them. */
-export const REPORT_FORMAT = 'verdict-evaluation-report/2'
+/**
+ * /2 adds per-case checks, the summary, the selection and performance. /1 reports have none of them.
+ * /3 adds the reference summary, the quality section (agreement, grounding, calibration, multi-image),
+ * the metric index and the next steps. Every /2 field is unchanged, so a /2 report still compares case by case.
+ */
+export const REPORT_FORMAT = 'verdict-evaluation-report/3'
 
 export type EvaluationMode = 'mock' | 'replay'
 
@@ -102,12 +108,22 @@ export interface EvaluationReport {
   /** Latency and cost, only when they were measured. Unavailable for synthetic fixtures. */
   performance: PerformanceReport
   metrics: EvaluationMetrics
+  /** Which references were used and how far each can be trusted. */
+  references: ReferenceSummary
+  /** Agreement with references, grounding, calibration and multi-image results, per reference tier. */
+  quality: QualityReport
+  /** Every comparable figure under one stable name, for metric-level regression. */
+  metric_index: MetricIndex
+  /** What to do next, derived from the figures above by fixed rules. Never model text. */
+  next_steps: string[]
   cases: CaseReport[]
 }
 
 export interface EvaluationOptions {
   /** Evaluate only some cases. The report is then marked partial. */
   selection?: CaseSelection
+  /** References for the cases. They are validated against the manifest here again, so an unchecked set is never scored. */
+  references?: ReferenceSet
 }
 
 const INTERPRETATION: Record<Recording['provenance'], string> = {
@@ -152,7 +168,14 @@ export function detailsFromRecording(recording: Recording, cases: BenchmarkCase[
       continue
     }
     const report = buildCompleteAnalysisResult(result.dimensions)
-    details.push({ ...screened, outcome: 'complete', band: report.overall_recommendation, score: report.verdict_score, dimensions: result.dimensions })
+    details.push({
+      ...screened,
+      outcome: 'complete',
+      band: report.overall_recommendation,
+      score: report.verdict_score,
+      dimensions: result.dimensions,
+      ...(result.outfit_components !== undefined ? { outfit_components: result.outfit_components } : {}),
+    })
   }
 
   return details.sort((a, b) => a.case_id.localeCompare(b.case_id) || a.run - b.run)
@@ -226,6 +249,13 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
       }
     })
 
+  const metrics = computeMetrics(details, cases)
+  // Validated here whatever the caller did: a set that was only typed, not parsed, must not reach the scoring.
+  const referenceSet = options.references ? parseReferenceSet(options.references, allCases) : undefined
+  const references = summarizeReferences(referenceSet, cases)
+  const quality = computeQuality(details, cases, resolveReferences(referenceSet, cases), recording.provenance === 'model' ? 'model' : 'synthetic_fixture')
+  const summary = summarizeCases(caseReports)
+
   return {
     report_format: REPORT_FORMAT,
     mode,
@@ -251,11 +281,56 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
       matches_recording: fingerprint === recording.dataset_fingerprint,
     },
     selection: describeSelection(options.selection, cases.length),
-    summary: summarizeCases(caseReports),
+    summary,
     performance: computePerformance(recording, recording.entries.filter((entry) => selectedIds.has(entry.case_id))),
-    metrics: computeMetrics(details, cases),
+    metrics,
+    references,
+    quality,
+    metric_index: buildMetricIndex(metrics, quality),
+    next_steps: nextSteps({ provenance: recording.provenance, summary, references, quality }),
     cases: caseReports,
   }
+}
+
+/**
+ * What to do next. Each line is produced by a fixed rule from the figures of
+ * the report, in a fixed order, so the list is as reproducible as the rest.
+ */
+export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary' | 'references' | 'quality'>): string[] {
+  const { provenance, summary, references, quality } = input
+  const steps: string[] = []
+
+  if (summary.failed > 0) steps.push(`Fix or explain the ${summary.failed} failing case(s) listed under "Cases" before reading any other figure.`)
+  if (provenance !== 'model') steps.push('These are hand-written fixture outputs. To learn anything about a model, replay a recording from an approved live benchmark run.')
+
+  const reviewed = references.cases_by_tier.image_reviewed
+  if (reviewed === 0) {
+    steps.push('Add human-reviewed cases with real images (evaluation/HUMAN_REVIEW.md). Until then accuracy on real images is unavailable.')
+  } else if (reviewed < MIN_SAMPLE) {
+    steps.push(`Only ${reviewed} image-reviewed case(s): add at least ${MIN_SAMPLE - reviewed} more before drawing conclusions about any dimension.`)
+  }
+  if (references.cases_by_tier.unreviewed > 0) steps.push(`Finish the ${references.cases_by_tier.unreviewed} unreviewed reference(s); they are not scored.`)
+
+  if (quality.image_grounded_accuracy.status === 'available') {
+    const weakest = Object.entries(quality.agreement.image_reviewed.dimensions)
+      .filter(([, dimension]) => dimension.exact_rate.status === 'measured')
+      .sort(([a, x], [b, y]) => (x.exact_rate.value as number) - (y.exact_rate.value as number) || a.localeCompare(b))[0]
+    if (weakest) steps.push(`Lowest exact agreement with reviewers: ${weakest[0]} (${weakest[1].exact_rate.value}). Read the cases that disagree before changing anything.`)
+    const calibration = quality.calibration.image_reviewed
+    if (calibration.ordering === 'inverted') steps.push('Stated confidence is inverted against reviewer agreement: a lower confidence level agrees more often than a higher one.')
+    if (calibration.high_confidence_severe_error_rate.status === 'measured' && (calibration.high_confidence_severe_error_rate.value as number) > 0) {
+      steps.push(`A share of ${calibration.high_confidence_severe_error_rate.value} of High-confidence ratings is far from the reviewer's rating. Read those cases.`)
+    }
+    const missing = quality.grounding.image_reviewed.cases_missing_key_facts
+    if (missing.length > 0) steps.push(`${missing.length} case(s) never mention a key fact the reviewer listed (proxy): ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ' and others' : ''}.`)
+  }
+
+  const outfit = quality.multi_image.outfit_items.completeness_rate
+  if (outfit.value !== null && outfit.value < 1) steps.push(`Per-item outfit notes are missing or invalid in part of the outfit runs (completeness ${outfit.value}).`)
+  if (quality.multi_image.outfit_items.unexpected_blocks_in_other_modes > 0) steps.push('Some single-garment or multi-view runs returned per-item outfit notes, where none are expected.')
+  if (quality.multi_image.comparison_groups.groups === 0 && reviewed > 0) steps.push('No comparison group links a single photo to several photos of the same garment, so the two cannot be compared yet.')
+
+  return steps
 }
 
 /** The report as stable JSON: sorted keys, no timestamps, so reports diff cleanly. */
@@ -331,73 +406,4 @@ export function compareReports(base: EvaluationReport, candidate: EvaluationRepo
   }
 }
 
-// ---------------------------------------------------------------------------
-// Human-readable summary
-// ---------------------------------------------------------------------------
-
-function show(value: number | null): string {
-  return value === null ? 'n/a' : String(value)
-}
-
-function showMicroUsd(value: number | null): string {
-  return value === null ? 'n/a' : `$${(value / 1_000_000).toFixed(6)}`
-}
-
-function showCounts(counts: Record<string, number>): string {
-  return Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => `${key} ${value}`).join(', ') || 'none'
-}
-
-/** A short Markdown summary of a report. Contains aggregates only, never model text. */
-export function renderMarkdown(report: EvaluationReport): string {
-  const { metrics, subject, summary, performance } = report
-  const failing = report.cases.filter((entry) => entry.status === 'fail')
-  const flagged = report.cases.filter((entry) => entry.proxy_flags.length > 0)
-  const caseLines = [
-    '## Cases',
-    '',
-    `- Total: ${summary.total_cases} (passed ${summary.passed}, failed ${summary.failed}, not applicable ${summary.not_applicable})`,
-    `- Pass rate: ${show(summary.pass_rate)}${report.selection.partial ? ' — PARTIAL RUN: only the selected cases were evaluated; this report cannot become a baseline' : ''}`,
-    `- Safety failures: ${summary.safety_failures}; unsupported-claim failures: ${summary.unsupported_claim_failures}; schema failures: ${summary.schema_failures}`,
-    `- Uncertainty failures: ${summary.uncertainty_failures}; verdict integrity failures: ${summary.verdict_integrity_failures}`,
-    `- Failures by category: ${showCounts(summary.failures_by_category)}`,
-    `- Failures by scenario: ${showCounts(summary.failures_by_scenario)}`,
-    `- Latency: ${performance.latency.status === 'recorded' ? `p50 ${performance.latency.p50_ms} ms, p95 ${performance.latency.p95_ms} ms over ${performance.latency.runs} runs` : `unavailable (${performance.latency.reason})`}`,
-    `- Cost: ${performance.cost.status === 'recorded' ? `${showMicroUsd(performance.cost.total_micro_usd)} total, ${showMicroUsd(performance.cost.median_micro_usd_per_run)} median per run over ${performance.cost.runs_with_usage} runs` : `unavailable (${performance.cost.reason})`}`,
-    `- Proxy flags for human review (not failures, not a measure of fashion quality): occasion ${summary.proxy_flags.proxy_occasion}, explanation ${summary.proxy_flags.proxy_explanation}`,
-    '',
-    ...(failing.length > 0 ? ['| Failing case | Reason |', '|---|---|', ...failing.flatMap((entry) => entry.failure_reasons.map((reason) => `| ${entry.case_id} | ${reason} |`)), ''] : []),
-    ...(flagged.length > 0 ? ['| Case flagged for review | Proxy |', '|---|---|', ...flagged.flatMap((entry) => entry.proxy_flags.map((flag) => `| ${entry.case_id} | ${flag} |`)), ''] : []),
-    '## Metrics',
-    '',
-  ]
-  const lines = [
-    `# Evaluation report (${report.mode})`,
-    '',
-    `> ${report.interpretation}`,
-    '',
-    `- Model: ${subject.model} (reasoning ${subject.reasoning_effort ?? 'n/a'}, max output ${subject.max_output_tokens})`,
-    `- Prompt version: ${subject.prompt_version}${report.evaluated_with.same_prompt_as_recording ? '' : ` (current code: ${report.evaluated_with.prompt_version})`}`,
-    `- Schema version: ${subject.schema_version}${report.evaluated_with.same_schema_as_recording ? '' : ` (current code: ${report.evaluated_with.schema_version})`}`,
-    `- Dataset: ${report.dataset.fingerprint}, ${report.dataset.cases} cases, ${report.dataset.cases_with_verified_labels} with verified labels${report.dataset.matches_recording ? '' : ' — DIFFERS from the dataset the recording was made with'}`,
-    `- Runs scored: ${metrics.runs} (${metrics.withheld_runs} withheld)`,
-    '',
-    ...caseLines,
-    '| Group | Metric | Value |',
-    '|---|---|---|',
-    `| Model | Valid structured output rate | ${show(metrics.structured_output.valid_rate)} |`,
-    `| Model | Abstention precision / recall | ${show(metrics.abstention.precision)} / ${show(metrics.abstention.recall)} |`,
-    `| Model | False abstention rate | ${show(metrics.abstention.false_abstention_rate)} |`,
-    `| Model | Cases with the same outcome on every run | ${show(metrics.stability.same_outcome_case_rate)} |`,
-    `| Model | Dimension rating agreement across runs | ${show(metrics.stability.dimension_rating_agreement_rate)} |`,
-    `| Model | Stable ratings at High / Medium / Low confidence | ${show(metrics.confidence.stability_by_confidence.High.stable_rate)} / ${show(metrics.confidence.stability_by_confidence.Medium.stable_rate)} / ${show(metrics.confidence.stability_by_confidence.Low.stable_rate)} |`,
-    `| Model | Acceptable ratings at High / Medium / Low confidence | ${show(metrics.confidence.accuracy_by_confidence.High.correct_rate)} / ${show(metrics.confidence.accuracy_by_confidence.Medium.correct_rate)} / ${show(metrics.confidence.accuracy_by_confidence.Low.correct_rate)} |`,
-    `| Model | Runs with screening hits (prohibited / forbidden claim) | ${metrics.screening.runs_with_prohibited_hits} / ${metrics.screening.runs_with_forbidden_claims} |`,
-    `| Model | Attribute accuracy | not available |`,
-    `| End to end | Verdict band agreement | ${show(metrics.verdict_band.agreement_rate)} (${metrics.verdict_band.graded_runs} graded runs) |`,
-    `| End to end | Adversarial runs outside acceptable bands | ${metrics.adversarial.runs_outside_acceptable_bands} of ${metrics.adversarial.graded_runs} |`,
-    `| End to end | Adversarial cases whose outcome differs from the clean twin | ${show(metrics.adversarial.twin_outcome_change_rate)} (${metrics.adversarial.twin_pairs} pairs) |`,
-    `| Application | Verdict recomputation matches | ${metrics.application.verdict_recomputation_matches} |`,
-    '',
-  ]
-  return lines.join('\n')
-}
+export { renderMarkdown } from './markdown'

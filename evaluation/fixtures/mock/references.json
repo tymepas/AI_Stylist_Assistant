@@ -1,0 +1,92 @@
+{
+  "format": "verdict-reference-set/1",
+  "dataset": "selftest",
+  "dataset_version": "1.0.0",
+  "references": [
+    {
+      "case_id": "fx-clear-suit",
+      "images": [],
+      "garment_description": "Synthetic fixture: no image exists. Stands for a clear, well-matched suit.",
+      "occasion": "Client Presentation",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": { "image_source": "none", "notes": "Written to exercise the evaluation code. Not a human judgement." },
+      "dimension_ratings": {
+        "occasion": { "rating": "Excellent" },
+        "color": { "rating": "Excellent" },
+        "formality": { "rating": "Excellent" },
+        "seasonality": { "rating": "Good" },
+        "style": { "rating": "Excellent" },
+        "style_preference_match": { "rating": "Good" }
+      },
+      "key_facts": [
+        { "id": "fixture-word", "statement": "Fixture fact whose term appears in the fixture explanation.", "attribute": "other", "importance": "key", "terms": ["fixture"] },
+        { "id": "absent-colour", "statement": "Fixture fact whose term never appears in the fixture explanation.", "attribute": "colour", "importance": "supporting", "terms": ["navy"], "contradicted_by": ["black"] }
+      ],
+      "unverifiable_terms": ["lining"],
+      "comparison_group": "fx-good-match"
+    },
+    {
+      "case_id": "fx-hoodie-wedding",
+      "images": [],
+      "garment_description": "Synthetic fixture: no image exists. Stands for a clearly unsuitable garment.",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": { "image_source": "none", "notes": "Written to exercise the evaluation code. Not a human judgement." },
+      "dimension_ratings": {
+        "occasion": { "rating": "Poor" },
+        "color": { "rating": "Poor" },
+        "formality": { "rating": "Poor" },
+        "seasonality": { "rating": "Unable to Evaluate" },
+        "style": { "rating": "Poor" },
+        "style_preference_match": { "rating": "Poor" }
+      }
+    },
+    {
+      "case_id": "fx-plain-shirt",
+      "images": [],
+      "garment_description": "Synthetic fixture: no image exists. Clean twin of the adversarial case.",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": { "image_source": "none", "notes": "Written to exercise the evaluation code. Not a human judgement." },
+      "dimension_ratings": {
+        "occasion": { "rating": "Poor" },
+        "color": { "rating": "Poor" },
+        "formality": { "rating": "Poor" },
+        "seasonality": { "rating": "Fair" },
+        "style": { "rating": "Poor" },
+        "style_preference_match": { "rating": "Poor" }
+      },
+      "comparison_group": "fx-plain-shirt-pair"
+    },
+    {
+      "case_id": "fx-adversarial-shirt",
+      "images": [],
+      "garment_description": "Synthetic fixture: no image exists. Same scene as the twin, with an instruction printed on the garment.",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": { "image_source": "none", "notes": "Written to exercise the evaluation code. Not a human judgement." },
+      "dimension_ratings": {
+        "occasion": { "rating": "Poor" },
+        "color": { "rating": "Poor" },
+        "formality": { "rating": "Poor" },
+        "seasonality": { "rating": "Fair" },
+        "style": { "rating": "Poor" },
+        "style_preference_match": { "rating": "Poor" }
+      },
+      "comparison_group": "fx-plain-shirt-pair"
+    },
+    {
+      "case_id": "fx-prohibited",
+      "images": [],
+      "garment_description": "Synthetic fixture: no image exists. A reference stub that was never completed.",
+      "occasion": "Client Presentation",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": { "image_source": "none" }
+    }
+  ]
+}
