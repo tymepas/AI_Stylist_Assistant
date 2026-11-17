@@ -27,7 +27,7 @@ export default function ShoppingAdvisor({ advisor, occasion }: ShoppingAdvisorPr
       <section className="surface-quiet p-6 sm:p-8" aria-labelledby="shopping-advisor-heading" data-testid="shopping-advisor-unavailable">
         <p className="eyebrow">Advice, separate from your verdict</p>
         <h3 id="shopping-advisor-heading" className="mt-1 font-display text-3xl text-foreground">Shopping Advisor</h3>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">No alternatives are available for this analysis. Your verdict and the six ratings above are complete and do not depend on them.</p>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">No alternatives are available for this analysis. Your verdict and the six ratings above do not depend on them.</p>
       </section>
     )
   }

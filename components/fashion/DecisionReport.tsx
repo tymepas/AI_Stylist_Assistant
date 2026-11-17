@@ -155,7 +155,7 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
         <section aria-labelledby="outfit-items-heading" data-testid="outfit-components-unavailable" className="surface-quiet p-6 sm:p-8">
           <p className="eyebrow">Item by item</p>
           <h3 id="outfit-items-heading" className="mt-1 font-display text-3xl text-foreground">The pieces of the outfit</h3>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">Notes on the individual items are not available for this analysis. The verdict and the six ratings above cover the outfit as a whole and are complete without them.</p>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">Notes on the individual items are not available for this analysis. The verdict and the six ratings above cover the outfit as a whole and do not depend on them.</p>
         </section>
       ) : null}
 
