@@ -5,6 +5,7 @@
  * No network is used.
  */
 
+import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 import { describe, expect, it, jest } from '@jest/globals'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -17,7 +18,8 @@ import { classifyMetricChanges, classifyRegressions } from '@/evaluation/regress
 import { RUN_OUTCOMES, RUN_RECORD_FORMAT, buildRunRecord, serializeRunRecord, sha256 } from '@/evaluation/runRecord'
 import { degrade, fixtureCases, fixtureRecording, fixtureReferences } from '../helpers/qualityFixture'
 
-const CURRENT = { promptVersion: 'aaaaaaaaaaaa', schemaVersion: 'analysis-output/2' }
+// The code under test: the same versions the self-test snapshot was produced with (tests/evaluation/mockEvaluation.test.ts).
+const CURRENT = { promptVersion: 'aaaaaaaaaaaa', schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION }
 const paths = mockFixturePaths(process.cwd())
 
 function selftestReport(): EvaluationReport {
@@ -56,7 +58,7 @@ describe('run record', () => {
       model: 'gpt-6.1-terra',
       prompt_version: '000000000000',
       schema_version: ANALYSIS_SCHEMA,
-      evaluated_with: { prompt_version: 'aaaaaaaaaaaa', schema_version: 'analysis-output/2' },
+      evaluated_with: { prompt_version: 'aaaaaaaaaaaa', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION },
       baseline: null,
       comparison: null,
       outcome: 'no_baseline',
@@ -95,7 +97,7 @@ describe('run record', () => {
   it('ties the record to the exact bytes of its report', () => {
     const report = selftestReport()
     const text = serializeReport(report)
-    expect(record(report).report).toEqual({ file: 'evaluation/reports/example.json', format: 'verdict-evaluation-report/4', sha256: sha256(text) })
+    expect(record(report).report).toEqual({ file: 'evaluation/reports/example.json', format: 'verdict-evaluation-report/5', sha256: sha256(text) })
     expect(sha256(text)).toMatch(/^[0-9a-f]{64}$/)
   })
 
@@ -112,7 +114,7 @@ describe('run record', () => {
       outcome: 'regression',
     })
     expect(run.outcome).toBe('regression')
-    expect(run.baseline).toEqual({ file: 'evaluation/baselines/example.json', sha256: sha256(baselineText), dataset_fingerprint: base.dataset.fingerprint, report_format: 'verdict-evaluation-report/4' })
+    expect(run.baseline).toEqual({ file: 'evaluation/baselines/example.json', sha256: sha256(baselineText), dataset_fingerprint: base.dataset.fingerprint, report_format: 'verdict-evaluation-report/5' })
     expect(run.comparison?.newly_failing_cases).toEqual([])
     expect(run.comparison?.metric_regressions).toContain('agreement.image_reviewed.occasion.exact_rate')
     expect(run.comparison?.metric_improvements).toEqual([])
@@ -124,6 +126,7 @@ describe('run record', () => {
   })
 })
 
+// The schema the self-test recording was written for. The code under test is newer (ANALYSIS_OUTPUT_SCHEMA_VERSION).
 const ANALYSIS_SCHEMA = 'analysis-output/2'
 
 describe('the report stays deterministic', () => {

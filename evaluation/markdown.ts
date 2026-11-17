@@ -45,6 +45,55 @@ function table(header: string[], rows: string[][]): string[] {
   return [`| ${header.join(' | ')} |`, `|${header.map(() => '---').join('|')}|`, ...rows.map((row) => `| ${row.join(' | ')} |`), '']
 }
 
+const STRUCTURAL_LABELS: Array<[keyof EvaluationReport['quality']['visual_evidence']['structural'], string]> = [
+  ['observations_valid_rate', 'Observations usable'],
+  ['evidence_complete_rate', 'Evidence usable for all six dimensions'],
+  ['invalid_citation_rate', 'Cites an observation that does not exist or was not visible'],
+  ['unsupplied_source_rate', 'Names an input that was not sent'],
+  ['support_conflict_rate', 'Evidence contradicts its rating'],
+  ['unsupported_text_rate', 'States a price, material, brand, quality, link or instruction'],
+  ['image_mapping_error_rate', 'Observations not mapped one per garment image'],
+  ['view_contradiction_rate', 'Views said to be one garment but identified as different garments'],
+  ['outfit_identity_consistency_rate', 'Outfit items: per-item note and observation name the same kind of garment'],
+  ['evidence_relevance_proxy_rate', 'Evidence points at the kind of fact its dimension is about (proxy)'],
+]
+
+const REFERENCE_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['visual_evidence']['by_tier'][ScoredTier], 'cases'>, string]> = [
+  ['garment_category_accuracy', 'Garment category matches the reviewer'],
+  ['confident_misidentification_rate', 'Identified with confidence as a different garment'],
+  ['identification_abstention_rate', 'Abstains where the reviewer could not identify the garment'],
+  ['dominant_colour_recall', 'Reviewer\'s dominant colour families reported'],
+  ['unsupported_colour_rate', 'Colour families the reviewer did not list'],
+  ['pattern_accuracy', 'Pattern matches the reviewer'],
+  ['visual_abstention_rate', 'Does not state as observed what the reviewer could not see'],
+  ['supported_detail_rate', 'Details the reviewer confirmed'],
+  ['contradicted_detail_rate', 'Details the reviewer marked absent or unverifiable'],
+  ['same_garment_agreement_rate', 'Views: same-garment answer matches the reviewer'],
+]
+
+/** Observations and rating evidence (analysis-output/3). Aggregates only; never model text. */
+function visualEvidenceSection(report: EvaluationReport): string[] {
+  const visual = report.quality.visual_evidence
+  const heading = ['## 9b. Observations and evidence', '']
+  if (!visual.applicable) return [...heading, visual.reason as string, '']
+  const fixture = report.provenance !== 'model'
+  return [
+    ...heading,
+    fixture
+      ? 'Hand-written fixture outputs: these figures check that Verdict validates the blocks as intended. They say nothing about how well any model observes garments.'
+      : 'Recorded model outputs. The blocks are informational; none of these figures is part of the verdict.',
+    '',
+    ...table(['Structural figure (no reference needed)', 'Value'], STRUCTURAL_LABELS.map(([key, label]) => [label, showMetric(visual.structural[key])])),
+    `- Runs with usable observations per mode: ${GARMENT_MODES.map((mode) => `${mode} ${visual.valid_runs_by_mode[mode]}`).join(', ')}`,
+    '',
+    ...SCORED_TIERS.flatMap((tier) => {
+      const block = visual.by_tier[tier]
+      if (block.cases === 0) return tier === 'image_reviewed' ? ['Observations against human-reviewed images: unavailable (no image-reviewed case records garment facts).', ''] : []
+      return [`### ${TIER_TITLES[tier]}`, '', ...table(['Figure', 'Value'], REFERENCE_LABELS.map(([key, label]) => [label, showMetric(block[key])]))]
+    }),
+  ]
+}
+
 function agreementSection(report: EvaluationReport, tier: ScoredTier): string[] {
   const agreement = report.quality.agreement[tier]
   if (agreement.reference_cases === 0) return []
@@ -180,6 +229,9 @@ export function renderMarkdown(report: EvaluationReport): string {
     `- Model: ${subject.model} (reasoning ${subject.reasoning_effort ?? 'n/a'}, max output ${subject.max_output_tokens})`,
     `- Prompt version: ${subject.prompt_version}${report.evaluated_with.same_prompt_as_recording ? '' : ` (current code: ${report.evaluated_with.prompt_version})`}`,
     `- Schema version: ${subject.schema_version}${report.evaluated_with.same_schema_as_recording ? '' : ` (current code: ${report.evaluated_with.schema_version})`}`,
+    ...(report.evaluated_with.same_prompt_as_recording && report.evaluated_with.same_schema_as_recording
+      ? []
+      : ['- **The recording was made with a different prompt or schema than the current code.** Every figure describes the recorded prompt and schema. None of them is evidence about the current prompt.']),
     '',
     '## 2. Dataset and references',
     '',
@@ -206,7 +258,7 @@ export function renderMarkdown(report: EvaluationReport): string {
     `- Total: ${summary.total_cases} (passed ${summary.passed}, failed ${summary.failed}, not applicable ${summary.not_applicable})`,
     `- Pass rate: ${show(summary.pass_rate)}`,
     `- Safety failures: ${summary.safety_failures}; unsupported-claim failures: ${summary.unsupported_claim_failures}; schema failures: ${summary.schema_failures}`,
-    `- Uncertainty failures: ${summary.uncertainty_failures}; verdict integrity failures: ${summary.verdict_integrity_failures}`,
+    `- Uncertainty failures: ${summary.uncertainty_failures}; verdict integrity failures: ${summary.verdict_integrity_failures}; observation and evidence failures: ${summary.visual_evidence_failures ?? 0}`,
     `- Failures by category: ${showCounts(summary.failures_by_category)}`,
     `- Failures by scenario: ${showCounts(summary.failures_by_scenario)}`,
     `- Proxy flags for human review (not failures, not a measure of fashion quality): occasion ${summary.proxy_flags.proxy_occasion}, explanation ${summary.proxy_flags.proxy_explanation}`,
@@ -258,6 +310,7 @@ export function renderMarkdown(report: EvaluationReport): string {
     ...(SCORED_TIERS.every((tier) => quality.agreement[tier].cases_with_output === 0)
       ? ['Grounding against reference facts: unavailable (no scored reference).', '']
       : SCORED_TIERS.flatMap((tier) => groundingSection(report, tier))),
+    ...visualEvidenceSection(report),
     '## 10. End to end and application',
     '',
     ...(styleDna.mixed ? ['**Pooled:** the first four lines combine cases with and without Style DNA. The Shopping Advisor lines are each about one condition only, by definition.', ''] : []),

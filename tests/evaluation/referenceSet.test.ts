@@ -388,9 +388,10 @@ describe('committed reference files', () => {
     .filter((file) => !file.includes(`${path.sep}reports${path.sep}`))
     .filter((file) => (JSON.parse(readFileSync(file, 'utf8')) as { format?: string }).format === REFERENCE_SET_FORMAT)
 
-  it('are found: the self-test references and the golden template', () => {
+  it('are found: the self-test references, the scenarios-v3 synthetic garment facts and the golden template', () => {
     expect(referenceFiles.map((file) => path.relative(root, file).replace(/\\/g, '/')).sort()).toEqual([
       'evaluation/datasets/golden-v1/references.template.json',
+      'evaluation/datasets/scenarios-v3/references.json',
       'evaluation/fixtures/mock/references.json',
     ])
   })

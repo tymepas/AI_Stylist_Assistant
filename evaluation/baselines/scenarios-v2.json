@@ -44,6 +44,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -110,6 +115,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -174,6 +184,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -243,6 +258,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -304,6 +324,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -372,6 +397,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -436,6 +466,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -504,6 +539,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -568,6 +608,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -636,6 +681,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -700,6 +750,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -768,6 +823,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -832,6 +892,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -900,6 +965,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -964,6 +1034,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1032,6 +1107,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1095,6 +1175,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1163,6 +1248,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1227,6 +1317,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1295,6 +1390,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1356,6 +1456,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1424,6 +1529,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1487,6 +1597,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1554,6 +1669,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1617,6 +1737,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1684,6 +1809,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1745,6 +1875,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1812,6 +1947,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -1873,6 +2013,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -1940,6 +2085,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "not_applicable"
@@ -2005,6 +2155,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2066,6 +2221,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -2131,6 +2291,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2192,6 +2357,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -2257,6 +2427,11 @@
           "status": "not_applicable"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "not_applicable"
@@ -2317,6 +2492,11 @@
         {
           "blocking": true,
           "check": "verdict_integrity",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
           "status": "not_applicable"
         },
         {
@@ -2386,6 +2566,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2450,6 +2635,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -2518,6 +2708,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2582,6 +2777,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -2650,6 +2850,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2716,6 +2921,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2779,6 +2989,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -2847,6 +3062,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -2911,6 +3131,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -2979,6 +3204,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3045,6 +3275,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3106,6 +3341,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3174,6 +3414,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3238,6 +3483,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3306,6 +3556,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3370,6 +3625,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3438,6 +3698,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3502,6 +3767,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3570,6 +3840,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3634,6 +3909,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3702,6 +3982,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3766,6 +4051,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3834,6 +4124,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -3897,6 +4192,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -3965,6 +4265,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4029,6 +4334,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4097,6 +4407,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4161,6 +4476,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4229,6 +4549,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4295,6 +4620,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4356,6 +4686,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4424,6 +4759,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4488,6 +4828,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4556,6 +4901,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4620,6 +4970,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4688,6 +5043,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4749,6 +5109,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4817,6 +5182,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -4881,6 +5251,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -4949,6 +5324,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -5013,6 +5393,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -5081,6 +5466,11 @@
           "status": "pass"
         },
         {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
+        },
+        {
           "blocking": false,
           "check": "proxy_occasion",
           "status": "pass"
@@ -5145,6 +5535,11 @@
           "blocking": true,
           "check": "verdict_integrity",
           "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "not_applicable"
         },
         {
           "blocking": false,
@@ -5226,10 +5621,10 @@
     "matches_recording": true
   },
   "evaluated_with": {
-    "prompt_version": "3c78bd7bbd3b",
+    "prompt_version": "e5ea8ad7c9ff",
     "same_prompt_as_recording": false,
-    "same_schema_as_recording": true,
-    "schema_version": "analysis-output/2"
+    "same_schema_as_recording": false,
+    "schema_version": "analysis-output/3"
   },
   "interpretation": "Hand-written fixture outputs. This report checks that the evaluation harness and the deterministic verdict code behave as intended. It says nothing about model quality.",
   "metric_index": {
@@ -8342,6 +8737,446 @@
       "style_dna_condition": "with_style_dna",
       "value": 1
     },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.brief_derived.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.image_reviewed.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.evidence_complete_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.evidence_relevance_proxy_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.image_mapping_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.invalid_citation_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.observations_valid_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.outfit_identity_consistency_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.support_conflict_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.unsupplied_source_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.unsupported_text_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.structural.view_contradiction_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.visual_evidence.synthetic.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
     "style_dna.without_style_dna.abstention.false_abstention_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
@@ -9888,6 +10723,446 @@
       "style_dna_condition": "without_style_dna",
       "value": 0.9701
     },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.brief_derived.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.image_reviewed.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.evidence_complete_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.evidence_relevance_proxy_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.image_mapping_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.invalid_citation_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.observations_valid_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.outfit_identity_consistency_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.support_conflict_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.unsupplied_source_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.unsupported_text_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.structural.view_contradiction_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.visual_evidence.synthetic.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
     "validity.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -9897,6 +11172,446 @@
       "se": 0.0177,
       "status": "measured",
       "value": 0.9747
+    },
+    "visual_evidence.brief_derived.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.evidence_complete_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.evidence_relevance_proxy_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.image_mapping_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.invalid_citation_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.observations_valid_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.outfit_identity_consistency_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.support_conflict_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.unsupplied_source_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.unsupported_text_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.structural.view_contradiction_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.confident_misidentification_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.contradicted_detail_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.dominant_colour_recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.garment_category_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.pattern_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.same_garment_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.supported_detail_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.unsupported_colour_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.visual_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
     }
   },
   "metrics": {
@@ -11967,6 +13682,308 @@
       "noise_floor_bands": 0.25,
       "noise_floor_rate": 0.05,
       "noise_z": 1.96
+    },
+    "visual_evidence": {
+      "applicable": false,
+      "by_tier": {
+        "brief_derived": {
+          "cases": 0,
+          "confident_misidentification_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "contradicted_detail_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "dominant_colour_recall": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "garment_category_accuracy": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "identification_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "pattern_accuracy": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "same_garment_agreement_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "supported_detail_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "unsupported_colour_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "visual_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "image_reviewed": {
+          "cases": 0,
+          "confident_misidentification_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "contradicted_detail_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "dominant_colour_recall": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "garment_category_accuracy": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "identification_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "pattern_accuracy": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "same_garment_agreement_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "supported_detail_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "unsupported_colour_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "visual_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "synthetic": {
+          "cases": 0,
+          "confident_misidentification_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "contradicted_detail_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "dominant_colour_recall": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "garment_category_accuracy": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "identification_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "pattern_accuracy": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "same_garment_agreement_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "supported_detail_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "unsupported_colour_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "visual_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        }
+      },
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "structural": {
+        "evidence_complete_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "evidence_relevance_proxy_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "image_mapping_error_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "invalid_citation_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "observations_valid_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "outfit_identity_consistency_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "support_conflict_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "unsupplied_source_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "unsupported_text_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "view_contradiction_rate": {
+          "n": 0,
+          "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        }
+      },
+      "valid_runs_by_mode": {
+        "outfit_items": 0,
+        "same_garment_views": 0,
+        "single": 0
+      }
     }
   },
   "references": {
@@ -11988,7 +14005,7 @@
     "scoring_fingerprint": null,
     "status": "none"
   },
-  "report_format": "verdict-evaluation-report/4",
+  "report_format": "verdict-evaluation-report/5",
   "selection": {
     "cases_evaluated": 79,
     "filters": {
@@ -12015,7 +14032,8 @@
       "schema_validity": 0,
       "uncertainty": 0,
       "unsupported_claims": 0,
-      "verdict_integrity": 0
+      "verdict_integrity": 0,
+      "visual_evidence": 0
     },
     "failures_by_scenario": {},
     "not_applicable": 0,
@@ -12030,6 +14048,7 @@
     "total_cases": 79,
     "uncertainty_failures": 0,
     "unsupported_claim_failures": 0,
-    "verdict_integrity_failures": 0
+    "verdict_integrity_failures": 0,
+    "visual_evidence_failures": 0
   }
 }

@@ -143,7 +143,7 @@ describe('mock evaluation of the committed fixtures', () => {
   })
 
   it('records whether the report was produced with the same prompt and schema as the recording', () => {
-    expect(report.evaluated_with).toEqual({ prompt_version: 'aaaaaaaaaaaa', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION, same_prompt_as_recording: false, same_schema_as_recording: true })
+    expect(report.evaluated_with).toEqual({ prompt_version: 'aaaaaaaaaaaa', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION, same_prompt_as_recording: false, same_schema_as_recording: false })
   })
 
   it('contains no model text, file names or timestamps', () => {

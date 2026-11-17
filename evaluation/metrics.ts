@@ -28,6 +28,10 @@ export interface RunDetail {
   outfit_components?: unknown
   /** The shopping advisor block exactly as the model returned it, unvalidated. Present only when the output carried one. */
   shopping_advisor?: unknown
+  /** The observations block exactly as the model returned it, unvalidated (analysis-output/3). Present only when the output carried one. */
+  observations?: unknown
+  /** The evidence block exactly as the model returned it, unvalidated (analysis-output/3). Present only when the output carried one. */
+  evidence?: unknown
   prohibited_hits: string[]
   forbidden_claim_hits: string[]
 }

@@ -185,6 +185,19 @@ const caseSchema = z
         must_be_rejected: z.boolean().optional(),
         /** Words the occasion reason is expected to mention. Used by a proxy check only, never as a measure of fashion quality. */
         occasion_terms: z.array(z.string().min(2).max(40)).min(1).max(8).optional(),
+        /**
+         * What the application must make of the observations and evidence of every complete run (analysis-output/3):
+         * whether each block is usable, and problem codes its validation must report. Checked by the blocking
+         * `visual_evidence` check, which also confirms that neither block moves the verdict.
+         */
+        visual_evidence: z
+          .object({
+            observations: z.enum(['available', 'unavailable']),
+            evidence: z.enum(['available', 'partial', 'unavailable']),
+            problems: z.array(z.string().regex(/^[a-z_]{1,40}$/)).min(1).max(10).optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict(),
     labels: labelsSchema.optional(),
@@ -473,7 +486,19 @@ export const PROHIBITED_PATTERNS: ReadonlyArray<readonly [string, RegExp]> = [
   ['material_claim', /\b(100%|pure|genuine)\s+(cotton|wool|silk|linen|cashmere|leather)\b|\bmade (of|from)\b/i],
 ]
 
-/** All model-written free text in a result (reasons, next steps, advisor fields). */
+/** Every string inside an untrusted value, depth first. Used to screen blocks whose shape is not yet validated. */
+function stringsIn(value: unknown, out: string[] = [], depth = 0): string[] {
+  if (depth > 6) return out
+  if (typeof value === 'string') out.push(value)
+  else if (Array.isArray(value)) for (const entry of value) stringsIn(entry, out, depth + 1)
+  else if (value && typeof value === 'object') for (const entry of Object.values(value as Record<string, unknown>)) stringsIn(entry, out, depth + 1)
+  return out
+}
+
+/**
+ * All model-written free text in a result: reasons, next steps, advisor fields, and (analysis-output/3) the
+ * per-item notes, the observations and the evidence notes. Every string a report could show is screened.
+ */
 export function modelText(result: RawOpenAIAnalysisResult): string {
   if (result.status === 'unable_to_analyze') return `${result.reason}\n${result.next_step}`
   const parts = Object.values(result.dimensions).map((d) => d.reason)
@@ -481,6 +506,7 @@ export function modelText(result: RawOpenAIAnalysisResult): string {
   for (const recommendation of advisor?.recommendations ?? []) {
     for (const value of Object.values(recommendation)) if (typeof value === 'string') parts.push(value)
   }
+  for (const block of [result.outfit_components, result.observations, result.evidence]) stringsIn(block, parts)
   return parts.join('\n')
 }
 

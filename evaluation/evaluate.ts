@@ -11,7 +11,7 @@
 
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
-import { validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
+import { schemaHasVisualEvidence, validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
 import { GARMENT_MODES } from '@/lib/constants/garmentModes'
 import { describeComposition, modelText, scanText, type Band, type BenchmarkCase, type DatasetComposition } from '@/benchmark/harness'
 import { BLOCKING_CHECKS, PROXY_CHECKS, checkStatus, evaluateCase, type BlockingCheckId, type CaseStatus, type CheckResult, type ProxyCheckId } from './checks'
@@ -30,8 +30,12 @@ import { describeSelection, selectCases, type CaseSelection, type SelectionRepor
  * agreement between reviewers, the Shopping Advisor figures, and Style DNA as a condition: every figure that
  * combines cases with and without a profile is marked as pooled, and separate figures per condition are in
  * the metric index. Every /3 field is unchanged.
+ * /5 adds the observations and evidence of analysis-output/3: `quality.visual_evidence` (structural figures and
+ * figures against reviewer garment facts), its figures in the metric index under `visual_evidence.`, and the
+ * blocking `visual_evidence` check. A recording made with an earlier output schema has every such figure
+ * unavailable, never scored as if the blocks were missing. Every /4 field is unchanged.
  */
-export const REPORT_FORMAT = 'verdict-evaluation-report/4'
+export const REPORT_FORMAT = 'verdict-evaluation-report/5'
 
 export type EvaluationMode = 'mock' | 'replay'
 
@@ -77,6 +81,8 @@ export interface EvaluationSummary {
   schema_failures: number
   uncertainty_failures: number
   verdict_integrity_failures: number
+  /** Cases whose observations or evidence were not handled as the case expects (analysis-output/3). */
+  visual_evidence_failures: number
   /** Cases flagged by a proxy check. Proxies are rough textual signals for human review, not measurements of fashion quality. */
   proxy_flags: Record<ProxyCheckId, number>
 }
@@ -183,6 +189,8 @@ export function detailsFromRecording(recording: Recording, cases: BenchmarkCase[
       dimensions: result.dimensions,
       ...(result.outfit_components !== undefined ? { outfit_components: result.outfit_components } : {}),
       ...(result.shopping_advisor !== undefined ? { shopping_advisor: result.shopping_advisor } : {}),
+      ...(result.observations !== undefined ? { observations: result.observations } : {}),
+      ...(result.evidence !== undefined ? { evidence: result.evidence } : {}),
     })
   }
 
@@ -224,6 +232,7 @@ export function summarizeCases(cases: CaseReport[]): EvaluationSummary {
     schema_failures: failuresByCheck.schema_validity,
     uncertainty_failures: failuresByCheck.uncertainty,
     verdict_integrity_failures: failuresByCheck.verdict_integrity,
+    visual_evidence_failures: failuresByCheck.visual_evidence,
     proxy_flags: count(PROXY_CHECKS, (check) => cases.filter((entry) => checkStatus(entry, check) === 'fail').length),
   }
 }
@@ -263,7 +272,9 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   const references = summarizeReferences(referenceSet, cases)
   const resolved = resolveReferences(referenceSet, cases)
   const outputs = recording.provenance === 'model' ? 'model' : 'synthetic_fixture'
-  const quality = computeQuality(details, cases, resolved, outputs)
+  // Outputs recorded with a schema from before observations and evidence existed are never scored as if they had left them out.
+  const carriesVisualEvidence = schemaHasVisualEvidence(recording.schema_version)
+  const quality = computeQuality(details, cases, resolved, outputs, carriesVisualEvidence)
   const summary = summarizeCases(caseReports)
   const composition = describeComposition(allCases)
 
@@ -299,7 +310,7 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
     references,
     quality,
     // The pooled figures, then the same figures for each Style DNA condition on its own (empty unless the cases mix both).
-    metric_index: { ...buildMetricIndex(metrics, quality), ...buildStyleDnaIndex(details, cases, resolved, outputs) },
+    metric_index: { ...buildMetricIndex(metrics, quality), ...buildStyleDnaIndex(details, cases, resolved, outputs, carriesVisualEvidence) },
     next_steps: nextSteps({ provenance: recording.provenance, summary, references, quality, composition }),
     cases: caseReports,
   }
@@ -356,6 +367,15 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
   if (outfit.value !== null && outfit.value < 1) steps.push(`Per-item outfit notes are missing or invalid in part of the outfit runs (completeness ${outfit.value}).`)
   if (quality.multi_image.outfit_items.unexpected_blocks_in_other_modes > 0) steps.push('Some single-garment or multi-view runs returned per-item outfit notes, where none are expected.')
   if (quality.multi_image.comparison_groups.groups === 0 && reviewed > 0) steps.push('No comparison group links a single photo to several photos of the same garment, so the two cannot be compared yet.')
+
+  const visual = quality.visual_evidence
+  if (visual.applicable) {
+    const usable = visual.structural.observations_valid_rate.value
+    if (usable !== null && usable < 1) steps.push(`Observations are missing or invalid in part of the runs (usable ${usable}). The ratings and the verdict are unaffected; the report shows them as unavailable.`)
+    const citations = visual.structural.invalid_citation_rate.value
+    if (citations !== null && citations > 0) steps.push(`Some runs cite observations that do not exist or were not visible (${citations}). That evidence is dropped, never shown.`)
+    if (visual.by_tier.image_reviewed.cases === 0 && provenance === 'model') steps.push('No image-reviewed case records garment facts (garment type, colour families, pattern, details), so observations cannot be compared with a human review yet.')
+  }
 
   const advisor = quality.shopping_advisor
   if (advisor.availability_rate.value !== null && advisor.availability_rate.value < 1) steps.push(`With Style DNA, the advisor block is missing or invalid in part of the runs (availability ${advisor.availability_rate.value}). The verdict is unaffected; the report shows no alternatives for those runs.`)
