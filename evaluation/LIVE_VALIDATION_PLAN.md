@@ -25,8 +25,8 @@ about the multi-image modes was built against mocks and synthetic fixtures.
 1. Human-reviewed cases exist in `evaluation/datasets/golden-v1/` and pass
    `npm run eval:references` with `--images` (`evaluation/HUMAN_REVIEW.md`).
 2. The cases use `public_license` images. Model output for `owned` and
-   `approved_volunteer` photos is withheld from recordings and cannot be scored
-   (see "Open decision" in `HUMAN_REVIEW.md`).
+   `approved_volunteer` photos is withheld from recordings and is not scored
+   (see "Decisions" in `HUMAN_REVIEW.md`).
 3. A dry run of the exact manifest has printed the worst-case cost, and that
    figure is inside the approved cap.
 4. Explicit approval for the run, naming the model, the number of runs per case

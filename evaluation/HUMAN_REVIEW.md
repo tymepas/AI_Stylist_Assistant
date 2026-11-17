@@ -45,8 +45,9 @@ real model outputs: hand-written fixture outputs are never scored against them.
 
 One limit to know about: the recorder does not store model output for `owned`
 and `approved_volunteer` photos, because the text describes a real person. Those
-cases therefore cannot be scored today. Only `public_license` cases can. Changing
-that is a privacy decision that has not been made (see "Open decision" below).
+cases therefore cannot be scored. Only `public_license` cases are scored. That is
+the current decision (see "Decisions" below): build the first golden dataset
+from public-licence images.
 
 ## Workflow
 
@@ -263,14 +264,34 @@ of one kind tell you about that kind only.
   sure it has to be a deliberate, attributable one: a named reviewer, a date and
   the hash of the file.
 
-## Open decision
+## Decisions
 
-Model output for `owned` and `approved_volunteer` photos is withheld from
-recordings, so those cases cannot be scored. Three ways forward, none of them
-taken yet:
+### Decided: only public-licence cases are scored, for now
 
-1. Store only the enumerated values for those cases (ratings, confidence and
-   outfit garment types) and no text. Ratings could then be scored; grounding
-   could not.
-2. Build the golden dataset from `public_license` images only.
-3. Keep full outputs for your own photos, locally, by explicit choice.
+Decided on 2026-11-17. Model output for `owned` and `approved_volunteer` photos
+stays withheld from recordings, because the text describes a real person. Those
+cases are counted as withheld and are not scored. The first golden dataset is
+therefore built from `public_license` images.
+
+Nothing in the code needs to change for this: it is how the recorder already
+behaves. Two alternatives were considered and not taken. Either would be a
+privacy change and needs its own decision:
+
+- store only the enumerated values for those cases (ratings, confidence, outfit
+  garment types) and no text, so that ratings could be scored and grounding
+  could not;
+- keep full outputs for your own photos, locally, by explicit choice.
+
+### Open: the `style` and `style_preference_match` dimensions overlap
+
+The system prompt defines `style` as "does the garment align with the user's
+stated style preference" and `style_preference_match` as naming a conflict with
+that same preference. The product shows `style` as "Style consistency" and gives
+it no weight in the verdict.
+
+This is a product decision, not an evaluation setting. The prompt is not changed
+by this framework. Until it is decided, reviewers rate `style` as the prompt
+defines it (see the rubric above), and agreement on the two dimensions is
+expected to move together. Any change to the prompt needs its own approval and a
+new recording, because a prompt change makes earlier recordings a different
+prompt version.

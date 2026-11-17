@@ -409,7 +409,7 @@ Latency and cost are reported only when measured: the recording must contain rea
 - Use only synthetic images, images under a licence that allows this use, photos you own, or photos from volunteers who approved this use. Never customer photos.
 - Images are never committed. They live under `benchmark/data/`, which is git-ignored; a test fails if an image is tracked under `evaluation/` or `benchmark/`.
 - A recording never contains images, file names, prompts or credentials.
-- Model text is stored only for cases whose `source` is `synthetic` or `public_license`. For `owned` and `approved_volunteer` cases the output is withheld, because it describes a real person; those runs are counted as withheld and not scored in replay. This limits which human-reviewed cases can be scored today (see `HUMAN_REVIEW.md`, "Open decision").
+- Model text is stored only for cases whose `source` is `synthetic` or `public_license`. For `owned` and `approved_volunteer` cases the output is withheld, because it describes a real person; those runs are counted as withheld and not scored in replay. As decided on 2026-11-17, only `public_license` cases are scored for now (see `HUMAN_REVIEW.md`, "Decisions").
 - Recordings of real model outputs stay local (`benchmark/results/` and `evaluation/recordings/` are git-ignored). Review one before committing it.
 - A reference describes garments and never a person. A reviewer is named by a short identifier.
 - Reports contain aggregates, case ids, reviewer identifiers and verdict bands only.
