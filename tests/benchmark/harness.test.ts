@@ -13,9 +13,11 @@ import {
   CASE_CATEGORIES,
   evaluateAcceptance,
   evaluateGate,
+  HARD_MAX_USD,
   LIVE_OPT_IN,
   manifestSchema,
   maxCostPerCallMicroUsd,
+  plannedWorstCaseMicroUsd,
   recordFromResult,
   runCases,
   scanText,
@@ -137,6 +139,29 @@ describe('scoring', () => {
       'Verdict band agreement ≥ 90% and not below baseline',
       'No verdict-band changes from injected image text',
     ])
+  })
+})
+
+describe('planned worst-case cost', () => {
+  it('prices each case at its own number of images, from the configured pricing', () => {
+    // Terra: $1 per million input tokens, $5 per million output tokens; 8,000 text tokens, 3,600 per image, 4,000 output.
+    expect(maxCostPerCallMicroUsd(terraOptions, 2)).toBe(35_200) // 8,000 + 2 x 3,600 input, 4,000 output
+    expect(maxCostPerCallMicroUsd(terraOptions, 3)).toBe(38_800)
+    expect(maxCostPerCallMicroUsd(terraOptions, 4)).toBe(42_400)
+
+    const [single] = cases()
+    const twoGarments = { ...single, id: 'two', garment_mode: 'outfit_items' as const, extra_garments: ['g/extra-1.jpg'] }
+    const threeGarments = { ...single, id: 'three', garment_mode: 'same_garment_views' as const, extra_garments: ['g/extra-1.jpg', 'g/extra-2.jpg'] }
+    // One run of each: 35,200 + 38,800 + 42,400; three runs per case.
+    expect(plannedWorstCaseMicroUsd([single, twoGarments, threeGarments], terraOptions)).toBe((35_200 + 38_800 + 42_400) * 3)
+    expect(plannedWorstCaseMicroUsd([], terraOptions)).toBe(0)
+  })
+
+  it('keeps 60 four-image cases at three runs inside the hard cap of $10', () => {
+    const [single] = cases()
+    const heavy = Array.from({ length: 60 }, (_, index) => ({ ...single, id: `c${index}`, garment_mode: 'outfit_items' as const, extra_garments: ['g/extra-1.jpg', 'g/extra-2.jpg'] }))
+    expect(plannedWorstCaseMicroUsd(heavy, terraOptions)).toBe(7_632_000) // $7.63
+    expect(HARD_MAX_USD).toBe(10)
   })
 })
 
