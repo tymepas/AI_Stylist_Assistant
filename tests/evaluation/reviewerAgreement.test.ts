@@ -388,7 +388,7 @@ describe('the second-review tool', () => {
       const sent = buildUserContext('Client Meeting', { preferredStyles: [], favoriteColors: [], occasionPreferences: [] }, validateAIStyleProfile(personas.PERSONAS[persona]))
       for (const line of dna.context) expect(sent).toContain(line.slice(line.indexOf(': ') + 2))
       // And everything the request says about the profile is on the sheet.
-      const sentLines = sent.split('\n').filter((line) => line.startsWith('AI-analyzed'))
+      const sentLines = sent.split('\n').filter((line) => /^Style DNA (coloring|aesthetic|proportions)/.test(line))
       expect(dna.context).toHaveLength(sentLines.length)
     }
   })

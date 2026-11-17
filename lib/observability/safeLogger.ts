@@ -54,11 +54,15 @@ export interface SafeLogFields {
   retry_after_s?: number
   issue_count?: number
   issue_paths?: string[]
+  /** Fixed problem codes of an informational block that was dropped, for example `invalid_citation`. Never text. */
+  problem_codes?: string[]
+  /** How many of the six dimensions kept their evidence. */
+  dimension_count?: number
 }
 
 const NUMBER_FIELDS = new Set<keyof SafeLogFields>([
   'duration_ms', 'http_status', 'input_tokens', 'output_tokens', 'total_tokens', 'cached_tokens',
-  'reasoning_tokens', 'cost_micro_usd', 'reserved_micro_usd', 'retry_after_s', 'issue_count',
+  'reasoning_tokens', 'cost_micro_usd', 'reserved_micro_usd', 'retry_after_s', 'issue_count', 'dimension_count',
 ])
 const STRING_FIELDS = new Set<keyof SafeLogFields>([
   'request_id', 'endpoint', 'operation', 'model', 'reasoning_effort', 'outcome', 'config_issue', 'error_code', 'error_name',
@@ -145,6 +149,11 @@ function sanitizeFields(fields: SafeLogFields): Record<string, unknown> {
         .filter((item): item is string => typeof item === 'string')
         .slice(0, MAX_ISSUE_PATHS)
         .map((item) => scrubString(item, 80))
+    } else if (key === 'problem_codes' && Array.isArray(value)) {
+      // Codes only: anything that is not a short lower-case identifier is dropped, so no text can pass through.
+      output.problem_codes = value
+        .filter((item): item is string => typeof item === 'string' && /^[a-z_]{1,40}$/.test(item))
+        .slice(0, MAX_ISSUE_PATHS)
     } else if (NUMBER_FIELDS.has(key) && typeof value === 'number' && Number.isFinite(value)) {
       output[key] = value
     } else if (STRING_FIELDS.has(key) && typeof value === 'string') {

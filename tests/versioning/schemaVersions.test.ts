@@ -12,6 +12,8 @@ import { aiStyleProfileResultSchema, PROFILE_OUTPUT_SCHEMA_VERSION } from '@/lib
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION, rawOpenAIAnalysisSchema } from '@/lib/services/openai/openAIAnalysisSchema'
 import { outfitComponentsPayloadSchema } from '@/lib/services/openai/outfitComponentsSchema'
 import { shoppingAdvisorPayloadSchema } from '@/lib/services/openai/shoppingRecommendationSchema'
+import { observationsPayloadSchema } from '@/lib/services/openai/observationsSchema'
+import { dimensionEvidenceSchema, evidencePayloadSchema } from '@/lib/services/openai/ratingEvidenceSchema'
 import { describeSchema, schemaFingerprint } from '../helpers/zodFingerprint'
 
 /** version → fingerprint. Add a new line when a schema changes; never edit an old one. */
@@ -19,6 +21,8 @@ const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   'analysis-output/1': '2e81c731e418',
   // Adds the optional outfit_components block (several outfit items) and its schema.
   'analysis-output/2': '2bf1446af120',
+  // Adds the optional observations and evidence blocks (Phase 4 Milestone 1) and their schemas.
+  'analysis-output/3': '50d64a1397d2',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {

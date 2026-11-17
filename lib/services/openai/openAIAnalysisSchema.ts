@@ -34,6 +34,10 @@ const completeAnalysisSchema = z.object({
   // Per-item notes for an outfit of several garment images. Advisory, validated
   // separately for the same reason (lib/services/openai/outfitComponentsSchema.ts).
   outfit_components: z.unknown().optional(),
+  // What is visible in each garment image, and what each rating rests on. Informational, validated
+  // separately for the same reason (observationsSchema.ts, ratingEvidenceSchema.ts).
+  observations: z.unknown().optional(),
+  evidence: z.unknown().optional(),
 }).strict()
 
 const unableToAnalyzeSchema = z.object({
@@ -52,8 +56,18 @@ const unableToAnalyzeSchema = z.object({
  * - analysis-output/1: ratings plus the optional shopping advisor.
  * - analysis-output/2: adds the optional `outfit_components` block for outfits
  *   made of several garment images. Every /1 output is still a valid /2 output.
+ * - analysis-output/3: adds the optional `observations` block (what is visible in
+ *   each garment image) and the optional `evidence` block (what each rating rests
+ *   on). Both are informational and validated separately. Every /2 output is still
+ *   a valid /3 output; it simply has neither block.
  */
-export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/2'
+export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/3'
+
+/** Schema versions whose outputs are expected to carry `observations` and `evidence`. */
+export function schemaHasVisualEvidence(version: string): boolean {
+  const match = /^analysis-output\/(\d+)$/.exec(version)
+  return match !== null && Number(match[1]) >= 3
+}
 
 export const rawOpenAIAnalysisSchema = z.discriminatedUnion('status', [
   completeAnalysisSchema,

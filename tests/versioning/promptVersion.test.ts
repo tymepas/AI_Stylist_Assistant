@@ -30,7 +30,8 @@ const PROFILE_PROMPT = readFileSync(path.join(process.cwd(), 'memory', 'STYLE_PR
  * meant to be a deliberate, reviewed event: when one is intended, update the
  * value here in the same change so the new version is visible in the diff.
  */
-const CURRENT_ANALYSIS_PROMPT_VERSION = '3c78bd7bbd3b'
+// Phase 4 Milestone 1 (observations and evidence, analysis-output/3). Was 3c78bd7bbd3b.
+const CURRENT_ANALYSIS_PROMPT_VERSION = 'e5ea8ad7c9ff'
 const CURRENT_PROFILE_PROMPT_VERSION = 'fce6c25bb5cf'
 
 const originalEnv = { ...process.env }
@@ -81,7 +82,7 @@ describe('analysis prompt version', () => {
     const template = buildUserContext('<occasion>', EMPTY_PROFILE)
     const withProfile = buildUserContext('<occasion>', EMPTY_PROFILE, VALID_COMPLETE_PROFILE)
     expect(template).toContain('Return one JSON object only.')
-    expect(withProfile).toContain('AI-analyzed coloring context')
+    expect(withProfile).toContain('Style DNA coloring (for color)')
     // The version is exactly the fingerprint of the system prompt and both message forms.
     const placeholderProfile = {
       coloring: { skin_tone_depth: '<depth>', skin_tone_undertone: '<undertone>', hair_color: '<hair>', high_contrast: false },

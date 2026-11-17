@@ -24,12 +24,16 @@ import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
 
 const SYSTEM_PROMPT = readFileSync(path.join(process.cwd(), 'memory', 'SYSTEM_PROMPT.md'), 'utf8')
 const EMPTY_PROFILE = { preferredStyles: [], favoriteColors: [], occasionPreferences: [] }
+const lines = (text: string): string[] => text.split(/\r?\n/)
+const firstLine = (text: string): string => lines(text)[0]
 
 // Recorded versions of the prompt template for each garment mode. A change to any instruction
 // line of a mode changes its version; update the value here so the change is visible in review.
-const SINGLE_PROMPT_VERSION = '3c78bd7bbd3b' // unchanged since before multiple garment images existed
-const VIEWS_PROMPT_VERSION = '26de11106f0a'
-const OUTFIT_PROMPT_VERSION = 'ff754a0c0e59'
+// Changed in Phase 4 Milestone 1 (analysis-output/3, observations and evidence). Before: single 3c78bd7bbd3b,
+// views 26de11106f0a, outfit ff754a0c0e59. A recording made with one of those can never carry these.
+const SINGLE_PROMPT_VERSION = 'e5ea8ad7c9ff'
+const VIEWS_PROMPT_VERSION = '9d13c5a01b5c'
+const OUTFIT_PROMPT_VERSION = '0aea6b2a2286'
 
 describe('garment mode rules', () => {
   it('has exactly three modes and at most three garment images', () => {
@@ -71,56 +75,65 @@ describe('garment mode rules', () => {
 })
 
 describe('prompt context per garment mode', () => {
-  it('adds nothing for a single garment image: the prompt is byte for byte what it was', () => {
-    const before = buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE)
-    expect(buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE, { mode: 'single', count: 1 })).toBe(before)
-    expect(buildAnalysisContent(before, 'data:photo', 'data:garment')).toEqual(buildAnalysisContent(before, 'data:photo', ['data:garment'], 'single'))
-    expect(before).not.toMatch(/Garment images:|outfit_components/)
+  // analysis-output/3 (Phase 4 Milestone 1): every fixed rule is in the system prompt, stated once. The user
+  // message names the image mode explicitly in EVERY mode, a single garment image included, and carries the data.
+  it('names the image mode in every mode, a single garment image included', () => {
+    expect(buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE)).toBe(buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE, { mode: 'single', count: 1 }))
+    expect(firstLine(buildUserContext('Office Work', EMPTY_PROFILE))).toBe('Image mode: single. Garment image 1 shows one garment.')
+    expect(buildAnalysisContent('c', 'data:photo', 'data:garment')).toEqual(buildAnalysisContent('c', 'data:photo', ['data:garment'], 'single'))
   })
 
-  it('tells the model that several views show one garment, and how to handle views that disagree', () => {
+  it('tells the model that several views show one garment, and asks for the views entry', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'same_garment_views', count: 2 })
-    expect(text).toMatch(/the 2 garment images show different views of ONE garment/)
-    expect(text).toMatch(/Do not treat them as separate garments or as an outfit/)
-    expect(text).toMatch(/do not appear to show the same item, say so in the affected reasons and lower the confidence/)
-    expect(text).not.toMatch(/outfit_components/)
+    expect(firstLine(text)).toBe('Image mode: same_garment_views. Garment images 1 to 2 are views of ONE garment; include views.')
+    expect(text).not.toContain('outfit_components')
+    expect(SYSTEM_PROMPT).toContain('same_garment_views: views of ONE garment. Use them together as evidence about one item, never as separate garments.')
+    expect(SYSTEM_PROMPT).toContain('same_garment_views only: views {"same_garment":"yes|no|unclear","conflicts":""}; explain conflicts unless yes.')
   })
 
   it('tells the model that several items form one outfit, and asks for advisory per-item notes', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'outfit_items', count: 3 })
-    expect(text).toMatch(/the 3 garment images show 3 DIFFERENT items worn together as one outfit/)
-    expect(text).toMatch(/Rate every dimension for the combined outfit as a whole/)
-    expect(text).toMatch(/add "outfit_components" to the "complete" shape: one object per garment image, in image order/)
-    expect(text).toMatch(/advisory only and never replaces or changes the six ratings/)
-    for (const assessment of OUTFIT_COMPONENT_ASSESSMENTS) expect(text).toContain(assessment)
+    expect(firstLine(text)).toBe('Image mode: outfit_items. Garment images 1 to 3 are 3 DIFFERENT items worn together; include outfit_components.')
+    expect(SYSTEM_PROMPT).toContain('outfit_items: DIFFERENT items worn together. Rate the outfit as a whole.')
+    expect(SYSTEM_PROMPT).toContain('outfit_items only: outfit_components, one per garment image in order')
+    expect(SYSTEM_PROMPT).toContain('Advisory blocks never change a rating.')
+    for (const assessment of OUTFIT_COMPONENT_ASSESSMENTS) expect(SYSTEM_PROMPT).toContain(assessment)
   })
 
-  it('keeps every existing rule, and the closing line last, in every mode', () => {
+  it('keeps every rule in the system prompt once, and the closing line last in every mode', () => {
     for (const garments of [undefined, { mode: 'same_garment_views' as const, count: 3 }, { mode: 'outfit_items' as const, count: 2 }]) {
       const text = buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE, garments)
-      expect(text).toMatch(/Do not return an overall verdict, recommendation, verdict score/)
-      expect(text).toMatch(/Never estimate a future verdict score, calculate a verdict/)
       expect(text.endsWith('Return one JSON object only.')).toBe(true)
+      // No rule is repeated in the message: the message holds the mode and the data only.
+      expect(text).not.toMatch(/shopping_advisor|recommendations|rating|confidence|observations|evidence/)
     }
+    expect(SYSTEM_PROMPT).toContain('You never decide the overall verdict: the application calculates it from your six ratings.')
+    expect(SYSTEM_PROMPT).toContain('Add no field beyond the shapes below: no verdict, score or recommendation.')
+    expect(SYSTEM_PROMPT).toContain('No score estimate, retailers, links, price, stock, discounts, brand, material quality, durability or comfort.')
   })
 
-  it('never puts a verdict field into the shape it asks for', () => {
-    const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'outfit_items', count: 3 })
-    const shape = text.split('\n').find((line) => line.includes('add "outfit_components"')) as string
-    expect(shape).toContain('{"item":1,"garment_type":"","assessment":"","note":""}')
-    expect(shape).not.toMatch(/verdict|score|recommendation/i)
+  it('never puts a verdict field into the output shapes it asks for', () => {
+    const shapes = lines(SYSTEM_PROMPT).filter((line) => line.startsWith('Complete: ') || line.startsWith('Unable: ') || line.startsWith('outfit_items only:'))
+    expect(shapes).toHaveLength(3)
+    for (const shape of shapes) expect(shape).not.toMatch(/verdict|score|"recommendation"/i)
   })
 
-  it('labels every garment image by position and role', () => {
-    const labels = (mode: 'same_garment_views' | 'outfit_items', count: number) =>
+  it('no longer refers to a schema document the model never receives', () => {
+    expect(SYSTEM_PROMPT).not.toContain('AI_OUTPUT_SCHEMA')
+    expect(SYSTEM_PROMPT).not.toContain('.md')
+  })
+
+  it('labels every garment image by number and role', () => {
+    const labels = (mode: 'single' | 'same_garment_views' | 'outfit_items', count: number) =>
       buildAnalysisContent('context', 'data:photo', Array.from({ length: count }, (_, i) => `data:g${i}`), mode).filter((part) => part.type === 'input_text').map((part) => (part as { text: string }).text)
-    expect(labels('same_garment_views', 2)).toEqual(['context', 'Person image:', 'Garment image 1 of 2 (a view of the same garment):', 'Garment image 2 of 2 (a view of the same garment):'])
-    expect(labels('outfit_items', 3)).toEqual(['context', 'Person image:', 'Garment image 1 of 3 (outfit item 1):', 'Garment image 2 of 3 (outfit item 2):', 'Garment image 3 of 3 (outfit item 3):'])
+    expect(labels('single', 1)).toEqual(['context', 'Person image:', 'Garment image 1:'])
+    expect(labels('same_garment_views', 2)).toEqual(['context', 'Person image:', 'Garment image 1 of 2 (view):', 'Garment image 2 of 2 (view):'])
+    expect(labels('outfit_items', 3)).toEqual(['context', 'Person image:', 'Garment image 1 of 3 (item):', 'Garment image 2 of 3 (item):', 'Garment image 3 of 3 (item):'])
   })
 })
 
 describe('prompt version per garment mode', () => {
-  it('is unchanged for a single garment image', async () => {
+  it('matches the recorded version for a single garment image', async () => {
     expect(computeAnalysisPromptVersion(SYSTEM_PROMPT)).toBe(SINGLE_PROMPT_VERSION)
     expect(computeAnalysisPromptVersion(SYSTEM_PROMPT, 'single')).toBe(SINGLE_PROMPT_VERSION)
     await expect(getAnalysisPromptVersion()).resolves.toBe(SINGLE_PROMPT_VERSION)
@@ -210,9 +223,10 @@ describe('cost bounds with several images', () => {
       coloring: { ...VALID_COMPLETE_PROFILE.coloring, hair_color: '\u{1F600}'.repeat(20), skin_tone_depth: 'medium light' as const },
       style_keywords: (['Minimalist', 'Streetwear', 'Bohemian', 'Romantic', 'Eclectic'] as const).map((keyword) => ({ keyword, confidence: 'High' as const, source: 'observed' as const })),
     }
-    for (const mode of ['same_garment_views', 'outfit_items'] as const) {
-      const context = buildUserContext(occasion, styleProfile, aiProfile, { mode, count: MAX_GARMENT_IMAGES })
-      const labels = buildAnalysisContent('', 'p', ['a', 'b', 'c'], mode).filter((part) => part.type === 'input_text').map((part) => (part as { text: string }).text).join('')
+    for (const mode of GARMENT_MODES) {
+      const count = mode === 'single' ? 1 : MAX_GARMENT_IMAGES
+      const context = buildUserContext(occasion, styleProfile, aiProfile, { mode, count })
+      const labels = buildAnalysisContent('', 'p', Array.from({ length: count }, () => 'a'), mode).filter((part) => part.type === 'input_text').map((part) => (part as { text: string }).text).join('')
       const textBytes = utf8ByteLength(SYSTEM_PROMPT) + utf8ByteLength(context) + utf8ByteLength(labels) + 200
       for (const model of SUPPORTED_MODEL_IDS) {
         expect({ mode, model, fits: textBytes <= resolveModelConfig(model)!.operations.analysis.maxTextInputTokens }).toEqual({ mode, model, fits: true })

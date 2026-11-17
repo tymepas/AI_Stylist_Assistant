@@ -48,6 +48,77 @@ export interface CompleteAnalysisResult {
   garment_mode?: GarmentMode
   /** Per-item notes for an outfit of several items. Advisory only; never part of the verdict. */
   outfit_components?: OutfitComponents
+  /** What was visible in each garment image. Informational only; never part of the verdict. Absent in results from before analysis-output/3. */
+  observations?: Observations
+  /** Which inputs and observations support each rating. Informational only; never part of the verdict. Absent in results from before analysis-output/3. */
+  evidence?: RatingEvidence
+}
+
+// ---------------------------------------------------------------------------
+// Phase 4 Milestone 1 - Visual observations and rating evidence
+// ---------------------------------------------------------------------------
+
+/**
+ * How far something could be seen. `observed`: clearly visible. `uncertain`:
+ * visible, but lighting, angle or occlusion leaves doubt. `not_visible`: it
+ * cannot be seen in the image. "Unable to Evaluate" stays a rating, not an
+ * observation status.
+ */
+export type ObservationStatus = 'observed' | 'uncertain' | 'not_visible'
+
+/** Broad colour families. Exact shade names are never claimed. */
+export type ColourFamily =
+  | 'black' | 'white' | 'cream' | 'grey' | 'beige' | 'brown' | 'red' | 'pink' | 'orange'
+  | 'yellow' | 'green' | 'blue' | 'navy' | 'purple' | 'gold' | 'silver' | 'multicolour'
+
+export type PatternObservation = 'solid' | 'striped' | 'checked' | 'printed' | 'textured' | 'other' | 'unclear'
+
+/** What limited an image, in fixed categories, so the report can say it plainly. */
+export type ImageLimitation = 'lighting' | 'occlusion' | 'cropped' | 'blur' | 'low_resolution' | 'angle' | 'image_text' | 'several_items'
+
+export type ObservedGarmentCategory = ShoppingGarmentCategory | 'unclear'
+
+/** What was visible in one garment image. One entry per image, never one for several items. */
+export interface GarmentObservation {
+  /** Number of the garment image, starting at 1. */
+  image: number
+  /** A short plain name such as "blazer". Null when the garment cannot be identified. */
+  garment: string | null
+  category: ObservedGarmentCategory
+  identification: ObservationStatus
+  colours: { dominant: ColourFamily[]; secondary: ColourFamily[] }
+  colour_status: ObservationStatus
+  pattern: PatternObservation
+  /** Clearly visible features, at most three, each a few words. */
+  details: string[]
+  limits: ImageLimitation[]
+}
+
+export interface Observations {
+  /** `unavailable` when the model output was missing or did not pass validation. Nothing is filled in on its behalf. */
+  availability: 'available' | 'unavailable'
+  images: GarmentObservation[]
+  /** Only for views of one garment: whether the views appear to show the same garment. */
+  views?: { same_garment: 'yes' | 'no' | 'unclear'; conflicts?: string }
+}
+
+export type EvidenceSource = 'person_photo' | 'garment_images' | 'occasion' | 'style_preferences' | 'style_dna'
+export type EvidenceSupport = 'sufficient' | 'partial' | 'insufficient'
+
+/** What one rating rests on. It explains the rating; it never changes it. */
+export interface DimensionEvidence {
+  sources: EvidenceSource[]
+  /** References to observations, for example "g1.colour" or "g2.d1". Each one exists and was visible. */
+  cites: string[]
+  support: EvidenceSupport
+  /** What was missing or unclear. Present whenever the support is not sufficient. */
+  missing?: string
+}
+
+export interface RatingEvidence {
+  /** `available`: all six dimensions. `partial`: some. `unavailable`: none passed validation. */
+  availability: 'available' | 'partial' | 'unavailable'
+  dimensions: Partial<Record<keyof Dimensions, DimensionEvidence>>
 }
 
 /** How one item works within a multi-item outfit. A qualitative label, not a rating, a score or a verdict. */

@@ -197,12 +197,13 @@ describe('what is sent to the model provider', () => {
 })
 
 describe('a single garment image (the request every existing client sends)', () => {
-  it('works without a garment mode and returns the response shape it always had', async () => {
+  it('works without a garment mode and returns the response shape it always had, plus the two informational blocks', async () => {
     const response = await post('analyze', analyzeForm())
     const body = await response.json()
     expect(response.status).toBe(200)
     expect(body).toMatchObject({ status: 'complete', overall_recommendation: 'Recommended', verdict_score: 4 })
-    expect(Object.keys(body).sort()).toEqual(['analysis_based_on', 'dimensions', 'next_step', 'overall_recommendation', 'shopping_advisor', 'status', 'things_to_consider', 'verdict_score'])
+    // analysis-output/3 adds `observations` and `evidence`. Both are informational and never part of the verdict.
+    expect(Object.keys(body).sort()).toEqual(['analysis_based_on', 'dimensions', 'evidence', 'next_step', 'observations', 'overall_recommendation', 'shopping_advisor', 'status', 'things_to_consider', 'verdict_score'])
   })
 
   it('accepts the explicit mode "single" with the same result', async () => {
@@ -211,12 +212,13 @@ describe('a single garment image (the request every existing client sends)', () 
     expect(body.outfit_components).toBeUndefined()
   })
 
-  it('sends the same message structure as before multiple images existed', async () => {
+  it('sends the same message structure, with the garment image numbered and the mode named', async () => {
     await post('analyze', analyzeForm())
     const content = sentContent(fetchMock)
     expect(content.map((part) => part.type)).toEqual(['input_text', 'input_text', 'input_image', 'input_text', 'input_image'])
-    expect([content[1].text, content[3].text]).toEqual(['Person image:', 'Garment image:'])
-    expect(content[0].text).not.toMatch(/Garment images:|outfit_components/)
+    expect([content[1].text, content[3].text]).toEqual(['Person image:', 'Garment image 1:'])
+    expect(content[0].text).toMatch(/^Image mode: single\. Garment image 1 shows one garment\./)
+    expect(content[0].text).not.toMatch(/outfit_components|include views/)
   })
 })
 
@@ -272,12 +274,11 @@ describe('views of one garment', () => {
     expect(content.filter((part) => part.type === 'input_image')).toHaveLength(4)
     expect(content.filter((part) => part.type === 'input_text').map((part) => part.text).slice(1)).toEqual([
       'Person image:',
-      'Garment image 1 of 3 (a view of the same garment):',
-      'Garment image 2 of 3 (a view of the same garment):',
-      'Garment image 3 of 3 (a view of the same garment):',
+      'Garment image 1 of 3 (view):',
+      'Garment image 2 of 3 (view):',
+      'Garment image 3 of 3 (view):',
     ])
-    expect(content[0].text).toMatch(/the 3 garment images show different views of ONE garment/)
-    expect(content[0].text).toMatch(/Do not treat them as separate garments or as an outfit/)
+    expect(content[0].text).toMatch(/^Image mode: same_garment_views\. Garment images 1 to 3 are views of ONE garment; include views\./)
     expect(content[0].text).not.toMatch(/outfit_components/)
   })
 
@@ -307,13 +308,11 @@ describe('items of one outfit', () => {
     const content = sentContent(fetchMock)
     expect(content.filter((part) => part.type === 'input_text').map((part) => part.text).slice(1)).toEqual([
       'Person image:',
-      'Garment image 1 of 3 (outfit item 1):',
-      'Garment image 2 of 3 (outfit item 2):',
-      'Garment image 3 of 3 (outfit item 3):',
+      'Garment image 1 of 3 (item):',
+      'Garment image 2 of 3 (item):',
+      'Garment image 3 of 3 (item):',
     ])
-    expect(content[0].text).toMatch(/3 DIFFERENT items worn together as one outfit/)
-    expect(content[0].text).toMatch(/"outfit_components"/)
-    expect(content[0].text).toMatch(/advisory only/)
+    expect(content[0].text).toMatch(/^Image mode: outfit_items\. Garment images 1 to 3 are 3 DIFFERENT items worn together; include outfit_components\./)
     expect((content[0].text as string).trim().endsWith('Return one JSON object only.')).toBe(true)
   })
 
