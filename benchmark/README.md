@@ -27,8 +27,16 @@ garment, product claims on a tag, and an insufficient-input case.
 BENCHMARK_MODEL=gpt-6.1-terra npm run benchmark
 ```
 
-Validates the manifest and every image, then prints the worst-case cost. Network
-access is disabled inside the run.
+Validates the manifest and every image, then prints the worst-case cost, with
+each case priced at its own number of images. Network access is disabled inside
+the run.
+
+For the human-reviewed golden dataset, point the same command at its manifest
+and image directory (see `evaluation/HUMAN_REVIEW.md`):
+
+```bash
+BENCHMARK_MODEL=gpt-6.1-terra BENCHMARK_CASES=evaluation/datasets/golden-v1/cases.json BENCHMARK_DATA_DIR=benchmark/data/golden-v1 npm run benchmark
+```
 
 ## 3. Live run (billable; needs separate approval)
 
@@ -66,6 +74,14 @@ Each live run writes three files to `benchmark/results/`:
 
 In the review sheet, a reviewer marks hallucinations against each case's
 `key_facts` and confirms or dismisses screening hits.
+
+To score a recording against human-reviewed references (per-dimension agreement,
+grounding, confidence calibration, image modes), replay it with a reference set.
+Replay is free and repeatable:
+
+```bash
+npm run eval:replay -- --manifest <cases.json> --references <references.json> --recording benchmark/results/<file>.recording.json
+```
 
 Automated metrics are:
 - valid structured output rate;

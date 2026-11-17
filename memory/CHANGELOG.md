@@ -165,3 +165,33 @@ Expanding the occasion list to include "Startup Interview", "Networking Event", 
 - A single-garment request: same request, same prompt version, same response shape
 - Shopping Advisor as advice only, with its four qualitative match levels and the Myntra, Amazon and Ajio search links
 - Style DNA as optional
+
+---
+
+## Unreleased - Evaluation Framework 2.0
+
+### Added
+
+- Reference sets with provenance (`verdict-reference-set/1`): reviewer, review date, basis, status, image hashes and the right to use each image. Four tiers keep human-reviewed images apart from brief-derived, synthetic and unreviewed expectations
+- Per-dimension metrics for the six dimensions: exact agreement, agreement within one band, mean absolute error and coverage, each with its sample size and a status (`measured`, `insufficient_sample`, `unavailable`)
+- Explanation grounding against reviewer-listed facts: mentioned and missing facts, contradictions, claims about details that cannot be seen, uncertainty handling. Labelled as a proxy
+- Confidence calibration: agreement by stated confidence, high-confidence error rates, the confidence gap and the ordering of levels
+- Image-mode evaluation: results per garment mode, outfit note completeness, outfit garment type accuracy, comparison groups for one photo against several
+- Metric-level regression classification with a minimum sample and a noise margin, included in baseline protection
+- Run records with a run id and timestamps, kept apart from the deterministic report
+- Human review guide, rubric, stub generator (`npm run eval:review-stubs`) and validator (`npm run eval:references`); `npm run eval:replay`
+- A deliberately degraded fixture that shows a quality regression being detected although no per-case check fails
+
+### Changed
+
+- Evaluation report format `verdict-evaluation-report/3`. Every `/2` field is unchanged; the `scenarios-v1` baseline was refreshed through `npm run eval:baseline`
+- The benchmark dry run prices each case at its own number of images instead of pricing every call as a two-image call
+
+### Preserved
+
+- `computeVerdict`, the system prompts, the output schema, the model configuration and the spend safeguards: no production code changed
+- Mock and replay stay deterministic and free; the evaluation command has no live mode; the $10 benchmark hard cap and its opt-in phrase
+
+### Not measured
+
+- No model accuracy figure exists yet. The golden dataset is empty until real images are reviewed, and scoring them needs a separately approved live run
