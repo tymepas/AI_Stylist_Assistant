@@ -3545,7 +3545,7 @@
     "abstention.false_abstention_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 104,
+      "n": 52,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -3554,9 +3554,9 @@
     "abstention.recall": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 4,
+      "n": 2,
       "needs_references": false,
-      "reason": "Built from 4 unit(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4224,7 +4224,7 @@
     "end_to_end.verdict_band_agreement_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 88,
+      "n": 44,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -4415,7 +4415,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: no comparison group has two cases with ratings",
+      "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -4425,7 +4425,7 @@
       "kind": "bands",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: no comparison group has two cases with ratings",
+      "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -4493,9 +4493,9 @@
     "multi_image.outfit_items.completeness_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 4,
+      "n": 2,
       "needs_references": false,
-      "reason": "Built from 4 unit(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4505,7 +4505,7 @@
       "kind": "rate",
       "n": 2,
       "needs_references": false,
-      "reason": "Built from 2 unit(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4513,9 +4513,9 @@
     "multi_image.outfit_items.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 4,
+      "n": 2,
       "needs_references": false,
-      "reason": "Built from 4 unit(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4585,7 +4585,7 @@
       "kind": "rate",
       "n": 3,
       "needs_references": false,
-      "reason": "Built from 3 unit(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4593,9 +4593,9 @@
     "multi_image.same_garment_views.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 6,
+      "n": 3,
       "needs_references": false,
-      "reason": "Built from 6 unit(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "value": 1
@@ -4672,9 +4672,9 @@
     "multi_image.single.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 98,
+      "n": 49,
       "needs_references": false,
-      "se": 0.02,
+      "se": 0.0283,
       "status": "measured",
       "value": 0.9592
     },
@@ -4744,9 +4744,9 @@
     "validity.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 108,
+      "n": 54,
       "needs_references": false,
-      "se": 0.0182,
+      "se": 0.0257,
       "status": "measured",
       "value": 0.963
     }
@@ -5314,6 +5314,33 @@
         "reference_cases": 0
       }
     },
+    "by_case": {
+      "abstention_recall": {
+        "n": 2,
+        "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0,
+        "status": "insufficient_sample",
+        "value": 1
+      },
+      "false_abstention_rate": {
+        "n": 52,
+        "se": 0,
+        "status": "measured",
+        "value": 0
+      },
+      "valid_output_rate": {
+        "n": 54,
+        "se": 0.0257,
+        "status": "measured",
+        "value": 0.963
+      },
+      "verdict_band_agreement_rate": {
+        "n": 44,
+        "se": 0,
+        "status": "measured",
+        "value": 1
+      }
+    },
     "calibration": {
       "brief_derived": {
         "buckets": {
@@ -5834,7 +5861,7 @@
       "comparison_groups": {
         "cross_mode_rating_consistency": {
           "n": 0,
-          "reason": "Unavailable: no comparison group has two cases with ratings",
+          "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
           "se": null,
           "status": "unavailable",
           "value": null
@@ -5843,7 +5870,7 @@
         "groups": 0,
         "mean_band_shift": {
           "n": 0,
-          "reason": "Unavailable: no comparison group has two cases with ratings",
+          "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
           "se": null,
           "status": "unavailable",
           "value": null
@@ -5851,21 +5878,21 @@
         "multi_minus_single_exact": {
           "brief_derived": {
             "n": 0,
-            "reason": "Unavailable: no comparison group has two cases with ratings",
+            "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
             "se": null,
             "status": "unavailable",
             "value": null
           },
           "image_reviewed": {
             "n": 0,
-            "reason": "Unavailable: no comparison group has two cases with ratings",
+            "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
             "se": null,
             "status": "unavailable",
             "value": null
           },
           "synthetic": {
             "n": 0,
-            "reason": "Unavailable: no comparison group has two cases with ratings",
+            "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
             "se": null,
             "status": "unavailable",
             "value": null
@@ -5948,7 +5975,7 @@
           "cases": 2,
           "repeat_rating_stability": {
             "n": 2,
-            "reason": "Built from 2 unit(s); at least 10 are needed before anything is concluded.",
+            "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
             "se": 0,
             "status": "insufficient_sample",
             "value": 1
@@ -5956,8 +5983,8 @@
           "runs_with_unsupported_claims": 0,
           "scored_runs": 4,
           "valid_output_rate": {
-            "n": 4,
-            "reason": "Built from 4 unit(s); at least 10 are needed before anything is concluded.",
+            "n": 2,
+            "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
             "se": 0,
             "status": "insufficient_sample",
             "value": 1
@@ -6038,7 +6065,7 @@
           "cases": 3,
           "repeat_rating_stability": {
             "n": 3,
-            "reason": "Built from 3 unit(s); at least 10 are needed before anything is concluded.",
+            "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
             "se": 0,
             "status": "insufficient_sample",
             "value": 1
@@ -6046,8 +6073,8 @@
           "runs_with_unsupported_claims": 0,
           "scored_runs": 6,
           "valid_output_rate": {
-            "n": 6,
-            "reason": "Built from 6 unit(s); at least 10 are needed before anything is concluded.",
+            "n": 3,
+            "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
             "se": 0,
             "status": "insufficient_sample",
             "value": 1
@@ -6135,8 +6162,8 @@
           "runs_with_unsupported_claims": 0,
           "scored_runs": 98,
           "valid_output_rate": {
-            "n": 98,
-            "se": 0.02,
+            "n": 49,
+            "se": 0.0283,
             "status": "measured",
             "value": 0.9592
           }
@@ -6144,8 +6171,8 @@
       },
       "outfit_items": {
         "completeness_rate": {
-          "n": 4,
-          "reason": "Built from 4 unit(s); at least 10 are needed before anything is concluded.",
+          "n": 2,
+          "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
           "se": 0,
           "status": "insufficient_sample",
           "value": 1
