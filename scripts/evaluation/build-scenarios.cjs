@@ -31,7 +31,6 @@ const { readFileSync, writeFileSync, mkdirSync } = require('node:fs')
 const path = require('node:path')
 const { styleDna } = require('./style-dna-personas.cjs')
 
-const OUT_DIR = path.resolve(__dirname, '..', '..', 'evaluation', 'datasets', 'scenarios-v1')
 const DIMENSIONS = ['occasion', 'color', 'formality', 'seasonality', 'style', 'style_preference_match']
 const RATING = { E: 'Excellent', G: 'Good', F: 'Fair', P: 'Poor', U: 'Unable to Evaluate' }
 const CONFIDENCE = { H: 'High', M: 'Medium', L: 'Low' }
@@ -458,6 +457,6 @@ function main() {
   return 0
 }
 
-module.exports = { build, CASES, V2_CASES, DATASET_CASES, OUT_DIR, datasetDir }
+module.exports = { build, CASES, V2_CASES, DATASET_CASES, datasetDir }
 
 if (require.main === module) process.exit(main())

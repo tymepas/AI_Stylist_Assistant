@@ -325,12 +325,12 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
     steps.push('No image-reviewed case was rated by a second reviewer. Every agreement figure rests on one person\'s judgement: have a second person rate at least some cases, independently, before treating a difference as a model error (evaluation/HUMAN_REVIEW.md).')
   } else if (reviewers.disagreements.length > 0) {
     const severe = reviewers.disagreements.filter((entry) => entry.severe.length > 0).length
-    steps.push(`Reviewers differ from each other on ${reviewers.disagreements.length} of ${reviewers.cases} twice-reviewed case(s) (${severe} by two bands or more): ${reviewers.disagreements.slice(0, 5).map((entry) => entry.case_id).join(', ')}${reviewers.disagreements.length > 5 ? ' and others' : ''}. On those dimensions a model rating that differs from the first reviewer is not established as an error.`)
+    steps.push(`Reviewers differ from each other on ${reviewers.disagreements.length} of ${reviewers.cases} twice-reviewed case(s) (${severe} far apart: two bands or more, or one reviewer could not judge): ${reviewers.disagreements.slice(0, 5).map((entry) => entry.case_id).join(', ')}${reviewers.disagreements.length > 5 ? ' and others' : ''}. On those dimensions a model rating that differs from the first reviewer is not established as an error.`)
   }
 
   if (composition && !composition.mode_balance.balanced) {
     const short = GARMENT_MODES.filter((mode) => composition.mode_balance.short_by[mode] > 0).map((mode) => `${mode} (${composition.cases_by_mode[mode]})`)
-    steps.push(`Fewer than ${composition.mode_balance.target_per_mode} cases in: ${short.join(', ')}. Figures for those garment modes stay "too few to conclude" until each has ${composition.mode_balance.target_per_mode} cases. Images do not count: an outfit of three items is one case.`)
+    steps.push(`Fewer than ${composition.mode_balance.target_per_mode} cases in: ${short.join(', ')}. A garment mode with no case has no figure at all; one with fewer than ${composition.mode_balance.target_per_mode} stays "too few to conclude". Images do not count: an outfit of three items is one case.`)
   }
 
   if (quality.image_grounded_accuracy.status === 'available') {
@@ -355,6 +355,11 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
   const advisor = quality.shopping_advisor
   if (advisor.availability_rate.value !== null && advisor.availability_rate.value < 1) steps.push(`With Style DNA, the advisor block is missing or invalid in part of the runs (availability ${advisor.availability_rate.value}). The verdict is unaffected; the report shows no alternatives for those runs.`)
   if (composition && composition.style_dna.cases === 0 && provenance === 'model') steps.push('No case sends a Style DNA profile, so the personalised path and the Shopping Advisor were not exercised.')
+  // Style DNA is a condition on a case, not a garment mode, and it changes what the model is told. Say that the figures pool both.
+  if (composition && composition.style_dna.cases > 0 && composition.style_dna.cases < composition.cases) {
+    const without = GARMENT_MODES.map((mode) => `${mode} ${composition.cases_by_mode[mode] - composition.style_dna.cases_by_mode[mode]}`)
+    steps.push(`${composition.style_dna.cases} of ${composition.cases} cases send a Style DNA profile. Every figure pools cases with and without one; none is split by it. Cases without Style DNA: ${without.join(', ')}.`)
+  }
 
   return steps
 }

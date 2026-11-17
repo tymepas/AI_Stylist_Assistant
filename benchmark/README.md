@@ -28,13 +28,20 @@ BENCHMARK_MODEL=gpt-6.1-terra npm run benchmark
 ```
 
 Validates the manifest and every image, then prints what the dataset is made of
-and the worst-case cost, with each case priced at its own number of images.
+and the amount it would reserve, with each case priced at its own number of images.
 Network access is disabled inside the run.
 
 The composition counts **cases and images apart**: cases per garment mode,
-personal photos and garment images, the cases that send Style DNA, and whether
-each garment mode has the ten cases a figure about it needs. A case is one unit
-of evidence however many images it has; images decide cost only.
+personal photo and garment image slots, the cases that send Style DNA, and
+whether each garment mode has the ten cases a figure about it needs. A case is
+one unit of evidence however many images it has; images decide cost only. The
+image counts are slots, the files a case names; the line above them says how
+many of those files were found.
+
+The cost printed is the sum of the amounts the runner would reserve, from
+bounds in the configuration. It is not a guaranteed maximum of what the
+provider bills: the per-image token bound is an assumption that has not been
+measured. `evaluation/LIVE_VALIDATION_PLAN.md` gives the calculation.
 
 ### Style DNA in a case
 

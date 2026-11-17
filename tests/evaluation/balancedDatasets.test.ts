@@ -16,12 +16,13 @@
 
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { existsSync, readFileSync } from 'node:fs'
+import { parseReferenceSet } from '@/evaluation/reference'
 import path from 'node:path'
 
 jest.mock('server-only', () => ({}), { virtual: true })
 
 import { HARD_MAX_USD, MIN_CASES_PER_MODE, describeComposition, evaluateGate, manifestSchema, plannedWorstCaseMicroUsd, type BenchmarkCase, type RunOptions } from '@/benchmark/harness'
-import { evaluateRecording, renderMarkdown, serializeReport, type EvaluationReport } from '@/evaluation/evaluate'
+import { detailsFromRecording, evaluateRecording, renderMarkdown, serializeReport, type EvaluationReport } from '@/evaluation/evaluate'
 import { DATASETS, datasetPaths, loadCases, loadRecording, loadReferenceSet, loadReport } from '@/evaluation/load'
 import { describeReadiness } from '@/evaluation/readiness'
 import { RECORDABLE_SOURCES, datasetFingerprint } from '@/evaluation/recording'
@@ -54,6 +55,9 @@ afterEach(() => {
   expect(fetchSpy).not.toHaveBeenCalled()
   jest.restoreAllMocks()
 })
+
+/** One entry per recorded run: its band, its score and its ratings, as the production verdict code computes them. */
+const detailsOf = (recording: ReturnType<typeof loadRecording>) => detailsFromRecording(recording, loadCases(v2.casesPath))
 
 const evaluate = (paths: typeof v2, change?: (recording: ReturnType<typeof loadRecording>) => void): EvaluationReport => {
   const recording = loadRecording(paths.recordingPath)
@@ -91,7 +95,7 @@ describe('scenarios-v2: the balanced synthetic dataset', () => {
     const composition = describeComposition(cases)
     expect(composition.cases_by_mode).toEqual({ single: 55, same_garment_views: 12, outfit_items: 12 })
     expect(composition.mode_balance).toEqual({ target_per_mode: 10, short_by: { single: 0, same_garment_views: 0, outfit_items: 0 }, balanced: true })
-    // 111 garment images belong to 79 cases; nothing below is built from the larger number.
+    // 111 garment image slots belong to 79 cases; nothing below is built from the larger number.
     expect(composition.images).toMatchObject({ personal_photos: 79, garment_images: 111, total: 190 })
     for (const mode of GARMENT_MODES) expect(report.quality.multi_image.modes[mode].cases).toBe(composition.cases_by_mode[mode])
   })
@@ -168,7 +172,7 @@ describe('Shopping Advisor figures', () => {
   })
 
   it('count a case once, however many recommendations and runs it has', () => {
-    // 12 cases, 24 runs, 15 recommendations per run: the sample is 12.
+    // 12 cases, 24 runs, 14 recommendations per run: the sample is 12.
     expect(report.quality.shopping_advisor.availability_rate.n).toBe(12)
     expect(report.quality.shopping_advisor.mistargeted_recommendation_rate.n).toBe(12)
   })
@@ -183,9 +187,15 @@ describe('Shopping Advisor figures', () => {
       }
     })
     expect(broken.quality.shopping_advisor.availability_rate).toMatchObject({ status: 'measured', value: 0, n: 12 })
-    // The ratings and the verdict are untouched: the advisor never reaches them.
-    expect(broken.cases.map((entry) => [entry.case_id, entry.outcomes])).toEqual(report.cases.map((entry) => [entry.case_id, entry.outcomes]))
-    expect(broken.summary.failed).toBe(0)
+    // Nothing else moves: every case report (bands, outcomes, status, every check), the summary and every
+    // other figure are identical. The advisor reaches no rating, no score and no verdict.
+    expect(broken.cases).toEqual(report.cases)
+    expect(broken.summary).toEqual(report.summary)
+    expect(broken.metrics).toEqual(report.metrics)
+    const { shopping_advisor: _brokenAdvisor, ...brokenQuality } = broken.quality
+    const { shopping_advisor: _advisor, ...quality } = report.quality
+    expect(brokenQuality).toEqual(quality)
+    expect(Object.keys(broken.metric_index).filter((name) => JSON.stringify(broken.metric_index[name]) !== JSON.stringify(report.metric_index[name])).every((name) => name.startsWith('shopping_advisor.'))).toBe(true)
     const changes = classifyMetricChanges(report, broken)
     expect(changes.regressions).toContain('shopping_advisor.availability_rate')
     // With no valid block left there is nothing to judge the targeting on: that figure is lost, which also counts as worse.
@@ -207,6 +217,59 @@ describe('Shopping Advisor figures', () => {
     // One of twelve cases, all of its recommendations: 1 / 12.
     expect(mistargeted.quality.shopping_advisor.mistargeted_recommendation_rate).toMatchObject({ value: 0.0833, n: 12 })
     expect(mistargeted.quality.shopping_advisor.availability_rate.value).toBe(1)
+  })
+
+  it('leave every band and score unchanged whatever the advisor block holds, including its own verdict', () => {
+    const verdicts = (source: EvaluationReport) => source.cases.map((entry) => [entry.case_id, entry.outcomes, entry.modal_outcome])
+    const scores = (change?: (recording: ReturnType<typeof loadRecording>) => void) => {
+      const recording = loadRecording(v2.recordingPath)
+      change?.(recording)
+      return detailsOf(recording).map((detail) => [detail.case_id, detail.run, detail.band, detail.score, JSON.stringify(detail.dimensions)])
+    }
+    const baselineScores = scores()
+    for (const block of [undefined, null, 'text', 7, [], { recommendations: [] }, { recommendations: 'x', overall_recommendation: 'Highly Recommended', verdict_score: 5 }]) {
+      const change = (recording: ReturnType<typeof loadRecording>) => {
+        for (const entry of recording.entries) {
+          const output = entry.output as { status?: string; shopping_advisor?: unknown }
+          if (output?.status !== 'complete') continue
+          if (block === undefined) delete output.shopping_advisor
+          else output.shopping_advisor = block
+        }
+      }
+      expect(scores(change)).toEqual(baselineScores)
+      expect(verdicts(evaluate(v2, change))).toEqual(verdicts(report))
+    }
+  })
+
+  it('are screened like any other model text: what an alternative SAYS can fail a case, and still cannot move the verdict', () => {
+    // The advisor is shown to the user, so its text goes through the same safety and unsupported-claim screening as a
+    // reason. That is the one way it reaches a case result. It is deliberate, and it existed before this dataset.
+    const screened = evaluate(v2, (recording) => {
+      for (const entry of recording.entries) {
+        if (entry.case_id !== 'sc-dna-classic-office-blazer') continue
+        ;(entry.output as { shopping_advisor: { recommendations: Array<{ rationale: string }> } }).shopping_advisor.recommendations[0].rationale = 'This one is on sale at half price for 49 dollars.'
+      }
+    })
+    const before = report.cases.find((entry) => entry.case_id === 'sc-dna-classic-office-blazer') as EvaluationReport['cases'][number]
+    const after = screened.cases.find((entry) => entry.case_id === 'sc-dna-classic-office-blazer') as EvaluationReport['cases'][number]
+    expect(before.status).toBe('pass')
+    expect(after.status).toBe('fail')
+    expect(after.failure_reasons.join(' ')).toMatch(/^unsupported_claims:/)
+    expect({ outcomes: after.outcomes, modal: after.modal_outcome }).toEqual({ outcomes: before.outcomes, modal: before.modal_outcome })
+  })
+
+  it('do not count a recommendation as mistargeted when the run rated every dimension Excellent', () => {
+    // With six Excellent ratings there is no weak dimension, and the prompt still asks for at least one alternative.
+    const allExcellent = evaluate(v2, (recording) => {
+      for (const entry of recording.entries) {
+        if (entry.case_id !== 'sc-dna-classic-office-blazer') continue
+        const output = entry.output as { dimensions: Record<string, { rating: string }> }
+        for (const key of Object.keys(output.dimensions)) output.dimensions[key].rating = 'Excellent'
+      }
+    })
+    // The case is left out of the figure instead of counting against it: eleven cases remain, none mistargeted.
+    expect(allExcellent.quality.shopping_advisor.mistargeted_recommendation_rate).toMatchObject({ value: 0, n: 11 })
+    expect(allExcellent.quality.shopping_advisor.availability_rate).toMatchObject({ value: 1, n: 12 })
   })
 
   it('notice recommendations returned without Style DNA, which the prompt asks to leave empty', () => {
@@ -250,6 +313,21 @@ describe('scenarios-v2: the committed baseline', () => {
     expect({ regressions: changes.regressions, improvements: changes.improvements, lost: changes.lost }).toEqual({ regressions: [], improvements: [], lost: [] })
     // Only the abstention figure is still built from fewer than ten cases.
     expect(changes.comparisons.filter((comparison) => comparison.classification === 'inconclusive').map((comparison) => comparison.metric)).toEqual(['abstention.recall'])
+  })
+
+  it('names the figures that are new and so were not gated, instead of passing them silently', () => {
+    // A report in an older format has none of the newer figures. Whatever the candidate reports for them
+    // has nothing to be compared with: that must be said, because it is not protection.
+    const older = JSON.parse(JSON.stringify(baseline)) as EvaluationReport
+    for (const name of Object.keys(older.metric_index)) if (name.startsWith('shopping_advisor.')) delete older.metric_index[name]
+    const changes = classifyMetricChanges(older, report)
+    expect(changes.new_in_candidate).toEqual(['shopping_advisor.availability_rate', 'shopping_advisor.mistargeted_recommendation_rate', 'shopping_advisor.unrequested_recommendation_rate'])
+    expect(changes.has_regression).toBe(false)
+    const decision = assessBaselineUpdate(older, report)
+    expect(decision.allowed).toBe(true)
+    expect((decision as { notes: string[] }).notes.some((note) => note.startsWith('Metrics new in this report: 3 figure(s) have nothing to compare with in the baseline, so this comparison does not gate them'))).toBe(true)
+    // Against the committed baseline nothing is new.
+    expect(classifyMetricChanges(baseline, report).new_in_candidate).toEqual([])
   })
 
   it('is byte-identical to the current report, so the committed file is exactly what the code produces', () => {
@@ -324,9 +402,51 @@ describe('the golden case plan', () => {
     }
   })
 
-  it('sends an invented Style DNA profile in twelve cases, four per garment mode', () => {
+  it('sends an invented Style DNA profile in fourteen cases, as a condition on a case and never as a garment mode', () => {
     const composition = describeComposition(cases)
-    expect(composition.style_dna).toEqual({ cases: 12, cases_by_mode: { single: 4, same_garment_views: 4, outfit_items: 4 }, personas: ['persona-bold-aesthetic', 'persona-minimal-aesthetic'] })
+    expect(composition.style_dna).toEqual({ cases: 14, cases_by_mode: { single: 6, same_garment_views: 4, outfit_items: 4 }, personas: ['persona-bold-aesthetic', 'persona-minimal-aesthetic'] })
+    // Every Style DNA case is counted in exactly one garment mode, and the modes add up with and without them.
+    const sum = (counts: Record<string, number>) => Object.values(counts).reduce((total, count) => total + count, 0)
+    expect(sum(composition.cases_by_mode)).toBe(composition.cases)
+    expect(sum(composition.style_dna.cases_by_mode)).toBe(composition.style_dna.cases)
+    const without = describeComposition(cases.filter((benchmarkCase) => !benchmarkCase.style_dna))
+    expect(without.cases_by_mode).toEqual({ single: 15, same_garment_views: 6, outfit_items: 6 })
+    expect(without.cases + composition.style_dna.cases).toBe(composition.cases)
+    // Fourteen cases, ten different inputs: four of them are the second half of a pair.
+    const inputs = new Set(cases.filter((benchmarkCase) => benchmarkCase.style_dna).map((benchmarkCase) => `${benchmarkCase.photo}|${benchmarkCase.garment}|${benchmarkCase.occasion}`))
+    expect(inputs.size).toBe(10)
+  })
+
+  it('has no margin in the multi-image modes, and says so: exactly ten cases each', () => {
+    // Recorded as a fact of the plan, so that a change to it is deliberate. See LIVE_VALIDATION_PLAN.md.
+    expect(byMode('same_garment_views')).toHaveLength(10)
+    expect(byMode('outfit_items')).toHaveLength(10)
+    const rateable = cases.filter((benchmarkCase) => !benchmarkCase.expected.should_abstain)
+    expect(rateable).toHaveLength(39)
+    // 39 cases that can give ratings are 29 different photo, garment and occasion combinations: a pair shares all three.
+    expect(new Set(rateable.map((benchmarkCase) => `${benchmarkCase.photo}|${benchmarkCase.garment}|${benchmarkCase.occasion}`)).size).toBe(29)
+  })
+
+  it('gives the extra single cases neutral ids, so an id tells a reviewer nothing about what to expect', () => {
+    const extra = cases.filter((benchmarkCase) => !/^gv-(g|o)\d\d-/.test(benchmarkCase.id)).map((benchmarkCase) => benchmarkCase.id)
+    expect(extra).toEqual(Array.from({ length: 11 }, (_, index) => `gv-s${String(index + 1).padStart(2, '0')}`))
+    for (const benchmarkCase of cases) {
+      const visible = [benchmarkCase.id, benchmarkCase.photo, benchmarkCase.garment, ...(benchmarkCase.extra_garments ?? [])].join(' ')
+      expect(visible).not.toMatch(/borderline|blur|quality|ambiguous|insufficient|mismatch|match|clear/i)
+    }
+  })
+
+  it('cannot have a comparison pair whose two cases differ in Style DNA or in style preferences', () => {
+    const template = JSON.parse(readFileSync(path.join(dir, 'references.template.json'), 'utf8')) as unknown
+    const without = cases.map((benchmarkCase) => {
+      if (benchmarkCase.id !== 'gv-g03-views') return benchmarkCase
+      const { style_dna: _dna, ...rest } = benchmarkCase
+      return rest
+    })
+    expect(() => parseReferenceSet(template, without)).toThrow(/Comparison group g03: its cases differ in Style DNA \(\(none\), persona-minimal-aesthetic\)/)
+    const otherPreferences = cases.map((benchmarkCase) => (benchmarkCase.id === 'gv-g01-views' ? { ...benchmarkCase, style_profile: { preferredStyles: ['Bold'], favoriteColors: [], occasionPreferences: [] } } : benchmarkCase))
+    expect(() => parseReferenceSet(template, otherPreferences)).toThrow(/Comparison group g01: its cases have different style preferences/)
+    expect(() => parseReferenceSet(template, cases)).not.toThrow()
   })
 
   it('covers borderline fits, poor image quality, ambiguous detail, text in the image and insufficient input', () => {
@@ -334,7 +454,7 @@ describe('the golden case plan', () => {
     for (const category of ['clear', 'lighting', 'blur', 'occluded', 'difficult_colour', 'ambiguous_detail', 'product_claims_text', 'adversarial_text', 'insufficient_input', 'single_garment', 'multiple_garments'] as const) {
       expect({ category, covered: categories.has(category) }).toEqual({ category, covered: true })
     }
-    expect(cases.filter((benchmarkCase) => benchmarkCase.expected.should_abstain).map((benchmarkCase) => benchmarkCase.id)).toEqual(['gv-insufficient-no-person', 'gv-insufficient-no-garment'])
+    expect(cases.filter((benchmarkCase) => benchmarkCase.expected.should_abstain).map((benchmarkCase) => benchmarkCase.id)).toEqual(['gv-s10', 'gv-s11'])
     expect(byMode('outfit_items').filter((benchmarkCase) => benchmarkCase.extra_garments?.length === 2)).toHaveLength(5)
     expect(byMode('same_garment_views').filter((benchmarkCase) => benchmarkCase.extra_garments?.length === 2)).toHaveLength(4)
     for (const benchmarkCase of cases) expect(OCCASION_OPTIONS).toContain(benchmarkCase.occasion)
@@ -347,12 +467,19 @@ describe('the golden case plan', () => {
     expect(plannedWorstCaseMicroUsd(cases, options(3))).toBe(4_642_800)
     expect(plannedWorstCaseMicroUsd(cases, options(3))).toBeLessThan(HARD_MAX_USD * 1_000_000)
     expect(HARD_MAX_USD).toBe(10)
+    expect(plannedWorstCaseMicroUsd(cases, options(2))).toBe(3_095_200)
     // Without the opt-in phrase the benchmark is a dry run, whatever else is set.
     expect(evaluateGate({ BENCHMARK_MODEL: 'gpt-6.1-terra', BENCHMARK_MAX_USD: '5' }).mode).toBe('dry_run')
   })
 
-  it('leaves the golden dataset empty: the plan is the only thing committed', () => {
-    expect(existsSync(path.join(dir, 'cases.json'))).toBe(false)
-    expect(existsSync(path.join(dir, 'references.json'))).toBe(false)
+  it('reserves for one personal photo plus every garment image of a case, and the same with or without Style DNA', () => {
+    const options: RunOptions = { model: 'gpt-6.1-terra', reasoningEffort: 'low', maxOutputTokens: 4_000, runsPerCase: 1, maxUsd: 0 }
+    // (8,000 text tokens + 3,600 per image) at $1 per million, plus 4,000 output tokens at $5 per million.
+    const reservation = (images: number) => (8_000 + 3_600 * images) * 1 + 4_000 * 5
+    for (const benchmarkCase of cases) {
+      const images = 1 + 1 + (benchmarkCase.extra_garments?.length ?? 0)
+      expect({ id: benchmarkCase.id, reserved: plannedWorstCaseMicroUsd([benchmarkCase], options) }).toEqual({ id: benchmarkCase.id, reserved: reservation(images) })
+    }
+    expect([reservation(2), reservation(3), reservation(4)]).toEqual([35_200, 38_800, 42_400])
   })
 })

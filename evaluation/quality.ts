@@ -348,7 +348,7 @@ export interface ReviewerDisagreement {
   case_id: string
   /** Dimensions on which two reviewers of the case gave different ratings. */
   dimensions: DimensionKey[]
-  /** Of those, the ones two or more bands apart, or where one reviewer rated what another could not judge. */
+  /** Of those, the ones that are FAR APART: two or more bands apart, or one reviewer rated what another could not judge. */
   severe: DimensionKey[]
 }
 
@@ -359,6 +359,10 @@ export interface ReviewerAgreementBlock {
    * Per dimension, over those cases: how often two reviewers gave the same
    * rating, a rating within one band, and how far apart they were. A case
    * contributes one value: the share of its reviewer pairs that agree.
+   *
+   * The distance covers only pairs in which both reviewers gave a rating. A
+   * pair in which one could not judge has no distance; it shows in the two
+   * rates and in the list of disagreements instead.
    */
   dimensions: Record<DimensionKey, { exact_rate: Metric; within_one_rate: Metric; mean_distance: Metric }>
   /** Every case on which reviewers differ. For people to read: none of these is an error in a review. */
@@ -423,7 +427,8 @@ function reviewerAgreementOf(references: CaseReference[], scored: ScoredCase[], 
       const rated = pairs.map((pair) => pair.distance).filter((distance): distance is number => distance !== null)
       if (rated.length > 0) distances.push(mean(rated))
     }
-    return [key, { exact_rate: rateMetric(exact, NO_SECOND_REVIEW), within_one_rate: rateMetric(withinOne, NO_SECOND_REVIEW), mean_distance: meanMetric(distances, NO_SECOND_REVIEW) }]
+    // With second reviews present, an empty distance means that no pair has two ratings (for example both said "Unable to Evaluate").
+    return [key, { exact_rate: rateMetric(exact, NO_SECOND_REVIEW), within_one_rate: rateMetric(withinOne, NO_SECOND_REVIEW), mean_distance: meanMetric(distances, reviewedTwice.length === 0 ? NO_SECOND_REVIEW : 'Unavailable: in no twice-reviewed case did two reviewers both give a rating for this dimension') }]
   })) as ReviewerAgreementBlock['dimensions']
 
   const modelWithinRange = Object.fromEntries(DIMENSION_KEYS.map((key) => {
@@ -463,7 +468,9 @@ export interface ShoppingAdvisorBlock {
   /**
    * Per case with Style DNA and a valid block: the share of its recommendations
    * that address only dimensions the same run rated Excellent. The prompt asks
-   * for alternatives that address weak dimensions.
+   * for alternatives that address weak dimensions. A run that rated all six
+   * dimensions Excellent is left out: it has no weak dimension to address, and
+   * the prompt still asks it for at least one alternative.
    */
   mistargeted_recommendation_rate: Metric
   /**
@@ -492,7 +499,9 @@ function shoppingAdvisorOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDe
     if (benchmarkCase.style_dna) {
       const blocks = runs.map((run) => ({ run, recommendations: validAdvisor(run) }))
       availability.push(share(blocks, (block) => block.recommendations !== null))
-      const targets = blocks.flatMap(({ run, recommendations }) => (recommendations ?? []).map((recommendation) => recommendation.addresses.every((key) => run.dimensions[key as DimensionKey]?.rating === 'Excellent')))
+      const targets = blocks
+        .filter(({ run }) => DIMENSION_KEYS.some((key) => run.dimensions[key].rating !== 'Excellent'))
+        .flatMap(({ run, recommendations }) => (recommendations ?? []).map((recommendation) => recommendation.addresses.every((key) => run.dimensions[key as DimensionKey]?.rating === 'Excellent')))
       if (targets.length > 0) mistargeted.push(share(targets, (missed) => missed))
     } else {
       unrequested.push(share(runs, (run) => {
@@ -506,7 +515,7 @@ function shoppingAdvisorOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDe
     cases_with_style_dna: availability.length,
     cases_without_style_dna: unrequested.length,
     availability_rate: rateMetric(availability, noStyleDna),
-    mistargeted_recommendation_rate: rateMetric(mistargeted, availability.length === 0 ? noStyleDna : 'Unavailable: no run with Style DNA returned a valid advisor block'),
+    mistargeted_recommendation_rate: rateMetric(mistargeted, availability.length === 0 ? noStyleDna : 'Unavailable: no run with Style DNA returned a valid advisor block next to a dimension rated below Excellent'),
     unrequested_recommendation_rate: rateMetric(unrequested, 'Unavailable: no case without Style DNA produced ratings'),
   }
 }
@@ -984,6 +993,8 @@ export interface IndexedMetric extends Metric {
   kind: 'rate' | 'bands'
   /** True when the figure depends on the reference set, so it is comparable only between reports that used the same one. */
   needs_references: boolean
+  /** Present, and true, only for a figure that uses second reviews: it is comparable only when those are the same as well. */
+  needs_second_reviews?: true
 }
 
 export type MetricIndex = Record<string, IndexedMetric>
@@ -996,8 +1007,8 @@ export type MetricIndex = Record<string, IndexedMetric>
  */
 export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityReport): MetricIndex {
   const index: MetricIndex = {}
-  const add = (name: string, metric: Metric, direction: IndexedMetric['direction'], kind: IndexedMetric['kind'], needsReferences: boolean) => {
-    index[name] = { ...metric, direction, kind, needs_references: needsReferences }
+  const add = (name: string, metric: Metric, direction: IndexedMetric['direction'], kind: IndexedMetric['kind'], needsReferences: boolean, needsSecondReviews = false) => {
+    index[name] = { ...metric, direction, kind, needs_references: needsReferences, ...(needsSecondReviews ? { needs_second_reviews: true as const } : {}) }
   }
 
   add('validity.valid_output_rate', quality.by_case.valid_output_rate, 'higher_is_better', 'rate', false)
@@ -1016,7 +1027,7 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
       add(`agreement.${tier}.${key}.within_one_rate`, agreement.dimensions[key].within_one_rate, 'higher_is_better', 'rate', true)
       add(`agreement.${tier}.${key}.mae`, agreement.dimensions[key].mae, 'lower_is_better', 'bands', true)
       // Reviewer-to-reviewer agreement is not indexed: it describes the reviews, not the outputs, so it cannot regress.
-      add(`agreement.${tier}.${key}.within_reviewer_range_rate`, quality.reviewer_agreement[tier].model_within_reviewer_range[key], 'higher_is_better', 'rate', true)
+      add(`agreement.${tier}.${key}.within_reviewer_range_rate`, quality.reviewer_agreement[tier].model_within_reviewer_range[key], 'higher_is_better', 'rate', true, true)
     }
 
     const grounding = quality.grounding[tier]

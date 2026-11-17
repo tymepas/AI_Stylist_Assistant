@@ -289,23 +289,26 @@ Rules that hold:
 - Colour, pattern and single-garment identification cannot be measured: the model output has no field for them. Garment identification covers the `garment_type` of outfit items only.
 - The golden dataset is empty until real images have been reviewed. Until then every figure about model quality is unavailable.
 
-### Phase 4, Milestone 0: a measured baseline, prepared
+### Phase 4, Milestone 0: preparation for a first measured baseline
 
 Preparation for the first measurement of the model on real images. It adds no production code and changes no prompt, output schema, model setting, verdict or spend safeguard. No model was called.
 
 | Piece | Where | What it does |
 |---|---|---|
-| Synthetic Style DNA in a manifest | `benchmark/harness.ts`, `scripts/evaluation/style-dna-personas.cjs` | A case may send an invented Style DNA profile, checked with the production validator. Only `source: "synthetic"` is accepted, so no personal profile can be committed |
+| Synthetic Style DNA in a manifest | `benchmark/harness.ts`, `scripts/evaluation/style-dna-personas.cjs` | A case may send an invented Style DNA profile, checked with the production validator. Only `source: "synthetic"` is accepted, and a test fails if a committed profile is not one from the persona library |
 | Composition | `benchmark/harness.ts` (`describeComposition`) | Cases and images counted apart, cases per garment mode against a minimum of ten, cases with Style DNA. Shown by the dry run, the validator and every report |
 | Second reviews | `evaluation/reference.ts`, `scripts/evaluation/second-review.cjs` | A second person rates the same case blind. Both reviews are kept; a difference is recorded, never resolved by editing a rating |
 | Agreement between reviewers | `evaluation/quality.ts`, `evaluation/readiness.ts` | How often two reviewers agree per dimension, every case they differ on, and how often the model lies within their range |
 | Shopping Advisor figures | `evaluation/quality.ts` | With Style DNA: usable block and mistargeted recommendations. Without: unrequested recommendations. Advisory only; the verdict integrity check still proves the block cannot move the verdict |
 | `scenarios-v2` | `evaluation/datasets/scenarios-v2/`, `evaluation/baselines/scenarios-v2.json` | The 54 cases of `scenarios-v1` unchanged, plus 25: at least ten cases per garment mode and twelve with Style DNA. Synthetic, with its own baseline |
-| Golden case plan | `evaluation/datasets/golden-v1/cases.template.json` | 41 planned cases (21 single, 10 multi-view, 10 outfit), ten comparison pairs, twelve with Style DNA. No image, no rating |
+| Golden case plan | `evaluation/datasets/golden-v1/cases.template.json` | 41 planned cases (21 single, 10 multi-view, 10 outfit), ten comparison pairs, fourteen with Style DNA. No image, no rating |
 
 Rules added:
 
 - A rating is one reviewer's judgement. Reports say how far reviewers agree with each other, and say so plainly when no case has a second review.
 - Sample sizes count cases, never images.
 - Synthetic results stay apart from image-reviewed results: neither scenario dataset has a reference set, and a synthetic expectation cannot carry a reviewer or a second review.
-- A live run of the plan would reserve at most $4.64 at three runs per case. It has not been run and needs its own approval (`evaluation/LIVE_VALIDATION_PLAN.md`).
+- Style DNA is a condition on a case, not a garment mode. Figures pool cases with and without a profile; a comparison group may not mix them.
+- Adding a second review, or bumping the hand-kept dataset version, does not switch off metric comparison: reference-dependent figures are compared on the first reviews (`scoring_fingerprint`).
+- "Measured" is a status about sample size. The scenario baselines hold hand-written outputs and measure nothing about a model.
+- A live run of the plan would reserve $4.64 at three runs per case and $3.10 at two. That is a sum of reservations from configured bounds, not a guaranteed maximum: the per-image token bound is an assumption. It has not been run and needs its own approval (`evaluation/LIVE_VALIDATION_PLAN.md`).

@@ -113,6 +113,14 @@ describe('Style DNA in a manifest', () => {
     expect(() => parse([rawCase('a', { style_dna: personas.styleDna('persona-classic-tailored') }), rawCase('b', { style_dna: changed })])).toThrow(/different profile/)
   })
 
+  it('accepts the same persona written with its keys in another order', () => {
+    const reorder = (value: unknown): unknown => (Array.isArray(value) ? value.map(reorder) : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value as object).reverse().map(([key, entry]) => [key, reorder(entry)])) : value)
+    const reversed = personas.styleDna('persona-classic-tailored')
+    reversed.profile = reorder(reversed.profile) as Record<string, unknown>
+    expect(JSON.stringify(reversed.profile)).not.toBe(JSON.stringify(personas.PERSONAS['persona-classic-tailored']))
+    expect(() => parse([rawCase('a', { style_dna: personas.styleDna('persona-classic-tailored') }), rawCase('b', { style_dna: reversed })])).not.toThrow()
+  })
+
   it('is optional and has no default, so a manifest without it keeps its fingerprint', () => {
     const [benchmarkCase] = parse([rawCase('a')])
     expect(Object.prototype.hasOwnProperty.call(benchmarkCase, 'style_dna')).toBe(false)
@@ -187,7 +195,10 @@ describe('dataset composition', () => {
     expect(composition.mode_balance).toEqual({ target_per_mode: 10, short_by: { single: 7, same_garment_views: 9, outfit_items: 9 }, balanced: false })
     const lines = compositionLines(composition)
     expect(lines[0]).toBe('Cases: 5 (single 3, same_garment_views 1, outfit_items 1)')
-    expect(lines[1]).toContain('Images: 13 (5 personal photos + 8 garment images; 11 different files). Images are not cases')
+    // Slots, not files: whether a file exists is not known here.
+    expect(lines[1]).toContain('Image slots: 13 (5 personal photos + 8 garment images; 11 different files). Images are not cases')
+    const synthetic = compositionLines(describeComposition(parse([rawCase('a'), rawCase('b')])))
+    expect(synthetic[1]).toBe('Image slots: 4 (2 personal photos + 2 garment images; 4 different files). Every case is synthetic: none of these files exists. Images are not cases: sample sizes count cases only.')
     expect(lines[4]).toBe('Mode balance: NOT met (target 10 cases per mode): single needs 7 more, same_garment_views needs 9 more, outfit_items needs 9 more.')
   })
 
@@ -201,10 +212,11 @@ describe('dataset composition', () => {
 })
 
 describe('committed evaluation data', () => {
-  const tracked = execFileSync('git', ['ls-files', 'evaluation', 'benchmark'], { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean)
-  const manifests = tracked.filter((file) => /cases[^/]*\.json$/.test(file))
+  // Read inside each test, so that a missing git is a failed test with a message and not a suite that cannot load.
+  const committedManifests = () => execFileSync('git', ['ls-files', 'evaluation', 'benchmark'], { cwd: root, encoding: 'utf8' }).split('\n').filter((file) => /cases[^/]*\.json$/.test(file))
 
   it('carries Style DNA only from the persona library, never a personal profile', () => {
+    const manifests = committedManifests()
     expect(manifests.length).toBeGreaterThanOrEqual(4)
     let withDna = 0
     for (const file of manifests) {
@@ -219,7 +231,7 @@ describe('committed evaluation data', () => {
   })
 
   it('attaches only aesthetic-only personas to cases that will have a real photo', () => {
-    for (const file of manifests) {
+    for (const file of committedManifests()) {
       for (const benchmarkCase of manifestSchema.parse(JSON.parse(readFileSync(path.join(root, file), 'utf8'))).cases) {
         if (benchmarkCase.style_dna && benchmarkCase.source !== 'synthetic') expect(personas.AESTHETIC_ONLY).toContain(benchmarkCase.style_dna.persona)
       }

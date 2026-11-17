@@ -230,6 +230,7 @@ export function referenceProblems(reference: CaseReference): string[] {
   const second = reference.second_reviews ?? []
   if (second.length > 0) {
     if (basis !== 'image_review' && basis !== 'brief') problems.push('only a human review (basis image_review or brief) can carry a second review')
+    else if (status !== 'complete') problems.push('a second review is added only to a finished first review (status "complete")')
     for (const id of duplicates(second.map((review) => review.reviewer.id))) problems.push(`second reviewer "${id}" appears twice`)
     for (const review of second) {
       if (review.reviewer.id === reference.reviewer?.id) problems.push(`second reviewer "${review.reviewer.id}" is also the first reviewer; a second review is by another person`)
@@ -344,6 +345,23 @@ export function manifestProblems(set: ReferenceSet, cases: BenchmarkCase[]): str
   for (const group of [...occasionsByGroup.keys()].sort()) {
     if ((occasionsByGroup.get(group) as Set<string>).size > 1) problems.push(`Comparison group ${group}: its cases have different occasions. A group holds the same garment for the same occasion`)
   }
+
+  // A group compares image modes and nothing else. Its cases must be sent with the same style preferences and the
+  // same Style DNA condition (the same persona, or none): otherwise a difference between them could come from either.
+  const conditionsByGroup = new Map<string, { preferences: Set<string>; styleDna: Set<string> }>()
+  for (const reference of set.references) {
+    const benchmarkCase = byId.get(reference.case_id)
+    if (!reference.comparison_group || !benchmarkCase) continue
+    const seen = conditionsByGroup.get(reference.comparison_group) ?? { preferences: new Set<string>(), styleDna: new Set<string>() }
+    seen.preferences.add(JSON.stringify(sortKeys(benchmarkCase.style_profile)))
+    seen.styleDna.add(benchmarkCase.style_dna?.persona ?? '(none)')
+    conditionsByGroup.set(reference.comparison_group, seen)
+  }
+  for (const group of [...conditionsByGroup.keys()].sort()) {
+    const seen = conditionsByGroup.get(group) as { preferences: Set<string>; styleDna: Set<string> }
+    if (seen.styleDna.size > 1) problems.push(`Comparison group ${group}: its cases differ in Style DNA (${[...seen.styleDna].sort().join(', ')}). Every case of a group is sent with the same profile, or with none`)
+    if (seen.preferences.size > 1) problems.push(`Comparison group ${group}: its cases have different style preferences. A group differs only in how the garment was photographed`)
+  }
   return problems
 }
 
@@ -399,6 +417,24 @@ export function referenceSetFingerprint(set: ReferenceSet): string {
   return fingerprint([JSON.stringify(sortKeys({ dataset: set.dataset, dataset_version: set.dataset_version, references: ordered }))])
 }
 
+/**
+ * Identifies what the reference-dependent figures are scored against: every
+ * first review, and nothing else. Second reviews and the hand-kept
+ * `dataset_version` are left out, because neither changes a single agreement,
+ * grounding or calibration figure. Two reports with the same scoring
+ * fingerprint can therefore be compared metric by metric even when a second
+ * review was added in between. Without this, adding a second review would make
+ * every such comparison "inconclusive" and a real regression would go unseen.
+ *
+ * The figures that do use second reviews are compared on the full fingerprint.
+ */
+export function referenceScoringFingerprint(set: ReferenceSet): string {
+  const ordered = [...set.references]
+    .sort((a, b) => a.case_id.localeCompare(b.case_id))
+    .map((reference) => Object.fromEntries(Object.entries(reference).filter(([key]) => key !== 'second_reviews')))
+  return fingerprint([JSON.stringify(sortKeys({ dataset: set.dataset, references: ordered }))])
+}
+
 export interface ResolvedReference {
   reference: CaseReference
   tier: ReferenceTier
@@ -420,6 +456,8 @@ export interface ReferenceSummary {
   dataset: string | null
   dataset_version: string | null
   fingerprint: string | null
+  /** The first reviews only (see referenceScoringFingerprint). What figures that ignore second reviews are compared on. */
+  scoring_fingerprint: string | null
   /** Cases of the evaluated selection, by the tier of their reference. */
   cases_by_tier: Record<ReferenceTier, number>
   cases_without_reference: number
@@ -443,6 +481,7 @@ export function summarizeReferences(set: ReferenceSet | undefined, cases: Benchm
     dataset: set?.dataset ?? null,
     dataset_version: set?.dataset_version ?? null,
     fingerprint: set ? referenceSetFingerprint(set) : null,
+    scoring_fingerprint: set ? referenceScoringFingerprint(set) : null,
     cases_by_tier: counts,
     cases_without_reference: cases.length - resolved.size,
     image_reviewers: [...new Set(reviewed.map((reference) => reference.reviewer?.id as string))].sort(),

@@ -105,6 +105,12 @@ const relativeImagePath = z
   .refine((value) => !value.startsWith('/') && !/^[A-Za-z]:/.test(value) && !value.split(/[\\/]/).includes('..'), 'Image paths must be relative to the data directory')
   .refine((value) => /\.(jpe?g|png|webp)$/i.test(value), 'Images must be .jpg, .jpeg, .png or .webp')
 
+function sortedKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortedKeys)
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value as object).sort().map((key) => [key, sortedKeys((value as Record<string, unknown>)[key])]))
+  return value
+}
+
 function isCompleteStyleProfile(value: unknown): boolean {
   try {
     validateAIStyleProfile(value)
@@ -231,11 +237,12 @@ export const manifestSchema = z
     const personas = new Map<string, string>()
     for (const benchmarkCase of manifest.cases) {
       if (!benchmarkCase.style_dna) continue
-      const text = JSON.stringify(benchmarkCase.style_dna.profile)
-      if (utf8ByteLength(text) > MAX_AI_STYLE_PROFILE_BYTES) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: the Style DNA profile is larger than the ${MAX_AI_STYLE_PROFILE_BYTES} bytes the application accepts` })
+      if (utf8ByteLength(JSON.stringify(benchmarkCase.style_dna.profile)) > MAX_AI_STYLE_PROFILE_BYTES) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: the Style DNA profile is larger than the ${MAX_AI_STYLE_PROFILE_BYTES} bytes the application accepts` })
+      // Compared with sorted keys: the same profile written in another key order is the same profile.
+      const canonical = JSON.stringify(sortedKeys(benchmarkCase.style_dna.profile))
       const known = personas.get(benchmarkCase.style_dna.persona)
-      if (known !== undefined && known !== text) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: Style DNA persona "${benchmarkCase.style_dna.persona}" has a different profile than in an earlier case` })
-      personas.set(benchmarkCase.style_dna.persona, text)
+      if (known !== undefined && known !== canonical) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: Style DNA persona "${benchmarkCase.style_dna.persona}" has a different profile than in an earlier case` })
+      personas.set(benchmarkCase.style_dna.persona, canonical)
     }
   })
 
@@ -258,6 +265,9 @@ export const MIN_CASES_PER_MODE = 10
  * purpose: a case is one unit of evidence whatever its number of images, so an
  * outfit of three items is one case, not three. Images matter for cost and for
  * sourcing, never for sample size.
+ *
+ * The image counts are SLOTS: the files a case names. Whether a file exists is
+ * not known here. A synthetic case names files that do not exist at all.
  */
 export interface DatasetComposition {
   cases: number
@@ -330,8 +340,8 @@ export function compositionLines(composition: DatasetComposition): string[] {
   const short = GARMENT_MODES.filter((mode) => balance.short_by[mode] > 0).map((mode) => `${mode} needs ${balance.short_by[mode]} more`)
   return [
     `Cases: ${composition.cases} (single ${byMode.single}, same_garment_views ${byMode.same_garment_views}, outfit_items ${byMode.outfit_items})`,
-    `Images: ${images.total} (${images.personal_photos} personal photos + ${images.garment_images} garment images; ${images.distinct_files} different files). Images are not cases: sample sizes count cases only.`,
-    `Garment images by mode: single ${images.garment_images_by_mode.single}, same_garment_views ${images.garment_images_by_mode.same_garment_views}, outfit_items ${images.garment_images_by_mode.outfit_items}`,
+    `Image slots: ${images.total} (${images.personal_photos} personal photos + ${images.garment_images} garment images; ${images.distinct_files} different files).${composition.cases > 0 && composition.cases_by_source.synthetic === composition.cases ? ' Every case is synthetic: none of these files exists.' : ''} Images are not cases: sample sizes count cases only.`,
+    `Garment image slots by mode: single ${images.garment_images_by_mode.single}, same_garment_views ${images.garment_images_by_mode.same_garment_views}, outfit_items ${images.garment_images_by_mode.outfit_items}`,
     `Style DNA (synthetic profiles only): ${styleDna.cases} case(s)${styleDna.cases > 0 ? ` (single ${styleDna.cases_by_mode.single}, same_garment_views ${styleDna.cases_by_mode.same_garment_views}, outfit_items ${styleDna.cases_by_mode.outfit_items}); personas: ${styleDna.personas.join(', ')}` : ''}`,
     balance.balanced
       ? `Mode balance: every garment mode has at least ${balance.target_per_mode} cases.`

@@ -265,6 +265,11 @@ export interface MetricRegressionReport {
   lost: string[]
   /** Metrics that could not be compared because the dataset or the reference set differs. */
   not_compared: number
+  /**
+   * Figures the candidate has and the base report does not carry at all, for example after the report
+   * format gained metrics. There is nothing to compare them with, so they are NOT gated by this comparison.
+   */
+  new_in_candidate: string[]
   /** True when a metric regressed or was lost. */
   has_regression: boolean
 }
@@ -272,8 +277,13 @@ export interface MetricRegressionReport {
 export interface MetricComparisonContext {
   /** False when the two reports were produced from different manifests. */
   sameDataset: boolean
-  /** False when the two reports used different reference sets. Only metrics that depend on references are affected. */
+  /**
+   * False when the two reports were scored against different first reviews. Only metrics that depend on
+   * references are affected. Adding a second review does not make this false: it changes no first review.
+   */
   sameReferences: boolean
+  /** False when the second reviews differ. Only the figures that use them are affected. Absent means: as sameReferences. */
+  sameSecondReviews?: boolean
   /** True when either report covers only part of its dataset. */
   partial: boolean
 }
@@ -299,6 +309,7 @@ export function classifyMetric(metric: string, base: IndexedMetric | undefined, 
   if (!context.sameDataset) return result('inconclusive', 'The two reports were produced from different datasets.', delta, margin)
   if (context.partial) return result('inconclusive', 'At least one report covers only part of the dataset.', delta, margin)
   if (candidate.needs_references && !context.sameReferences) return result('inconclusive', 'The two reports used different reference sets.', delta, margin)
+  if (candidate.needs_second_reviews && !(context.sameSecondReviews ?? context.sameReferences)) return result('inconclusive', 'The two reports used different second reviews.', delta, margin)
   if (base.status !== 'measured' || candidate.status !== 'measured') {
     return result('inconclusive', `Too few samples (base ${base.n}, candidate ${candidate.n}).`, delta, margin)
   }
@@ -312,9 +323,15 @@ export function classifyMetric(metric: string, base: IndexedMetric | undefined, 
 export function classifyMetricChanges(base: EvaluationReport, candidate: EvaluationReport): MetricRegressionReport {
   const baseIndex: MetricIndex = base.metric_index ?? {}
   const candidateIndex: MetricIndex = candidate.metric_index ?? {}
+  const sameFullReferences = (base.references?.fingerprint ?? null) === (candidate.references?.fingerprint ?? null)
+  // Reports that carry a scoring fingerprint are compared on it: the first reviews only. An older report has
+  // none, and is compared on the full fingerprint, exactly as before.
+  const baseScoring = base.references?.scoring_fingerprint
+  const candidateScoring = candidate.references?.scoring_fingerprint
   const context: MetricComparisonContext = {
     sameDataset: base.dataset?.fingerprint === candidate.dataset?.fingerprint,
-    sameReferences: (base.references?.fingerprint ?? null) === (candidate.references?.fingerprint ?? null),
+    sameReferences: baseScoring !== undefined && candidateScoring !== undefined ? baseScoring === candidateScoring : sameFullReferences,
+    sameSecondReviews: sameFullReferences,
     partial: isPartial(base) || isPartial(candidate),
   }
   const comparisons = [...new Set([...Object.keys(baseIndex), ...Object.keys(candidateIndex)])]
@@ -326,11 +343,14 @@ export function classifyMetricChanges(base: EvaluationReport, candidate: Evaluat
   const named = (wanted: MetricClass) => comparisons.filter((comparison) => comparison.classification === wanted).map((comparison) => comparison.metric)
 
   // Whether a difference between the two reports can be read as a change in this metric at all.
-  const comparable = (metric: string) => context.sameDataset && !context.partial && (context.sameReferences || !baseIndex[metric]?.needs_references)
+  const comparable = (metric: string) =>
+    context.sameDataset && !context.partial && (context.sameReferences || !baseIndex[metric]?.needs_references) && (sameFullReferences || !baseIndex[metric]?.needs_second_reviews)
   const lost = Object.keys(baseIndex).sort().filter((metric) => baseIndex[metric].status === 'measured' && candidateIndex[metric]?.status !== 'measured' && comparable(metric))
   const notCompared = comparisons.filter((comparison) => comparison.base !== null && comparison.candidate !== null && !comparable(comparison.metric) && !context.partial).length
 
-  return { comparisons, counts, regressions: named('regression'), improvements: named('improvement'), lost, not_compared: notCompared, has_regression: counts.regression > 0 || lost.length > 0 }
+  const newInCandidate = Object.keys(candidateIndex).sort().filter((metric) => baseIndex[metric] === undefined && candidateIndex[metric].value !== null)
+
+  return { comparisons, counts, regressions: named('regression'), improvements: named('improvement'), lost, not_compared: notCompared, new_in_candidate: newInCandidate, has_regression: counts.regression > 0 || lost.length > 0 }
 }
 
 /** One line per metric that moved or could not be judged, then a line of counts. Unavailable metrics are counted, not listed. */
@@ -346,6 +366,7 @@ export function describeMetricChanges(changes: MetricRegressionReport): string[]
     const comparison = changes.comparisons.find((entry) => entry.metric === metric) as MetricComparison
     lines.push(`Metric lost: ${metric} was measured in the baseline (${comparison.base}, ${comparison.base_n} cases) and has no measured figure now (${comparison.candidate === null ? 'no figure' : `${comparison.candidate}, ${comparison.candidate_n} cases`})`)
   }
+  if (changes.new_in_candidate.length > 0) lines.push(`Metrics new in this report: ${changes.new_in_candidate.length} figure(s) have nothing to compare with in the baseline, so this comparison does not gate them: ${changes.new_in_candidate.join(', ')}.`)
   if (changes.not_compared > 0) lines.push(`Metrics not compared: ${changes.not_compared} figure(s) exist on both sides but the dataset or the reference set differs, so nothing is concluded from them.`)
   lines.push(`Metrics: ${METRIC_CLASSES.map((entry) => `${changes.counts[entry]} ${entry.replace(/_/g, ' ')}`).join(', ')}.`)
   return lines

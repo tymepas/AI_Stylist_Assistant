@@ -273,13 +273,20 @@ one of them.
 | Reviewers: same rating | Per dimension, share of twice-reviewed cases on which both reviewers gave the same rating |
 | Reviewers: within one band | The same, counting a neighbouring band as agreement |
 | Reviewers: mean distance | Mean distance in bands between the reviewers |
-| Cases reviewers differ on | Listed, with the dimensions, and marked where they are two bands or more apart or where one could not judge |
+| Cases reviewers differ on | Listed, with the dimensions, and marked where they are far apart: two bands or more, or one of them could not judge |
 | Model within the reviewers' range | Share of twice-reviewed cases whose model rating is one a reviewer gave, or lies between two reviewers' ratings |
 
 Agreement between reviewers needs no model output, so it is reported for any
 outputs. It is not part of the metric index: it describes the reviews, so it
 can neither regress nor improve. "Model within the reviewers' range" is in the
-index and is compared between reports like any other figure.
+index and is compared between two reports when both used the same second
+reviews. The mean distance covers only pairs in which both reviewers gave a
+rating; a pair in which one could not judge shows in the two rates and in the
+list of disagreements.
+
+Each tier's reviewer table is shown in that tier's own section of the report,
+so reviewers of brief-derived expectations never appear under human-reviewed
+images.
 
 Read every figure of section 1 next to this one. If two people give the same
 `color` rating in 6 cases out of 10, a model that agrees with the first of them
@@ -300,10 +307,48 @@ only with Style DNA, and no case used to send one.
 | Mistargeted recommendations | Per such case: share of its recommendations that address only dimensions the same run rated Excellent. The prompt asks for alternatives that address weak dimensions |
 | Unrequested recommendations | Per case without Style DNA: share of complete runs that returned recommendations although the prompt asks for an empty list |
 
+A run that rated all six dimensions Excellent is left out of the mistargeted
+figure: it has no weak dimension to address, and the prompt still asks it for
+an alternative.
+
+**What isolated means here.** No advisor value reaches a rating, a band, a
+score or an agreement figure, and removing or breaking the block leaves every
+case report and every other figure identical; tests check both. One thing does
+reach a case result, on purpose and as before: the *text* of an alternative is
+shown to the user, so it goes through the same safety and unsupported-claim
+screening as a reason. A recommendation that states a price can fail its case.
+It still cannot move the verdict.
+
+**Style DNA is a condition on a case, not a garment mode.** A case with a
+profile is counted in exactly one garment mode. No figure is split by Style
+DNA: agreement, calibration and the per-mode figures pool cases with and
+without a profile, although a profile changes what the model is told. A report
+that mixes both says so in its next steps and gives the number of cases
+without a profile per mode. Cases of one comparison group must share the
+Style DNA condition and the style preferences; the validator refuses a group
+that does not.
+
 A Style DNA profile in evaluation data is always an invented persona. The
-manifest accepts no other `source` than `synthetic`, checks the profile with
-the production validator and size limit, and a test fails if a committed
-profile is not one from `scripts/evaluation/style-dna-personas.cjs`.
+manifest accepts no other `source` than `synthetic` and checks the profile with
+the production validator and size limit. The label is a declaration: what
+enforces it for committed files is a test that fails if a committed profile is
+not, value for value, one from `scripts/evaluation/style-dna-personas.cjs`.
+
+### "Measured" is a statement about sample size
+
+The status `measured` means a figure is built from at least ten cases. It says
+nothing about what produced the outputs. In a mock report the outputs are
+hand-written, so a `measured` figure there describes those fixtures and the
+evaluation code, never a model. The report's first line and its
+`interpretation` field say which kind of outputs it holds.
+
+Two more limits of every figure:
+
+- A figure at exactly ten cases has no margin: one case without a complete
+  output puts it back to `insufficient_sample`.
+- The standard error treats cases as independent. Cases that share their
+  images, such as the two cases of a comparison pair, are not, so the error of
+  a pooled figure over such cases is somewhat too narrow.
 
 ### What cannot be measured yet
 
@@ -373,6 +418,27 @@ runs. The test therefore leans towards calling a real change "no meaningful
 change" over calling noise a regression. The thresholds are constants in
 `quality.ts` (`MIN_SAMPLE`, `NOISE_FLOOR_RATE`, `NOISE_FLOOR_BANDS`, `NOISE_Z`)
 and are written into every report.
+
+### When two reports count as scored against the same references
+
+A figure that depends on references is compared between two reports only when
+both were scored against the same first reviews. That is decided by the
+`scoring_fingerprint` of the reference summary: the first review of every
+case, without second reviews and without the hand-kept `dataset_version`.
+
+- A change to any first review makes those figures `inconclusive`, as before.
+- Adding a second review, or bumping `dataset_version` with no review changed,
+  does not. Neither can move a figure, and a comparison that is switched off
+  hides a regression instead of preventing one.
+- The figures that use second reviews ("within the reviewers' range") are
+  compared only when the full fingerprint, second reviews included, is the same.
+- A report written before the scoring fingerprint existed is compared on the
+  full fingerprint, exactly as it always was.
+
+A figure the candidate has and the baseline does not carry at all, for example
+after the report format gained metrics, has nothing to be compared with. The
+comparison names every such figure ("Metrics new in this report") so that it
+is not mistaken for a figure that was checked.
 
 ### Replacing the baseline
 
@@ -483,7 +549,7 @@ Filters of different kinds combine with AND. A filter that names nothing in the 
 | Action | Cost | Approval |
 |---|---|---|
 | `npm test`, `npm run eval`, `npm run eval:scenarios`, `npm run eval:scenarios:v2`, `npm run eval:replay`, `npm run eval:references`, `npm run eval:second-review`, `npm run eval:build-golden-plan` | None. No network access | None |
-| `npm run benchmark` without the opt-in phrase (dry run) | None. Prints the worst-case cost | None |
+| `npm run benchmark` without the opt-in phrase (dry run) | None. Prints the amounts a live run would reserve | None |
 | `npm run benchmark` with `BENCHMARK_LIVE=I_ACCEPT_OPENAI_CHARGES` and `BENCHMARK_MAX_USD` | Billable | Explicit approval for that run. Hard cap $10 |
 
 Worst-case reservation per call, from the pricing table in
@@ -496,8 +562,9 @@ per image, 4,000 output tokens, $1 and $5 per million):
 | 2 | 3 | $0.0388 |
 | 3 | 4 | $0.0424 |
 
-The 41 planned golden cases cost at most $4.64 at three runs and $3.10 at two
-(`LIVE_VALIDATION_PLAN.md`). Sixty cases at three runs cost at most $7.63 even
+For the 41 planned golden cases the reservations add up to $4.64 at three runs
+and $3.10 at two (`LIVE_VALIDATION_PLAN.md`, which also states the assumption
+these figures rest on: the per-image token bound is not measured). Sixty cases at three runs cost at most $7.63 even
 if every case has three garment images, which is inside the $10 hard cap. A
 Style DNA profile does not change the reservation. These are upper bounds used
 to reserve budget, not expected spend, and they follow the configured pricing.

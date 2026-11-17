@@ -534,17 +534,17 @@
       "comparison_group": "g10"
     },
     {
-      "case_id": "gv-borderline-suit-no-tie",
+      "case_id": "gv-s01",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "borderline-suit-no-tie/photo.jpg"
+          "path": "s01/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "borderline-suit-no-tie/garment-1.jpg"
+          "path": "s01/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -556,17 +556,17 @@
       }
     },
     {
-      "case_id": "gv-borderline-smart-jeans",
+      "case_id": "gv-s02",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "borderline-smart-jeans/photo.jpg"
+          "path": "s02/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "borderline-smart-jeans/garment-1.jpg"
+          "path": "s02/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -578,17 +578,17 @@
       }
     },
     {
-      "case_id": "gv-quality-warm-light",
+      "case_id": "gv-s03",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "quality-warm-light/photo.jpg"
+          "path": "s03/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "quality-warm-light/garment-1.jpg"
+          "path": "s03/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -600,17 +600,17 @@
       }
     },
     {
-      "case_id": "gv-quality-blurred",
+      "case_id": "gv-s04",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "quality-blurred/photo.jpg"
+          "path": "s04/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "quality-blurred/garment-1.jpg"
+          "path": "s04/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -622,17 +622,17 @@
       }
     },
     {
-      "case_id": "gv-quality-partly-hidden",
+      "case_id": "gv-s05",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "quality-partly-hidden/photo.jpg"
+          "path": "s05/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "quality-partly-hidden/garment-1.jpg"
+          "path": "s05/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -644,17 +644,17 @@
       }
     },
     {
-      "case_id": "gv-ambiguous-navy-or-black",
+      "case_id": "gv-s06",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "ambiguous-navy-or-black/photo.jpg"
+          "path": "s06/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "ambiguous-navy-or-black/garment-1.jpg"
+          "path": "s06/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -666,17 +666,17 @@
       }
     },
     {
-      "case_id": "gv-ambiguous-fabric-weight",
+      "case_id": "gv-s07",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "ambiguous-fabric-weight/photo.jpg"
+          "path": "s07/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "ambiguous-fabric-weight/garment-1.jpg"
+          "path": "s07/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -688,17 +688,17 @@
       }
     },
     {
-      "case_id": "gv-text-price-tag",
+      "case_id": "gv-s08",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "text-price-tag/photo.jpg"
+          "path": "s08/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "text-price-tag/garment-1.jpg"
+          "path": "s08/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -710,17 +710,17 @@
       }
     },
     {
-      "case_id": "gv-text-slogan-instruction",
+      "case_id": "gv-s09",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "text-slogan-instruction/photo.jpg"
+          "path": "s09/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "text-slogan-instruction/garment-1.jpg"
+          "path": "s09/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -732,17 +732,17 @@
       }
     },
     {
-      "case_id": "gv-insufficient-no-person",
+      "case_id": "gv-s10",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "insufficient-no-person/photo.jpg"
+          "path": "s10/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "insufficient-no-person/garment-1.jpg"
+          "path": "s10/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -754,17 +754,17 @@
       }
     },
     {
-      "case_id": "gv-insufficient-no-garment",
+      "case_id": "gv-s11",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "insufficient-no-garment/photo.jpg"
+          "path": "s11/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "insufficient-no-garment/garment-1.jpg"
+          "path": "s11/garment-1.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",

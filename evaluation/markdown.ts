@@ -70,12 +70,12 @@ function reviewerSection(report: EvaluationReport, tier: ScoredTier): string[] {
     `${reviewers.cases} case(s) were rated by a second person, independently. Where two careful people differ, neither is wrong, and a model rating inside their range is not an error.`,
     '',
     ...table(
-      ['Dimension', 'Reviewers: same rating', 'Reviewers: within one band', 'Reviewers: mean distance (bands)', 'Model within the reviewers\' range'],
+      ['Dimension', 'Reviewers: same rating', 'Reviewers: within one band', 'Reviewers: mean distance (bands)', `${report.provenance === 'model' ? 'Model' : 'Fixture outputs (not a model)'} within the reviewers' range`],
       DIMENSION_KEYS.map((key) => [key, showMetric(reviewers.dimensions[key].exact_rate), showMetric(reviewers.dimensions[key].within_one_rate), showMetric(reviewers.dimensions[key].mean_distance), showMetric(reviewers.model_within_reviewer_range[key])]),
     ),
     ...(reviewers.disagreements.length === 0
       ? ['No recorded disagreement between reviewers.', '']
-      : table(['Case reviewers differ on', 'Dimensions', 'Two bands or more apart'], reviewers.disagreements.map((entry) => [entry.case_id, entry.dimensions.join(', '), entry.severe.join(', ') || 'none']))),
+      : table(['Case reviewers differ on', 'Dimensions', 'Far apart (two bands or more, or one reviewer could not judge)'], reviewers.disagreements.map((entry) => [entry.case_id, entry.dimensions.join(', '), entry.severe.join(', ') || 'none']))),
   ]
 }
 
@@ -174,9 +174,9 @@ export function renderMarkdown(report: EvaluationReport): string {
     ...(quality.image_grounded_accuracy.status === 'available'
       ? ['A reference rating is one reviewer\'s judgement, not a fact about the image. "Agreement" means agreement with that reviewer.', '', ...agreementSection(report, 'image_reviewed')]
       : [quality.image_grounded_accuracy.reason as string, '', 'No figure below this line is evidence about accuracy on real images.', '']),
-    ...SCORED_TIERS.flatMap((tier) => reviewerSection(report, tier)),
+    ...reviewerSection(report, 'image_reviewed'),
     ...(otherTiers.some((tier) => quality.agreement[tier].reference_cases > 0)
-      ? ['## 6. Agreement with other expectations', '', 'These are not accuracy on real images.', '', ...otherTiers.flatMap((tier) => agreementSection(report, tier))]
+      ? ['## 6. Agreement with other expectations', '', 'These are not accuracy on real images.', '', ...otherTiers.flatMap((tier) => [...agreementSection(report, tier), ...reviewerSection(report, tier)])]
       : []),
     '## 7. Confidence',
     '',

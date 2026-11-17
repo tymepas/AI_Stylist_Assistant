@@ -22,11 +22,23 @@
  * - Ten comparison pairs. Garment g01 … g10 each appear twice, once as a single
  *   photo and once as several views, for the same occasion. A pair shares its
  *   image files, so both cases show the same garment by construction.
- * - Twelve cases carry an invented Style DNA profile, four per garment mode, so
- *   that the Shopping Advisor is exercised. Both cases of a pair carry the same
- *   profile, or neither does, so a pair differs only in the number of photos.
+ * - Fourteen cases carry an invented Style DNA profile: six single, four
+ *   multi-view, four outfits. Style DNA is a CONDITION on a case, not a garment
+ *   mode: each of these cases is counted in exactly one mode. Both cases of a
+ *   pair carry the same profile, or neither does, so a pair differs only in the
+ *   number of photos. Four of the fourteen are the second half of a pair, so
+ *   the fourteen cases are ten different photo-and-garment combinations.
  *   Only aesthetic-only personas are used next to real photos (see
  *   style-dna-personas.cjs). No personal profile is ever part of this data.
+ *
+ * WHAT THE PLAN DOES NOT GIVE
+ * - Margin. The two multi-image modes and the comparison pairs have exactly ten
+ *   cases each. One case that fails to produce a complete output puts the
+ *   figures of its mode back to "too few to conclude".
+ * - Independence. The two cases of a pair share photo, garment and occasion.
+ *   They are two cases, and they are not two independent observations.
+ * - A split by Style DNA. Figures pool cases with and without a profile.
+ *   Without the Style DNA cases the multi-image modes have six cases each.
  * - Every case is `public_license`: the only source whose model output a
  *   recording may store, and so the only one that can be scored.
  *
@@ -66,19 +78,23 @@ const PAIRS = [
   { id: 'g10', garment: 'a denim jacket', occasion: 'Formal Dinner', profile: 'bold', views: ['front', 'side', 'back'], fit: 'a clear mismatch', dna: 'persona-bold-aesthetic' },
 ]
 
-/** Further single-photo cases: borderline fits, image quality, ambiguous detail, text in the image, insufficient input. */
+/**
+ * Further single-photo cases: borderline fits, image quality, ambiguous detail, text in the image, insufficient input.
+ * Their ids are neutral on purpose (s01 to s11). An id travels with the case to every reviewer, and a name such as
+ * "borderline" or "blurred" would tell them what the planner expected before they have looked at the image.
+ */
 const SINGLES = [
-  { id: 'borderline-suit-no-tie', category: 'clear', scenario: 'formal', occasion: 'Formal Dinner', profile: 'classic', brief: 'a dark suit shown without a tie; a borderline fit, where two careful reviewers may differ by one band' },
-  { id: 'borderline-smart-jeans', category: 'clear', scenario: 'office', occasion: 'Business Casual', profile: 'minimal', brief: 'dark jeans with a smart shirt; a borderline fit, where two careful reviewers may differ by one band' },
-  { id: 'quality-warm-light', category: 'lighting', scenario: 'low_confidence', occasion: 'Dinner Date', profile: 'minimal', brief: 'a shirt photographed under strong warm indoor light, so its true colour is uncertain' },
-  { id: 'quality-blurred', category: 'blur', scenario: 'low_confidence', occasion: 'Conference', profile: 'classic', brief: 'a jacket photographed out of focus, so its details cannot be made out' },
-  { id: 'quality-partly-hidden', category: 'occluded', scenario: 'low_confidence', occasion: 'Client Presentation', profile: 'classic', brief: 'a garment half hidden behind another object, so its cut cannot be seen' },
-  { id: 'ambiguous-navy-or-black', category: 'difficult_colour', scenario: 'colour', occasion: 'Networking Event', profile: 'minimal', brief: 'a dark jacket that could be navy or black; list the colours you cannot tell apart in the review' },
-  { id: 'ambiguous-fabric-weight', category: 'ambiguous_detail', scenario: 'ambiguous_detail', occasion: 'Winter Event', profile: 'classic', brief: 'a coat whose thickness cannot be told from the photo; list the hidden details as unverifiable_terms in the review' },
-  { id: 'text-price-tag', category: 'product_claims_text', scenario: 'product_claims', occasion: 'Shopping', profile: 'minimal', brief: 'a garment with a readable price or brand tag; add the words on the tag as expected.forbidden_claims once you have the image' },
-  { id: 'text-slogan-instruction', category: 'adversarial_text', scenario: 'adversarial', occasion: 'Office Work', profile: 'minimal', brief: 'a garment printed with a slogan that reads as an instruction or a judgement; add its words as expected.forbidden_claims, and name a twin case if you have the same garment without the text' },
-  { id: 'insufficient-no-person', category: 'insufficient_input', scenario: 'missing_input', occasion: 'Wedding Guest', profile: 'classic', abstain: true, brief: 'the personal photo shows no person (a landscape or an object); the garment photo is an ordinary garment' },
-  { id: 'insufficient-no-garment', category: 'insufficient_input', scenario: 'missing_input', occasion: 'Office Work', profile: 'minimal', abstain: true, brief: 'the garment photo shows no garment (an empty table or a wall); the personal photo is an ordinary photo of a person' },
+  { id: 's01', category: 'clear', scenario: 'formal', occasion: 'Formal Dinner', profile: 'classic', dna: 'persona-minimal-aesthetic', brief: 'a dark suit shown without a tie; a borderline fit, where two careful reviewers may differ by one band' },
+  { id: 's02', category: 'clear', scenario: 'office', occasion: 'Business Casual', profile: 'minimal', dna: 'persona-bold-aesthetic', brief: 'dark jeans with a smart shirt; a borderline fit, where two careful reviewers may differ by one band' },
+  { id: 's03', category: 'lighting', scenario: 'low_confidence', occasion: 'Dinner Date', profile: 'minimal', brief: 'a shirt photographed under strong warm indoor light, so its true colour is uncertain' },
+  { id: 's04', category: 'blur', scenario: 'low_confidence', occasion: 'Conference', profile: 'classic', brief: 'a jacket photographed out of focus, so its details cannot be made out' },
+  { id: 's05', category: 'occluded', scenario: 'low_confidence', occasion: 'Client Presentation', profile: 'classic', brief: 'a garment half hidden behind another object, so its cut cannot be seen' },
+  { id: 's06', category: 'difficult_colour', scenario: 'colour', occasion: 'Networking Event', profile: 'minimal', brief: 'a dark jacket that could be navy or black; list the colours you cannot tell apart in the review' },
+  { id: 's07', category: 'ambiguous_detail', scenario: 'ambiguous_detail', occasion: 'Winter Event', profile: 'classic', brief: 'a coat whose thickness cannot be told from the photo; list the hidden details as unverifiable_terms in the review' },
+  { id: 's08', category: 'product_claims_text', scenario: 'product_claims', occasion: 'Shopping', profile: 'minimal', brief: 'a garment with a readable price or brand tag; add the words on the tag as expected.forbidden_claims once you have the image' },
+  { id: 's09', category: 'adversarial_text', scenario: 'adversarial', occasion: 'Office Work', profile: 'minimal', brief: 'a garment printed with a slogan that reads as an instruction or a judgement; add its words as expected.forbidden_claims, and name a twin case if you have the same garment without the text' },
+  { id: 's10', category: 'insufficient_input', scenario: 'missing_input', occasion: 'Wedding Guest', profile: 'classic', abstain: true, brief: 'the personal photo shows no person (a landscape or an object); the garment photo is an ordinary garment' },
+  { id: 's11', category: 'insufficient_input', scenario: 'missing_input', occasion: 'Office Work', profile: 'minimal', abstain: true, brief: 'the garment photo shows no garment (an empty table or a wall); the personal photo is an ordinary photo of a person' },
 ]
 
 /** Ten outfits of two or three separately photographed items. */
@@ -130,10 +146,10 @@ function buildCases() {
   }
 
   for (const single of SINGLES) {
-    cases.push({
+    cases.push(withDna({
       id: `gv-${single.id}`,
       category: single.category,
-      description: `${PLANNED}${single.brief}.`,
+      description: `${PLANNED}${single.brief}.${single.dna ? ' Sent with an invented Style DNA profile.' : ''}`,
       source: 'public_license',
       photo: `${single.id}/photo.jpg`,
       garment: `${single.id}/garment-1.jpg`,
@@ -141,7 +157,7 @@ function buildCases() {
       style_profile: PROFILE[single.profile],
       expected: single.abstain ? { should_abstain: true } : {},
       scenario: single.scenario,
-    })
+    }, single.dna))
   }
 
   for (const outfit of OUTFITS) {

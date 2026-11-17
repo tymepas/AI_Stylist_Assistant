@@ -112,7 +112,9 @@ describe('Verdict model benchmark', () => {
     // Each case is priced at its own number of images: a multi-photo case costs more than a single-photo one.
     const readyWorst = plannedWorstCaseMicroUsd(prepared.map((entry) => entry.benchmarkCase), options)
     const manifestWorst = plannedWorstCaseMicroUsd(manifest.cases, options)
-    out(`Worst-case cost: $${(maxCostPerCallMicroUsd(options, 2) / 1e6).toFixed(4)} per call with one garment image, $${(maxCostPerCallMicroUsd(options, 4) / 1e6).toFixed(4)} with three; $${(readyWorst / 1e6).toFixed(2)} for ${plannedCalls} ready calls ($${(manifestWorst / 1e6).toFixed(2)} for all ${manifestCalls} manifest calls)`)
+    out(`Reserved per call (from configured token bounds): $${(maxCostPerCallMicroUsd(options, 2) / 1e6).toFixed(4)} per call with one garment image, $${(maxCostPerCallMicroUsd(options, 4) / 1e6).toFixed(4)} with three; $${(readyWorst / 1e6).toFixed(2)} for ${plannedCalls} ready calls ($${(manifestWorst / 1e6).toFixed(2)} for all ${manifestCalls} manifest calls)`)
+    // The per-image token bound is an assumption that has not been measured, so this is not what the provider is guaranteed to bill.
+    out('These are sums of reservations, not a guaranteed maximum spend: see evaluation/LIVE_VALIDATION_PLAN.md, "Assumptions". The spend cap, not this figure, limits a live run.')
     if (manifestWorst > HARD_MAX_USD * 1e6) out(`NOTE: the whole manifest could cost more than the hard cap of $${HARD_MAX_USD}. A live run stops before the cap, so it would not finish every case.`)
 
     if (gate.mode === 'dry_run') {

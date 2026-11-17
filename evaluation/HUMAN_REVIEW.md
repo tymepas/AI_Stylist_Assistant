@@ -96,7 +96,15 @@ Use `.jpg`, `.jpeg`, `.png` or `.webp`. One folder per case keeps things tidy.
 21 with one garment photo, 10 with several views of one garment and 10 outfits,
 so that every garment mode reaches the minimum of ten cases. Each entry is a
 brief of what its images should show ("PLANNED, no image yet: ..."). It holds no
-image, no rating and no expected verdict.
+image, no rating and no expected verdict band.
+
+A brief is a sourcing criterion, not a rating. "A clear mismatch for the
+occasion" tells you what kind of image to look for; it does not tell you what
+to rate. Rate what the image you found actually shows, and before you review a
+case replace its "PLANNED" description with a neutral description of the
+images, so that the brief does not sit next to the case while you rate it.
+The eleven extra single cases have neutral ids (`gv-s01` to `gv-s11`) for the
+same reason: an id is shown to every reviewer.
 
 Copy it to `evaluation/datasets/golden-v1/cases.json` the first time. Then, for
 each entry, source images that fit the brief, or rewrite the brief to fit the
@@ -115,6 +123,28 @@ measurable.
 
 Leave `expected.acceptable_bands` empty unless you, as the reviewer, are
 prepared to say which verdict bands are acceptable for the actual image.
+
+Two tests pin the golden folder to the plan files (`tests/evaluation/referenceSet.test.ts`,
+"leave the golden dataset empty until real images have been reviewed"). They
+fail as soon as `cases.json` exists, on purpose: update them in the commit
+that adds the real dataset.
+
+Three limits of the plan to keep in mind while you fill it:
+
+- **No margin.** The two multi-image modes and the comparison pairs have
+  exactly ten cases each. One case without a complete output puts the figures
+  of its mode back to "too few to conclude". Adding a spare case or two per
+  mode avoids that; each costs one more call per run.
+- **Pairs are not independent.** The two cases of a pair share the photo, the
+  garment and the occasion. They are two cases and count as two, and they are
+  not two independent observations: the 39 cases that can give ratings are 29
+  different photo, garment and occasion combinations.
+- **Style DNA is a condition on a case, not a garment mode.** Fourteen cases
+  send a profile (six single, four multi-view, four outfits). Each is counted
+  in exactly one mode. Figures pool cases with and without a profile and are
+  not split by it; without the Style DNA cases the multi-image modes have six
+  cases each. Both cases of a pair carry the same profile or neither does, and
+  the validator refuses a pair that differs.
 
 ### 3. Create the review stubs
 
@@ -165,7 +195,7 @@ ideally all of them. See
 
 Model outputs come from a live benchmark run, which is billable and is never
 started without explicit approval (`benchmark/README.md`). A dry run is free and
-prints the worst-case cost:
+prints the amounts a live run would reserve (a sum of reservations, not a guaranteed maximum spend):
 
 ```bash
 BENCHMARK_MODEL=gpt-6.1-terra BENCHMARK_CASES=evaluation/datasets/golden-v1/cases.json BENCHMARK_DATA_DIR=benchmark/data/golden-v1 npm run benchmark
@@ -380,8 +410,11 @@ review in `second_reviews`. Both stay as they were given.
 
 ### How to do one
 
-1. Make a blind sheet. It contains the occasion, the style preferences and the
-   image paths of each finished case, and nothing the first reviewer concluded:
+1. The person who keeps the dataset makes a blind sheet. It contains the inputs
+   of each finished case and nothing the first reviewer concluded: the
+   occasion, the style preferences, the Style DNA context where the case sends
+   a profile (in the words the model is given), the garment mode, and the image
+   paths with the hash of each file the first review recorded:
 
    ```bash
    npm run eval:second-review -- sheet --manifest evaluation/datasets/golden-v1/cases.json --references evaluation/datasets/golden-v1/references.json --out benchmark/data/golden-v1/second-review.json
@@ -394,14 +427,23 @@ review in `second_reviews`. Both stay as they were given.
    and six ratings per case, using the rubric above. They do not open
    `references.json`.
 
-3. Add the sheet to the reference set. Without `--write` the command only
-   prints what it would add and where the two reviewers differ:
+3. The person who keeps the dataset adds the sheet to the reference set. The
+   second reviewer does not run this step: the command prints the earlier
+   ratings wherever the reviews differ. Without `--write` it only prints what
+   it would add:
 
    ```bash
    npm run eval:second-review -- merge --sheet benchmark/data/golden-v1/second-review.json --references evaluation/datasets/golden-v1/references.json --write
    ```
 
-4. Bump `dataset_version` and run the validator (step 5 above).
+   The merge refuses a sheet that is incomplete, was made for another dataset
+   or for other image files, names a case twice, or would exceed a limit of the
+   reference format. It adds a sheet completely or not at all.
+
+4. Bump `dataset_version` and run the validator (step 5 above). Adding a
+   second review changes no first review, so reports from before and after it
+   are still compared metric by metric: only the figures that use second
+   reviews are held back until both reports have the same ones.
 
 ### What to do about a difference
 
@@ -424,7 +466,7 @@ Nothing, to the ratings. This is the rule that matters most:
   agrees with the first of them in 6 out of 10 is not shown to be worse than a
   person.
 - **Every case reviewers differ on** is listed, with the dimensions, and marked
-  where they are two bands or more apart or where one could not judge.
+  where they are far apart: two bands or more, or one of them could not judge.
 - **Model within the reviewers' range**: how often the model's rating is one a
   reviewer gave, or lies between two reviewers' ratings. Where reviewers
   differ, a rating inside their range is not an error.
@@ -481,7 +523,7 @@ them in place.
 | 10 or more outfit cases | Garment type accuracy and outfit note completeness count as measured |
 | 10 or more comparison groups | One photo against several counts as measured |
 | 10 or more cases with a second review | Agreement between reviewers, and the model's position within their range, count as measured |
-| 10 or more cases that send Style DNA | The Shopping Advisor figures count as measured |
+| 10 or more cases that send Style DNA and return ratings | Shopping Advisor availability counts as measured. The mistargeted figure needs ten such cases with a usable block and a dimension below Excellent; the unrequested figure counts cases without Style DNA |
 
 Every count is a count of cases. Running a case three times, or an outfit of
 three items, does not add to it. An abstaining case (no person, no garment)
