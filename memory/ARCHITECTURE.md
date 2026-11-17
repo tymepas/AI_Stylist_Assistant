@@ -94,10 +94,28 @@ Rules that hold everywhere (API, UI, evaluation manifest, benchmark):
 
 - **The mode is never inferred** from the number of photos, and a photo is never dropped to make a request fit. A count that does not fit the mode is an error with a message; in the UI, switching to one garment photo while several are added asks first.
 - **Backward compatible.** `POST /api/analyze` takes the field `garment` one to three times and `garmentMode`. A request without `garmentMode` is a `single` request and gets exactly the response it always did (no `garment_mode` field). The same garment file twice is refused.
-- **Prompt.** A `single` request sends the same message as before multiple images existed, so its prompt version is unchanged. Each multi-image mode adds a few instruction lines to the user message and labels every garment image by position and role; each has its own recorded prompt version (`tests/core/garmentModes.test.ts`). `memory/SYSTEM_PROMPT.md` is not changed. The added lines are kept short enough that the whole prompt text stays within `maxTextInputTokens`, the bound the spend reservation is computed from.
+- **Prompt.** Since analysis-output/3 (Phase 4 Milestone 1) every mode, `single` included, is named in the first line of the user message, and every garment image is numbered (`Garment image 1:`, `Garment image 2 of 3 (view):`, `Garment image 2 of 3 (item):`). The rules for each mode are in `memory/SYSTEM_PROMPT.md`, stated once. Each mode has its own recorded prompt version (`tests/core/garmentModes.test.ts`). The whole prompt text stays within `maxTextInputTokens`, the bound the spend reservation is computed from; the worst case the application accepts is 7,905 bytes against 8,000.
 - **Spend.** The reservation covers every image actually sent (the personal photo plus one to three garment photos). Limits, budgets and concurrency are unchanged.
 - **Per-item notes.** In `outfit_items` mode the model may return `outfit_components`: one note per item with a qualitative label (Works well, Works, Needs attention, Unable to tell). It is validated separately (`lib/services/openai/outfitComponentsSchema.ts`), exactly like the shopping advisor: a missing or malformed block leaves the analysis untouched, and nothing in it reaches `computeVerdict`. This is `analysis-output/2`; every `/1` output is still valid.
 - **Not validated against a live model.** The multi-image modes were built and tested with mocks and synthetic fixtures only. How well a model follows the new instructions is unknown until an approved live benchmark is run and replayed.
+
+## Observations and rating evidence (analysis-output/3)
+
+Phase 4 Milestone 1 adds two informational blocks to a complete analysis. The full contract is in `memory/AI_OUTPUT_SCHEMA.md`.
+
+- **`observations`**: what is visible in each garment image: a short garment name and a category (or `unclear`), up to three broad colour families (dominant and secondary), a pattern category, up to three visible details, and photo limitations. Each status distinguishes `observed`, `uncertain` and `not_visible`; "Unable to Evaluate" stays a rating. One entry per garment image: outfit items are never merged, and views of one garment carry a `views` entry saying whether they appear to show the same garment.
+- **`evidence`**: per dimension, the inputs used (`person_photo`, `garment_images`, `occasion`, `style_preferences`, `style_dna`), the observations it rests on (`g1.colour`, `g2.d1`), whether the support was `sufficient`, `partial` or `insufficient`, and what was missing. It carries no explanation of its own.
+
+How they are handled:
+
+- **Validated after, and apart from, the six ratings** (`lib/services/visualEvidenceService.ts`), like the Shopping Advisor. A missing or invalid block is `unavailable`; evidence is checked per dimension, so one bad entry does not remove the others. Nothing is filled in on the model's behalf.
+- **Cross-references are checked.** Evidence may cite only observations that exist and were visible, and name only inputs that were sent. Evidence that contradicts its rating is dropped; the rating is never changed.
+- **Unsupported claims are refused.** Observation and evidence text that states a material or fibre, a brand, a price, durability, comfort or quality, a link or an instruction makes its block (or dimension) unavailable (`lib/services/openai/claimScreening.ts`). Text visible in an image is data, never an instruction.
+- **Never part of the verdict.** `computeVerdict` reads the six ratings only. The blocks are attached to the result afterwards (`buildCompleteAnalysisResult`), and the evaluation's `verdict_integrity` and `visual_evidence` checks prove on every recorded run that adding, removing or breaking them never moves the band or the score.
+- **Logging.** A dropped block logs `observations_unavailable` or `rating_evidence_unavailable` with fixed problem codes (`problem_codes`), the number of dimensions kept and schema paths; never model text. The logger accepts only short lower-case codes in that field.
+- **Mock mode** (Preview) returns mock blocks that say no image was analysed, built in the raw model shape and passed through the same validation (`lib/services/mockVisualEvidence.ts`).
+- **Report.** "What Verdict AI observed" (`components/fashion/VisualObservations.tsx`) shows one card per garment image, and each rating has a "Why this rating" disclosure separating observed facts from the explanation. Unavailable blocks are stated plainly; results from before /3 show neither.
+- **Not validated against a live model.** Everything was built and tested with hand-written fixtures and mocks. How well a model fills these blocks is unknown until an approved live run is replayed.
 
 ## Evidence summary and the decision report
 
@@ -169,7 +187,7 @@ Mock mode never reaches the model client, so it writes one `api_request_complete
 ## Prompt and schema versions
 
 - **Prompt version** (`lib/services/openai/promptVersion.ts`): the first 12 hex characters of a SHA-256 over the system prompt file and the user message, as produced by the same builder functions that produce the real request. User values and images are replaced by fixed placeholders first, so the version identifies the template and never depends on a user. Line endings are normalised, so a Windows checkout and the Linux deployment report the same version. Editing `memory/SYSTEM_PROMPT.md`, `memory/STYLE_PROFILE_SYSTEM_PROMPT.md` or any fixed instruction line changes the version automatically. `tests/versioning/promptVersion.test.ts` records the current versions, so a prompt change is visible in review.
-- **Schema version**: `ANALYSIS_OUTPUT_SCHEMA_VERSION` (`analysis-output/2`, covering the analysis, shopping recommendation and outfit component schemas; `/2` added the optional `outfit_components` block) and `PROFILE_OUTPUT_SCHEMA_VERSION` (`profile-output/1.0`). `tests/versioning/schemaVersions.test.ts` pairs each version with a fingerprint of the schema's structure and fails if a schema changes without a version bump.
+- **Schema version**: `ANALYSIS_OUTPUT_SCHEMA_VERSION` (`analysis-output/3`, covering the analysis, shopping recommendation, outfit component, observation and evidence schemas; `/2` added the optional `outfit_components` block, `/3` the optional `observations` and `evidence` blocks) and `PROFILE_OUTPUT_SCHEMA_VERSION` (`profile-output/1.0`). `tests/versioning/schemaVersions.test.ts` pairs each version with a fingerprint of the schema's structure and fails if a schema changes without a version bump.
 
 ## Client disconnects
 

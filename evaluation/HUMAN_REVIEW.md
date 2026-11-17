@@ -368,13 +368,26 @@ dimensions to agree closely, and treat that as a property of the current prompt.
 You do not review confidence. The evaluation compares the confidence the model
 states with how often its ratings agree with yours.
 
-### Garment facts (outfits only)
+### Garment facts (every garment mode)
 
-For an outfit of several items, name the type of each garment image in order:
-`top`, `bottom`, `outerwear`, `dress`, `footwear`, `accessory`, `suiting` or
-`traditional_wear`. These are compared with the per-item notes the model
-returns. `colour_family` and `pattern` may be recorded for later; the model
-output has no field to compare them with yet.
+Record, for each garment image in order (`item` is the image number), what you
+can see. These are compared with the model's `observations` (analysis-output/3)
+and, for outfits, with its per-item notes. Record only what the image shows;
+leave a field out rather than guess.
+
+| Field | What to write |
+|---|---|
+| `garment_type` | `top`, `bottom`, `outerwear`, `dress`, `footwear`, `accessory`, `suiting` or `traditional_wear` |
+| `identifiable: false` | Instead of `garment_type`, when you cannot tell what the garment is from this image. The model is expected to abstain |
+| `colours` | `{ "dominant": [...], "secondary": [...] }` in the broad families the model uses: black, white, cream, grey, beige, brown, red, pink, orange, yellow, green, blue, navy, purple, gold, silver, multicolour. One or two dominant, at most three in all |
+| `colour_visible: false` | Instead of `colours`, when lighting or occlusion means the colour cannot be judged |
+| `pattern_category` | `solid`, `striped`, `checked`, `printed`, `textured`, `other`, or `unclear` when it cannot be judged |
+| `visible_details` | Words that name details you can see (for example `lapel`, `pocket`). A model detail mentioning one counts as supported |
+| `absent_details` | Words that name details that are NOT there (for example `hood` on a blazer). A model detail mentioning one counts as contradicted |
+
+For views of one garment, also set `views_same_garment` on the reference:
+`yes` when the views show the same garment, `no` when they do not. The free-text
+`colour_family` and `pattern` fields of the first format are kept and never scored.
 
 ### Key facts
 

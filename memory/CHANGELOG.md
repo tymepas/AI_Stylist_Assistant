@@ -263,3 +263,26 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 - The plan has no margin for its ten comparison pairs, its pairs are not independent observations, and within the multi-image modes its figures exist only pooled over Style DNA: eight cases without a profile and four with one are too few for a separate figure
 - The dependency audit fails on `picomatch` GHSA-fc5q-39xc-vjpf, on `main` as well. It is left unresolved and is documented in `memory/ARCHITECTURE.md`; no dependency, override or exception was changed
 - The colouring part of Style DNA is not exercised on real images, because only aesthetic-only personas go with a real photo
+
+---
+
+## Unreleased - Phase 4 Milestone 1: visual observations and rating evidence
+
+### Added
+
+- `observations` block (analysis-output/3): per garment image, a garment name and category, up to three broad colour families (dominant and secondary), a pattern category, up to three visible details and photo limitations, with `observed` / `uncertain` / `not_visible` statuses. Views of one garment say whether they appear to show the same garment. Validated separately; never part of the verdict
+- `evidence` block: for each of the six dimensions, the inputs used, the observations cited, the level of support and what was missing. Validated per dimension against the ratings, the validated observations and the inputs actually sent
+- Refusal of unsupported claims in both blocks (material, fibre, brand, price, durability, comfort, quality, links, instructions), with logged problem codes only
+- Decision report: "What Verdict AI observed" and a "Why this rating" disclosure on each rating, with honest unavailable states
+- Evaluation: `quality.visual_evidence` (structural figures and figures against reviewer garment facts), the blocking `visual_evidence` check, report format `/5`, the `scenarios-v3` dataset with a synthetic reference set and its own baseline, and garment facts for every garment mode in the reference format
+
+### Changed
+
+- System prompt rewritten: every rule stated once, the output shapes the code enforces given directly (it no longer refers to a schema document the model never received), all three image modes described, and every garment image numbered. The prompt text stays within the 8,000-token text bound (worst case 7,905 bytes). New prompt versions: single `e5ea8ad7c9ff`, views `9d13c5a01b5c`, outfit `0aea6b2a2286`
+- `memory/AI_OUTPUT_SCHEMA.md` rewritten to match the enforced schemas
+- `scenarios-v1` and `scenarios-v2` baselines refreshed for the new prompt version and report format; no figure and no case outcome changed
+
+### Unchanged
+
+- `computeVerdict`, weights, thresholds and bands; the model, the output token cap (4,000) and the text bound (8,000); spend reservation and fail-closed protections; image intake
+- No live model call was made. No accuracy figure exists for the new blocks
