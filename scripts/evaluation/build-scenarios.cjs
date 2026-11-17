@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 /**
- * Builds the synthetic scenario dataset in evaluation/datasets/scenarios-v1/.
+ * Builds the synthetic scenario datasets in evaluation/datasets/:
  *
- *   node scripts/evaluation/build-scenarios.cjs          write cases.json and recording.json
- *   node scripts/evaluation/build-scenarios.cjs --check  exit 1 if the committed files differ
+ *   scenarios-v1   the original scenarios. Frozen: its cases never change.
+ *   scenarios-v2   the same cases plus more multi-view, outfit and Style DNA
+ *                  cases, so that every garment mode has at least ten.
+ *
+ *   node scripts/evaluation/build-scenarios.cjs          write cases.json and recording.json of both
+ *   node scripts/evaluation/build-scenarios.cjs --check  exit 1 if a committed file differs
  *
  * WHAT THIS DATASET IS
  * Each case is a written scenario brief plus a hand-specified REFERENCE OUTPUT:
@@ -25,6 +29,7 @@
 const { createHash } = require('node:crypto')
 const { readFileSync, writeFileSync, mkdirSync } = require('node:fs')
 const path = require('node:path')
+const { styleDna } = require('./style-dna-personas.cjs')
 
 const OUT_DIR = path.resolve(__dirname, '..', '..', 'evaluation', 'datasets', 'scenarios-v1')
 const DIMENSIONS = ['occasion', 'color', 'formality', 'seasonality', 'style', 'style_preference_match']
@@ -196,6 +201,125 @@ const CASES = [
   ] } },
 ]
 
+/**
+ * Cases added by scenarios-v2. scenarios-v1 is every case above and nothing
+ * else; scenarios-v2 is those same cases, unchanged, plus the ones below.
+ *
+ * They exist for two reasons found in the Phase 4 discovery:
+ * - v1 has 3 multi-view and 2 outfit cases. Every figure counts cases and needs
+ *   ten, so no figure about either mode could ever be more than indicative.
+ *   v2 brings each garment mode to at least ten cases.
+ * - No case carried a Style DNA profile, so the personalised path and the
+ *   Shopping Advisor were never evaluated. v2 adds twelve cases with an
+ *   invented profile (`dna`), spread over the three modes.
+ *
+ * Like every case here they are synthetic: no image, no model output.
+ */
+const rec = (title, garment_type, color_direction, style_direction, rationale, addresses, match_level = 'Strong Match') => ({ title, garment_type, color_direction, style_direction, rationale, addresses, match_level })
+
+const V2_CASES = [
+  // --- Several views of one garment (v1 has 3) ----------------------------------------
+  { id: 'sc-views-coat-front-back', scenario: 'garment_views', occasion: 'Winter Event', description: 'Front and back views of one long coat; the second view adds nothing that changes the picture.', g: 'long coat seen from front and back', r: 'GGGEGG', bands: [R, HR], profile: 'classic', mode: 'same_garment_views', extra: 1 },
+  { id: 'sc-views-dress-three-angles', scenario: 'garment_views', occasion: 'Wedding Guest', description: 'Front, side and back views of one midi dress for a daytime wedding.', g: 'midi dress seen from three angles', r: 'EEEGEG', bands: [HR, R], profile: 'classic', mode: 'same_garment_views', extra: 2 },
+  { id: 'sc-views-back-reveals-open-back', scenario: 'garment_views', occasion: 'Corporate Interview', description: 'The front view shows a plain dress; the back view shows a low open back that the front alone would hide.', g: 'dress with a plain front and an open back', r: 'PGPGGG', bands: [CA, NR], profile: 'minimal', mode: 'same_garment_views', extra: 1, notes: { formality: 'The back view shows a low open back that the front view does not reveal; it is well below the formality an interview expects.' }, review: { explanation_quality: 'Does the explanation use the second view, or does it read as if only the front had been seen?' } },
+  { id: 'sc-views-closeup-shows-pattern', scenario: 'garment_views', occasion: 'Client Meeting', description: 'A full view and a close-up of one shirt; the close-up shows a fine pattern that the full view does not.', g: 'shirt seen in full and in close-up', r: 'GGGGGF', bands: [R, HR], profile: 'minimal', mode: 'same_garment_views', extra: 1, notes: { style_preference_match: 'The close-up shows a fine all-over pattern, which only partly reflects a stated preference for plain, minimal pieces.' } },
+  { id: 'sc-views-one-view-blurred', scenario: 'garment_views', category: 'blur', occasion: 'Conference', description: 'Two views of one jacket; one is sharp and the other is out of focus.', g: 'jacket with one sharp and one blurred view', r: 'GGGGGG', c: 'HMHMMH', bands: [R, HR], profile: 'classic', mode: 'same_garment_views', extra: 1, uncertainty: { max_high_confidence_dimensions: 3 } },
+  { id: 'sc-views-colour-differs-between-photos', scenario: 'garment_views', category: 'lighting', occasion: 'Dinner Date', description: 'Two views of one shirt taken under different light; the shirt looks a different colour in each.', g: 'shirt photographed under two kinds of light', r: 'GUGGGG', c: 'MLMMMM', bands: [], profile: 'minimal', mode: 'same_garment_views', extra: 1, uncertainty: { unrated: ['color'], max_high_confidence_dimensions: 0 }, notes: { color: 'The two photos show the shirt in visibly different colours, so its true colour cannot be judged.' } },
+
+  // --- Several items forming one outfit (v1 has 2) ----------------------------------------
+  { id: 'sc-outfit-tee-jeans-trainers', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Weekend', description: 'Tee, jeans and trainers photographed separately; a coherent relaxed outfit.', g: 'tee, jeans and trainers', r: 'EGEGEG', bands: [HR, R], profile: 'street', mode: 'outfit_items', extra: 2, components: [
+    { item: 1, garment_type: 'top', assessment: 'Works well', note: 'The tee sets the relaxed tone the weekend calls for.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Works well', note: 'The jeans sit naturally with the tee and the trainers.' },
+    { item: 3, garment_type: 'footwear', assessment: 'Works', note: 'The trainers fit the outfit, in a slightly brighter tone than the rest.' },
+  ] },
+  { id: 'sc-outfit-dress-and-heels', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Cocktail Party', description: 'A knee-length dress and heeled shoes photographed separately; a coherent evening outfit.', g: 'knee-length dress and heeled shoes', r: 'EEEGEG', bands: [HR, R], profile: 'classic', mode: 'outfit_items', extra: 1, components: [
+    { item: 1, garment_type: 'dress', assessment: 'Works well', note: 'The dress is at the level of formality a cocktail party expects.' },
+    { item: 2, garment_type: 'footwear', assessment: 'Works well', note: 'The heeled shoes keep to the same dressed-up register as the dress.' },
+  ] },
+  { id: 'sc-outfit-suit-with-trainers', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Corporate Interview', description: 'A dark suit combined with casual trainers; one item is out of step with the setting.', g: 'dark suit and casual trainers', r: 'FGPGFG', bands: [CA, NR], profile: 'classic', mode: 'outfit_items', extra: 1, notes: { style: 'The suit is tailored and the trainers are sportswear, so the two items point in different directions.' }, components: [
+    { item: 1, garment_type: 'suiting', assessment: 'Works well', note: 'The suit on its own is what a corporate interview expects.' },
+    { item: 2, garment_type: 'footwear', assessment: 'Needs attention', note: 'The casual trainers are far more relaxed than the suit and the interview.' },
+  ] },
+  { id: 'sc-outfit-coat-knit-boots', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Winter Event', description: 'A long coat, a knit and boots photographed separately; a coherent cold-weather outfit.', g: 'long coat, knit and boots', r: 'GGGEEG', bands: [R, HR], profile: 'classic', mode: 'outfit_items', extra: 2, components: [
+    { item: 1, garment_type: 'outerwear', assessment: 'Works well', note: 'The long coat gives the coverage a winter event calls for.' },
+    { item: 2, garment_type: 'top', assessment: 'Works well', note: 'The knit layers easily under the coat.' },
+    { item: 3, garment_type: 'footwear', assessment: 'Works', note: 'The boots suit the weather and sit a little apart from the coat in tone.' },
+  ] },
+  { id: 'sc-outfit-shirt-shorts-sandals', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Beach', description: 'A light shirt, shorts and sandals photographed separately; a coherent warm-weather outfit.', g: 'light shirt, shorts and sandals', r: 'EGEEGG', bands: [HR, R], profile: 'minimal', mode: 'outfit_items', extra: 2, components: [
+    { item: 1, garment_type: 'top', assessment: 'Works well', note: 'The light shirt is easy and open, as a day at the beach calls for.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Works well', note: 'The shorts match the shirt in weight and in how relaxed they are.' },
+    { item: 3, garment_type: 'footwear', assessment: 'Works', note: 'The sandals are practical here and plainer than the other two items.' },
+  ] },
+  { id: 'sc-outfit-hoodie-with-tailored-trousers', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Client Meeting', description: 'A hoodie combined with tailored trousers; the top is too casual for the setting.', g: 'hoodie and tailored trousers', r: 'PGPGFG', bands: [CA, NR], profile: 'street', mode: 'outfit_items', extra: 1, notes: { style: 'The hoodie is sportswear and the trousers are tailored, so the outfit mixes two registers.' }, components: [
+    { item: 1, garment_type: 'top', assessment: 'Needs attention', note: 'The hoodie is much more casual than a client meeting expects.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Works', note: 'The tailored trousers on their own are in keeping with the meeting.' },
+  ] },
+  { id: 'sc-outfit-one-item-unclear', scenario: 'outfit_items', category: 'occluded', occasion: 'Office Work', description: 'Two outfit items; the second is folded so that its cut cannot be seen.', g: 'shirt and a folded second item', r: 'GGGGUG', c: 'MHMHLH', bands: [], profile: 'minimal', mode: 'outfit_items', extra: 1, uncertainty: { unrated: ['style'], max_high_confidence_dimensions: 3 }, notes: { style: 'The second item is folded so that its cut is hidden, so it cannot be judged whether the two pieces form a coherent look.' }, components: [
+    { item: 1, garment_type: 'top', assessment: 'Works', note: 'The shirt is in keeping with a regular office day.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Unable to tell', note: 'The item is folded, so its cut and length cannot be seen.' },
+  ] },
+
+  // --- Style DNA: an invented profile is sent, and alternatives are returned -------------------
+  { id: 'sc-dna-classic-office-blazer', scenario: 'office', occasion: 'Office Work', description: 'With an invented Style DNA profile (classic, tailored): a tailored blazer for an office day; a close match.', g: 'tailored blazer', r: 'EEEGEE', bands: [HR, R], profile: 'classic', dna: 'persona-classic-tailored', advisor: { recommendations: [
+    rec('Lighter unlined blazer', 'outerwear', 'Mid grey or stone', 'The same clean tailoring in a lighter build', 'A lighter build would carry the same tailored look through warmer months.', ['seasonality'], 'Good Match'),
+  ] } },
+  { id: 'sc-dna-minimal-bold-print', scenario: 'preference_conflict', occasion: 'Casual Outing', description: 'With an invented Style DNA profile (minimalist, plain): a bold all-over print shirt; it conflicts with the profile.', g: 'bold all-over print shirt', r: 'GGGGGP', bands: [R, CA], profile: 'minimal', dna: 'persona-minimal-aesthetic', advisor: { recommendations: [
+    rec('Plain relaxed shirt', 'top', 'Off-white or soft grey', 'Unpatterned, with clean lines', 'A plain shirt keeps the relaxed feel of this one and sits closer to the minimal style described in the profile.', ['style_preference_match'], 'Excellent Match'),
+    rec('Shirt with a fine tonal stripe', 'top', 'Navy on navy', 'A quiet pattern that reads as plain from a distance', 'A tonal stripe keeps some interest while staying close to the plain, minimal direction of the profile.', ['style_preference_match'], 'Good Match'),
+  ] } },
+  { id: 'sc-dna-street-black-tie', scenario: 'preference_conflict', occasion: 'Black Tie Event', description: 'With an invented Style DNA profile (streetwear): a classic tuxedo; right for the event, at odds with the profile.', g: 'classic tuxedo', r: 'EGEGGP', bands: [R, HR], profile: 'street', dna: 'persona-street-relaxed', advisor: { recommendations: [
+    rec('Tuxedo with a modern relaxed cut', 'suiting', 'Black or deep midnight tones', 'A slightly looser line that stays within evening dress', 'A more relaxed cut keeps to the dress code while moving a little towards the easier style of the profile.', ['style_preference_match'], 'Possible Match'),
+  ] } },
+  { id: 'sc-dna-romantic-wedding-guest', scenario: 'wedding', occasion: 'Wedding Guest', description: 'With an invented Style DNA profile (romantic, soft): a pastel midi dress for a daytime wedding; a close match.', g: 'pastel midi dress', r: 'EEEGEG', bands: [HR, R], profile: 'classic', dna: 'persona-romantic-soft', advisor: { recommendations: [
+    rec('Light wrap for the evening', 'outerwear', 'A soft tone close to the dress', 'Fine and unstructured', 'A light layer would keep the dress workable if the celebration runs into a cooler evening.', ['seasonality'], 'Strong Match'),
+  ] } },
+  { id: 'sc-dna-warm-colouring-cool-grey', scenario: 'colour', occasion: 'Dinner Date', description: 'With an invented Style DNA profile that states warm colouring: a cool grey shirt; the colour is the weak point.', g: 'cool grey shirt', r: 'GFGGGG', bands: [R, CA], profile: 'street', dna: 'persona-street-relaxed', notes: { color: 'The cool grey of the shirt sits less comfortably with the warm colouring stated in the style profile than a warmer tone would.' }, advisor: { recommendations: [
+    rec('Shirt in a warmer neutral', 'top', 'Warm beige, olive or rust', 'The same relaxed cut', 'A warmer tone would sit more comfortably with the colouring stated in the profile, without changing the look.', ['color'], 'Strong Match'),
+  ] } },
+  { id: 'sc-dna-smart-casual-first-date', scenario: 'casual', occasion: 'First Date', description: 'With an invented Style DNA profile (bold, eclectic): a plain smart casual shirt and chinos; fine throughout, a little quiet for the profile.', g: 'plain smart casual shirt and chinos', r: 'GGGGGG', c: 'HHHHHM', bands: [R], profile: 'bold', dna: 'persona-bold-aesthetic', advisor: { recommendations: [
+    rec('Shirt with a confident print', 'top', 'A saturated accent colour', 'One statement piece with plain trousers', 'A bolder shirt would bring the outfit closer to the expressive style described in the profile.', ['style_preference_match'], 'Good Match'),
+    rec('Textured casual jacket', 'outerwear', 'A deep contrasting tone', 'Relaxed, with visible texture', 'A jacket with some character would lift the look for a first date without making it formal.', ['occasion', 'style'], 'Possible Match'),
+  ] } },
+  { id: 'sc-views-dna-trainers-two-angles', scenario: 'garment_views', occasion: 'Casual Outing', description: 'With an invented Style DNA profile (streetwear): trainers seen from the side and from above.', g: 'trainers seen from two angles', r: 'EGEGGE', bands: [HR, R], profile: 'street', mode: 'same_garment_views', extra: 1, dna: 'persona-street-relaxed', advisor: { recommendations: [
+    rec('Trainers in a darker tone', 'footwear', 'Black or charcoal', 'The same low profile', 'A darker pair would be easier to combine across the cooler months.', ['seasonality', 'color'], 'Good Match'),
+  ] } },
+  { id: 'sc-views-dna-evening-dress', scenario: 'garment_views', occasion: 'Formal Dinner', description: 'With an invented Style DNA profile (romantic, soft): an evening dress seen from the front and from the side.', g: 'evening dress seen from front and side', r: 'EGEGEG', bands: [HR, R], profile: 'classic', mode: 'same_garment_views', extra: 1, dna: 'persona-romantic-soft', advisor: { recommendations: [
+    rec('Evening dress in a softer shade', 'dress', 'Dusty rose or soft blue', 'The same long line', 'A softer shade would sit closer to the gentle palette described in the profile.', ['color', 'style_preference_match'], 'Strong Match'),
+  ] } },
+  { id: 'sc-views-dna-suit-jacket-three-angles', scenario: 'garment_views', occasion: 'Business Lunch', description: 'With an invented Style DNA profile (classic, tailored): a suit jacket seen from three angles.', g: 'suit jacket seen from three angles', r: 'GGEGGG', bands: [R, HR], profile: 'classic', mode: 'same_garment_views', extra: 2, dna: 'persona-classic-tailored', advisor: { recommendations: [
+    rec('Jacket in a softer construction', 'outerwear', 'Navy or mid grey', 'Tailored, with a less structured shoulder', 'A softer jacket would suit the easier tone of a lunch while staying tailored.', ['occasion'], 'Good Match'),
+  ] } },
+  { id: 'sc-outfit-dna-kurta-and-trousers', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Wedding Guest', description: 'With an invented Style DNA profile (classic, tailored): a festive kurta and matching trousers photographed separately.', g: 'festive kurta and trousers', r: 'EEEGEG', bands: [HR, R], profile: 'classic', mode: 'outfit_items', extra: 1, dna: 'persona-classic-tailored', advisor: { recommendations: [
+    rec('Embroidered stole', 'accessory', 'A tone drawn from the kurta', 'Fine detailing, worn over one shoulder', 'A stole would add a layer for an evening ceremony and complete the festive look.', ['seasonality'], 'Good Match'),
+  ] }, components: [
+    { item: 1, garment_type: 'traditional_wear', assessment: 'Works well', note: 'The kurta is festive in a way that suits a wedding guest.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Works well', note: 'The trousers match the kurta in tone and in formality.' },
+  ] },
+  { id: 'sc-outfit-dna-blazer-tee-jeans', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Business Casual', description: 'With an invented Style DNA profile (minimalist): a blazer, a plain tee and dark jeans photographed separately.', g: 'blazer, plain tee and dark jeans', r: 'GGGGGG', bands: [R], profile: 'minimal', mode: 'outfit_items', extra: 2, dna: 'persona-minimal-aesthetic', advisor: { recommendations: [
+    rec('Plain fine-knit top', 'top', 'Navy, grey or off-white', 'Unpatterned and close-fitting under a blazer', 'A fine knit in place of the tee would raise the formality a little while staying minimal.', ['formality'], 'Strong Match'),
+  ] }, components: [
+    { item: 1, garment_type: 'outerwear', assessment: 'Works well', note: 'The blazer brings the outfit up to a business casual level.' },
+    { item: 2, garment_type: 'top', assessment: 'Works', note: 'The plain tee is the most relaxed of the three items.' },
+    { item: 3, garment_type: 'bottom', assessment: 'Works', note: 'The dark jeans are acceptable here and plainer than tailored trousers.' },
+  ] },
+  { id: 'sc-outfit-dna-clashing-colours', scenario: 'outfit_items', category: 'multiple_garments', occasion: 'Birthday Party', description: 'With an invented Style DNA profile (bold, eclectic): a top and trousers in two competing saturated colours.', g: 'top and trousers in competing saturated colours', r: 'GPGGFG', bands: [R, CA], profile: 'bold', mode: 'outfit_items', extra: 1, dna: 'persona-bold-aesthetic', advisor: { recommendations: [
+    rec('Trousers in a neutral tone', 'bottom', 'Black, cream or deep navy', 'The same cut as the current pair', 'A neutral pair would let the saturated top stand on its own instead of competing with it.', ['color', 'style'], 'Strong Match'),
+  ] }, components: [
+    { item: 1, garment_type: 'top', assessment: 'Works', note: 'The saturated top suits a birthday party on its own.' },
+    { item: 2, garment_type: 'bottom', assessment: 'Needs attention', note: 'The trousers are in a second strong colour that competes with the top.' },
+  ] },
+]
+
+/** The committed synthetic datasets this script writes. Each is the list of its case definitions. */
+const DATASET_CASES = {
+  'scenarios-v1': CASES,
+  'scenarios-v2': [...CASES, ...V2_CASES],
+}
+
+function datasetDir(name) {
+  return path.resolve(__dirname, '..', '..', 'evaluation', 'datasets', name)
+}
+
 function fill(template, garment, occasion) {
   return template.replace(/\{g\}/g, garment).replace(/\{o\}/g, occasion)
 }
@@ -240,6 +364,8 @@ function buildCase(definition) {
     benchmarkCase.garment_mode = definition.mode
     benchmarkCase.extra_garments = Array.from({ length: definition.extra }, (_, index) => `none/${slug}-garment-${index + 2}.jpg`)
   }
+  // An invented Style DNA profile, from the library of personas. Never a real person's profile.
+  if (definition.dna) benchmarkCase.style_dna = styleDna(definition.dna)
   if (definition.review) benchmarkCase.review = definition.review
   return benchmarkCase
 }
@@ -272,15 +398,18 @@ function datasetFingerprint(cases) {
 
 const RUNS_PER_CASE = 2
 
-function build() {
+/** The files of one dataset, by name. `build()` without a name builds scenarios-v1, as it always did. */
+function build(name = 'scenarios-v1') {
+  const definitions = DATASET_CASES[name]
+  if (!definitions) throw new Error(`Unknown dataset ${name}`)
   const ids = new Set()
-  for (const definition of CASES) {
+  for (const definition of definitions) {
     if (ids.has(definition.id)) throw new Error(`Duplicate case id ${definition.id}`)
     ids.add(definition.id)
   }
-  const cases = CASES.map(buildCase)
+  const cases = definitions.map(buildCase)
   const entries = []
-  for (const definition of [...CASES].sort((a, b) => (a.id < b.id ? -1 : 1))) {
+  for (const definition of [...definitions].sort((a, b) => (a.id < b.id ? -1 : 1))) {
     // Identical runs: a reference output does not vary. latency_ms is 0 and there is no usage, because nothing was measured.
     for (let run = 1; run <= RUNS_PER_CASE; run += 1) entries.push({ case_id: definition.id, run, outcome: 'returned', latency_ms: 0, output: buildOutput(definition) })
   }
@@ -302,24 +431,33 @@ function build() {
 }
 
 function main() {
-  const files = build()
-  if (process.argv.includes('--check')) {
-    const stale = Object.entries(files).filter(([name, content]) => {
-      try { return readFileSync(path.join(OUT_DIR, name), 'utf8').replace(/\r\n/g, '\n') !== content } catch { return true }
-    })
-    if (stale.length > 0) {
-      process.stderr.write(`Out of date: ${stale.map(([name]) => name).join(', ')}. Run node scripts/evaluation/build-scenarios.cjs\n`)
-      return 1
+  const check = process.argv.includes('--check')
+  const stale = []
+  for (const dataset of Object.keys(DATASET_CASES)) {
+    const dir = datasetDir(dataset)
+    const files = build(dataset)
+    if (check) {
+      for (const [name, content] of Object.entries(files)) {
+        let same = false
+        try { same = readFileSync(path.join(dir, name), 'utf8').replace(/\r\n/g, '\n') === content } catch { same = false }
+        if (!same) stale.push(`${dataset}/${name}`)
+      }
+      continue
     }
-    process.stdout.write('The scenario dataset is up to date.\n')
-    return 0
+    mkdirSync(dir, { recursive: true })
+    for (const [name, content] of Object.entries(files)) writeFileSync(path.join(dir, name), content)
+    const count = DATASET_CASES[dataset].length
+    process.stdout.write(`Wrote ${count} cases and ${count * RUNS_PER_CASE} recorded runs to ${path.relative(process.cwd(), dir)}\n`)
   }
-  mkdirSync(OUT_DIR, { recursive: true })
-  for (const [name, content] of Object.entries(files)) writeFileSync(path.join(OUT_DIR, name), content)
-  process.stdout.write(`Wrote ${CASES.length} cases and ${CASES.length * RUNS_PER_CASE} recorded runs to ${path.relative(process.cwd(), OUT_DIR)}\n`)
+  if (!check) return 0
+  if (stale.length > 0) {
+    process.stderr.write(`Out of date: ${stale.join(', ')}. Run node scripts/evaluation/build-scenarios.cjs\n`)
+    return 1
+  }
+  process.stdout.write('The scenario datasets are up to date.\n')
   return 0
 }
 
-module.exports = { build, CASES, OUT_DIR }
+module.exports = { build, CASES, V2_CASES, DATASET_CASES, OUT_DIR, datasetDir }
 
 if (require.main === module) process.exit(main())

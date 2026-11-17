@@ -12,8 +12,10 @@
 
 import { z } from 'zod'
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
-import type { OverallRecommendation, StyleProfile } from '@/types/schema'
+import type { AIStyleProfile, OverallRecommendation, StyleProfile } from '@/types/schema'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
+import { validateAIStyleProfile } from '@/lib/services/openai/aiStyleProfileSchema'
+import { MAX_AI_STYLE_PROFILE_BYTES, utf8ByteLength } from '@/lib/services/requestLimits'
 import {
   estimateMaxCostMicroUsd,
   isSupportedModelId,
@@ -103,6 +105,34 @@ const relativeImagePath = z
   .refine((value) => !value.startsWith('/') && !/^[A-Za-z]:/.test(value) && !value.split(/[\\/]/).includes('..'), 'Image paths must be relative to the data directory')
   .refine((value) => /\.(jpe?g|png|webp)$/i.test(value), 'Images must be .jpg, .jpeg, .png or .webp')
 
+function isCompleteStyleProfile(value: unknown): boolean {
+  try {
+    validateAIStyleProfile(value)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * A Style DNA profile for one case, so that the personalised path (Style DNA in
+ * the request, the Shopping Advisor in the answer) can be evaluated.
+ *
+ * Only INVENTED profiles are allowed. `source` has a single permitted value, so
+ * a profile produced from a real person's photo cannot be added without
+ * changing this schema. The profile itself is checked with the production
+ * validator and the production size limit: a case can only carry what the
+ * application would accept.
+ */
+const styleDnaSchema = z
+  .object({
+    source: z.literal('synthetic'),
+    /** Names the invented persona, so that the cases sharing one can be grouped. */
+    persona: z.string().regex(/^[a-z0-9][a-z0-9-]{0,39}$/),
+    profile: z.custom<AIStyleProfile>(isCompleteStyleProfile, 'style_dna.profile must be a complete AI Style Profile in the production format'),
+  })
+  .strict()
+
 const caseSchema = z
   .object({
     id: caseId,
@@ -160,6 +190,8 @@ const caseSchema = z
     garment_mode: z.enum(GARMENT_MODES).optional(),
     /** Further garment images (at most two more), for the multi-image modes. */
     extra_garments: z.array(relativeImagePath).min(1).max(MAX_GARMENT_IMAGES - 1).optional(),
+    /** An invented Style DNA profile sent with the case. Absent means the case runs without Style DNA. Never a real person's profile. */
+    style_dna: styleDnaSchema.optional(),
     /** Questions for a human reviewer. Never scored. */
     review: z
       .object({
@@ -195,10 +227,117 @@ export const manifestSchema = z
       const problem = garmentCountProblem(benchmarkCase.garment_mode ?? 'single', garmentCount)
       if (problem) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: ${garmentCount} garment image(s) do not fit garment_mode "${benchmarkCase.garment_mode ?? 'single'}"` })
     }
+    // A persona is one invented person: every case that names it must carry the same profile, within the size the API accepts.
+    const personas = new Map<string, string>()
+    for (const benchmarkCase of manifest.cases) {
+      if (!benchmarkCase.style_dna) continue
+      const text = JSON.stringify(benchmarkCase.style_dna.profile)
+      if (utf8ByteLength(text) > MAX_AI_STYLE_PROFILE_BYTES) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: the Style DNA profile is larger than the ${MAX_AI_STYLE_PROFILE_BYTES} bytes the application accepts` })
+      const known = personas.get(benchmarkCase.style_dna.persona)
+      if (known !== undefined && known !== text) ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Case ${benchmarkCase.id}: Style DNA persona "${benchmarkCase.style_dna.persona}" has a different profile than in an earlier case` })
+      personas.set(benchmarkCase.style_dna.persona, text)
+    }
   })
 
 export type BenchmarkManifest = z.infer<typeof manifestSchema>
 export type BenchmarkCase = BenchmarkManifest['cases'][number]
+
+// ---------------------------------------------------------------------------
+// Composition: cases, images and balance
+// ---------------------------------------------------------------------------
+
+/**
+ * Fewest cases a garment mode needs before any figure about that mode is more
+ * than indicative. The same number as the minimum sample of the evaluation
+ * (MIN_SAMPLE in evaluation/quality.ts); a test keeps the two equal.
+ */
+export const MIN_CASES_PER_MODE = 10
+
+/**
+ * What a dataset is made of. CASES and IMAGES are counted separately on
+ * purpose: a case is one unit of evidence whatever its number of images, so an
+ * outfit of three items is one case, not three. Images matter for cost and for
+ * sourcing, never for sample size.
+ */
+export interface DatasetComposition {
+  cases: number
+  cases_by_mode: Record<GarmentMode, number>
+  cases_by_source: Record<BenchmarkCase['source'], number>
+  images: {
+    /** One personal photo per case. */
+    personal_photos: number
+    garment_images: number
+    garment_images_by_mode: Record<GarmentMode, number>
+    /** Every image slot of every case: personal photos plus garment images. */
+    total: number
+    /** Different files among them. Lower than `total` when cases share a file. */
+    distinct_files: number
+  }
+  style_dna: {
+    /** Cases that send a Style DNA profile. Every one is synthetic: the manifest accepts nothing else. */
+    cases: number
+    cases_by_mode: Record<GarmentMode, number>
+    personas: string[]
+  }
+  mode_balance: {
+    target_per_mode: number
+    /** How many more cases each mode needs to reach the target. 0 when it is met. */
+    short_by: Record<GarmentMode, number>
+    balanced: boolean
+  }
+}
+
+export function describeComposition(cases: BenchmarkCase[]): DatasetComposition {
+  const modeOf = (benchmarkCase: BenchmarkCase): GarmentMode => benchmarkCase.garment_mode ?? 'single'
+  const perMode = (of: (benchmarkCase: BenchmarkCase) => number) =>
+    Object.fromEntries(GARMENT_MODES.map((mode) => [mode, cases.filter((benchmarkCase) => modeOf(benchmarkCase) === mode).reduce((sum, benchmarkCase) => sum + of(benchmarkCase), 0)])) as Record<GarmentMode, number>
+  const garmentImages = (benchmarkCase: BenchmarkCase) => 1 + (benchmarkCase.extra_garments?.length ?? 0)
+
+  const casesByMode = perMode(() => 1)
+  const garmentImagesByMode = perMode(garmentImages)
+  const garmentTotal = GARMENT_MODES.reduce((sum, mode) => sum + garmentImagesByMode[mode], 0)
+  const files = new Set(cases.flatMap((benchmarkCase) => [benchmarkCase.photo, benchmarkCase.garment, ...(benchmarkCase.extra_garments ?? [])]))
+  const shortBy = Object.fromEntries(GARMENT_MODES.map((mode) => [mode, Math.max(0, MIN_CASES_PER_MODE - casesByMode[mode])])) as Record<GarmentMode, number>
+  const sources = ['synthetic', 'owned', 'public_license', 'approved_volunteer'] as const
+
+  return {
+    cases: cases.length,
+    cases_by_mode: casesByMode,
+    cases_by_source: Object.fromEntries(sources.map((source) => [source, cases.filter((benchmarkCase) => benchmarkCase.source === source).length])) as Record<BenchmarkCase['source'], number>,
+    images: {
+      personal_photos: cases.length,
+      garment_images: garmentTotal,
+      garment_images_by_mode: garmentImagesByMode,
+      total: cases.length + garmentTotal,
+      distinct_files: files.size,
+    },
+    style_dna: {
+      cases: cases.filter((benchmarkCase) => benchmarkCase.style_dna !== undefined).length,
+      cases_by_mode: perMode((benchmarkCase) => (benchmarkCase.style_dna ? 1 : 0)),
+      personas: [...new Set(cases.flatMap((benchmarkCase) => (benchmarkCase.style_dna ? [benchmarkCase.style_dna.persona] : [])))].sort(),
+    },
+    mode_balance: {
+      target_per_mode: MIN_CASES_PER_MODE,
+      short_by: shortBy,
+      balanced: GARMENT_MODES.every((mode) => shortBy[mode] === 0),
+    },
+  }
+}
+
+/** The composition in plain lines, for the dry run and the validator. Cases and images are always stated apart. */
+export function compositionLines(composition: DatasetComposition): string[] {
+  const { cases_by_mode: byMode, images, style_dna: styleDna, mode_balance: balance } = composition
+  const short = GARMENT_MODES.filter((mode) => balance.short_by[mode] > 0).map((mode) => `${mode} needs ${balance.short_by[mode]} more`)
+  return [
+    `Cases: ${composition.cases} (single ${byMode.single}, same_garment_views ${byMode.same_garment_views}, outfit_items ${byMode.outfit_items})`,
+    `Images: ${images.total} (${images.personal_photos} personal photos + ${images.garment_images} garment images; ${images.distinct_files} different files). Images are not cases: sample sizes count cases only.`,
+    `Garment images by mode: single ${images.garment_images_by_mode.single}, same_garment_views ${images.garment_images_by_mode.same_garment_views}, outfit_items ${images.garment_images_by_mode.outfit_items}`,
+    `Style DNA (synthetic profiles only): ${styleDna.cases} case(s)${styleDna.cases > 0 ? ` (single ${styleDna.cases_by_mode.single}, same_garment_views ${styleDna.cases_by_mode.same_garment_views}, outfit_items ${styleDna.cases_by_mode.outfit_items}); personas: ${styleDna.personas.join(', ')}` : ''}`,
+    balance.balanced
+      ? `Mode balance: every garment mode has at least ${balance.target_per_mode} cases.`
+      : `Mode balance: NOT met (target ${balance.target_per_mode} cases per mode): ${short.join(', ')}.`,
+  ]
+}
 
 // ---------------------------------------------------------------------------
 // Opt-in gate
@@ -515,6 +654,8 @@ export type AnalyzeFn = (input: {
   garmentMode?: GarmentMode
   occasion: string
   styleProfile: StyleProfile
+  /** The case's synthetic Style DNA profile; absent when the case runs without one. */
+  aiStyleProfile?: AIStyleProfile
   options: RunOptions
   onUsage: (usage: NormalizedUsage) => void
   requestId: string
@@ -555,6 +696,7 @@ export async function runCases(prepared: PreparedCase[], options: RunOptions, an
           garmentMode: benchmarkCase.garment_mode ?? 'single',
           occasion: benchmarkCase.occasion,
           styleProfile: benchmarkCase.style_profile,
+          ...(benchmarkCase.style_dna ? { aiStyleProfile: benchmarkCase.style_dna.profile } : {}),
           options,
           onUsage: (u) => { usage = u },
           requestId: `bench-${benchmarkCase.id}-${run}`,

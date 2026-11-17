@@ -10,7 +10,7 @@
  * contains model text, and it never merges the figures into one score.
  */
 
-import { DIMENSION_KEYS } from '@/benchmark/harness'
+import { DIMENSION_KEYS, compositionLines } from '@/benchmark/harness'
 import { GARMENT_MODES } from '@/lib/constants/garmentModes'
 import type { EvaluationReport } from './evaluate'
 import type { Metric } from './quality'
@@ -57,6 +57,25 @@ function agreementSection(report: EvaluationReport, tier: ScoredTier): string[] 
       ['Dimension', 'Exact agreement', 'Within one band', 'Mean absolute error (bands)'],
       DIMENSION_KEYS.map((key) => [key, showMetric(agreement.dimensions[key].exact_rate), showMetric(agreement.dimensions[key].within_one_rate), showMetric(agreement.dimensions[key].mae)]),
     ),
+  ]
+}
+
+/** How far reviewers agree with each other. Shown wherever a second review exists, whatever the outputs are. */
+function reviewerSection(report: EvaluationReport, tier: ScoredTier): string[] {
+  const reviewers = report.quality.reviewer_agreement[tier]
+  if (reviewers.cases === 0) return []
+  return [
+    `### Agreement between reviewers: ${TIER_TITLES[tier].toLowerCase()}`,
+    '',
+    `${reviewers.cases} case(s) were rated by a second person, independently. Where two careful people differ, neither is wrong, and a model rating inside their range is not an error.`,
+    '',
+    ...table(
+      ['Dimension', 'Reviewers: same rating', 'Reviewers: within one band', 'Reviewers: mean distance (bands)', 'Model within the reviewers\' range'],
+      DIMENSION_KEYS.map((key) => [key, showMetric(reviewers.dimensions[key].exact_rate), showMetric(reviewers.dimensions[key].within_one_rate), showMetric(reviewers.dimensions[key].mean_distance), showMetric(reviewers.model_within_reviewer_range[key])]),
+    ),
+    ...(reviewers.disagreements.length === 0
+      ? ['No recorded disagreement between reviewers.', '']
+      : table(['Case reviewers differ on', 'Dimensions', 'Two bands or more apart'], reviewers.disagreements.map((entry) => [entry.case_id, entry.dimensions.join(', '), entry.severe.join(', ') || 'none']))),
   ]
 }
 
@@ -128,6 +147,8 @@ export function renderMarkdown(report: EvaluationReport): string {
       : '- Reference set: none',
     `- Cases by reference tier: image-reviewed ${tiers.image_reviewed}, brief-derived ${tiers.brief_derived}, synthetic ${tiers.synthetic}, unreviewed ${tiers.unreviewed}, no reference ${references.cases_without_reference}`,
     ...(references.image_reviewers.length > 0 ? [`- Image reviews by: ${references.image_reviewers.join(', ')} (${references.image_reviews_from} to ${references.image_reviews_to})`] : []),
+    ...(references.image_reviewers.length > 0 ? [`- Rated by a second person as well: ${references.image_cases_with_second_review} of ${tiers.image_reviewed} image-reviewed case(s)${references.image_second_reviewers.length > 0 ? ` (${references.image_second_reviewers.join(', ')})` : ''}`] : []),
+    ...compositionLines(report.composition).map((line) => `- ${line}`),
     '',
     '## 3. Output validity',
     '',
@@ -151,8 +172,9 @@ export function renderMarkdown(report: EvaluationReport): string {
     '## 5. Agreement with human-reviewed references',
     '',
     ...(quality.image_grounded_accuracy.status === 'available'
-      ? agreementSection(report, 'image_reviewed')
+      ? ['A reference rating is one reviewer\'s judgement, not a fact about the image. "Agreement" means agreement with that reviewer.', '', ...agreementSection(report, 'image_reviewed')]
       : [quality.image_grounded_accuracy.reason as string, '', 'No figure below this line is evidence about accuracy on real images.', '']),
+    ...SCORED_TIERS.flatMap((tier) => reviewerSection(report, tier)),
     ...(otherTiers.some((tier) => quality.agreement[tier].reference_cases > 0)
       ? ['## 6. Agreement with other expectations', '', 'These are not accuracy on real images.', '', ...otherTiers.flatMap((tier) => agreementSection(report, tier))]
       : []),
@@ -193,6 +215,8 @@ export function renderMarkdown(report: EvaluationReport): string {
     `- Abstention precision / recall: ${show(metrics.abstention.precision)} / ${show(metrics.abstention.recall)}; false abstention rate: ${show(metrics.abstention.false_abstention_rate)}`,
     `- Adversarial runs outside acceptable bands: ${metrics.adversarial.runs_outside_acceptable_bands} of ${metrics.adversarial.graded_runs}; outcome differs from the clean twin: ${show(metrics.adversarial.twin_outcome_change_rate)} (${metrics.adversarial.twin_pairs} pairs)`,
     `- Verdict recomputation matches: ${metrics.application.verdict_recomputation_matches}`,
+    `- Shopping Advisor with Style DNA (advisory only, never part of the verdict): usable block ${showMetric(quality.shopping_advisor.availability_rate)}; recommendations that address only dimensions rated Excellent ${showMetric(quality.shopping_advisor.mistargeted_recommendation_rate)}`,
+    `- Shopping Advisor without Style DNA: recommendations returned although none were asked for ${showMetric(quality.shopping_advisor.unrequested_recommendation_rate)}`,
     '',
     '## 11. What is unavailable',
     '',

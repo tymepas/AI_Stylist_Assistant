@@ -1,20 +1,20 @@
 {
   "format": "verdict-reference-set/1",
   "dataset": "golden-v1",
-  "dataset_version": "0.1.0",
+  "dataset_version": "0.2.0",
   "references": [
     {
-      "case_id": "gv-example-single",
+      "case_id": "gv-g01-single",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "gv-example-single/photo.jpg"
+          "path": "g01/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "gv-example-single/garment-1.jpg"
+          "path": "g01/garment-front.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -23,25 +23,26 @@
       "status": "pending",
       "provenance": {
         "image_source": "public_license"
-      }
+      },
+      "comparison_group": "g01"
     },
     {
-      "case_id": "gv-example-views",
+      "case_id": "gv-g01-views",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "gv-example-views/photo.jpg"
+          "path": "g01/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "gv-example-views/garment-1.jpg"
+          "path": "g01/garment-front.jpg"
         },
         {
           "id": "garment-2",
           "role": "garment",
-          "path": "gv-example-views/garment-2.jpg"
+          "path": "g01/garment-back.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
@@ -50,29 +51,1019 @@
       "status": "pending",
       "provenance": {
         "image_source": "public_license"
-      }
+      },
+      "comparison_group": "g01"
     },
     {
-      "case_id": "gv-example-outfit",
+      "case_id": "gv-g02-single",
       "images": [
         {
           "id": "photo",
           "role": "photo",
-          "path": "gv-example-outfit/photo.jpg"
+          "path": "g02/photo.jpg"
         },
         {
           "id": "garment-1",
           "role": "garment",
-          "path": "gv-example-outfit/garment-1.jpg"
+          "path": "g02/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Wedding Guest",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g02"
+    },
+    {
+      "case_id": "gv-g02-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g02/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g02/garment-front.jpg"
         },
         {
           "id": "garment-2",
           "role": "garment",
-          "path": "gv-example-outfit/garment-2.jpg"
+          "path": "g02/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Wedding Guest",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g02"
+    },
+    {
+      "case_id": "gv-g03-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g03/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g03/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Office Work",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g03"
+    },
+    {
+      "case_id": "gv-g03-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g03/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g03/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g03/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Office Work",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g03"
+    },
+    {
+      "case_id": "gv-g04-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g04/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g04/garment-side.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Casual Outing",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g04"
+    },
+    {
+      "case_id": "gv-g04-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g04/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g04/garment-side.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g04/garment-top.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "g04/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Casual Outing",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g04"
+    },
+    {
+      "case_id": "gv-g05-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g05/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g05/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Winter Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g05"
+    },
+    {
+      "case_id": "gv-g05-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g05/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g05/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g05/garment-side.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "g05/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Winter Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g05"
+    },
+    {
+      "case_id": "gv-g06-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g06/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g06/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Client Meeting",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g06"
+    },
+    {
+      "case_id": "gv-g06-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g06/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g06/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g06/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Client Meeting",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g06"
+    },
+    {
+      "case_id": "gv-g07-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g07/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g07/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Shopping",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g07"
+    },
+    {
+      "case_id": "gv-g07-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g07/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g07/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g07/garment-side.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "g07/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Shopping",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g07"
+    },
+    {
+      "case_id": "gv-g08-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g08/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g08/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Corporate Interview",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g08"
+    },
+    {
+      "case_id": "gv-g08-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g08/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g08/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g08/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Corporate Interview",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g08"
+    },
+    {
+      "case_id": "gv-g09-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g09/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g09/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Summer Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g09"
+    },
+    {
+      "case_id": "gv-g09-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g09/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g09/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g09/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Summer Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g09"
+    },
+    {
+      "case_id": "gv-g10-single",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g10/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g10/garment-front.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Formal Dinner",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g10"
+    },
+    {
+      "case_id": "gv-g10-views",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "g10/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "g10/garment-front.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "g10/garment-side.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "g10/garment-back.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Formal Dinner",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      },
+      "comparison_group": "g10"
+    },
+    {
+      "case_id": "gv-borderline-suit-no-tie",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "borderline-suit-no-tie/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "borderline-suit-no-tie/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Formal Dinner",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-borderline-smart-jeans",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "borderline-smart-jeans/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "borderline-smart-jeans/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Business Casual",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-quality-warm-light",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "quality-warm-light/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "quality-warm-light/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Dinner Date",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-quality-blurred",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "quality-blurred/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "quality-blurred/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Conference",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-quality-partly-hidden",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "quality-partly-hidden/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "quality-partly-hidden/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Client Presentation",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-ambiguous-navy-or-black",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "ambiguous-navy-or-black/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "ambiguous-navy-or-black/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Networking Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-ambiguous-fabric-weight",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "ambiguous-fabric-weight/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "ambiguous-fabric-weight/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Winter Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-text-price-tag",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "text-price-tag/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "text-price-tag/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Shopping",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-text-slogan-instruction",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "text-slogan-instruction/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "text-slogan-instruction/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Office Work",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-insufficient-no-person",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "insufficient-no-person/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "insufficient-no-person/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Wedding Guest",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-insufficient-no-garment",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "insufficient-no-garment/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "insufficient-no-garment/garment-1.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Office Work",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o01-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o01/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o01/garment-1-shirt.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o01/garment-2-trousers.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "o01/garment-3-blazer.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Client Meeting",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o02-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o02/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o02/garment-1-tee.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o02/garment-2-jeans.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "o02/garment-3-trainers.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Weekend",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o03-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o03/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o03/garment-1-dress.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o03/garment-2-heels.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Cocktail Party",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o04-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o04/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o04/garment-1-kurta.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o04/garment-2-trousers.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Wedding Guest",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o05-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o05/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o05/garment-1-coat.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o05/garment-2-knit.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "o05/garment-3-boots.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Winter Event",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o06-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o06/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o06/garment-1-blazer.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o06/garment-2-athletic-shorts.jpg"
         }
       ],
       "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
       "occasion": "Business Lunch",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o07-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o07/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o07/garment-1-suit.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o07/garment-2-trainers.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Corporate Interview",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o08-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o08/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o08/garment-1-hoodie.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o08/garment-2-tailored-trousers.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "o08/garment-3-loafers.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Client Presentation",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o09-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o09/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o09/garment-1-top.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o09/garment-2-trousers.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Birthday Party",
+      "basis": "unreviewed",
+      "status": "pending",
+      "provenance": {
+        "image_source": "public_license"
+      }
+    },
+    {
+      "case_id": "gv-o10-outfit",
+      "images": [
+        {
+          "id": "photo",
+          "role": "photo",
+          "path": "o10/photo.jpg"
+        },
+        {
+          "id": "garment-1",
+          "role": "garment",
+          "path": "o10/garment-1-shirt.jpg"
+        },
+        {
+          "id": "garment-2",
+          "role": "garment",
+          "path": "o10/garment-2-shorts.jpg"
+        },
+        {
+          "id": "garment-3",
+          "role": "garment",
+          "path": "o10/garment-3-sandals.jpg"
+        }
+      ],
+      "garment_description": "TO DO: describe the garment or outfit in plain words. Garments only, never the person.",
+      "occasion": "Beach",
       "basis": "unreviewed",
       "status": "pending",
       "provenance": {

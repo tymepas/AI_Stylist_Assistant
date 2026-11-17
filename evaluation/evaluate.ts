@@ -12,7 +12,8 @@
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
 import { validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
-import { modelText, scanText, type Band, type BenchmarkCase } from '@/benchmark/harness'
+import { GARMENT_MODES } from '@/lib/constants/garmentModes'
+import { describeComposition, modelText, scanText, type Band, type BenchmarkCase, type DatasetComposition } from '@/benchmark/harness'
 import { BLOCKING_CHECKS, PROXY_CHECKS, checkStatus, evaluateCase, type BlockingCheckId, type CaseStatus, type CheckResult, type ProxyCheckId } from './checks'
 import { computeMetrics, modalOutcome, outcomeSignature, type EvaluationMetrics, type RunDetail } from './metrics'
 import { computePerformance, type PerformanceReport } from './performance'
@@ -25,8 +26,10 @@ import { describeSelection, selectCases, type CaseSelection, type SelectionRepor
  * /2 adds per-case checks, the summary, the selection and performance. /1 reports have none of them.
  * /3 adds the reference summary, the quality section (agreement, grounding, calibration, multi-image),
  * the metric index and the next steps. Every /2 field is unchanged, so a /2 report still compares case by case.
+ * /4 adds the composition of the dataset (cases and images counted apart, balance across garment modes, Style DNA),
+ * agreement between reviewers, and the Shopping Advisor figures. Every /3 field is unchanged.
  */
-export const REPORT_FORMAT = 'verdict-evaluation-report/3'
+export const REPORT_FORMAT = 'verdict-evaluation-report/4'
 
 export type EvaluationMode = 'mock' | 'replay'
 
@@ -102,6 +105,8 @@ export interface EvaluationReport {
     cases_with_verified_labels: number
     matches_recording: boolean
   }
+  /** What the whole dataset is made of: cases and images counted apart, cases per garment mode, cases with Style DNA. */
+  composition: DatasetComposition
   /** Which cases were evaluated. A partial report can never become a baseline. */
   selection: SelectionReport
   summary: EvaluationSummary
@@ -175,6 +180,7 @@ export function detailsFromRecording(recording: Recording, cases: BenchmarkCase[
       score: report.verdict_score,
       dimensions: result.dimensions,
       ...(result.outfit_components !== undefined ? { outfit_components: result.outfit_components } : {}),
+      ...(result.shopping_advisor !== undefined ? { shopping_advisor: result.shopping_advisor } : {}),
     })
   }
 
@@ -255,6 +261,7 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   const references = summarizeReferences(referenceSet, cases)
   const quality = computeQuality(details, cases, resolveReferences(referenceSet, cases), recording.provenance === 'model' ? 'model' : 'synthetic_fixture')
   const summary = summarizeCases(caseReports)
+  const composition = describeComposition(allCases)
 
   return {
     report_format: REPORT_FORMAT,
@@ -280,6 +287,7 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
       cases_with_verified_labels: allCases.filter((benchmarkCase) => benchmarkCase.labels?.verified).length,
       matches_recording: fingerprint === recording.dataset_fingerprint,
     },
+    composition,
     selection: describeSelection(options.selection, cases.length),
     summary,
     performance: computePerformance(recording, recording.entries.filter((entry) => selectedIds.has(entry.case_id))),
@@ -287,7 +295,7 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
     references,
     quality,
     metric_index: buildMetricIndex(metrics, quality),
-    next_steps: nextSteps({ provenance: recording.provenance, summary, references, quality }),
+    next_steps: nextSteps({ provenance: recording.provenance, summary, references, quality, composition }),
     cases: caseReports,
   }
 }
@@ -296,8 +304,8 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
  * What to do next. Each line is produced by a fixed rule from the figures of
  * the report, in a fixed order, so the list is as reproducible as the rest.
  */
-export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary' | 'references' | 'quality'>): string[] {
-  const { provenance, summary, references, quality } = input
+export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary' | 'references' | 'quality'> & { composition?: DatasetComposition }): string[] {
+  const { provenance, summary, references, quality, composition } = input
   const steps: string[] = []
 
   if (summary.failed > 0) steps.push(`Fix or explain the ${summary.failed} failing case(s) listed under "Cases" before reading any other figure.`)
@@ -310,6 +318,20 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
     steps.push(`Only ${reviewed} image-reviewed case(s): add at least ${MIN_SAMPLE - reviewed} more before drawing conclusions about any dimension.`)
   }
   if (references.cases_by_tier.unreviewed > 0) steps.push(`Finish the ${references.cases_by_tier.unreviewed} unreviewed reference(s); they are not scored.`)
+
+  // A rating is one person's judgement. Say how far it has been checked against a second person's.
+  const reviewers = quality.reviewer_agreement.image_reviewed
+  if (reviewed > 0 && reviewers.cases === 0) {
+    steps.push('No image-reviewed case was rated by a second reviewer. Every agreement figure rests on one person\'s judgement: have a second person rate at least some cases, independently, before treating a difference as a model error (evaluation/HUMAN_REVIEW.md).')
+  } else if (reviewers.disagreements.length > 0) {
+    const severe = reviewers.disagreements.filter((entry) => entry.severe.length > 0).length
+    steps.push(`Reviewers differ from each other on ${reviewers.disagreements.length} of ${reviewers.cases} twice-reviewed case(s) (${severe} by two bands or more): ${reviewers.disagreements.slice(0, 5).map((entry) => entry.case_id).join(', ')}${reviewers.disagreements.length > 5 ? ' and others' : ''}. On those dimensions a model rating that differs from the first reviewer is not established as an error.`)
+  }
+
+  if (composition && !composition.mode_balance.balanced) {
+    const short = GARMENT_MODES.filter((mode) => composition.mode_balance.short_by[mode] > 0).map((mode) => `${mode} (${composition.cases_by_mode[mode]})`)
+    steps.push(`Fewer than ${composition.mode_balance.target_per_mode} cases in: ${short.join(', ')}. Figures for those garment modes stay "too few to conclude" until each has ${composition.mode_balance.target_per_mode} cases. Images do not count: an outfit of three items is one case.`)
+  }
 
   if (quality.image_grounded_accuracy.status === 'available') {
     const weakest = Object.entries(quality.agreement.image_reviewed.dimensions)
@@ -329,6 +351,10 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
   if (outfit.value !== null && outfit.value < 1) steps.push(`Per-item outfit notes are missing or invalid in part of the outfit runs (completeness ${outfit.value}).`)
   if (quality.multi_image.outfit_items.unexpected_blocks_in_other_modes > 0) steps.push('Some single-garment or multi-view runs returned per-item outfit notes, where none are expected.')
   if (quality.multi_image.comparison_groups.groups === 0 && reviewed > 0) steps.push('No comparison group links a single photo to several photos of the same garment, so the two cannot be compared yet.')
+
+  const advisor = quality.shopping_advisor
+  if (advisor.availability_rate.value !== null && advisor.availability_rate.value < 1) steps.push(`With Style DNA, the advisor block is missing or invalid in part of the runs (availability ${advisor.availability_rate.value}). The verdict is unaffected; the report shows no alternatives for those runs.`)
+  if (composition && composition.style_dna.cases === 0 && provenance === 'model') steps.push('No case sends a Style DNA profile, so the personalised path and the Shopping Advisor were not exercised.')
 
   return steps
 }

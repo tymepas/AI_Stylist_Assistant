@@ -4,6 +4,7 @@
  *   npm run eval                                  mock mode, the harness self-test fixtures
  *   npm run eval:scenarios                        mock mode, the scenario dataset, compared with its baseline
  *   npm run eval:baseline                         the same, and replace the baseline if the rules allow it
+ *   npm run eval:scenarios:v2 / eval:baseline:v2  the same two commands for the balanced dataset scenarios-v2
  *   npm run eval:references -- --manifest ... --references ...   validate a human-review reference set
  *   EVAL_MODE=replay EVAL_CASES=... EVAL_RECORDING=... [EVAL_REFERENCES=...] npm run eval
  *
@@ -29,6 +30,7 @@ import { getAnalysisPromptVersion } from '@/lib/services/openai/openAIAnalysisSe
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 import { REPORT_FORMAT, compareReports, renderMarkdown, serializeReport, type EvaluationReport } from './evaluate'
 import { DATASETS, datasetPaths, evaluateFiles, loadCases, loadReferenceSet, loadReport, type DatasetId } from './load'
+import { describeReadiness, readinessLines } from './readiness'
 import { resolveDatasetOptions, resolveEvaluationPlan } from './modes'
 import { datasetFingerprint } from './recording'
 import { REFERENCE_TIERS, ReferenceSetError, referenceSetFingerprint, summarizeReferences } from './reference'
@@ -78,6 +80,7 @@ function checkReferences(plan: { casesPath: string; referencesPath: string; imag
   if (summary.image_reviewers.length > 0) out(`  image reviews by ${summary.image_reviewers.join(', ')} (${summary.image_reviews_from} to ${summary.image_reviews_to})`)
   out(plan.imagesDir ? '  images: every recorded SHA-256 was compared with the file on disk' : '  images: NOT checked (pass --images <directory> to compare each file with its recorded SHA-256)')
   if (summary.cases_by_tier.image_reviewed === 0) out('  Accuracy on real images will read: Unavailable: insufficient human-reviewed ground truth')
+  for (const line of readinessLines(describeReadiness(set, cases))) out(`  ${line}`)
   out('Reference set is valid.')
 }
 
@@ -208,7 +211,7 @@ describe('Verdict evaluation', () => {
           notes.push(...decision.notes)
         }
       } else if (baseline === null) {
-        out(`No baseline yet (${baselineName}). Create one with "npm run eval:baseline".`)
+        out(`No baseline yet (${baselineName}). Create one with "node scripts/evaluation/run-eval.cjs --dataset ${datasetOptions.dataset} --update-baseline".`)
       } else {
         const changed = comparisonLines.filter((line) => !line.startsWith('Metrics:'))
         out(changed.length === 0 ? `No change against the baseline (${baselineName}).` : `Compared with the baseline (${baselineName}):`)

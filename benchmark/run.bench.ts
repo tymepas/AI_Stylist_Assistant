@@ -22,6 +22,8 @@ import { validateImageFile } from '@/lib/services/analysisService'
 import { ImageNormalizationError, normalizeImage } from '@/lib/images/normalizeImage'
 import { resolveModelConfig } from '@/lib/services/openai/modelConfig'
 import {
+  compositionLines,
+  describeComposition,
   evaluateGate,
   HARD_MAX_USD,
   manifestSchema,
@@ -102,7 +104,9 @@ describe('Verdict model benchmark', () => {
 
     const plannedCalls = prepared.length * options.runsPerCase
     out(`Model: ${options.model}  reasoning: ${options.reasoningEffort ?? 'n/a'}  max_output_tokens: ${options.maxOutputTokens}  runs/case: ${options.runsPerCase}`)
-    out(`Cases: ${manifest.cases.length} in manifest, ${prepared.length} ready, ${problems.length} problem(s)`)
+    out(`Manifest: ${manifest.cases.length} case(s), ${prepared.length} ready to run, ${problems.length} problem(s)`)
+    // Cases and images are stated apart: a case is one unit of evidence, however many images it has.
+    for (const line of compositionLines(describeComposition(manifest.cases))) out(line)
     for (const problem of problems) out(`  - ${problem}`)
     const manifestCalls = manifest.cases.length * options.runsPerCase
     // Each case is priced at its own number of images: a multi-photo case costs more than a single-photo one.
@@ -135,6 +139,7 @@ describe('Verdict model benchmark', () => {
       garmentMode: input.garmentMode,
       occasion: input.occasion,
       styleProfile: input.styleProfile,
+      aiStyleProfile: input.aiStyleProfile,
       requestId: input.requestId,
       onUsage: input.onUsage,
       runOverrides: { model: input.options.model, reasoningEffort: input.options.reasoningEffort, maxOutputTokens: input.options.maxOutputTokens },

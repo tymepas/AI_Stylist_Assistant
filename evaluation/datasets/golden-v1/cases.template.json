@@ -2,41 +2,1736 @@
   "version": 1,
   "cases": [
     {
-      "id": "gv-example-single",
+      "id": "gv-g01-single",
       "category": "clear",
-      "description": "TEMPLATE, not a real case. One garment photo. Replace every field, then describe what the images show.",
+      "description": "PLANNED, no image yet: a navy tailored blazer, front view only; a clear match for the occasion. Uses the same files as gv-g01-views.",
       "source": "public_license",
-      "photo": "gv-example-single/photo.jpg",
-      "garment": "gv-example-single/garment-1.jpg",
+      "photo": "g01/photo.jpg",
+      "garment": "g01/garment-front.jpg",
       "occasion": "Corporate Interview",
-      "style_profile": { "preferredStyles": ["Classic"], "favoriteColors": ["Navy"], "occasionPreferences": [] },
-      "expected": {}
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views"
     },
     {
-      "id": "gv-example-views",
+      "id": "gv-g01-views",
       "category": "single_garment",
-      "description": "TEMPLATE, not a real case. Two views of the same garment as gv-example-single, for comparing one photo with several.",
+      "description": "PLANNED, no image yet: a navy tailored blazer seen from 2 angles (front, back); the same garment, photo and occasion as gv-g01-single.",
       "source": "public_license",
-      "photo": "gv-example-views/photo.jpg",
-      "garment": "gv-example-views/garment-1.jpg",
+      "photo": "g01/photo.jpg",
+      "garment": "g01/garment-front.jpg",
       "occasion": "Corporate Interview",
-      "style_profile": { "preferredStyles": ["Classic"], "favoriteColors": ["Navy"], "occasionPreferences": [] },
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
       "expected": {},
+      "scenario": "garment_views",
       "garment_mode": "same_garment_views",
-      "extra_garments": ["gv-example-views/garment-2.jpg"]
+      "extra_garments": [
+        "g01/garment-back.jpg"
+      ]
     },
     {
-      "id": "gv-example-outfit",
-      "category": "multiple_garments",
-      "description": "TEMPLATE, not a real case. Two different items worn together.",
+      "id": "gv-g02-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a pastel midi dress, front view only; a clear match for the occasion. Uses the same files as gv-g02-views.",
       "source": "public_license",
-      "photo": "gv-example-outfit/photo.jpg",
-      "garment": "gv-example-outfit/garment-1.jpg",
-      "occasion": "Business Lunch",
-      "style_profile": { "preferredStyles": ["Business"], "favoriteColors": [], "occasionPreferences": [] },
+      "photo": "g02/photo.jpg",
+      "garment": "g02/garment-front.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
       "expected": {},
+      "scenario": "garment_views"
+    },
+    {
+      "id": "gv-g02-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a pastel midi dress seen from 2 angles (front, back); the same garment, photo and occasion as gv-g02-single.",
+      "source": "public_license",
+      "photo": "g02/photo.jpg",
+      "garment": "g02/garment-front.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g02/garment-back.jpg"
+      ]
+    },
+    {
+      "id": "gv-g03-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a plain white shirt, front view only; a clear match for the occasion. Uses the same files as gv-g03-views. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g03/photo.jpg",
+      "garment": "g03/garment-front.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-minimal-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Minimalist",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Classic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g03-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a plain white shirt seen from 2 angles (front, back); the same garment, photo and occasion as gv-g03-single. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g03/photo.jpg",
+      "garment": "g03/garment-front.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g03/garment-back.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-minimal-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Minimalist",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Classic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g04-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a pair of plain trainers, side view only; a clear match for the occasion. Uses the same files as gv-g04-views.",
+      "source": "public_license",
+      "photo": "g04/photo.jpg",
+      "garment": "g04/garment-side.jpg",
+      "occasion": "Casual Outing",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views"
+    },
+    {
+      "id": "gv-g04-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a pair of plain trainers seen from 3 angles (side, top, back); the same garment, photo and occasion as gv-g04-single.",
+      "source": "public_license",
+      "photo": "g04/photo.jpg",
+      "garment": "g04/garment-side.jpg",
+      "occasion": "Casual Outing",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g04/garment-top.jpg",
+        "g04/garment-back.jpg"
+      ]
+    },
+    {
+      "id": "gv-g05-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a long winter coat, front view only; a clear match for the occasion. Uses the same files as gv-g05-views.",
+      "source": "public_license",
+      "photo": "g05/photo.jpg",
+      "garment": "g05/garment-front.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views"
+    },
+    {
+      "id": "gv-g05-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a long winter coat seen from 3 angles (front, side, back); the same garment, photo and occasion as gv-g05-single.",
+      "source": "public_license",
+      "photo": "g05/photo.jpg",
+      "garment": "g05/garment-front.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g05/garment-side.jpg",
+        "g05/garment-back.jpg"
+      ]
+    },
+    {
+      "id": "gv-g06-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a hoodie, front view only; a clear mismatch for the occasion. Uses the same files as gv-g06-views. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g06/photo.jpg",
+      "garment": "g06/garment-front.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g06-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a hoodie seen from 2 angles (front, back); the same garment, photo and occasion as gv-g06-single. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g06/photo.jpg",
+      "garment": "g06/garment-front.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g06/garment-back.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g07-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a sequinned evening dress, front view only; a clear mismatch for the occasion. Uses the same files as gv-g07-views.",
+      "source": "public_license",
+      "photo": "g07/photo.jpg",
+      "garment": "g07/garment-front.jpg",
+      "occasion": "Shopping",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views"
+    },
+    {
+      "id": "gv-g07-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a sequinned evening dress seen from 3 angles (front, side, back); the same garment, photo and occasion as gv-g07-single.",
+      "source": "public_license",
+      "photo": "g07/photo.jpg",
+      "garment": "g07/garment-front.jpg",
+      "occasion": "Shopping",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g07/garment-side.jpg",
+        "g07/garment-back.jpg"
+      ]
+    },
+    {
+      "id": "gv-g08-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a bold all-over print shirt, front view only; a clear mismatch for the occasion. Uses the same files as gv-g08-views. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g08/photo.jpg",
+      "garment": "g08/garment-front.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-minimal-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Minimalist",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Classic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g08-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a bold all-over print shirt seen from 2 angles (front, back); the same garment, photo and occasion as gv-g08-single. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g08/photo.jpg",
+      "garment": "g08/garment-front.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g08/garment-back.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-minimal-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Minimalist",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Classic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g09-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a heavy overcoat, front view only; a clear mismatch for the occasion. Uses the same files as gv-g09-views.",
+      "source": "public_license",
+      "photo": "g09/photo.jpg",
+      "garment": "g09/garment-front.jpg",
+      "occasion": "Summer Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views"
+    },
+    {
+      "id": "gv-g09-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a heavy overcoat seen from 2 angles (front, back); the same garment, photo and occasion as gv-g09-single.",
+      "source": "public_license",
+      "photo": "g09/photo.jpg",
+      "garment": "g09/garment-front.jpg",
+      "occasion": "Summer Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g09/garment-back.jpg"
+      ]
+    },
+    {
+      "id": "gv-g10-single",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a denim jacket, front view only; a clear mismatch for the occasion. Uses the same files as gv-g10-views. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g10/photo.jpg",
+      "garment": "g10/garment-front.jpg",
+      "occasion": "Formal Dinner",
+      "style_profile": {
+        "preferredStyles": [
+          "Bold",
+          "Trendy"
+        ],
+        "favoriteColors": [
+          "Red",
+          "Orange",
+          "Yellow"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-g10-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a denim jacket seen from 3 angles (front, side, back); the same garment, photo and occasion as gv-g10-single. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "g10/photo.jpg",
+      "garment": "g10/garment-front.jpg",
+      "occasion": "Formal Dinner",
+      "style_profile": {
+        "preferredStyles": [
+          "Bold",
+          "Trendy"
+        ],
+        "favoriteColors": [
+          "Red",
+          "Orange",
+          "Yellow"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g10/garment-side.jpg",
+        "g10/garment-back.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-borderline-suit-no-tie",
+      "category": "clear",
+      "description": "PLANNED, no image yet: a dark suit shown without a tie; a borderline fit, where two careful reviewers may differ by one band.",
+      "source": "public_license",
+      "photo": "borderline-suit-no-tie/photo.jpg",
+      "garment": "borderline-suit-no-tie/garment-1.jpg",
+      "occasion": "Formal Dinner",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "formal"
+    },
+    {
+      "id": "gv-borderline-smart-jeans",
+      "category": "clear",
+      "description": "PLANNED, no image yet: dark jeans with a smart shirt; a borderline fit, where two careful reviewers may differ by one band.",
+      "source": "public_license",
+      "photo": "borderline-smart-jeans/photo.jpg",
+      "garment": "borderline-smart-jeans/garment-1.jpg",
+      "occasion": "Business Casual",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "office"
+    },
+    {
+      "id": "gv-quality-warm-light",
+      "category": "lighting",
+      "description": "PLANNED, no image yet: a shirt photographed under strong warm indoor light, so its true colour is uncertain.",
+      "source": "public_license",
+      "photo": "quality-warm-light/photo.jpg",
+      "garment": "quality-warm-light/garment-1.jpg",
+      "occasion": "Dinner Date",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "low_confidence"
+    },
+    {
+      "id": "gv-quality-blurred",
+      "category": "blur",
+      "description": "PLANNED, no image yet: a jacket photographed out of focus, so its details cannot be made out.",
+      "source": "public_license",
+      "photo": "quality-blurred/photo.jpg",
+      "garment": "quality-blurred/garment-1.jpg",
+      "occasion": "Conference",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "low_confidence"
+    },
+    {
+      "id": "gv-quality-partly-hidden",
+      "category": "occluded",
+      "description": "PLANNED, no image yet: a garment half hidden behind another object, so its cut cannot be seen.",
+      "source": "public_license",
+      "photo": "quality-partly-hidden/photo.jpg",
+      "garment": "quality-partly-hidden/garment-1.jpg",
+      "occasion": "Client Presentation",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "low_confidence"
+    },
+    {
+      "id": "gv-ambiguous-navy-or-black",
+      "category": "difficult_colour",
+      "description": "PLANNED, no image yet: a dark jacket that could be navy or black; list the colours you cannot tell apart in the review.",
+      "source": "public_license",
+      "photo": "ambiguous-navy-or-black/photo.jpg",
+      "garment": "ambiguous-navy-or-black/garment-1.jpg",
+      "occasion": "Networking Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "colour"
+    },
+    {
+      "id": "gv-ambiguous-fabric-weight",
+      "category": "ambiguous_detail",
+      "description": "PLANNED, no image yet: a coat whose thickness cannot be told from the photo; list the hidden details as unverifiable_terms in the review.",
+      "source": "public_license",
+      "photo": "ambiguous-fabric-weight/photo.jpg",
+      "garment": "ambiguous-fabric-weight/garment-1.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "ambiguous_detail"
+    },
+    {
+      "id": "gv-text-price-tag",
+      "category": "product_claims_text",
+      "description": "PLANNED, no image yet: a garment with a readable price or brand tag; add the words on the tag as expected.forbidden_claims once you have the image.",
+      "source": "public_license",
+      "photo": "text-price-tag/photo.jpg",
+      "garment": "text-price-tag/garment-1.jpg",
+      "occasion": "Shopping",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "product_claims"
+    },
+    {
+      "id": "gv-text-slogan-instruction",
+      "category": "adversarial_text",
+      "description": "PLANNED, no image yet: a garment printed with a slogan that reads as an instruction or a judgement; add its words as expected.forbidden_claims, and name a twin case if you have the same garment without the text.",
+      "source": "public_license",
+      "photo": "text-slogan-instruction/photo.jpg",
+      "garment": "text-slogan-instruction/garment-1.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "adversarial"
+    },
+    {
+      "id": "gv-insufficient-no-person",
+      "category": "insufficient_input",
+      "description": "PLANNED, no image yet: the personal photo shows no person (a landscape or an object); the garment photo is an ordinary garment.",
+      "source": "public_license",
+      "photo": "insufficient-no-person/photo.jpg",
+      "garment": "insufficient-no-person/garment-1.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {
+        "should_abstain": true
+      },
+      "scenario": "missing_input"
+    },
+    {
+      "id": "gv-insufficient-no-garment",
+      "category": "insufficient_input",
+      "description": "PLANNED, no image yet: the garment photo shows no garment (an empty table or a wall); the personal photo is an ordinary photo of a person.",
+      "source": "public_license",
+      "photo": "insufficient-no-garment/photo.jpg",
+      "garment": "insufficient-no-garment/garment-1.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {
+        "should_abstain": true
+      },
+      "scenario": "missing_input"
+    },
+    {
+      "id": "gv-o01-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 3 items photographed separately (shirt, trousers, blazer); a coherent business outfit. Record the garment type of each item in the review.",
+      "source": "public_license",
+      "photo": "o01/photo.jpg",
+      "garment": "o01/garment-1-shirt.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
       "garment_mode": "outfit_items",
-      "extra_garments": ["gv-example-outfit/garment-2.jpg"]
+      "extra_garments": [
+        "o01/garment-2-trousers.jpg",
+        "o01/garment-3-blazer.jpg"
+      ]
+    },
+    {
+      "id": "gv-o02-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 3 items photographed separately (tee, jeans, trainers); a coherent relaxed outfit. Record the garment type of each item in the review.",
+      "source": "public_license",
+      "photo": "o02/photo.jpg",
+      "garment": "o02/garment-1-tee.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o02/garment-2-jeans.jpg",
+        "o02/garment-3-trainers.jpg"
+      ]
+    },
+    {
+      "id": "gv-o03-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (dress, heels); a coherent evening outfit. Record the garment type of each item in the review.",
+      "source": "public_license",
+      "photo": "o03/photo.jpg",
+      "garment": "o03/garment-1-dress.jpg",
+      "occasion": "Cocktail Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o03/garment-2-heels.jpg"
+      ]
+    },
+    {
+      "id": "gv-o04-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (kurta, trousers); a coherent festive outfit. Record the garment type of each item in the review. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "o04/photo.jpg",
+      "garment": "o04/garment-1-kurta.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o04/garment-2-trousers.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-minimal-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Minimalist",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Classic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-o05-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 3 items photographed separately (coat, knit, boots); a coherent cold-weather outfit. Record the garment type of each item in the review.",
+      "source": "public_license",
+      "photo": "o05/photo.jpg",
+      "garment": "o05/garment-1-coat.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o05/garment-2-knit.jpg",
+        "o05/garment-3-boots.jpg"
+      ]
+    },
+    {
+      "id": "gv-o06-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (blazer, athletic shorts); two items at different levels of formality. Record the garment type of each item in the review. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "o06/photo.jpg",
+      "garment": "o06/garment-1-blazer.jpg",
+      "occasion": "Business Lunch",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o06/garment-2-athletic-shorts.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-minimal-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Minimalist",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Classic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-o07-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (suit, trainers); one item out of step with the setting. Record the garment type of each item in the review.",
+      "source": "public_license",
+      "photo": "o07/photo.jpg",
+      "garment": "o07/garment-1-suit.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o07/garment-2-trainers.jpg"
+      ]
+    },
+    {
+      "id": "gv-o08-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 3 items photographed separately (hoodie, tailored trousers, loafers); one item too casual for the setting. Record the garment type of each item in the review. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "o08/photo.jpg",
+      "garment": "o08/garment-1-hoodie.jpg",
+      "occasion": "Client Presentation",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o08/garment-2-tailored-trousers.jpg",
+        "o08/garment-3-loafers.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-o09-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (top, trousers); two items in competing strong colours. Record the garment type of each item in the review. Sent with an invented Style DNA profile.",
+      "source": "public_license",
+      "photo": "o09/photo.jpg",
+      "garment": "o09/garment-1-top.jpg",
+      "occasion": "Birthday Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Bold",
+          "Trendy"
+        ],
+        "favoriteColors": [
+          "Red",
+          "Orange",
+          "Yellow"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o09/garment-2-trousers.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "gv-o10-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 3 items photographed separately (shirt, shorts, sandals); a coherent warm-weather outfit. Record the garment type of each item in the review.",
+      "source": "public_license",
+      "photo": "o10/photo.jpg",
+      "garment": "o10/garment-1-shirt.jpg",
+      "occasion": "Beach",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o10/garment-2-shorts.jpg",
+        "o10/garment-3-sandals.jpg"
+      ]
     }
   ]
 }

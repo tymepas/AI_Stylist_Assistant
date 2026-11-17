@@ -16,6 +16,15 @@
  * 4. MULTI-IMAGE  — do the three garment modes behave differently, and are the
  *                   per-item notes of an outfit complete and correct?
  *
+ * Two further sections say how far the figures above can be leaned on:
+ *
+ * 5. REVIEWERS    — where a case was rated by two people, how often do THEY
+ *                   agree? A rating is a judgement, not a fact. Agreement
+ *                   between a model and one reviewer cannot mean more than
+ *                   agreement between two reviewers does.
+ * 6. ADVISOR      — with a Style DNA profile, is the advisory block usable?
+ *                   Without one, is it left empty as instructed?
+ *
  * Every figure is reported once per reference TIER (see reference.ts). Only the
  * `image_reviewed` tier is evidence about accuracy on real images, and only
  * when the outputs came from a model. Without such references that tier reads
@@ -38,8 +47,9 @@ import type { RawOpenAIConfidence, RawOpenAIDimensions, RawOpenAIRating } from '
 import { DIMENSION_KEYS, type Band, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { GARMENT_MODES, type GarmentMode } from '@/lib/constants/garmentModes'
 import { validateOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
+import { validateShoppingRecommendations } from '@/lib/services/openai/shoppingRecommendationSchema'
 import type { EvaluationMetrics, RunDetail } from './metrics'
-import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
+import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, reviewerRatings, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
 
 // ---------------------------------------------------------------------------
 // Thresholds
@@ -327,6 +337,177 @@ function pooledAgreement(scored: ScoredCase[], reason: string): PooledAgreement 
     exact_rate: rateMetric(perCase.map((entry) => entry.exact), reason),
     within_one_rate: rateMetric(perCase.map((entry) => entry.within_one), reason),
     mae: meanMetric(perCase.map((entry) => entry.mae).filter((value): value is number => value !== null), reason),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Reviewers: how far two people agree with each other
+// ---------------------------------------------------------------------------
+
+export interface ReviewerDisagreement {
+  case_id: string
+  /** Dimensions on which two reviewers of the case gave different ratings. */
+  dimensions: DimensionKey[]
+  /** Of those, the ones two or more bands apart, or where one reviewer rated what another could not judge. */
+  severe: DimensionKey[]
+}
+
+export interface ReviewerAgreementBlock {
+  /** Cases of this tier that were rated by a second person as well. */
+  cases: number
+  /**
+   * Per dimension, over those cases: how often two reviewers gave the same
+   * rating, a rating within one band, and how far apart they were. A case
+   * contributes one value: the share of its reviewer pairs that agree.
+   */
+  dimensions: Record<DimensionKey, { exact_rate: Metric; within_one_rate: Metric; mean_distance: Metric }>
+  /** Every case on which reviewers differ. For people to read: none of these is an error in a review. */
+  disagreements: ReviewerDisagreement[]
+  /**
+   * Per dimension, over cases with a second review and a scored output: how
+   * often the model's rating is one that a reviewer gave, or lies between two
+   * reviewers' ratings. Where reviewers differ, a rating inside their range
+   * cannot be called wrong.
+   */
+  model_within_reviewer_range: Record<DimensionKey, Metric>
+}
+
+const NO_SECOND_REVIEW = 'Unavailable: no case of this tier was rated by a second reviewer'
+
+/** Where two or more people rated one case: the dimensions they differ on. Null when the case has no second review. */
+export function reviewerDisagreement(reference: CaseReference): ReviewerDisagreement | null {
+  if ((reference.second_reviews ?? []).length === 0) return null
+  const dimensions: DimensionKey[] = []
+  const severe: DimensionKey[] = []
+  for (const key of DIMENSION_KEYS) {
+    const pairs = pairsOf(reviewerRatings(reference, key))
+    if (pairs.some((pair) => !pair.exact)) dimensions.push(key)
+    if (pairs.some((pair) => pair.severe)) severe.push(key)
+  }
+  return { case_id: reference.case_id, dimensions, severe }
+}
+
+/** Every pair of ratings given to one dimension of one case, compared. */
+function pairsOf(ratings: ReferenceRating[]): RatingComparison[] {
+  const pairs: RatingComparison[] = []
+  for (let a = 0; a < ratings.length; a += 1) for (let b = a + 1; b < ratings.length; b += 1) pairs.push(compareRating(ratings[a], ratings[b]))
+  return pairs
+}
+
+/** True when the rating is one a reviewer gave, or lies between the lowest and the highest band reviewers gave. */
+function withinReviewerRange(rating: RawOpenAIRating, given: ReferenceRating[]): boolean {
+  if ((given as string[]).includes(rating)) return true
+  if (rating === UNRATED) return false
+  const bands = given.filter((entry) => entry !== UNRATED).map((entry) => BAND[entry])
+  return bands.length > 0 && BAND[rating] >= Math.min(...bands) && BAND[rating] <= Math.max(...bands)
+}
+
+/**
+ * Reviewer agreement needs no model output: it describes the reviews. Only the
+ * last figure, the model against the range of the reviewers, uses the outputs.
+ */
+function reviewerAgreementOf(references: CaseReference[], scored: ScoredCase[], outputReason: string): ReviewerAgreementBlock {
+  const reviewedTwice = references.filter((reference) => (reference.second_reviews ?? []).length > 0)
+  const scoredTwice = scored.filter((entry) => (entry.reference.second_reviews ?? []).length > 0)
+  const rangeReason = reviewedTwice.length === 0 ? NO_SECOND_REVIEW : outputReason
+
+  const dimensions = Object.fromEntries(DIMENSION_KEYS.map((key) => {
+    const exact: number[] = []
+    const withinOne: number[] = []
+    const distances: number[] = []
+    for (const reference of reviewedTwice) {
+      const pairs = pairsOf(reviewerRatings(reference, key))
+      if (pairs.length === 0) continue
+      exact.push(share(pairs, (pair) => pair.exact))
+      withinOne.push(share(pairs, (pair) => pair.within_one))
+      const rated = pairs.map((pair) => pair.distance).filter((distance): distance is number => distance !== null)
+      if (rated.length > 0) distances.push(mean(rated))
+    }
+    return [key, { exact_rate: rateMetric(exact, NO_SECOND_REVIEW), within_one_rate: rateMetric(withinOne, NO_SECOND_REVIEW), mean_distance: meanMetric(distances, NO_SECOND_REVIEW) }]
+  })) as ReviewerAgreementBlock['dimensions']
+
+  const modelWithinRange = Object.fromEntries(DIMENSION_KEYS.map((key) => {
+    const values: number[] = []
+    for (const { reference, runs } of scoredTwice) {
+      const given = reviewerRatings(reference, key)
+      if (given.length > 0) values.push(share(runs, (run) => withinReviewerRange(run.dimensions[key].rating, given)))
+    }
+    return [key, rateMetric(values, rangeReason)]
+  })) as Record<DimensionKey, Metric>
+
+  return {
+    cases: reviewedTwice.length,
+    dimensions,
+    disagreements: reviewedTwice
+      .map((reference) => reviewerDisagreement(reference) as ReviewerDisagreement)
+      .filter((entry) => entry.dimensions.length > 0)
+      .sort((a, b) => a.case_id.localeCompare(b.case_id)),
+    model_within_reviewer_range: modelWithinRange,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Shopping Advisor (advisory only; nothing here reaches the verdict)
+// ---------------------------------------------------------------------------
+
+export interface ShoppingAdvisorBlock {
+  /** Cases that send a Style DNA profile and have at least one complete run. */
+  cases_with_style_dna: number
+  /** Cases without Style DNA that have at least one complete run. */
+  cases_without_style_dna: number
+  /**
+   * Per case with Style DNA: the share of its complete runs whose advisor block
+   * passes the production validation, which is when the application shows it.
+   */
+  availability_rate: Metric
+  /**
+   * Per case with Style DNA and a valid block: the share of its recommendations
+   * that address only dimensions the same run rated Excellent. The prompt asks
+   * for alternatives that address weak dimensions.
+   */
+  mistargeted_recommendation_rate: Metric
+  /**
+   * Per case without Style DNA: the share of its complete runs that returned
+   * recommendations anyway. The prompt asks for an empty list, and the
+   * application discards whatever arrives.
+   */
+  unrequested_recommendation_rate: Metric
+}
+
+function validAdvisor(run: CompleteRun): Array<{ addresses: string[] }> | null {
+  try {
+    return validateShoppingRecommendations(run.shopping_advisor)
+  } catch {
+    return null
+  }
+}
+
+function shoppingAdvisorOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDetail[]>): ShoppingAdvisorBlock {
+  const availability: number[] = []
+  const mistargeted: number[] = []
+  const unrequested: number[] = []
+  for (const benchmarkCase of cases) {
+    const runs = completeRuns(runsByCase.get(benchmarkCase.id) ?? [])
+    if (runs.length === 0) continue
+    if (benchmarkCase.style_dna) {
+      const blocks = runs.map((run) => ({ run, recommendations: validAdvisor(run) }))
+      availability.push(share(blocks, (block) => block.recommendations !== null))
+      const targets = blocks.flatMap(({ run, recommendations }) => (recommendations ?? []).map((recommendation) => recommendation.addresses.every((key) => run.dimensions[key as DimensionKey]?.rating === 'Excellent')))
+      if (targets.length > 0) mistargeted.push(share(targets, (missed) => missed))
+    } else {
+      unrequested.push(share(runs, (run) => {
+        const list = (run.shopping_advisor as { recommendations?: unknown } | null | undefined)?.recommendations
+        return Array.isArray(list) && list.length > 0
+      }))
+    }
+  }
+  const noStyleDna = 'Unavailable: no case with a Style DNA profile produced ratings'
+  return {
+    cases_with_style_dna: availability.length,
+    cases_without_style_dna: unrequested.length,
+    availability_rate: rateMetric(availability, noStyleDna),
+    mistargeted_recommendation_rate: rateMetric(mistargeted, availability.length === 0 ? noStyleDna : 'Unavailable: no run with Style DNA returned a valid advisor block'),
+    unrequested_recommendation_rate: rateMetric(unrequested, 'Unavailable: no case without Style DNA produced ratings'),
   }
 }
 
@@ -716,6 +897,10 @@ export interface QualityReport {
   calibration: Record<ScoredTier, CalibrationBlock>
   garment_identification: Record<ScoredTier, GarmentIdentificationBlock>
   multi_image: MultiImageBlock
+  /** How far two reviewers of the same case agree with each other. The context every agreement figure above is read in. */
+  reviewer_agreement: Record<ScoredTier, ReviewerAgreementBlock>
+  /** The advisory block, with and without Style DNA. It never reaches the verdict. */
+  shopping_advisor: ShoppingAdvisorBlock
   /** Per dimension: share of repeated cases that got the same rating on every run. */
   stability_by_dimension: Record<DimensionKey, Metric>
   /** What the current output cannot support, so that a missing figure is never read as a measured one. */
@@ -781,6 +966,8 @@ export function computeQuality(
     calibration: perTier((tier) => calibrationOf(scoredByTier[tier], reasonByTier[tier])),
     garment_identification: perTier((tier) => garmentIdentificationOf(scoredByTier[tier], reasonByTier[tier])),
     multi_image: multiImageOf(cases, runsByCase, references, scoredByTier, reasonByTier),
+    reviewer_agreement: perTier((tier) => reviewerAgreementOf(referenceCases[tier].map((benchmarkCase) => (references.get(benchmarkCase.id) as ResolvedReference).reference), scoredByTier[tier], reasonByTier[tier])),
+    shopping_advisor: shoppingAdvisorOf(cases, runsByCase),
     stability_by_dimension: stability,
     not_measurable: NOT_MEASURABLE,
     cases_with_unscored_manifest_facts: cases.filter((benchmarkCase) => benchmarkCase.expected.key_facts.length > 0).length,
@@ -828,6 +1015,8 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
       add(`agreement.${tier}.${key}.exact_rate`, agreement.dimensions[key].exact_rate, 'higher_is_better', 'rate', true)
       add(`agreement.${tier}.${key}.within_one_rate`, agreement.dimensions[key].within_one_rate, 'higher_is_better', 'rate', true)
       add(`agreement.${tier}.${key}.mae`, agreement.dimensions[key].mae, 'lower_is_better', 'bands', true)
+      // Reviewer-to-reviewer agreement is not indexed: it describes the reviews, not the outputs, so it cannot regress.
+      add(`agreement.${tier}.${key}.within_reviewer_range_rate`, quality.reviewer_agreement[tier].model_within_reviewer_range[key], 'higher_is_better', 'rate', true)
     }
 
     const grounding = quality.grounding[tier]
@@ -855,6 +1044,9 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
     add(`multi_image.${mode}.repeat_rating_stability`, quality.multi_image.modes[mode].repeat_rating_stability, 'higher_is_better', 'rate', false)
   }
   add('multi_image.outfit_items.completeness_rate', quality.multi_image.outfit_items.completeness_rate, 'higher_is_better', 'rate', false)
+  add('shopping_advisor.availability_rate', quality.shopping_advisor.availability_rate, 'higher_is_better', 'rate', false)
+  add('shopping_advisor.mistargeted_recommendation_rate', quality.shopping_advisor.mistargeted_recommendation_rate, 'lower_is_better', 'rate', false)
+  add('shopping_advisor.unrequested_recommendation_rate', quality.shopping_advisor.unrequested_recommendation_rate, 'lower_is_better', 'rate', false)
   add('multi_image.comparison_groups.cross_mode_rating_consistency', quality.multi_image.comparison_groups.cross_mode_rating_consistency, 'higher_is_better', 'rate', true)
   add('multi_image.comparison_groups.mean_band_shift', quality.multi_image.comparison_groups.mean_band_shift, 'lower_is_better', 'bands', true)
 
