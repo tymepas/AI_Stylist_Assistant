@@ -61,7 +61,24 @@ Only the re-encoded JPEG is passed on. The uploaded bytes are never sent to the 
 
 The browser still prepares every photo first (see above), so for photos from the Verdict frontend the server step resizes nothing and re-encodes once. It exists for clients that call the API directly, which could otherwise send metadata, a decompression bomb or bytes that are not an image. The benchmark runner applies the same normalisation, so a benchmark sends the model exactly what production sends.
 
-`sharp` is a native module. `output: 'standalone'` traces it and its platform binary into the deployment; the first Preview build of a change in this area is what confirms that on Vercel.
+`sharp` is a native module. `output: 'standalone'` traces it and its platform binary into the deployment. A successful build does not show that it runs, so the deployment is checked from outside:
+
+```bash
+npm run verify:image-intake -- https://verdictai-fawn.vercel.app
+```
+
+`scripts/verification/image-intake-probes.cjs` sends 20 synthetic requests to `/api/analyze`. None can reach a model call: each is refused before the spend reservation, either at image intake or at the duplicate-garment check, which runs only after `sharp` has decoded and re-encoded every image of the request. `tests/upload/imageIntakeProbes.test.ts` runs every probe through the real route in live mode with a model stub and fails if one reaches the model or reserves budget.
+
+| Verified on Production, 2026-11-17, commit `8afeb7b` | Result |
+|---|---|
+| JPEG, PNG, transparent PNG and WEBP decoded and re-encoded | Passed |
+| A 2400 x 3200 image (resize path), a JPEG with an EXIF orientation tag, a 15.2 MP image, four images in one request | Passed |
+| Refused: 17.6 MP, a side of 8,300 px, 300 x 300, a truncated JPEG, a corrupt garment, text sent as a JPEG, a PNG declared as JPEG, a GIF | Passed, each with its specific message |
+| Refused: two garments in single mode, four garments, no garment | Passed |
+| A request above 4.5 MB | Refused by the platform with 413 before the function runs |
+| Model calls made, budget reserved | None |
+
+What this does not show: the API does not return the processed image, so the bytes produced on the deployment cannot be inspected from outside. Metadata stripping, the output size and the JPEG quality are verified by `tests/images/normalizeImage.test.ts` on the same code. Re-run the command after any change to image intake, `sharp` or the build configuration.
 
 ## Garment modes: one garment, several views, or an outfit
 
