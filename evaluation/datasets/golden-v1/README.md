@@ -4,16 +4,50 @@ Real images, rated by a person, for measuring a model against. **It is empty.**
 No case has been reviewed yet, so every accuracy figure reads
 `Unavailable: insufficient human-reviewed ground truth`.
 
+What is committed is a **plan**: which cases a balanced benchmark needs. It
+holds no image, no rating and no expected verdict.
+
 | File | What it is | In Git |
 |---|---|---|
-| `cases.template.json` | Example manifest: one case per garment mode. Not real cases | Yes |
-| `references.template.json` | The review stubs `review-stubs.cjs` generates for the template. All unreviewed | Yes |
+| `cases.template.json` | The case plan: 41 planned cases, each a brief of what its images should show. Written by `npm run eval:build-golden-plan` | Yes |
+| `references.template.json` | One empty review stub per planned case. All unreviewed | Yes |
 | `cases.json` | The real manifest. Create it by copying the template | Yes, once it exists |
 | `references.json` | The real reviews: ratings, garment facts, key facts, image hashes. Text only | Yes, once it exists |
 | `benchmark/data/golden-v1/` | The images | **Never.** Git-ignored |
 | `benchmark/results/*.recording.json` | Model outputs from an approved live run | No. Git-ignored |
 
 How to add cases, the review rubric and every command: `evaluation/HUMAN_REVIEW.md`.
+
+## What the plan contains
+
+| | Cases | Garment images |
+|---|---|---|
+| One garment photo | 21 | 21 |
+| Several views of one garment | 10 | 24 |
+| Items of one outfit | 10 | 25 |
+| **Total** | **41** | **70**, plus 41 personal photos: 111 image slots, 91 different files |
+
+Cases and images are counted apart on purpose. Every sample size in a report
+counts cases; an outfit of three items is one case.
+
+- **Ten cases or more in each garment mode**, the minimum for a figure about a
+  mode to count as measured.
+- **Ten comparison pairs.** Garments `g01` to `g10` each appear as a single
+  photo and as two or three views, with the same personal photo and occasion.
+  A pair points at the same files.
+- **Twelve cases send an invented Style DNA profile**, four per garment mode,
+  so that the Shopping Advisor is exercised. Only aesthetic-only personas are
+  used: they leave colouring and proportions empty and so cannot contradict a
+  real photo. No personal profile is part of this data, and the manifest
+  refuses any profile not marked `synthetic`.
+- **Eleven further single-photo cases**: two borderline fits, three with poor
+  image quality, two with ambiguous detail, two with text in the image and two
+  with insufficient input.
+- **Every case is `public_license`**, the only source whose model output a
+  recording stores.
+
+The plan is a starting point. Rewrite a brief to fit the image you find, or
+remove an entry; the validator says which garment mode then falls short.
 
 ## Why the images are kept out of Git
 

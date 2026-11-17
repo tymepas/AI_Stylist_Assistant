@@ -8,6 +8,26 @@ Until at least one case has been reviewed this way, every accuracy figure reads
 `Unavailable: insufficient human-reviewed ground truth`. That is deliberate. A
 figure that nobody checked against an image is not accuracy.
 
+**A review is a judgement, not a fact.** Whether a jacket is "Good" or "Fair"
+for a dinner is something two careful people can differ on. This guide
+therefore does three things: it gives a rubric that makes ratings as
+repeatable as they can be, it asks for a second, independent review of at least
+part of the cases, and it records every difference between two reviewers
+instead of resolving it. A report then says how far reviewers agree with each
+other before it says how far a model agrees with one of them. See
+[Second reviews and disagreements](#second-reviews-and-disagreements).
+
+## Cases and images are counted apart
+
+A **case** is one analysis: one personal photo, one occasion, one to three
+garment images. An **image** is a file. An outfit of three items is one case
+with four images; ten such outfits are ten cases, not forty.
+
+Every sample size in a report counts cases. Images matter for two other things
+only: what a live run can cost at most, and how many files you have to source.
+The validator and the benchmark dry run print both numbers side by side, and
+say which garment modes still need cases to reach the minimum of ten.
+
 ## What counts as ground truth
 
 Every reference states where its expectation comes from. The evaluation keeps
@@ -42,6 +62,14 @@ real model outputs: hand-written fixture outputs are never scored against them.
    If you see the model's answer first, your rating is no longer independent.
 5. **Use an identifier, not your name.** `reviewer.id` is a short label such as
    `gm`. It appears in reports.
+6. **Style DNA in a case is always invented.** A case may send a Style DNA
+   profile so that the Shopping Advisor is exercised. Only the invented
+   personas in `scripts/evaluation/style-dna-personas.cjs` are allowed, marked
+   `"source": "synthetic"`; the manifest refuses anything else. Never paste a
+   profile that the application produced from a real person's photo, yours
+   included. Next to a real photo use an aesthetic-only persona: it states
+   style signals and leaves colouring and proportions empty, so it cannot
+   contradict what the photo shows.
 
 One limit to know about: the recorder does not store model output for `owned`
 and `approved_volunteer` photos, because the text describes a real person. Those
@@ -64,11 +92,29 @@ Use `.jpg`, `.jpeg`, `.png` or `.webp`. One folder per case keeps things tidy.
 
 ### 2. Add the case to the manifest
 
-Copy `evaluation/datasets/golden-v1/cases.template.json` to
-`evaluation/datasets/golden-v1/cases.json` the first time, then add one entry
-per case. Image paths are relative to `benchmark/data/golden-v1/`. Choose
-`garment_mode` explicitly: `single` (omit the field), `same_garment_views` or
-`outfit_items`, with one or two `extra_garments` for the last two.
+`evaluation/datasets/golden-v1/cases.template.json` is a **plan** of 41 cases:
+21 with one garment photo, 10 with several views of one garment and 10 outfits,
+so that every garment mode reaches the minimum of ten cases. Each entry is a
+brief of what its images should show ("PLANNED, no image yet: ..."). It holds no
+image, no rating and no expected verdict.
+
+Copy it to `evaluation/datasets/golden-v1/cases.json` the first time. Then, for
+each entry, source images that fit the brief, or rewrite the brief to fit the
+images you have, and replace the "PLANNED" description with what the images
+actually show. Remove an entry you cannot fill; the validator tells you which
+garment mode then falls short of ten. Image paths are relative to
+`benchmark/data/golden-v1/`. Choose `garment_mode` explicitly: `single` (omit
+the field), `same_garment_views` or `outfit_items`, with one or two
+`extra_garments` for the last two.
+
+Ten garments in the plan (`g01` to `g10`) appear twice: once as a single photo
+and once as two or three views, with the same personal photo and occasion.
+Both cases point at the same files, so a pair shows the same garment by
+construction. These pairs are what makes "one photo against several"
+measurable.
+
+Leave `expected.acceptable_bands` empty unless you, as the reviewer, are
+prepared to say which verdict bands are acceptable for the actual image.
 
 ### 3. Create the review stubs
 
@@ -103,8 +149,17 @@ npm run eval:references -- --manifest evaluation/datasets/golden-v1/cases.json -
 ```
 
 It lists every problem at once, counts the cases in each tier, and compares each
-image with its recorded hash. Bump `dataset_version` in the reference file
-whenever a case or a reference changes.
+image with its recorded hash. It also prints how ready the dataset is: cases and
+images counted apart, image-reviewed cases per garment mode against the minimum
+of ten, how many cases a second person has rated, and every case on which two
+reviewers differ. Bump `dataset_version` in the reference file whenever a case
+or a reference changes.
+
+### 5a. Get a second, independent review
+
+Before any model output exists, have a second person rate at least ten cases,
+ideally all of them. See
+[Second reviews and disagreements](#second-reviews-and-disagreements).
 
 ### 6. Get model outputs (needs separate approval, costs money)
 
@@ -150,16 +205,115 @@ Rate each dimension on its own. Do not let one weak dimension pull the others
 down, and do not rate towards the verdict you expect: the application computes
 the verdict, not the reviewer and not the model.
 
+### How to rate
+
+1. Read the occasion and the style preferences of the case first. They are part
+   of the question.
+2. Look at every image of the case at full size. For several views, all views
+   are evidence about one garment. For an outfit, rate the outfit as a whole.
+3. Rate the six dimensions one at a time, in the order below. Decide each
+   before you look at the next.
+4. When you hesitate between two bands, choose one and say so in the `note` of
+   that dimension ("between Good and Fair: the hem is not visible"). That
+   hesitation is useful information, and a second review will show whether
+   another person lands on the other side.
+5. Use `Unable to Evaluate` whenever the images and inputs do not let you
+   judge. Do not guess in order to avoid it.
+
+What you never rate: whether you like the garment, whether it flatters the
+person, price, brand, material quality, durability or comfort. The model is
+told to leave these out, so a rating that rests on them measures something else.
+
 ### The six dimensions
 
-| Dimension | Question | Notes |
-|---|---|---|
-| `occasion` | Does the garment fit the stated occasion? | Judge the occasion named in the case, not occasions in general |
-| `color` | Do the garment's colours work with the visible skin tone and the occasion? | If the lighting hides the true colour, say `Unable to Evaluate` |
-| `formality` | Does the garment match the formality the occasion expects? | Too formal is as much a mismatch as too casual |
-| `seasonality` | Is the garment appropriate for the implied season? | `Unable to Evaluate` when no season can be inferred |
-| `style` | Does the garment align with the stated style preference? | See the note below |
-| `style_preference_match` | Does the garment conflict with the stated style preference? | A direct conflict is Poor. With no stated preference, `Unable to Evaluate` |
+Each dimension has a question, taken from the production system prompt, and an
+anchor for every band. The anchors are examples of the band, not a checklist:
+where a case fits none of them, rate by the question.
+
+#### `occasion`: does the garment fit the stated occasion?
+
+Judge the occasion named in the case, not occasions in general.
+
+| Rating | Anchor |
+|---|---|
+| Excellent | What people at this occasion would expect to see. Nothing to change |
+| Good | Appropriate. One small reservation, for example slightly more relaxed or more dressed up than usual |
+| Fair | Unusual for the occasion. It could pass with other pieces or careful styling |
+| Poor | Clearly at odds with the occasion: a hoodie at a wedding, an evening dress for a shopping trip, bridal white on a guest |
+| Unable to Evaluate | Too little of the garment is visible to tell what it is |
+
+#### `color`: do the garment's colours work with the visible skin tone and the occasion?
+
+Three things are compared: the garment's colours with each other, with the
+colouring visible in the personal photo, and with the occasion. Say in the note
+which of the three decided your rating. Write about the colours, not about the
+person.
+
+| Rating | Anchor |
+|---|---|
+| Excellent | The colours sit well together, with the visible colouring and with the occasion |
+| Good | Works. One combination is a little less settled, or slightly unusual for the occasion |
+| Fair | Uneven. Some tones compete, or the colour is a questionable choice for the occasion |
+| Poor | A clear clash, or a colour the conventions of the occasion rule out |
+| Unable to Evaluate | Lighting, a colour cast or image quality hides the true colour |
+
+This is the dimension on which reviewers differ most. A difference of one band
+between two reviewers is normal here and is not a mistake by either.
+
+#### `formality`: does the garment match the formality the occasion expects?
+
+Use this ladder: casual, smart casual, business casual, business formal,
+formal. Too formal is as much a mismatch as too casual.
+
+| Rating | Anchor |
+|---|---|
+| Excellent | On the level the occasion expects |
+| Good | Close: about half a step more relaxed or more dressed up |
+| Fair | A full step off. Other pieces would have to balance it |
+| Poor | Two steps or more off, in either direction: a suit at the beach, athletic shorts at a business lunch |
+| Unable to Evaluate | The cut or the length cannot be seen, so the level cannot be told |
+
+#### `seasonality`: is the garment appropriate for the implied season?
+
+The season comes from the occasion ("Summer Event", "Winter Event", "Beach") or
+from what the images plainly show. Many occasions imply no season at all, such
+as "Office Work". Then the honest rating is `Unable to Evaluate`. Do not use the
+date of your review, and do not guess at fabric weight that cannot be seen.
+
+| Rating | Anchor |
+|---|---|
+| Excellent | Weight and coverage clearly suit the implied season |
+| Good | Workable, with a small trade-off in coverage or weight |
+| Fair | Only partly suited |
+| Poor | Clearly wrong for the season: a heavy overcoat at a summer event |
+| Unable to Evaluate | No season can be inferred, or the weight of the garment cannot be told |
+
+#### `style`: does the garment align with the stated style preference?
+
+The stated preference is the case's `style_profile` (preferred styles and
+favourite colours) and, where the case sends a Style DNA profile, its style
+keywords. See the note below this section before rating it.
+
+| Rating | Anchor |
+|---|---|
+| Excellent | Squarely within the stated styles |
+| Good | Broadly in line with them |
+| Fair | Reflects them only in part |
+| Poor | Points in a different direction |
+| Unable to Evaluate | The case states no style preference |
+
+#### `style_preference_match`: does the garment conflict with the stated style preference?
+
+This dimension is about conflict. Ask whether the person who stated these
+preferences would be surprised by the garment.
+
+| Rating | Anchor |
+|---|---|
+| Excellent | No conflict. It fits the stated styles and colours |
+| Good | No real conflict. A small departure, such as a colour outside the favourites |
+| Fair | A partial conflict: one element goes against the stated preference |
+| Poor | A direct conflict: a bold all-over print for someone who asked for minimal, plain pieces |
+| Unable to Evaluate | The case states no style preference |
 
 **Note on `style`.** The system prompt defines `style` and
 `style_preference_match` in almost the same words, while the product calls
@@ -206,6 +360,80 @@ To compare one photo against several photos of the same garment, add the same
 garment for the same occasion twice, once as a single photo and once as
 `same_garment_views`, and give both references the same `comparison_group`.
 
+The plan already contains ten such pairs, `gv-g01-single` with `gv-g01-views`
+up to `g10`. The stub generator does not write a comparison group, so add
+`"comparison_group": "g01"` (and so on) to both references of each pair;
+`references.template.json` shows where it goes.
+
+## Second reviews and disagreements
+
+One reviewer's ratings are one person's judgement. Used alone, every place
+where a model differs from that person looks like a model error, including the
+places where another careful reviewer would have differed too. A second review
+makes that visible.
+
+### What a second review is
+
+The same case, rated again by another person who has not seen the first
+ratings and has not seen any model output. It is stored next to the first
+review in `second_reviews`. Both stay as they were given.
+
+### How to do one
+
+1. Make a blind sheet. It contains the occasion, the style preferences and the
+   image paths of each finished case, and nothing the first reviewer concluded:
+
+   ```bash
+   npm run eval:second-review -- sheet --manifest evaluation/datasets/golden-v1/cases.json --references evaluation/datasets/golden-v1/references.json --out benchmark/data/golden-v1/second-review.json
+   ```
+
+   Add `--cases id,id` to cover only some cases. The sheet is written under
+   `benchmark/data/`, which is git-ignored, because it is a working file.
+
+2. The second reviewer opens the images, fills in their identifier, the date
+   and six ratings per case, using the rubric above. They do not open
+   `references.json`.
+
+3. Add the sheet to the reference set. Without `--write` the command only
+   prints what it would add and where the two reviewers differ:
+
+   ```bash
+   npm run eval:second-review -- merge --sheet benchmark/data/golden-v1/second-review.json --references evaluation/datasets/golden-v1/references.json --write
+   ```
+
+4. Bump `dataset_version` and run the validator (step 5 above).
+
+### What to do about a difference
+
+Nothing, to the ratings. This is the rule that matters most:
+
+- **Never change a rating to make two reviews agree.** A difference is a
+  finding about how subjective that dimension is for that case.
+- Talk about it if you like, and write what you concluded in the second
+  review's `notes` ("we agree the hem is not visible; one of us read the dress
+  as knee length"). The ratings stay.
+- If one of you made a plain mistake, such as rating the wrong image, correct
+  that review, say so in `review_notes`, and bump `dataset_version`.
+
+### How a report uses it
+
+- **Agreement between reviewers**, per dimension: how often two reviewers gave
+  the same rating, a rating within one band, and how far apart they were on
+  average. Agreement between a model and one reviewer cannot mean more than
+  this does. If two people agree on `color` in 6 cases out of 10, a model that
+  agrees with the first of them in 6 out of 10 is not shown to be worse than a
+  person.
+- **Every case reviewers differ on** is listed, with the dimensions, and marked
+  where they are two bands or more apart or where one could not judge.
+- **Model within the reviewers' range**: how often the model's rating is one a
+  reviewer gave, or lies between two reviewers' ratings. Where reviewers
+  differ, a rating inside their range is not an error.
+- The report says in plain words when no case has a second review, so that a
+  single reviewer's ratings are never read as settled.
+
+The figures that compare a model with a reference still use the first review.
+Which review counts as first is not a statement about who is right.
+
 ## A complete reference
 
 Placeholders in angle brackets must be replaced; the file does not validate with
@@ -249,11 +477,16 @@ them in place.
 | 1 to 9 | Figures are shown and marked "too few to conclude". No regression is ever declared from them |
 | 10 or more | Per-dimension exact agreement, agreement within one band and mean absolute error count as measured |
 | 10 or more cases that state a confidence level | That level's agreement counts as measured. The confidence gap and the ordering need this for each level they compare |
+| 10 or more cases of one garment mode | The figures for that mode count as measured. The plan has 21 single, 10 multi-view and 10 outfit cases for this reason |
 | 10 or more outfit cases | Garment type accuracy and outfit note completeness count as measured |
 | 10 or more comparison groups | One photo against several counts as measured |
+| 10 or more cases with a second review | Agreement between reviewers, and the model's position within their range, count as measured |
+| 10 or more cases that send Style DNA | The Shopping Advisor figures count as measured |
 
 Every count is a count of cases. Running a case three times, or an outfit of
-three items, does not add to it.
+three items, does not add to it. An abstaining case (no person, no garment)
+produces no ratings, so it adds to validity and abstention figures and not to
+agreement.
 
 The minimum is ten units per figure, and a difference between two reports counts
 only when it exceeds the noise margin (`evaluation/README.md`). Thirty to fifty
@@ -264,7 +497,10 @@ of one kind tell you about that kind only.
 
 - A reference is changed only to correct a mistake in the review. Say what
   changed in `review_notes` and bump `dataset_version`. Never adjust a rating
-  because the model disagreed.
+  because the model disagreed, and never because another reviewer did.
+- A rating is not ground truth in the sense a measurement is. Report agreement
+  as "agreement with the reviewer", next to how far reviewers agree with each
+  other, and never as "accuracy" without that context.
 - An image is never swapped under a finished review. The validator, and a
   replay given `--images`, refuse a file whose hash changed; review it again.
   The hash ties the review to the image file. It does not tie a recording to
