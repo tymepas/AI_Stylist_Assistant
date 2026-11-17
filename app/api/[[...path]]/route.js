@@ -249,9 +249,13 @@ async function handleRoute(request, { params }) {
         await new Promise((resolve) => setTimeout(resolve, 1400 + Math.random() * 1000))
         const mockAnalysis = getMockAnalysis()
         if (mockAnalysis.status === 'complete') {
+          // The mock result is already in the application's shape ({ availability, recommendations }).
+          // buildShoppingAdvisor expects what a model returns ({ recommendations }) and rejects any
+          // other key, so only the recommendations are passed on. They are validated like model output.
           mockAnalysis.shopping_advisor = buildShoppingAdvisor(
-            mockAnalysis.shopping_advisor,
-            Boolean(aiStyleProfileCheck.profile)
+            { recommendations: mockAnalysis.shopping_advisor.recommendations },
+            Boolean(aiStyleProfileCheck.profile),
+            requestId
           )
           // A single-garment response is exactly what it always was.
           if (garmentMode !== 'single') mockAnalysis.garment_mode = garmentMode
@@ -292,10 +296,10 @@ async function handleRoute(request, { params }) {
         const result = rawAnalysis.status === 'complete'
           ? buildCompleteAnalysisResult(
             rawAnalysis.dimensions,
-            buildShoppingAdvisor(rawAnalysis.shopping_advisor, Boolean(aiStyleProfileCheck.profile)),
+            buildShoppingAdvisor(rawAnalysis.shopping_advisor, Boolean(aiStyleProfileCheck.profile), requestId),
             garmentMode === 'single'
               ? {}
-              : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length) }
+              : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length, requestId) }
           )
           : rawAnalysis
 

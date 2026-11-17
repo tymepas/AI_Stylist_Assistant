@@ -52,7 +52,12 @@ function DimensionRow({ label, weightPercent, dim, delayClass, conflict }: { lab
           <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" /> Conflicts with your stated preference
         </p>
       ) : null}
-      <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground">{dim.reason}</p>
+      {dim.reason.trim() ? (
+        <p className="mt-3 max-w-prose break-words text-sm leading-relaxed text-muted-foreground">{dim.reason}</p>
+      ) : (
+        // Stated plainly rather than left blank; nothing is written on the analysis's behalf.
+        <p className="mt-3 max-w-prose text-sm italic leading-relaxed text-muted-foreground/80">No explanation was given for this rating.</p>
+      )}
     </li>
   )
 }
@@ -71,7 +76,12 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
   const evidence = summarizeEvidence(result.dimensions)
   const evidenceNotes = describeEvidence(evidence)
   const outfitItems = result.outfit_components?.availability === 'available' ? result.outfit_components.items : []
+  // An outfit of several items whose per-item notes did not come back in a usable form.
+  const outfitNotesMissing = result.garment_mode === 'outfit_items' && outfitItems.length === 0
   const modeLabel = result.garment_mode && result.garment_mode !== 'single' ? GARMENT_MODE_LABELS[result.garment_mode].title : null
+  // A section with nothing in it is left out, so the report never shows a heading over an empty space.
+  const considerations = result.things_to_consider.filter((item) => item.trim().length > 0)
+  const { considered, not_considered: notConsidered } = result.analysis_based_on
 
   return (
     <article className="mx-auto max-w-5xl space-y-12" aria-label="Decision report">
@@ -141,43 +151,58 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
             ))}
           </ol>
         </section>
+      ) : outfitNotesMissing ? (
+        <section aria-labelledby="outfit-items-heading" data-testid="outfit-components-unavailable" className="surface-quiet p-6 sm:p-8">
+          <p className="eyebrow">Item by item</p>
+          <h3 id="outfit-items-heading" className="mt-1 font-display text-3xl text-foreground">The pieces of the outfit</h3>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">Notes on the individual items are not available for this analysis. The verdict and the six ratings above cover the outfit as a whole and do not depend on them.</p>
+        </section>
       ) : null}
 
-      <div className="grid gap-10 md:grid-cols-2">
-        <section aria-labelledby="consider-heading">
-          <h3 id="consider-heading" className="font-display text-3xl text-foreground">Things to consider</h3>
-          <ul className="mt-4 space-y-3">
-            {result.things_to_consider.map((item, index) => (
-              <li key={index} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
-                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" aria-hidden="true" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </section>
+      {/* Two columns only from `lg`: at tablet width the sidebar leaves this area about 420px wide, too narrow to split. */}
+      <div className={cn('grid gap-10', considerations.length > 0 ? 'lg:grid-cols-2' : '')}>
+        {considerations.length > 0 ? (
+          <section aria-labelledby="consider-heading" className="min-w-0">
+            <h3 id="consider-heading" className="font-display text-3xl text-foreground">Things to consider</h3>
+            <ul className="mt-4 space-y-3">
+              {considerations.map((item, index) => (
+                <li key={index} className="flex gap-3 text-sm leading-relaxed text-muted-foreground">
+                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+                  <span className="min-w-0 break-words">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
-        <section aria-labelledby="basis-heading">
+        <section aria-labelledby="basis-heading" className="min-w-0">
           <h3 id="basis-heading" className="font-display text-3xl text-foreground">What this is based on</h3>
           <div className="mt-4 space-y-4">
+            {considered.length > 0 ? (
+              <div>
+                <p className="eyebrow">Considered</p>
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {considered.map((item) => (
+                    <li key={item} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-foreground/90">
+                      <CheckCircle2 className="h-3 w-3 text-verdict-high" aria-hidden="true" /> {humanize(item)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <div>
-              <p className="eyebrow">Considered</p>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {result.analysis_based_on.considered.map((item) => (
-                  <li key={item} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-foreground/90">
-                    <CheckCircle2 className="h-3 w-3 text-verdict-high" aria-hidden="true" /> {humanize(item)}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="eyebrow">Not considered</p>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {result.analysis_based_on.not_considered.map((item) => (
-                  <li key={item} className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground">
-                    <XCircle className="h-3 w-3" aria-hidden="true" /> {humanize(item)}
-                  </li>
-                ))}
-              </ul>
+              {notConsidered.length > 0 ? (
+                <>
+                  <p className="eyebrow">Not considered</p>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {notConsidered.map((item) => (
+                      <li key={item} className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1 text-xs text-muted-foreground">
+                        <XCircle className="h-3 w-3" aria-hidden="true" /> {humanize(item)}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Verdict cannot see price, material quality, brand, durability or comfort in a photo, so it does not judge them.</p>
             </div>
           </div>
