@@ -970,6 +970,60 @@
       }
     },
     {
+      "id": "gv-g11-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a plain knit jumper seen from 2 angles (front, back); a clear match for the occasion. Reserve case: it gives the multi-view mode margin above ten cases and has no single-photo twin.",
+      "source": "public_license",
+      "photo": "g11/photo.jpg",
+      "garment": "g11/garment-front.jpg",
+      "occasion": "Coffee Date",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g11/garment-back.jpg"
+      ]
+    },
+    {
+      "id": "gv-g12-views",
+      "category": "single_garment",
+      "description": "PLANNED, no image yet: a pair of tailored trousers seen from 2 angles (front, side); a clear mismatch for the occasion. Reserve case: it gives the multi-view mode margin above ten cases and has no single-photo twin.",
+      "source": "public_license",
+      "photo": "g12/photo.jpg",
+      "garment": "g12/garment-front.jpg",
+      "occasion": "Beach",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "g12/garment-side.jpg"
+      ]
+    },
+    {
       "id": "gv-s01",
       "category": "clear",
       "description": "PLANNED, no image yet: a dark suit shown without a tie; a borderline fit, where two careful reviewers may differ by one band. Sent with an invented Style DNA profile.",
@@ -1848,6 +1902,60 @@
       "extra_garments": [
         "o10/garment-2-shorts.jpg",
         "o10/garment-3-sandals.jpg"
+      ]
+    },
+    {
+      "id": "gv-o11-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (polo shirt, chinos); a coherent smart casual outfit. Record the garment type of each item in the review. Reserve case: it gives the outfit mode margin above ten cases.",
+      "source": "public_license",
+      "photo": "o11/photo.jpg",
+      "garment": "o11/garment-1-polo-shirt.jpg",
+      "occasion": "Business Casual",
+      "style_profile": {
+        "preferredStyles": [
+          "Minimal",
+          "Classic"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "White",
+          "Grey"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o11/garment-2-chinos.jpg"
+      ]
+    },
+    {
+      "id": "gv-o12-outfit",
+      "category": "multiple_garments",
+      "description": "PLANNED, no image yet: 2 items photographed separately (formal shirt, track pants); one item far too casual for the setting. Record the garment type of each item in the review. Reserve case: it gives the outfit mode margin above ten cases.",
+      "source": "public_license",
+      "photo": "o12/photo.jpg",
+      "garment": "o12/garment-1-formal-shirt.jpg",
+      "occasion": "Wedding Reception",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": []
+      },
+      "expected": {},
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "o12/garment-2-track-pants.jpg"
       ]
     }
   ]

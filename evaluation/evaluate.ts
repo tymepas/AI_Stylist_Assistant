@@ -17,7 +17,7 @@ import { describeComposition, modelText, scanText, type Band, type BenchmarkCase
 import { BLOCKING_CHECKS, PROXY_CHECKS, checkStatus, evaluateCase, type BlockingCheckId, type CaseStatus, type CheckResult, type ProxyCheckId } from './checks'
 import { computeMetrics, modalOutcome, outcomeSignature, type EvaluationMetrics, type RunDetail } from './metrics'
 import { computePerformance, type PerformanceReport } from './performance'
-import { MIN_SAMPLE, buildMetricIndex, computeQuality, type MetricIndex, type QualityReport } from './quality'
+import { MIN_SAMPLE, buildMetricIndex, buildStyleDnaIndex, computeQuality, type MetricIndex, type QualityReport } from './quality'
 import { datasetFingerprint, stableStringify, type Recording } from './recording'
 import { parseReferenceSet, resolveReferences, summarizeReferences, type ReferenceSet, type ReferenceSummary } from './reference'
 import { describeSelection, selectCases, type CaseSelection, type SelectionReport } from './selection'
@@ -27,7 +27,9 @@ import { describeSelection, selectCases, type CaseSelection, type SelectionRepor
  * /3 adds the reference summary, the quality section (agreement, grounding, calibration, multi-image),
  * the metric index and the next steps. Every /2 field is unchanged, so a /2 report still compares case by case.
  * /4 adds the composition of the dataset (cases and images counted apart, balance across garment modes, Style DNA),
- * agreement between reviewers, and the Shopping Advisor figures. Every /3 field is unchanged.
+ * agreement between reviewers, the Shopping Advisor figures, and Style DNA as a condition: every figure that
+ * combines cases with and without a profile is marked as pooled, and separate figures per condition are in
+ * the metric index. Every /3 field is unchanged.
  */
 export const REPORT_FORMAT = 'verdict-evaluation-report/4'
 
@@ -259,7 +261,9 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   // Validated here whatever the caller did: a set that was only typed, not parsed, must not reach the scoring.
   const referenceSet = options.references ? parseReferenceSet(options.references, allCases) : undefined
   const references = summarizeReferences(referenceSet, cases)
-  const quality = computeQuality(details, cases, resolveReferences(referenceSet, cases), recording.provenance === 'model' ? 'model' : 'synthetic_fixture')
+  const resolved = resolveReferences(referenceSet, cases)
+  const outputs = recording.provenance === 'model' ? 'model' : 'synthetic_fixture'
+  const quality = computeQuality(details, cases, resolved, outputs)
   const summary = summarizeCases(caseReports)
   const composition = describeComposition(allCases)
 
@@ -294,7 +298,8 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
     metrics,
     references,
     quality,
-    metric_index: buildMetricIndex(metrics, quality),
+    // The pooled figures, then the same figures for each Style DNA condition on its own (empty unless the cases mix both).
+    metric_index: { ...buildMetricIndex(metrics, quality), ...buildStyleDnaIndex(details, cases, resolved, outputs) },
     next_steps: nextSteps({ provenance: recording.provenance, summary, references, quality, composition }),
     cases: caseReports,
   }
@@ -358,7 +363,7 @@ export function nextSteps(input: Pick<EvaluationReport, 'provenance' | 'summary'
   // Style DNA is a condition on a case, not a garment mode, and it changes what the model is told. Say that the figures pool both.
   if (composition && composition.style_dna.cases > 0 && composition.style_dna.cases < composition.cases) {
     const without = GARMENT_MODES.map((mode) => `${mode} ${composition.cases_by_mode[mode] - composition.style_dna.cases_by_mode[mode]}`)
-    steps.push(`${composition.style_dna.cases} of ${composition.cases} cases send a Style DNA profile. Every figure pools cases with and without one; none is split by it. Cases without Style DNA: ${without.join(', ')}.`)
+    steps.push(`${composition.style_dna.cases} of ${composition.cases} cases send a Style DNA profile. Figures marked "pooled" combine cases with and without one. Read the separate figures for each condition next to them; where a condition has fewer than ${MIN_SAMPLE} cases behind a figure, its separate figure is unavailable and only the pooled one exists. Cases without Style DNA: ${without.join(', ')}.`)
   }
 
   return steps

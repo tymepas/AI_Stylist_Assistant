@@ -36,7 +36,14 @@ import { validateShoppingRecommendations } from '@/lib/services/openai/shoppingR
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const scenarios = require('../../scripts/evaluation/build-scenarios.cjs') as { build: (name?: string) => Record<string, string>; CASES: Array<{ id: string }>; V2_CASES: Array<{ id: string; dna?: string }> }
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const goldenPlan = require('../../scripts/evaluation/build-golden-plan.cjs') as { build: () => Record<string, string>; PLANNED: string }
+const goldenPlan = require('../../scripts/evaluation/build-golden-plan.cjs') as {
+  build: () => Record<string, string>
+  PLANNED: string
+  MIN_CASES: number
+  buildCases: () => { cases: Array<Record<string, unknown>>; groups: Map<string, string>; reserves: Set<string> }
+  matrixRows: (cases: unknown[], groups: Map<string, string>, reserves: Set<string>) => Array<{ id: string; mode: string; styleDna: string | null; abstain: boolean; rated: boolean; images: number; garments: number; pair: string | null; reserve: boolean; overall: string | null; inMode: string | null }>
+  conditionCounts: (cases: unknown[]) => Record<'with' | 'without', Record<string, number>>
+}
 
 const root = process.cwd()
 const CURRENT = { promptVersion: 'aaaaaaaaaaaa', schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION }
@@ -351,20 +358,45 @@ describe('the golden case plan', () => {
 
   it('is the output of its generator', () => {
     const built = goldenPlan.build()
-    for (const name of ['cases.template.json', 'references.template.json']) {
+    for (const name of ['cases.template.json', 'references.template.json', 'CASE_MATRIX.md']) {
       const committed = readFileSync(path.join(dir, name), 'utf8').replace(/\r\n/g, '\n')
       expect({ name, upToDate: committed === built[name] }).toEqual({ name, upToDate: true })
     }
   })
 
-  it('plans at least ten cases in each garment mode: 41 cases, which need 111 image slots', () => {
+  it('plans at least ten cases in each garment mode, with two reserve cases in each multi-image mode: 45 cases, 123 image slots', () => {
     const composition = describeComposition(cases)
-    expect(composition.cases).toBe(41)
-    expect(composition.cases_by_mode).toEqual({ single: 21, same_garment_views: 10, outfit_items: 10 })
+    expect(composition.cases).toBe(45)
+    expect(composition.cases_by_mode).toEqual({ single: 21, same_garment_views: 12, outfit_items: 12 })
     expect(composition.mode_balance.balanced).toBe(true)
     for (const mode of GARMENT_MODES) expect(composition.cases_by_mode[mode]).toBeGreaterThanOrEqual(MIN_CASES_PER_MODE)
-    // A pair shares its files, so 111 image slots are 91 different files.
-    expect(composition.images).toMatchObject({ personal_photos: 41, garment_images: 70, total: 111, distinct_files: 91 })
+    // A pair shares its files, so 123 image slots are 103 different files.
+    expect(composition.images).toMatchObject({ personal_photos: 45, garment_images: 78, garment_images_by_mode: { single: 21, same_garment_views: 28, outfit_items: 29 }, total: 123, distinct_files: 103 })
+  })
+
+  it('keeps the 41 earlier cases as they were and adds four reserve cases, each an ordinary case without Style DNA', () => {
+    const reserves = ['gv-g11-views', 'gv-g12-views', 'gv-o11-outfit', 'gv-o12-outfit']
+    const added = cases.filter((benchmarkCase) => reserves.includes(benchmarkCase.id))
+    expect(added.map((benchmarkCase) => [benchmarkCase.id, benchmarkCase.garment_mode, 1 + (benchmarkCase.extra_garments?.length ?? 0), benchmarkCase.style_dna === undefined, benchmarkCase.expected.should_abstain])).toEqual([
+      ['gv-g11-views', 'same_garment_views', 2, true, false],
+      ['gv-g12-views', 'same_garment_views', 2, true, false],
+      ['gv-o11-outfit', 'outfit_items', 2, true, false],
+      ['gv-o12-outfit', 'outfit_items', 2, true, false],
+    ])
+    for (const benchmarkCase of added) expect(benchmarkCase.description).toContain('Reserve case')
+    // A reserve is not part of a comparison pair, and brings its own files.
+    expect(references.references.filter((reference) => reserves.includes(reference.case_id)).every((reference) => reference.comparison_group === undefined)).toBe(true)
+    const others = cases.filter((benchmarkCase) => !reserves.includes(benchmarkCase.id))
+    expect(others).toHaveLength(41)
+    const otherFiles = new Set(others.flatMap((benchmarkCase) => [benchmarkCase.photo, benchmarkCase.garment, ...(benchmarkCase.extra_garments ?? [])]))
+    for (const benchmarkCase of added) for (const file of [benchmarkCase.photo, benchmarkCase.garment, ...(benchmarkCase.extra_garments ?? [])]) expect(otherFiles.has(file)).toBe(false)
+    // The 41 are the cases of the earlier plan: ten pairs, eleven further singles, ten outfits.
+    expect(others.map((benchmarkCase) => benchmarkCase.id).sort()).toEqual([
+      ...Array.from({ length: 10 }, (_, index) => `gv-g${String(index + 1).padStart(2, '0')}-single`),
+      ...Array.from({ length: 10 }, (_, index) => `gv-g${String(index + 1).padStart(2, '0')}-views`),
+      ...Array.from({ length: 10 }, (_, index) => `gv-o${String(index + 1).padStart(2, '0')}-outfit`),
+      ...Array.from({ length: 11 }, (_, index) => `gv-s${String(index + 1).padStart(2, '0')}`),
+    ].sort())
   })
 
   it('is a plan and says so: no image, no review, no rating, no expected band', () => {
@@ -374,7 +406,7 @@ describe('the golden case plan', () => {
       expect(benchmarkCase.expected.dimension_ratings).toBeUndefined()
       expect(benchmarkCase.labels).toBeUndefined()
     }
-    expect(references.references).toHaveLength(41)
+    expect(references.references).toHaveLength(45)
     for (const reference of references.references) {
       expect(tierOf(reference)).toBe('unreviewed')
       expect({ basis: reference.basis, status: reference.status, reviewer: reference.reviewer, ratings: reference.dimension_ratings, second: reference.second_reviews }).toEqual({ basis: 'unreviewed', status: 'pending', reviewer: undefined, ratings: undefined, second: undefined })
@@ -410,21 +442,22 @@ describe('the golden case plan', () => {
     expect(sum(composition.cases_by_mode)).toBe(composition.cases)
     expect(sum(composition.style_dna.cases_by_mode)).toBe(composition.style_dna.cases)
     const without = describeComposition(cases.filter((benchmarkCase) => !benchmarkCase.style_dna))
-    expect(without.cases_by_mode).toEqual({ single: 15, same_garment_views: 6, outfit_items: 6 })
+    expect(without.cases_by_mode).toEqual({ single: 15, same_garment_views: 8, outfit_items: 8 })
     expect(without.cases + composition.style_dna.cases).toBe(composition.cases)
     // Fourteen cases, ten different inputs: four of them are the second half of a pair.
     const inputs = new Set(cases.filter((benchmarkCase) => benchmarkCase.style_dna).map((benchmarkCase) => `${benchmarkCase.photo}|${benchmarkCase.garment}|${benchmarkCase.occasion}`))
     expect(inputs.size).toBe(10)
   })
 
-  it('has no margin in the multi-image modes, and says so: exactly ten cases each', () => {
-    // Recorded as a fact of the plan, so that a change to it is deliberate. See LIVE_VALIDATION_PLAN.md.
-    expect(byMode('same_garment_views')).toHaveLength(10)
-    expect(byMode('outfit_items')).toHaveLength(10)
+  it('has margin in both multi-image modes, and none for the comparison pairs, and says so', () => {
+    // Recorded as facts of the plan, so that a change to them is deliberate. See LIVE_VALIDATION_PLAN.md.
+    expect(byMode('same_garment_views')).toHaveLength(12)
+    expect(byMode('outfit_items')).toHaveLength(12)
+    expect(new Set(references.references.flatMap((reference) => (reference.comparison_group ? [reference.comparison_group] : []))).size).toBe(10)
     const rateable = cases.filter((benchmarkCase) => !benchmarkCase.expected.should_abstain)
-    expect(rateable).toHaveLength(39)
-    // 39 cases that can give ratings are 29 different photo, garment and occasion combinations: a pair shares all three.
-    expect(new Set(rateable.map((benchmarkCase) => `${benchmarkCase.photo}|${benchmarkCase.garment}|${benchmarkCase.occasion}`)).size).toBe(29)
+    expect(rateable).toHaveLength(43)
+    // 43 cases that can give ratings are 33 different photo, garment and occasion combinations: a pair shares all three.
+    expect(new Set(rateable.map((benchmarkCase) => `${benchmarkCase.photo}|${benchmarkCase.garment}|${benchmarkCase.occasion}`)).size).toBe(33)
   })
 
   it('gives the extra single cases neutral ids, so an id tells a reviewer nothing about what to expect', () => {
@@ -462,12 +495,18 @@ describe('the golden case plan', () => {
 
   it('has a known worst-case cost, inside the hard cap, that only a separately approved live run could spend', () => {
     const options = (runsPerCase: number): RunOptions => ({ model: 'gpt-6.1-terra', reasoningEffort: 'low', maxOutputTokens: 4_000, runsPerCase, maxUsd: 0 })
-    // 21 cases with one garment image, 11 with two, 9 with three: 21 x 0.0352 + 11 x 0.0388 + 9 x 0.0424 = 1.5476 per run.
-    expect(plannedWorstCaseMicroUsd(cases, options(1))).toBe(1_547_600)
-    expect(plannedWorstCaseMicroUsd(cases, options(3))).toBe(4_642_800)
+    // 21 cases with one garment image, 15 with two, 9 with three: 21 x 0.0352 + 15 x 0.0388 + 9 x 0.0424 = 1.7028 per run.
+    const byGarments = (count: number) => cases.filter((benchmarkCase) => 1 + (benchmarkCase.extra_garments?.length ?? 0) === count).length
+    expect([byGarments(1), byGarments(2), byGarments(3)]).toEqual([21, 15, 9])
+    expect(plannedWorstCaseMicroUsd(cases, options(1))).toBe(1_702_800)
+    expect(plannedWorstCaseMicroUsd(cases, options(2))).toBe(3_405_600)
+    expect(plannedWorstCaseMicroUsd(cases, options(3))).toBe(5_108_400)
     expect(plannedWorstCaseMicroUsd(cases, options(3))).toBeLessThan(HARD_MAX_USD * 1_000_000)
     expect(HARD_MAX_USD).toBe(10)
-    expect(plannedWorstCaseMicroUsd(cases, options(2))).toBe(3_095_200)
+    // The four reserve cases add 4 x 0.0388 = 0.1552 per run to the earlier 41 cases.
+    const earlier = cases.filter((benchmarkCase) => !['gv-g11-views', 'gv-g12-views', 'gv-o11-outfit', 'gv-o12-outfit'].includes(benchmarkCase.id))
+    expect(plannedWorstCaseMicroUsd(earlier, options(1))).toBe(1_547_600)
+    expect(plannedWorstCaseMicroUsd(cases, options(1)) - plannedWorstCaseMicroUsd(earlier, options(1))).toBe(155_200)
     // Without the opt-in phrase the benchmark is a dry run, whatever else is set.
     expect(evaluateGate({ BENCHMARK_MODEL: 'gpt-6.1-terra', BENCHMARK_MAX_USD: '5' }).mode).toBe('dry_run')
   })

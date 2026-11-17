@@ -17,7 +17,7 @@ The current programme of work on the quality and reliability of the analysis. Ev
 | 0 | Preparation for a first measured baseline: balanced datasets, review rubric, second reviews, Style DNA in the benchmark, dry run. Nothing about a model has been measured yet | Prepared; awaiting review. The live run it prepares for is **not approved and has not been run** |
 | 1 and later | Changes to what the model is asked to return | Not started. Each needs approval after Milestone 0 has been reviewed |
 
-What Milestone 0 still needs from a person before anything is measured: public-licence images for the 41 planned cases, a review of each, a second review of at least ten, and a separately approved live run.
+What Milestone 0 still needs from a person before anything is measured: public-licence images for the 45 planned cases, a review of each, a second review of at least ten, and a separately approved live run.
 
 ## Known follow-ups (not scheduled)
 

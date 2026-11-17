@@ -4,6 +4,7 @@
  *
  *   evaluation/datasets/golden-v1/cases.template.json        the planned cases
  *   evaluation/datasets/golden-v1/references.template.json   one empty review stub per case
+ *   evaluation/datasets/golden-v1/CASE_MATRIX.md             every case: mode, Style DNA, abstention, images, how it is reported
  *
  *   node scripts/evaluation/build-golden-plan.cjs          write both files
  *   node scripts/evaluation/build-golden-plan.cjs --check  exit 1 if a committed file differs
@@ -17,8 +18,12 @@
  * images and reviewed them (evaluation/HUMAN_REVIEW.md).
  *
  * WHAT THE PLAN GUARANTEES
- * - At least ten CASES in each garment mode: single, views of one garment,
- *   items of one outfit. Images are not cases: an outfit of three items is one.
+ * - At least ten CASES in each garment mode, with margin in the two multi-image
+ *   modes: 21 single, 12 views of one garment, 12 outfits. Each multi-image mode
+ *   has two RESERVE cases beyond the ten its figures need, so that one case
+ *   without a complete output does not cost the mode its figures. A reserve is
+ *   an ordinary case in every respect; the word only says why it was added.
+ *   Images are not cases: an outfit of three items is one.
  * - Ten comparison pairs. Garment g01 … g10 each appear twice, once as a single
  *   photo and once as several views, for the same occasion. A pair shares its
  *   image files, so both cases show the same garment by construction.
@@ -32,13 +37,17 @@
  *   style-dna-personas.cjs). No personal profile is ever part of this data.
  *
  * WHAT THE PLAN DOES NOT GIVE
- * - Margin. The two multi-image modes and the comparison pairs have exactly ten
- *   cases each. One case that fails to produce a complete output puts the
- *   figures of its mode back to "too few to conclude".
+ * - Margin for the comparison pairs. There are exactly ten, and a reserve case
+ *   has no single-photo twin. One pair without a complete output on both sides
+ *   puts "one photo against several" back to "too few to conclude".
  * - Independence. The two cases of a pair share photo, garment and occasion.
  *   They are two cases, and they are not two independent observations.
- * - A split by Style DNA. Figures pool cases with and without a profile.
- *   Without the Style DNA cases the multi-image modes have six cases each.
+ * - Separate figures by Style DNA for every garment mode. A report gives a
+ *   figure for each condition where that condition has ten cases, and says
+ *   "unavailable" where it has not. In this plan that is: overall with and
+ *   without Style DNA, and single-garment cases without it. The multi-image
+ *   modes have eight cases without and four with, too few for a separate
+ *   figure, so their figures are pooled and labelled as pooled.
  * - Every case is `public_license`: the only source whose model output a
  *   recording may store, and so the only one that can be scored.
  *
@@ -97,7 +106,16 @@ const SINGLES = [
   { id: 's11', category: 'insufficient_input', scenario: 'missing_input', occasion: 'Office Work', profile: 'minimal', abstain: true, brief: 'the garment photo shows no garment (an empty table or a wall); the personal photo is an ordinary photo of a person' },
 ]
 
-/** Ten outfits of two or three separately photographed items. */
+/**
+ * Two further garments, as several views only. They are the RESERVE cases of the multi-view mode: ordinary cases
+ * that give the mode margin above ten. They have no single-photo twin, so they add nothing to the comparison pairs.
+ */
+const RESERVE_VIEWS = [
+  { id: 'g11', garment: 'a plain knit jumper', occasion: 'Coffee Date', profile: 'minimal', views: ['front', 'back'], fit: 'a clear match' },
+  { id: 'g12', garment: 'a pair of tailored trousers', occasion: 'Beach', profile: 'classic', views: ['front', 'side'], fit: 'a clear mismatch' },
+]
+
+/** Ten outfits of two or three separately photographed items, and two reserve outfits (o11, o12). */
 const OUTFITS = [
   { id: 'o01', items: ['shirt', 'trousers', 'blazer'], occasion: 'Client Meeting', profile: 'classic', fit: 'a coherent business outfit' },
   { id: 'o02', items: ['tee', 'jeans', 'trainers'], occasion: 'Weekend', profile: 'street', fit: 'a coherent relaxed outfit' },
@@ -109,6 +127,9 @@ const OUTFITS = [
   { id: 'o08', items: ['hoodie', 'tailored-trousers', 'loafers'], occasion: 'Client Presentation', profile: 'street', fit: 'one item too casual for the setting', dna: 'persona-bold-aesthetic' },
   { id: 'o09', items: ['top', 'trousers'], occasion: 'Birthday Party', profile: 'bold', fit: 'two items in competing strong colours', dna: 'persona-bold-aesthetic' },
   { id: 'o10', items: ['shirt', 'shorts', 'sandals'], occasion: 'Beach', profile: 'minimal', fit: 'a coherent warm-weather outfit' },
+  // Reserve outfits: ordinary cases that give the mode margin above ten.
+  { id: 'o11', items: ['polo-shirt', 'chinos'], occasion: 'Business Casual', profile: 'minimal', fit: 'a coherent smart casual outfit', reserve: true },
+  { id: 'o12', items: ['formal-shirt', 'track-pants'], occasion: 'Wedding Reception', profile: 'classic', fit: 'one item far too casual for the setting', reserve: true },
 ]
 
 function withDna(benchmarkCase, persona) {
@@ -120,6 +141,7 @@ function withDna(benchmarkCase, persona) {
 function buildCases() {
   const cases = []
   const groups = new Map()
+  const reserves = new Set()
 
   for (const pair of PAIRS) {
     const files = pair.views.map((view) => `${pair.id}/garment-${view}.jpg`)
@@ -145,6 +167,25 @@ function buildCases() {
     groups.set(`gv-${pair.id}-views`, pair.id)
   }
 
+  for (const garment of RESERVE_VIEWS) {
+    const files = garment.views.map((view) => `${garment.id}/garment-${view}.jpg`)
+    cases.push({
+      id: `gv-${garment.id}-views`,
+      category: 'single_garment',
+      description: `${PLANNED}${garment.garment} seen from ${garment.views.length} angles (${garment.views.join(', ')}); ${garment.fit} for the occasion. Reserve case: it gives the multi-view mode margin above ten cases and has no single-photo twin.`,
+      source: 'public_license',
+      photo: `${garment.id}/photo.jpg`,
+      garment: files[0],
+      occasion: garment.occasion,
+      style_profile: PROFILE[garment.profile],
+      expected: {},
+      scenario: 'garment_views',
+      garment_mode: 'same_garment_views',
+      extra_garments: files.slice(1),
+    })
+    reserves.add(`gv-${garment.id}-views`)
+  }
+
   for (const single of SINGLES) {
     cases.push(withDna({
       id: `gv-${single.id}`,
@@ -165,7 +206,7 @@ function buildCases() {
     cases.push(withDna({
       id: `gv-${outfit.id}-outfit`,
       category: 'multiple_garments',
-      description: `${PLANNED}${outfit.items.length} items photographed separately (${outfit.items.join(', ').replace(/-/g, ' ')}); ${outfit.fit}. Record the garment type of each item in the review.${outfit.dna ? ' Sent with an invented Style DNA profile.' : ''}`,
+      description: `${PLANNED}${outfit.items.length} items photographed separately (${outfit.items.join(', ').replace(/-/g, ' ')}); ${outfit.fit}. Record the garment type of each item in the review.${outfit.dna ? ' Sent with an invented Style DNA profile.' : ''}${outfit.reserve ? ' Reserve case: it gives the outfit mode margin above ten cases.' : ''}`,
       source: 'public_license',
       photo: `${outfit.id}/photo.jpg`,
       garment: files[0],
@@ -176,20 +217,159 @@ function buildCases() {
       garment_mode: 'outfit_items',
       extra_garments: files.slice(1),
     }, outfit.dna))
+    if (outfit.reserve) reserves.add(`gv-${outfit.id}-outfit`)
   }
 
-  return { cases, groups }
+  return { cases, groups, reserves }
+}
+
+// ---------------------------------------------------------------------------
+// Case matrix
+// ---------------------------------------------------------------------------
+
+/** Fewest cases a figure needs. The same number as MIN_SAMPLE in evaluation/quality.ts; a test keeps them equal. */
+const MIN_CASES = 10
+const MODES = ['single', 'same_garment_views', 'outfit_items']
+const MODE_LABEL = { single: 'single garment', same_garment_views: 'views of one garment', outfit_items: 'outfit items' }
+
+function modeOf(planCase) {
+  return planCase.garment_mode || 'single'
+}
+
+/** Whether a planned case is expected to return ratings. A case that should abstain returns none. */
+function givesRatings(planCase) {
+  return !planCase.expected.should_abstain
+}
+
+/**
+ * How many planned cases can give ratings, by Style DNA condition and garment mode. A separate figure for a
+ * condition exists only where that condition has at least MIN_CASES such cases; otherwise it reads "unavailable".
+ */
+function conditionCounts(cases) {
+  const counts = { with: { all: 0 }, without: { all: 0 } }
+  for (const mode of MODES) { counts.with[mode] = 0; counts.without[mode] = 0 }
+  for (const planCase of cases.filter(givesRatings)) {
+    const condition = planCase.style_dna ? 'with' : 'without'
+    counts[condition].all += 1
+    counts[condition][modeOf(planCase)] += 1
+  }
+  return counts
+}
+
+function matrixRows(cases, groups, reserves) {
+  const counts = conditionCounts(cases)
+  return cases.map((planCase) => {
+    const mode = modeOf(planCase)
+    const condition = planCase.style_dna ? 'with' : 'without'
+    const garments = 1 + (planCase.extra_garments || []).length
+    const rated = givesRatings(planCase)
+    const separate = (n) => (n >= MIN_CASES ? `separate (${n} cases)` : `unavailable (${n} cases)`)
+    return {
+      id: planCase.id,
+      mode,
+      styleDna: planCase.style_dna ? planCase.style_dna.persona : null,
+      abstain: Boolean(planCase.expected.should_abstain),
+      rated,
+      images: 1 + garments,
+      garments,
+      pair: groups.get(planCase.id) || null,
+      reserve: reserves.has(planCase.id),
+      // Every case is part of the pooled figures. Its condition-specific figures exist only where the sample allows.
+      overall: rated ? separate(counts[condition].all) : null,
+      inMode: rated ? separate(counts[condition][mode]) : null,
+    }
+  })
+}
+
+function renderMatrix(cases, groups, reserves) {
+  const rows = matrixRows(cases, groups, reserves)
+  const counts = conditionCounts(cases)
+  const total = (of) => rows.filter(of).length
+  const byMode = (of) => MODES.map((mode) => total((row) => row.mode === mode && of(row)))
+  const line = (cells) => `| ${cells.join(' | ')} |`
+  const yes = (value) => (value ? 'Yes' : 'No')
+
+  const out = [
+    '# Golden dataset v1: case matrix',
+    '',
+    'Generated by `npm run eval:build-golden-plan` from the case plan. Do not edit by hand; a test fails if it differs.',
+    '',
+    '**This is a plan.** No image exists yet, no case has been reviewed and no model has been called. The matrix says',
+    'what each planned case is and how its results would be reported. It contains no rating and no result.',
+    '',
+    '## How to read it',
+    '',
+    '- **Garment mode** is one of three. **Style DNA is not a mode.** It is a condition on a case: a case with a',
+    '  profile is counted in exactly one garment mode, like any other case.',
+    '- **Images** is the number of images in the request: one personal photo plus the garment images.',
+    '  Images are never a sample size. Every sample size counts cases.',
+    '- **Abstain expected**: the inputs are insufficient on purpose, and the right answer is to decline.',
+    '- **Gives ratings**: whether the case can contribute to the figures that compare ratings with a review',
+    '  (agreement, calibration, grounding). A case that should abstain gives none. It still counts in output',
+    '  validity and in the abstention figures.',
+    '- **Reported as** says where the results of the case appear:',
+    '  - *Pooled* figures combine cases with and without Style DNA. Every pooled figure is labelled as pooled in a report.',
+    `  - A *separate* figure for one condition exists where that condition has at least ${MIN_CASES} cases that give ratings.`,
+    '    Where it has fewer, the separate figure reads "unavailable" and only the pooled figure exists.',
+    '',
+    '## Totals',
+    '',
+    line(['', 'Single garment', 'Views of one garment', 'Outfit items', 'Total']),
+    '|---|---|---|---|---|',
+    line(['Cases', ...byMode(() => true), rows.length]),
+    line(['of which reserve cases', ...byMode((row) => row.reserve), total((row) => row.reserve)]),
+    line(['Expected to abstain', ...byMode((row) => row.abstain), total((row) => row.abstain)]),
+    line(['Give ratings', ...byMode((row) => row.rated), total((row) => row.rated)]),
+    line(['Give ratings, without Style DNA', ...MODES.map((mode) => counts.without[mode]), counts.without.all]),
+    line(['Give ratings, with Style DNA', ...MODES.map((mode) => counts.with[mode]), counts.with.all]),
+    line(['Images in the requests', ...MODES.map((mode) => rows.filter((row) => row.mode === mode).reduce((sum, row) => sum + row.images, 0)), rows.reduce((sum, row) => sum + row.images, 0)]),
+    '',
+    '## Which figures are separate and which are pooled',
+    '',
+    line(['Figure', 'Without Style DNA', 'With Style DNA', 'Both together']),
+    '|---|---|---|---|',
+    line(['All cases that give ratings', `${counts.without.all}: ${counts.without.all >= MIN_CASES ? 'separate figure' : 'unavailable'}`, `${counts.with.all}: ${counts.with.all >= MIN_CASES ? 'separate figure' : 'unavailable'}`, `${counts.without.all + counts.with.all}: pooled, labelled`]),
+    ...MODES.map((mode) => line([`${MODE_LABEL[mode][0].toUpperCase()}${MODE_LABEL[mode].slice(1)}`, `${counts.without[mode]}: ${counts.without[mode] >= MIN_CASES ? 'separate figure' : 'unavailable'}`, `${counts.with[mode]}: ${counts.with[mode] >= MIN_CASES ? 'separate figure' : 'unavailable'}`, `${counts.without[mode] + counts.with[mode]}: pooled, labelled`])),
+    line(['Comparison pairs (one photo against several)', `${new Set(rows.filter((row) => row.pair && !row.styleDna).map((row) => row.pair)).size} pairs: unavailable`, `${new Set(rows.filter((row) => row.pair && row.styleDna).map((row) => row.pair)).size} pairs: unavailable`, `${new Set(rows.filter((row) => row.pair).map((row) => row.pair)).size} pairs: pooled, labelled, no margin`]),
+    line(['Shopping Advisor: usable block', 'not applicable', `${counts.with.all}: with Style DNA only, by definition`, 'not applicable']),
+    line(['Shopping Advisor: unrequested recommendations', `${counts.without.all}: without Style DNA only, by definition`, 'not applicable', 'not applicable']),
+    line(['Abstention on insufficient input', `${total((row) => row.abstain)} cases: too few to conclude`, '0', 'not applicable']),
+    '',
+    'These counts assume that every case is reviewed and returns a complete output. A case that fails lowers them.',
+    'The two cases of a comparison pair share their photo, garment and occasion: they are two cases and not two',
+    'independent observations.',
+    '',
+    '## Every case',
+    '',
+    line(['Case', 'Garment mode', 'Images', 'Style DNA', 'Abstain expected', 'Gives ratings', 'Pair', 'Reported as']),
+    '|---|---|---|---|---|---|---|---|',
+    ...rows.map((row) => line([
+      `\`${row.id}\`${row.reserve ? ' (reserve)' : ''}`,
+      MODE_LABEL[row.mode],
+      `${row.images} (1 photo + ${row.garments})`,
+      row.styleDna ? `On (${row.styleDna.replace('persona-', '')})` : 'Off',
+      yes(row.abstain),
+      yes(row.rated),
+      row.pair || 'none',
+      row.rated
+        ? `Pooled. ${row.styleDna ? 'With' : 'Without'} Style DNA: overall ${row.overall}; ${MODE_LABEL[row.mode]} ${row.inMode}`
+        : 'Output validity and abstention only. No ratings, so no agreement figure',
+    ])),
+    '',
+  ]
+  return `${out.join('\n')}`
 }
 
 function build() {
-  const { cases, groups } = buildCases()
+  const { cases, groups, reserves } = buildCases()
   const manifest = { version: 1, cases }
   // The same stubs the reviewer's own command would write, with no image directory: nothing is hashed, nothing is rated.
   const { stubs } = planStubs(manifest, { references: [] }, undefined)
   const references = stubs.map((stub) => (groups.has(stub.case_id) ? { ...stub, comparison_group: groups.get(stub.case_id) } : stub))
   return {
     'cases.template.json': `${JSON.stringify(manifest, null, 2)}\n`,
-    'references.template.json': `${JSON.stringify({ format: 'verdict-reference-set/1', dataset: 'golden-v1', dataset_version: '0.2.0', references }, null, 2)}\n`,
+    'references.template.json': `${JSON.stringify({ format: 'verdict-reference-set/1', dataset: 'golden-v1', dataset_version: '0.3.0', references }, null, 2)}\n`,
+    'CASE_MATRIX.md': renderMatrix(cases, groups, reserves),
   }
 }
 
@@ -211,6 +391,6 @@ function main() {
   return 0
 }
 
-module.exports = { build, PAIRS, SINGLES, OUTFITS, OUT_DIR, PLANNED }
+module.exports = { build, buildCases, matrixRows, conditionCounts, PAIRS, RESERVE_VIEWS, SINGLES, OUTFITS, OUT_DIR, PLANNED, MIN_CASES }
 
 if (require.main === module) process.exit(main())

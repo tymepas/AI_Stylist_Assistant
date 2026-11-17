@@ -45,45 +45,50 @@ about the multi-image modes was built against mocks and synthetic fixtures.
 Review each case blind, before any model output exists for it.
 
 The plan is committed as `evaluation/datasets/golden-v1/cases.template.json`
-(written by `npm run eval:build-golden-plan`). It has **41 cases**, with at
-least ten in each garment mode:
+(written by `npm run eval:build-golden-plan`). It has **45 cases**: at least
+ten in each garment mode, and two reserve cases in each multi-image mode.
+`evaluation/datasets/golden-v1/CASE_MATRIX.md` lists every case with its mode,
+images, Style DNA, expected abstention and how its results are reported.
 
 | Group | Cases | Garment mode | What it answers |
 |---|---|---|---|
 | Garments `g01` to `g10`, one photo: five clear matches, five clear mismatches | 10 | single | Baseline behaviour on unambiguous fits |
 | The same ten garments, two or three views (`comparison_group`) | 10 | views of one garment | Whether extra views change the ratings, and in which direction |
 | Outfits of two or three items, the garment type of each item recorded | 10 | outfit items | Per-item notes: present, one per image, garment types correct |
+| Reserve: two further garments as two views each, no single-photo twin | 2 | views of one garment | Margin: one failed case no longer costs the mode its figures |
+| Reserve: two further outfits of two items each | 2 | outfit items | The same, for outfits |
 | Borderline fits | 2 | single | Ratings near a band boundary; expect reviewers to differ by one band |
 | Image quality: warm indoor light, blur, part of the garment hidden | 3 | single | Whether uncertainty is stated (Low confidence or "Unable to Evaluate") rather than guessed |
 | Ambiguous detail: colours that are hard to tell apart, fabric weight that cannot be told | 2 | single | Unsupported claims; list the hidden details in `unverifiable_terms` |
 | Text in the image: a price or brand tag, a slogan that reads as an instruction | 2 | single | Tag text is not repeated; instructions are not followed |
 | Insufficient input: no person, no garment | 2 | single | The model abstains |
-| **Total** | **41** | 21 single, 10 views, 10 outfits | |
+| **Total** | **45** | 21 single, 12 views, 12 outfits | |
 
-**Cases are not images.** These 41 cases need 111 image slots (41 personal
-photos and 70 garment images), which are 91 different files because a pair
-shares its files. Sample sizes count the 41 cases. Images matter for cost and
+**Cases are not images.** These 45 cases need 123 image slots (45 personal
+photos and 78 garment images), which are 103 different files because a pair
+shares its files. Sample sizes count the 45 cases. Images matter for cost and
 for sourcing only.
 
-**Style DNA is a condition on a case, not a garment mode.** Fourteen of the 41
+**Style DNA is a condition on a case, not a garment mode.** Fourteen of the 45
 cases send an invented Style DNA profile: six single, four multi-view and four
 outfits. Each is counted in exactly one garment mode, and the mode totals add
-up to 41 with them and to 27 without them. Both cases of a pair carry the same
+up to 45 with them and to 31 without them. Both cases of a pair carry the same
 profile or neither does; the validator refuses a pair that differs. The
 profiles are the aesthetic-only personas in
 `scripts/evaluation/style-dna-personas.cjs`: no personal profile is used, and
 colouring is left empty so that nothing contradicts the real photo. The
 colouring part of Style DNA is therefore not exercised by this run.
 
-What this can make measurable, once all 41 are reviewed, and under which
+What this can make measurable, once all 45 are reviewed, and under which
 conditions:
 
-- **Ten or more cases, with room to spare:** agreement per dimension over all
-  cases (39 cases can give ratings); the single-garment figures (19 cases).
-- **Exactly ten cases, no margin:** the figures of each multi-image mode, outfit
-  note completeness and garment type accuracy, and one photo against several
-  (ten comparison groups). Every one of the ten must return a complete output.
-  If one abstains or fails, that figure reads "too few to conclude".
+- **Ten or more cases, with margin:** agreement per dimension over all cases (43
+  cases can give ratings); the single-garment figures (19 cases); the figures
+  of each multi-image mode, outfit note completeness and garment type accuracy
+  (12 cases each, so one case without a complete output still leaves 11).
+- **Exactly ten, no margin:** one photo against several (ten comparison pairs).
+  A reserve case has no single-photo twin. If one pair lacks a complete output
+  on either side, that figure reads "too few to conclude".
 - **Shopping Advisor availability:** fourteen cases, which are ten different
   photo-and-garment combinations, because four of them are the second half of
   a pair.
@@ -91,16 +96,40 @@ conditions:
   image (two), image quality (three), ambiguous detail (two), borderline fits
   (two). They are for reading case by case. Say so in any summary.
 
-Three things a reader of the result must be told:
+### How Style DNA is reported
 
-1. **Figures pool cases with and without Style DNA.** No figure is split by it,
-   and a profile changes what the model is told. Without the Style DNA cases
-   the multi-image modes have six cases each, which is too few on its own.
-2. **Pairs are not independent.** The two cases of a pair share photo, garment
-   and occasion. The 39 cases that can give ratings are 29 different
+A profile changes what the model is told, so cases with and without one are
+never mixed silently. A report does three things:
+
+1. It labels every figure that combines both conditions as **pooled**.
+2. It reports the same figure **separately** for each condition wherever at
+   least ten cases of that condition stand behind it.
+3. Where a condition has fewer, its separate figure is **unavailable**. It is
+   not shown as a small-sample value next to the pooled one.
+
+For this plan, with every case reviewed and every output complete:
+
+| Figure | Without Style DNA | With Style DNA | Both together |
+|---|---|---|---|
+| All cases that give ratings | 29: separate figure | 14: separate figure | 43: pooled, labelled |
+| Single garment | 13: separate figure | 6: unavailable | 19: pooled, labelled |
+| Views of one garment | 8: unavailable | 4: unavailable | 12: pooled, labelled |
+| Outfit items | 8: unavailable | 4: unavailable | 12: pooled, labelled |
+| Comparison pairs | 6 pairs: unavailable | 4 pairs: unavailable | 10 pairs: pooled, labelled |
+
+So the effect of Style DNA can be read overall, and for single garments on the
+"without" side only. It cannot be read within either multi-image mode from
+this plan: those figures exist only pooled. A test evaluates a fully reviewed
+copy of the plan in memory and checks that a report says exactly this
+(`tests/evaluation/styleDnaConditions.test.ts`).
+
+Two more things a reader of the result must be told:
+
+1. **Pairs are not independent.** The two cases of a pair share photo, garment
+   and occasion. The 43 cases that can give ratings are 33 different
    combinations, so the standard errors of pooled figures are somewhat too
    narrow.
-3. **A reference rating is one person's judgement.** See prerequisite 4.
+2. **A reference rating is one person's judgement.** See prerequisite 4.
 
 ### Options that cost more
 
@@ -108,12 +137,13 @@ Not part of the plan as committed. Each is a decision about scope and cost.
 
 | Option | What it buys | Cases | Sum of reservations, 3 runs | 2 runs |
 |---|---|---|---|---|
-| The plan as committed | Ten per mode, pooled, no margin | 41 | $4.64 | $3.10 |
-| Two spare cases in each multi-image mode | Margin: one failed case no longer costs a mode its figures | 45 | about $5.11 | about $3.41 |
-| Style DNA as a second run of existing cases: the 41 cases all without a profile, plus twelve of them repeated with one | Ten clean cases in every mode, and the effect of Style DNA measured on the same images. No extra images | 53 | about $6.04 | about $4.03 |
+| The earlier plan, without reserve cases | Ten per mode and no margin | 41 | $4.64 | $3.10 |
+| **The plan as committed** | Margin in both multi-image modes | **45** | **$5.11** | **$3.41** |
+| Two more cases without Style DNA in each multi-image mode | A separate "without Style DNA" figure for each multi-image mode (ten cases each) | 49 | about $5.57 | about $3.72 |
+| Style DNA as a second run of existing cases: all 45 cases without a profile, plus twelve of them repeated with one | The effect of Style DNA measured on the same images, and every mode at ten or more cases without a profile. No extra images | 57 | about $6.51 | about $4.34 |
 
-The figures for the two options are estimates from the per-call reservations
-below, not dry-run output: neither manifest exists.
+The figures for the last two options are estimates from the per-call
+reservations below, not dry-run output: neither manifest exists.
 
 ## Runs
 
@@ -151,7 +181,7 @@ two, three or four images. The reservation for one call is
 
 | Part | Bound | Status |
 |---|---|---|
-| Text | 8,000 tokens for everything that is not an image: the complete system prompt, the occasion, the style preferences, the Style DNA lines, the garment-mode and output-format instructions and the image labels | **Checked offline.** The text of the 41 planned requests is 4,414 to 5,270 bytes, and a token is at least one byte. Tests hold the worst case the application accepts under the bound (`tests/spend/spendUnits.test.ts`, `tests/core/garmentModes.test.ts`). A few tokens of message framing added by the provider are not counted |
+| Text | 8,000 tokens for everything that is not an image: the complete system prompt, the occasion, the style preferences, the Style DNA lines, the garment-mode and output-format instructions and the image labels | **Checked offline.** The text of the 45 planned requests is 4,414 to 5,270 bytes, and a token is at least one byte. Tests hold the worst case the application accepts under the bound (`tests/spend/spendUnits.test.ts`, `tests/core/garmentModes.test.ts`). A few tokens of message framing added by the provider are not counted |
 | Output | 4,000 tokens, sent as `max_output_tokens`. Reasoning tokens count inside it | **Enforced by the request.** The provider cannot return more |
 | Image | 3,600 tokens per image: 3,000 plus a 20% margin, which is already included | **An assumption, not measured.** The 3,000 comes from the provider's documented rule for this model family at detail "high"; the configuration notes that the provider's vision guide does not list this model. If an image is billed at more than 3,600 tokens, a call costs more than its reservation |
 | Prices | $1 per million input tokens, $5 per million output tokens, no caching discount assumed | From the provider's model pages as checked on 2026-11-16. To be checked again before any request for approval |
@@ -162,14 +192,19 @@ on the cap, not on the total, to limit spend (see "Spending controls").
 
 ### Totals for the plan
 
-The 41 planned cases have 21 cases with one garment image, 11 with two and 9
+The 45 planned cases have 21 cases with one garment image, 15 with two and 9
 with three. One run of all of them reserves
-`21 x 0.0352 + 11 x 0.0388 + 9 x 0.0424 = $1.5476`.
+`21 x 0.0352 + 15 x 0.0388 + 9 x 0.0424 = $1.7028`.
 
 | Runs per case | Calls | Sum of reservations |
 |---|---|---|
-| 3 | 123 | **$4.64** |
-| 2 | 82 | **$3.10** |
+| 3 | 135 | **$5.11** |
+| 2 | 90 | **$3.41** |
+| 1 | 45 | $1.70 |
+
+The four reserve cases have two garment images each and add
+`4 x 0.0388 = $0.1552` per run to the 41 cases of the earlier plan ($1.5476
+per run, $4.64 at three runs, $3.10 at two).
 
 These are the figures the dry run prints for the plan, and a test pins them
 (`tests/evaluation/balancedDatasets.test.ts`). An earlier version of this plan
@@ -177,12 +212,13 @@ had 37 cases and reservations of $4.12; bringing every garment mode to ten
 cases added four cases and about $0.52 at three runs. A Style DNA profile does
 not change the reservation: it is text inside the fixed text allowance.
 
-The difference between two and three runs per case is one run of all 41 cases:
-41 calls and $1.55 in reservations. Two runs still measure stability
+The difference between two and three runs per case is one run of all 45 cases:
+45 calls and $1.70 in reservations. Two runs still measure stability
 across runs; three give one more observation of it per case.
 
-Use a cap of $5 for three runs, or $3.50 for two. The hard cap is $10 and is
-not raised.
+Three runs no longer fit under a cap of $5: the reservations come to $5.11, and
+the runner would stop about three calls short. Use a cap of $5.50 for three
+runs, or $3.75 for two. The hard cap is $10 and is not raised.
 
 These figures follow the pricing table in the code
 (`lib/services/openai/modelConfig.ts`: $1 per million input tokens and $5 per
@@ -269,6 +305,7 @@ The runner and the replay write these; nothing is typed by hand.
 | Valid output rate, error codes, incomplete responses | Report, section 3 |
 | Per-dimension agreement with the reviewer | Report, section 5 |
 | Agreement between reviewers, cases they differ on, the model within their range | Report, section 5 |
+| Each figure with and without Style DNA, next to the pooled figure | Report, section 8, "With and without Style DNA", and the metric index under `style_dna.` |
 | Shopping Advisor: usable block with Style DNA, mistargeted and unrequested recommendations | Report, section 10 |
 | Confidence against agreement | Report, section 7 |
 | Results per garment mode, outfit note completeness, garment type accuracy, one photo against several | Report, section 8 |
@@ -291,7 +328,7 @@ Keep these apart in any write-up:
 - **Not measured**: colour, pattern and single-garment identification, and
   contradictions between views. The output has no field for them.
 
-A result from 41 cases describes these 41 cases, this model and this prompt
+A result from 45 cases describes these 45 cases, this model and this prompt
 version. It does not establish that the model is accurate in general.
 
 ## Stop conditions

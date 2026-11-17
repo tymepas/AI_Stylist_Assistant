@@ -92,11 +92,18 @@ Use `.jpg`, `.jpeg`, `.png` or `.webp`. One folder per case keeps things tidy.
 
 ### 2. Add the case to the manifest
 
-`evaluation/datasets/golden-v1/cases.template.json` is a **plan** of 41 cases:
-21 with one garment photo, 10 with several views of one garment and 10 outfits,
-so that every garment mode reaches the minimum of ten cases. Each entry is a
-brief of what its images should show ("PLANNED, no image yet: ..."). It holds no
-image, no rating and no expected verdict band.
+`evaluation/datasets/golden-v1/cases.template.json` is a **plan** of 45 cases:
+21 with one garment photo, 12 with several views of one garment and 12 outfits.
+Every garment mode reaches the minimum of ten cases, and each multi-image mode
+has two reserve cases beyond it, so that one case without a complete output
+does not cost the mode its figures. Each entry is a brief of what its images
+should show ("PLANNED, no image yet: ..."). It holds no image, no rating and no
+expected verdict band.
+
+`evaluation/datasets/golden-v1/CASE_MATRIX.md` lists every planned case with
+its garment mode, its number of images, whether it sends Style DNA, whether it
+is expected to abstain, whether it gives ratings, and whether its results are
+reported in a separate figure or only in a pooled one.
 
 A brief is a sourcing criterion, not a rating. "A clear mismatch for the
 occasion" tells you what kind of image to look for; it does not tell you what
@@ -129,22 +136,29 @@ Two tests pin the golden folder to the plan files (`tests/evaluation/referenceSe
 fail as soon as `cases.json` exists, on purpose: update them in the commit
 that adds the real dataset.
 
-Three limits of the plan to keep in mind while you fill it:
+Three things about the plan to keep in mind while you fill it:
 
-- **No margin.** The two multi-image modes and the comparison pairs have
-  exactly ten cases each. One case without a complete output puts the figures
-  of its mode back to "too few to conclude". Adding a spare case or two per
-  mode avoids that; each costs one more call per run.
+- **Margin, and where there is none.** Each multi-image mode has twelve cases:
+  two more than a figure needs. The comparison pairs have no margin: there are
+  exactly ten, and a reserve case has no single-photo twin. One pair without a
+  complete output on both sides puts "one photo against several" back to "too
+  few to conclude".
 - **Pairs are not independent.** The two cases of a pair share the photo, the
   garment and the occasion. They are two cases and count as two, and they are
-  not two independent observations: the 39 cases that can give ratings are 29
+  not two independent observations: the 43 cases that can give ratings are 33
   different photo, garment and occasion combinations.
 - **Style DNA is a condition on a case, not a garment mode.** Fourteen cases
   send a profile (six single, four multi-view, four outfits). Each is counted
-  in exactly one mode. Figures pool cases with and without a profile and are
-  not split by it; without the Style DNA cases the multi-image modes have six
-  cases each. Both cases of a pair carry the same profile or neither does, and
-  the validator refuses a pair that differs.
+  in exactly one mode. A profile changes what the model is told, so a report
+  never mixes the two conditions silently: every figure that combines them is
+  labelled as pooled, and next to it each condition gets a figure of its own
+  wherever ten cases of that condition stand behind it. With fewer, the
+  separate figure is unavailable. In this plan that gives separate figures for
+  all cases without Style DNA (29), all cases with it (14) and single-garment
+  cases without it (13); the multi-image modes have eight cases without and
+  four with, so their figures exist only pooled. Both cases of a pair carry
+  the same profile or neither does, and the validator refuses a pair that
+  differs.
 
 ### 3. Create the review stubs
 
@@ -519,7 +533,8 @@ them in place.
 | 1 to 9 | Figures are shown and marked "too few to conclude". No regression is ever declared from them |
 | 10 or more | Per-dimension exact agreement, agreement within one band and mean absolute error count as measured |
 | 10 or more cases that state a confidence level | That level's agreement counts as measured. The confidence gap and the ordering need this for each level they compare |
-| 10 or more cases of one garment mode | The figures for that mode count as measured. The plan has 21 single, 10 multi-view and 10 outfit cases for this reason |
+| 10 or more cases of one garment mode | The figures for that mode count as measured. The plan has 21 single, 12 multi-view and 12 outfit cases for this reason |
+| 10 or more cases of one Style DNA condition behind a figure | That figure is also reported for the condition on its own. With fewer it is unavailable for that condition, and only the figure labelled pooled exists |
 | 10 or more outfit cases | Garment type accuracy and outfit note completeness count as measured |
 | 10 or more comparison groups | One photo against several counts as measured |
 | 10 or more cases with a second review | Agreement between reviewers, and the model's position within their range, count as measured |

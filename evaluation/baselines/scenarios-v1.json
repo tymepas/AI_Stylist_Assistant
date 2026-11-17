@@ -4927,6 +4927,7 @@
       "reason": "Unavailable: no case with a Style DNA profile produced ratings",
       "se": null,
       "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
       "value": null
     },
     "shopping_advisor.mistargeted_recommendation_rate": {
@@ -4937,6 +4938,7 @@
       "reason": "Unavailable: no case with a Style DNA profile produced ratings",
       "se": null,
       "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
       "value": null
     },
     "shopping_advisor.unrequested_recommendation_rate": {
@@ -4946,6 +4948,7 @@
       "needs_references": false,
       "se": 0.0198,
       "status": "measured",
+      "style_dna_condition": "without_style_dna",
       "value": 0.02
     },
     "stability.rating.color": {
@@ -7084,6 +7087,12 @@
         "status": "measured",
         "value": 1
       }
+    },
+    "style_dna": {
+      "cases_with_style_dna": 0,
+      "cases_without_style_dna": 54,
+      "mixed": false,
+      "reading": "No evaluated case sends a Style DNA profile. Every figure describes cases without one; nothing is pooled."
     },
     "thresholds": {
       "min_sample": 10,

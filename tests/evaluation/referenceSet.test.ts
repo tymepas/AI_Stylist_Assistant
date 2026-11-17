@@ -431,7 +431,8 @@ describe('committed reference files', () => {
 
   it('leave the golden dataset empty until real images have been reviewed', () => {
     const dir = path.join(root, 'evaluation', 'datasets', 'golden-v1')
-    expect(readdirSync(dir).sort()).toEqual(['README.md', 'cases.template.json', 'references.template.json'])
+    // The plan, its empty review stubs and the generated case matrix. No real manifest, no reviews, no image.
+    expect(readdirSync(dir).sort()).toEqual(['CASE_MATRIX.md', 'README.md', 'cases.template.json', 'references.template.json'])
   })
 })
 

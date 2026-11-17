@@ -13,7 +13,7 @@
 
 import { compositionLines, describeComposition, MIN_CASES_PER_MODE, type BenchmarkCase, type DatasetComposition } from '@/benchmark/harness'
 import { GARMENT_MODES, type GarmentMode } from '@/lib/constants/garmentModes'
-import { reviewerDisagreement, type ReviewerDisagreement } from './quality'
+import { STYLE_DNA_CONDITIONS, reviewerDisagreement, type ReviewerDisagreement, type StyleDnaCondition } from './quality'
 import { RECORDABLE_SOURCES } from './recording'
 import { resolveReferences, type ReferenceSet } from './reference'
 
@@ -30,6 +30,11 @@ export interface DatasetReadiness {
   scorable_short_by: Record<GarmentMode, number>
   /** Such cases in total. */
   image_reviewed_scorable: number
+  /**
+   * The same cases by Style DNA condition. Style DNA is a condition on a case, not a garment mode: a figure is
+   * reported separately for a condition only where that condition has enough cases, and is unavailable otherwise.
+   */
+  scorable_by_style_dna: Record<StyleDnaCondition, { total: number; by_mode: Record<GarmentMode, number> }>
   second_reviews: {
     /** Image-reviewed cases that a second person rated as well. */
     cases: number
@@ -59,6 +64,10 @@ export function describeReadiness(set: ReferenceSet, cases: BenchmarkCase[]): Da
     scorable_by_mode: scorableByMode,
     scorable_short_by: shortBy,
     image_reviewed_scorable: scorable.length,
+    scorable_by_style_dna: Object.fromEntries(STYLE_DNA_CONDITIONS.map((condition) => {
+      const subset = scorable.filter((benchmarkCase) => (benchmarkCase.style_dna !== undefined) === (condition === 'with_style_dna'))
+      return [condition, { total: subset.length, by_mode: perMode(subset) }]
+    })) as DatasetReadiness['scorable_by_style_dna'],
     second_reviews: {
       cases: twice.length,
       reviewers: [...new Set(twice.flatMap((reference) => (reference.second_reviews ?? []).map((review) => review.reviewer.id)))].sort(),
@@ -69,6 +78,30 @@ export function describeReadiness(set: ReferenceSet, cases: BenchmarkCase[]): Da
     },
     ready_for_measured_figures: GARMENT_MODES.every((mode) => shortBy[mode] === 0),
   }
+}
+
+/** Which figures can be reported separately for each Style DNA condition, and which exist only pooled. */
+function styleDnaLines(readiness: DatasetReadiness): string[] {
+  const { with_style_dna: withProfile, without_style_dna: without } = readiness.scorable_by_style_dna
+  const counts = (entry: { total: number; by_mode: Record<GarmentMode, number> }) => `single ${entry.by_mode.single}, same_garment_views ${entry.by_mode.same_garment_views}, outfit_items ${entry.by_mode.outfit_items} (${entry.total} in all)`
+  if (withProfile.total === 0 || without.total === 0) {
+    return [`Style DNA condition: every case that can give ratings is ${withProfile.total > 0 ? 'with' : 'without'} Style DNA, so no figure is pooled.`]
+  }
+  const separate: string[] = []
+  const pooledOnly: string[] = []
+  const judge = (label: string, n: number) => (n >= MIN_CASES_PER_MODE ? separate : pooledOnly).push(`${label} (${n})`)
+  judge('all cases without Style DNA', without.total)
+  judge('all cases with Style DNA', withProfile.total)
+  for (const mode of GARMENT_MODES) {
+    judge(`${mode} without`, without.by_mode[mode])
+    judge(`${mode} with`, withProfile.by_mode[mode])
+  }
+  return [
+    `Cases that can give ratings, without Style DNA: ${counts(without)}`,
+    `Cases that can give ratings, with Style DNA: ${counts(withProfile)}`,
+    `Style DNA is a condition, not a garment mode. Separate figures (at least ${MIN_CASES_PER_MODE} cases): ${separate.length > 0 ? separate.join('; ') : 'none'}.`,
+    `Unavailable as separate figures, reported only as figures labelled pooled: ${pooledOnly.length > 0 ? pooledOnly.join('; ') : 'none'}.`,
+  ]
 }
 
 /** The readiness in plain lines, for the validator. Identifiers and counts only. */
@@ -83,6 +116,7 @@ export function readinessLines(readiness: DatasetReadiness): string[] {
     readiness.ready_for_measured_figures
       ? `Reviews per mode: every garment mode has at least ${MIN_CASES_PER_MODE} such cases. A mode with exactly ${MIN_CASES_PER_MODE} has no margin: one case without a complete output puts its figures back to "too few to conclude".`
       : `Reviews per mode: NOT enough for measured figures (${MIN_CASES_PER_MODE} such cases per mode): ${short.join(', ')}.`,
+    ...styleDnaLines(readiness),
     second.cases === 0
       ? 'Second reviews: none. Every rating is one person\'s judgement and has not been checked against another\'s.'
       : `Second reviews: ${second.cases} case(s) rated by a second person (${second.reviewers.join(', ')}); reviewers differ on ${second.disagreements.length} of them.`,
