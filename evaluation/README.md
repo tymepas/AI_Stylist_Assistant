@@ -99,6 +99,10 @@ evaluation with a list of every problem.
 How to add reviewed cases, the rubric and the review template:
 [`HUMAN_REVIEW.md`](HUMAN_REVIEW.md).
 
+What a first live run on real images should cover, what it costs at most and
+how to read it: [`LIVE_VALIDATION_PLAN.md`](LIVE_VALIDATION_PLAN.md). It is a plan;
+no live call is made without approval.
+
 The older `labels.verified` flag and `expected.dimension_ratings` in a manifest
 are still read for the legacy "acceptable ratings by confidence" figure. That
 flag is a self-declared boolean with no provenance, so it is not evidence of a
