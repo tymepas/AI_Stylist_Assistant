@@ -21,6 +21,7 @@ import { validateImageMeta } from '@/lib/services/analysisService'
 import { utf8ByteLength } from '@/lib/services/requestLimits'
 import { postFormData, type UploadFailureKind } from '@/lib/services/uploadRequest'
 import { isWithinRequestBudget } from '@/lib/images/prepareImageForUpload'
+import { readStorage, writeStorage } from '@/lib/services/browserStorage'
 import { emptyProfile, getProfile, saveProfile } from '@/lib/services/styleProfileService'
 import { getProfile as getAIStyleProfile } from '@/lib/services/aiStyleProfileService'
 import type { AIStyleProfile, StyleProfile } from '@/types/schema'
@@ -138,7 +139,7 @@ export default function AnalysisPage() {
   useEffect(() => {
     setAIStyleProfile(getAIStyleProfile())
     setPreferences(getProfile() ?? emptyProfile)
-    setProfilePromptDismissed(window.localStorage.getItem('verdict_profile_prompt_dismissed') === 'true')
+    setProfilePromptDismissed(readStorage('verdict_profile_prompt_dismissed') === 'true')
   }, [])
 
   // Leaving the page stops waiting for an in-flight analysis.
@@ -361,7 +362,7 @@ export default function AnalysisPage() {
       ) : !profilePromptDismissed ? (
         <div className="surface-quiet flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-muted-foreground">
           <span>Style DNA is optional. Adding it makes results more personal.</span>
-          <div className="flex items-center gap-3"><Link href="/dashboard/profile" className="focus-ring font-medium text-primary hover:underline">Build Style DNA</Link><button type="button" className="focus-ring text-muted-foreground hover:text-foreground" onClick={() => { window.localStorage.setItem('verdict_profile_prompt_dismissed', 'true'); setProfilePromptDismissed(true) }}>Dismiss</button></div>
+          <div className="flex items-center gap-3"><Link href="/dashboard/profile" className="focus-ring font-medium text-primary hover:underline">Build Style DNA</Link><button type="button" className="focus-ring text-muted-foreground hover:text-foreground" onClick={() => { writeStorage('verdict_profile_prompt_dismissed', 'true'); setProfilePromptDismissed(true) }}>Dismiss</button></div>
         </div>
       ) : null}
 
