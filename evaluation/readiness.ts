@@ -84,6 +84,8 @@ export function describeReadiness(set: ReferenceSet, cases: BenchmarkCase[]): Da
 function styleDnaLines(readiness: DatasetReadiness): string[] {
   const { with_style_dna: withProfile, without_style_dna: without } = readiness.scorable_by_style_dna
   const counts = (entry: { total: number; by_mode: Record<GarmentMode, number> }) => `single ${entry.by_mode.single}, same_garment_views ${entry.by_mode.same_garment_views}, outfit_items ${entry.by_mode.outfit_items} (${entry.total} in all)`
+  // Before any case is reviewed there is nothing to report in either condition: say that, not that nothing is pooled.
+  if (withProfile.total === 0 && without.total === 0) return ['Style DNA condition: no reviewed case can give ratings yet. The case matrix shows what the plan would report with and without Style DNA.']
   if (withProfile.total === 0 || without.total === 0) {
     return [`Style DNA condition: every case that can give ratings is ${withProfile.total > 0 ? 'with' : 'without'} Style DNA, so no figure is pooled.`]
   }

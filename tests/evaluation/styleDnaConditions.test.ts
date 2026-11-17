@@ -390,6 +390,13 @@ describe('the golden case matrix', () => {
     expect(lines.join('\n')).toContain('Reviews per mode: every garment mode has at least 10 such cases.')
   })
 
+  it('does not claim anything about pooling while no case is reviewed', () => {
+    const unreviewed = parseReferenceSet(planTemplate, planCases)
+    const lines = readinessLines(describeReadiness(unreviewed, planCases))
+    expect(lines).toContain('Style DNA condition: no reviewed case can give ratings yet. The case matrix shows what the plan would report with and without Style DNA.')
+    expect(lines.join(' ')).not.toContain('no figure is pooled')
+  })
+
   it('is a plan: the committed files hold no review, and the matrix says so', () => {
     expect(matrix).toContain('**This is a plan.** No image exists yet, no case has been reviewed and no model has been called.')
     expect(matrix).not.toMatch(/Excellent|Good|Fair|Poor|test-reviewer/)
