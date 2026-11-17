@@ -9,6 +9,7 @@
         "build": "next build",
         "start": "next start",
         "audit:check": "node scripts/security/audit-check.cjs",
+        "verify:image-intake": "node scripts/verification/image-intake-probes.cjs",
         "test": "jest --config jest.config.ts",
         "test:phase3": "jest --config jest.config.ts --testPathPattern tests/phase3",
         "typecheck": "tsc --noEmit",
