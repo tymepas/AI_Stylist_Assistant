@@ -5,6 +5,9 @@
  * - mock   (default): committed, hand-written fixture outputs. Runs in CI.
  * - replay: previously recorded model outputs, read from a file.
  *
+ * A third mode, `check-references`, evaluates nothing: it validates a
+ * human-review reference set against its manifest.
+ *
  * Live calls are not part of this command at all. They exist only in the
  * benchmark runner (`npm run benchmark`), behind its own opt-in phrase and
  * spend cap. Asking this command for `live` is refused; it never falls back to
@@ -14,7 +17,9 @@
 
 export type EvaluationPlan =
   | { mode: 'mock' }
-  | { mode: 'replay'; recordingPath: string; casesPath: string; baselinePath?: string }
+  | { mode: 'replay'; recordingPath: string; casesPath: string; baselinePath?: string; referencesPath?: string; imagesDir?: string }
+  /** Validates a reference set against its manifest (and its images, when a directory is given). Evaluates nothing. */
+  | { mode: 'check_references'; casesPath: string; referencesPath: string; imagesDir?: string }
   | { mode: 'refused'; reason: string }
 
 export const EVALUATION_MODES = ['mock', 'replay'] as const
@@ -29,16 +34,23 @@ export function resolveEvaluationPlan(env: Record<string, string | undefined>): 
     }
   }
   if (requested === 'mock') return { mode: 'mock' }
+
+  const casesPath = env.EVAL_CASES?.trim()
+  const referencesPath = env.EVAL_REFERENCES?.trim()
+  if (requested === 'check-references') {
+    if (!casesPath) return { mode: 'refused', reason: 'Checking references needs EVAL_CASES (path to the manifest).' }
+    if (!referencesPath) return { mode: 'refused', reason: 'Checking references needs EVAL_REFERENCES (path to the reference set).' }
+    return { mode: 'check_references', casesPath, referencesPath, imagesDir: env.EVAL_IMAGES?.trim() || undefined }
+  }
   if (requested !== 'replay') {
-    return { mode: 'refused', reason: 'EVAL_MODE must be "mock" or "replay".' }
+    return { mode: 'refused', reason: 'EVAL_MODE must be "mock", "replay" or "check-references".' }
   }
 
   const recordingPath = env.EVAL_RECORDING?.trim()
-  const casesPath = env.EVAL_CASES?.trim()
   if (!recordingPath) return { mode: 'refused', reason: 'Replay needs EVAL_RECORDING (path to a recording file). Nothing is fetched when it is missing.' }
   if (!casesPath) return { mode: 'refused', reason: 'Replay needs EVAL_CASES (path to the manifest the recording was made with).' }
   const baselinePath = env.EVAL_BASELINE?.trim()
-  return { mode: 'replay', recordingPath, casesPath, baselinePath: baselinePath || undefined }
+  return { mode: 'replay', recordingPath, casesPath, baselinePath: baselinePath || undefined, referencesPath: referencesPath || undefined, imagesDir: env.EVAL_IMAGES?.trim() || undefined }
 }
 
 /**

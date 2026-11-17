@@ -32,6 +32,11 @@ function renderReport(result: CompleteAnalysisResult, handlers: { onReset?: () =
 
 const advisor = (recommendations: unknown[]): ShoppingAdvisor => ({ availability: 'available', recommendations: recommendations as ShoppingAdvisor['recommendations'] })
 
+// The two notes shown when advisory content is unavailable, word for word. They say what is missing and that the
+// verdict does not depend on it. They make no statement about how many ratings could be given.
+const ADVISOR_UNAVAILABLE = 'No alternatives are available for this analysis. Your verdict and the six ratings above do not depend on them.'
+const OUTFIT_NOTES_UNAVAILABLE = 'Notes on the individual items are not available for this analysis. The verdict and the six ratings above cover the outfit as a whole and do not depend on them.'
+
 describe('verdict', () => {
   it('is the first heading and shows the band the application calculated', () => {
     const result = resultWith('Good')
@@ -137,9 +142,23 @@ describe('outfit items', () => {
     expect(withNotes.verdict_score).toBe(plain.verdict_score)
   })
 
-  it('shows nothing when there are no notes', () => {
+  it('says the notes are unavailable instead of leaving a gap, and keeps the verdict', () => {
+    const plain = resultWith('Good')
     renderReport(resultWith('Good', {}, undefined, { garmentMode: 'outfit_items', outfitComponents: { availability: 'unavailable', items: [] } }))
     expect(screen.queryByTestId('outfit-components')).toBeNull()
+    const note = within(screen.getByTestId('outfit-components-unavailable'))
+    expect(note.getByRole('heading', { name: 'The pieces of the outfit' })).toBeTruthy()
+    expect(note.getByText(OUTFIT_NOTES_UNAVAILABLE)).toBeTruthy()
+    expect(note.queryAllByRole('listitem')).toHaveLength(0)
+    expect(screen.getByTestId('verdict-band').textContent).toBe(plain.overall_recommendation)
+  })
+
+  it('shows no item section at all for one garment or for views of one garment', () => {
+    const { unmount } = renderReport(resultWith('Good'))
+    expect(screen.queryByText('The pieces of the outfit')).toBeNull()
+    unmount()
+    renderReport(resultWith('Good', {}, undefined, { garmentMode: 'same_garment_views', outfitComponents: { availability: 'not_applicable', items: [] } }))
+    expect(screen.queryByText('The pieces of the outfit')).toBeNull()
   })
 })
 
@@ -197,11 +216,22 @@ describe('Shopping Advisor', () => {
     expect(screen.getByTestId('verdict-band').textContent).toBe('Recommended')
   })
 
-  it('is absent when advice is unavailable, and the report is otherwise complete', () => {
+  it('says so when advice is unavailable, without a card, a reason or a suggestion of its own', () => {
     renderReport(resultWith('Good'))
     expect(screen.queryByTestId('shopping-advisor')).toBeNull()
-    expect(screen.queryByText('Shopping Advisor')).toBeNull()
+    const note = within(screen.getByTestId('shopping-advisor-unavailable'))
+    expect(note.getByRole('heading', { name: 'Shopping Advisor' })).toBeTruthy()
+    expect(note.getByText(ADVISOR_UNAVAILABLE)).toBeTruthy()
+    expect(screen.queryByText('Why it is suggested')).toBeNull()
+    expect(screen.queryByText('Expected Outcome')).toBeNull()
+    expect(screen.queryAllByRole('link')).toHaveLength(0)
     expect(screen.getByTestId('verdict-band')).toBeTruthy()
+  })
+
+  it('treats an available advisor with no suggestions the same way, never as an empty grid', () => {
+    renderReport(resultWith('Good', {}, advisor([])))
+    expect(screen.queryByTestId('shopping-advisor')).toBeNull()
+    expect(screen.getByTestId('shopping-advisor-unavailable')).toBeTruthy()
   })
 
   it('never changes the verdict shown above it', () => {
@@ -210,6 +240,116 @@ describe('Shopping Advisor', () => {
     unmount()
     renderReport(resultWith('Poor', {}, advisor([{ ...VALID_RECOMMENDATION, match_level: 'Excellent Match' }])))
     expect(screen.getByTestId('verdict-band').textContent).toBe(without)
+  })
+})
+
+describe('no blank sections', () => {
+  /** Every heading of the report with the text of the block it introduces, heading excluded. */
+  function sectionsWithoutContent(): string[] {
+    const empty: string[] = []
+    for (const heading of screen.getAllByRole('heading')) {
+      const block = heading.closest('section, header, li, article') as HTMLElement | null
+      if (!block) continue
+      const rest = (block.textContent ?? '').replace(heading.textContent ?? '', '').trim()
+      if (rest.length === 0) empty.push(heading.textContent ?? '')
+    }
+    return empty
+  }
+
+  const outfit = { availability: 'available' as const, items: [
+    { item: 1, garment_type: 'top' as const, assessment: 'Works well' as const, note: 'The shirt anchors the outfit.' },
+    { item: 2, garment_type: 'bottom' as const, assessment: 'Works' as const, note: 'The trousers sit well with it.' },
+  ] }
+
+  it.each<[string, () => CompleteAnalysisResult]>([
+    ['one garment, no Style DNA', () => resultWith('Good', {}, { availability: 'requires_style_dna', recommendations: [] })],
+    ['one garment, advice unavailable', () => resultWith('Good')],
+    ['one garment, with advice', () => resultWith('Fair', {}, advisor([VALID_RECOMMENDATION]))],
+    ['an outfit with notes and advice', () => resultWith('Poor', {}, advisor([VALID_RECOMMENDATION]), { garmentMode: 'outfit_items', outfitComponents: outfit })],
+    ['an outfit whose notes are unavailable', () => resultWith('Good', {}, undefined, { garmentMode: 'outfit_items', outfitComponents: { availability: 'unavailable', items: [] } })],
+    ['nothing could be evaluated', () => resultWith('Unable to Evaluate')],
+  ])('has content under every heading: %s', (_name, make) => {
+    renderReport(make())
+    expect(sectionsWithoutContent()).toEqual([])
+  })
+
+  it('leaves out "Things to consider" when there is nothing to list, instead of a heading over nothing', () => {
+    const result = { ...resultWith('Good'), things_to_consider: ['', '   '] }
+    renderReport(result)
+    expect(screen.queryByRole('heading', { name: 'Things to consider' })).toBeNull()
+    expect(screen.getByRole('heading', { name: 'What this is based on' })).toBeTruthy()
+    expect(sectionsWithoutContent()).toEqual([])
+  })
+
+  it('lists every consideration the application produced', () => {
+    const result = resultWith('Good', { formality: { rating: 'Poor', reason: 'Far too casual for this setting.' } })
+    renderReport(result)
+    const section = screen.getByRole('heading', { name: 'Things to consider' }).closest('section') as HTMLElement
+    expect(within(section).getAllByRole('listitem')).toHaveLength(result.things_to_consider.length)
+    expect(within(section).getByText(/Far too casual for this setting\./)).toBeTruthy()
+  })
+
+  it('states that a rating has no explanation rather than showing a blank line or inventing one', () => {
+    const result = resultWith('Good')
+    result.dimensions.color = { ...result.dimensions.color, reason: '   ' }
+    renderReport(result)
+    expect(screen.getAllByText('No explanation was given for this rating.')).toHaveLength(1)
+    expect(sectionsWithoutContent()).toEqual([])
+  })
+
+  it('leaves out an empty "Considered" or "Not considered" list', () => {
+    const result = { ...resultWith('Good'), analysis_based_on: { considered: [], not_considered: [] } } as unknown as CompleteAnalysisResult
+    renderReport(result)
+    expect(screen.queryByText('Considered')).toBeNull()
+    expect(screen.queryByText('Not considered')).toBeNull()
+    expect(screen.getByText(/Verdict cannot see price, material quality, brand, durability or comfort/)).toBeTruthy()
+  })
+})
+
+describe('unavailable notes claim nothing about the ratings', () => {
+  const outfitUnavailable = { garmentMode: 'outfit_items' as const, outfitComponents: { availability: 'unavailable' as const, items: [] } }
+  const advisorNote = () => screen.getByTestId('shopping-advisor-unavailable')
+  const outfitNote = () => screen.getByTestId('outfit-components-unavailable')
+
+  it('do not say the ratings are complete when no dimension could be evaluated and there is no score', () => {
+    // Every dimension "Unable to Evaluate": the header shows no score. Advice and item notes are unavailable too.
+    renderReport(resultWith('Unable to Evaluate', {}, undefined, outfitUnavailable))
+
+    expect(screen.getByText(/No score: nothing that counts towards the verdict could be evaluated/)).toBeTruthy()
+    expect(screen.queryByRole('img', { name: /Calculated score/ })).toBeNull()
+    expect(screen.getByTestId('evidence-note').textContent).toMatch(/Not enough to go on/)
+
+    expect(within(advisorNote()).getByText(ADVISOR_UNAVAILABLE)).toBeTruthy()
+    expect(within(outfitNote()).getByText(OUTFIT_NOTES_UNAVAILABLE)).toBeTruthy()
+    // Nothing in either note contradicts the header above it.
+    for (const note of [advisorNote(), outfitNote()]) {
+      expect(note.textContent).not.toMatch(/complete/i)
+      expect(note.textContent).not.toMatch(/\bscore\b/i)
+    }
+  })
+
+  it('use the same words whatever the ratings are', () => {
+    for (const rating of ['Excellent', 'Poor', 'Unable to Evaluate'] as const) {
+      const { unmount } = renderReport(resultWith(rating, {}, undefined, outfitUnavailable))
+      expect(advisorNote().querySelector('p:last-of-type')?.textContent).toBe(ADVISOR_UNAVAILABLE)
+      expect(outfitNote().querySelector('p:last-of-type')?.textContent).toBe(OUTFIT_NOTES_UNAVAILABLE)
+      unmount()
+    }
+  })
+
+  it('do not say the ratings are complete when only some dimensions could be evaluated', () => {
+    renderReport(resultWith('Good', { occasion: { rating: 'Unable to Evaluate' }, formality: { rating: 'Unable to Evaluate' } }, undefined, outfitUnavailable))
+    expect(screen.getByTestId('evidence-note')).toBeTruthy()
+    expect(advisorNote().textContent).not.toMatch(/complete/i)
+    expect(outfitNote().textContent).not.toMatch(/complete/i)
+  })
+
+  it('leave the verdict and the score exactly as calculated', () => {
+    const plain = resultWith('Unable to Evaluate')
+    const withNotes = resultWith('Unable to Evaluate', {}, undefined, outfitUnavailable)
+    renderReport(withNotes)
+    expect(screen.getByTestId('verdict-band').textContent).toBe(plain.overall_recommendation)
+    expect({ band: withNotes.overall_recommendation, score: withNotes.verdict_score }).toEqual({ band: plain.overall_recommendation, score: plain.verdict_score })
   })
 })
 
