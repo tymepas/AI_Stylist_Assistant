@@ -272,6 +272,17 @@ export function maxCostPerCallMicroUsd(options: RunOptions, imageCount = 2): num
   return estimateMaxCostMicroUsd(resolveModelConfig(options.model)!, 'analysis', imageCount, options.maxOutputTokens)
 }
 
+/**
+ * Worst-case cost of every planned call, in micro-USD: each case priced at its
+ * own number of images (the personal photo plus every garment image), times the
+ * runs per case. This is the same per-call figure runCases reserves, so a dry
+ * run shows what a live run could spend at most.
+ */
+export function plannedWorstCaseMicroUsd(cases: BenchmarkCase[], options: RunOptions): number {
+  const perRun = cases.reduce((sum, benchmarkCase) => sum + maxCostPerCallMicroUsd(options, 2 + (benchmarkCase.extra_garments?.length ?? 0)), 0)
+  return perRun * options.runsPerCase
+}
+
 // ---------------------------------------------------------------------------
 // Records and scanning
 // ---------------------------------------------------------------------------

@@ -646,6 +646,1228 @@
     "schema_version": "analysis-output/2"
   },
   "interpretation": "Hand-written fixture outputs. This report checks that the evaluation harness and the deterministic verdict code behave as intended. It says nothing about model quality.",
+  "metric_index": {
+    "abstention.false_abstention_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 7,
+      "needs_references": false,
+      "reason": "Built from 7 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.0973,
+      "status": "insufficient_sample",
+      "value": 0.0714
+    },
+    "abstention.recall": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": false,
+      "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.5,
+      "status": "insufficient_sample",
+      "value": 0.5
+    },
+    "agreement.brief_derived.color.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.color.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.color.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.coverage": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.formality.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.formality.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.formality.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.occasion.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.occasion.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.occasion.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.seasonality.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.seasonality.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.seasonality.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style_preference_match.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style_preference_match.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.brief_derived.style_preference_match.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.color.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.color.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.color.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.coverage": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.formality.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.formality.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.formality.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.occasion.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.occasion.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.occasion.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.seasonality.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.seasonality.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.seasonality.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style_preference_match.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style_preference_match.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.image_reviewed.style_preference_match.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "agreement.synthetic.color.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2421,
+      "status": "insufficient_sample",
+      "value": 0.625
+    },
+    "agreement.synthetic.color.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.7181,
+      "status": "insufficient_sample",
+      "value": 0.875
+    },
+    "agreement.synthetic.color.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.coverage": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 1
+    },
+    "agreement.synthetic.formality.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2421,
+      "status": "insufficient_sample",
+      "value": 0.625
+    },
+    "agreement.synthetic.formality.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.7181,
+      "status": "insufficient_sample",
+      "value": 0.875
+    },
+    "agreement.synthetic.formality.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.occasion.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.occasion.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.75,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.occasion.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.seasonality.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2421,
+      "status": "insufficient_sample",
+      "value": 0.375
+    },
+    "agreement.synthetic.seasonality.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 3,
+      "needs_references": true,
+      "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.6009,
+      "status": "insufficient_sample",
+      "value": 0.8333
+    },
+    "agreement.synthetic.seasonality.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.25,
+      "status": "insufficient_sample",
+      "value": 0.5
+    },
+    "agreement.synthetic.style.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.style.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.75,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.style.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "agreement.synthetic.style_preference_match.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2421,
+      "status": "insufficient_sample",
+      "value": 0.375
+    },
+    "agreement.synthetic.style_preference_match.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.6575,
+      "status": "insufficient_sample",
+      "value": 1.125
+    },
+    "agreement.synthetic.style_preference_match.within_one_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.75
+    },
+    "calibration.brief_derived.confidence_gap": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "calibration.brief_derived.high_confidence_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "calibration.brief_derived.high_confidence_severe_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "calibration.image_reviewed.confidence_gap": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "calibration.image_reviewed.high_confidence_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "calibration.image_reviewed.high_confidence_severe_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "calibration.synthetic.confidence_gap": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": true,
+      "reason": "One confidence level was stated by fewer than 10 cases.",
+      "se": 0.2329,
+      "status": "insufficient_sample",
+      "value": 0.6818
+    },
+    "calibration.synthetic.high_confidence_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2329,
+      "status": "insufficient_sample",
+      "value": 0.3182
+    },
+    "calibration.synthetic.high_confidence_severe_error_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2165,
+      "status": "insufficient_sample",
+      "value": 0.25
+    },
+    "end_to_end.verdict_band_agreement_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1789,
+      "status": "insufficient_sample",
+      "value": 0.8
+    },
+    "garment_identification.brief_derived.garment_type_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "garment_identification.image_reviewed.garment_type_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "garment_identification.synthetic.garment_type_accuracy": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.brief_derived.contradiction_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.brief_derived.key_fact_mention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.brief_derived.supporting_fact_mention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.brief_derived.uncertainty_handling_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.brief_derived.unverifiable_claim_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.image_reviewed.contradiction_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.image_reviewed.key_fact_mention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.image_reviewed.supporting_fact_mention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.image_reviewed.uncertainty_handling_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.image_reviewed.unverifiable_claim_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "grounding.synthetic.contradiction_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": true,
+      "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 0
+    },
+    "grounding.synthetic.key_fact_mention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": true,
+      "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 1
+    },
+    "grounding.synthetic.supporting_fact_mention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": true,
+      "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 0
+    },
+    "grounding.synthetic.uncertainty_handling_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": true,
+      "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.5,
+      "status": "insufficient_sample",
+      "value": 0.5
+    },
+    "grounding.synthetic.unverifiable_claim_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 1,
+      "needs_references": true,
+      "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 0
+    },
+    "multi_image.comparison_groups.cross_mode_rating_consistency": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.comparison_groups.mean_band_shift": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.agreement.brief_derived.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.agreement.brief_derived.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.agreement.image_reviewed.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.agreement.image_reviewed.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.agreement.synthetic.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.agreement.synthetic.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.completeness_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no complete run of an outfit case",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.repeat_rating_stability": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no case in this mode was run more than once",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.outfit_items.valid_output_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no run in this mode",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.agreement.brief_derived.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.agreement.brief_derived.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.agreement.image_reviewed.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.agreement.image_reviewed.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.agreement.synthetic.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.agreement.synthetic.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.repeat_rating_stability": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no case in this mode was run more than once",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.same_garment_views.valid_output_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no run in this mode",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.single.agreement.brief_derived.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.single.agreement.brief_derived.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: no brief-derived references",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.single.agreement.image_reviewed.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.single.agreement.image_reviewed.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image.single.agreement.synthetic.exact_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2465,
+      "status": "insufficient_sample",
+      "value": 0.5833
+    },
+    "multi_image.single.agreement.synthetic.mae": {
+      "direction": "lower_is_better",
+      "kind": "bands",
+      "n": 4,
+      "needs_references": true,
+      "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.6657,
+      "status": "insufficient_sample",
+      "value": 0.8458
+    },
+    "multi_image.single.repeat_rating_stability": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1667,
+      "status": "insufficient_sample",
+      "value": 0.8333
+    },
+    "multi_image.single.valid_output_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 8,
+      "needs_references": false,
+      "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1169,
+      "status": "insufficient_sample",
+      "value": 0.875
+    },
+    "stability.rating.color": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1789,
+      "status": "insufficient_sample",
+      "value": 0.8
+    },
+    "stability.rating.formality": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1789,
+      "status": "insufficient_sample",
+      "value": 0.8
+    },
+    "stability.rating.occasion": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 1
+    },
+    "stability.rating.seasonality": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2191,
+      "status": "insufficient_sample",
+      "value": 0.6
+    },
+    "stability.rating.style": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0,
+      "status": "insufficient_sample",
+      "value": 1
+    },
+    "stability.rating.style_preference_match": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 5,
+      "needs_references": false,
+      "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1789,
+      "status": "insufficient_sample",
+      "value": 0.8
+    },
+    "stability.same_outcome_case_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 8,
+      "needs_references": false,
+      "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1768,
+      "status": "insufficient_sample",
+      "value": 0.5
+    },
+    "validity.valid_output_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 8,
+      "needs_references": false,
+      "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.1169,
+      "status": "insufficient_sample",
+      "value": 0.875
+    }
+  },
   "metrics": {
     "abstention": {
       "abstained_runs": 2,
@@ -730,6 +1952,12 @@
     "withheld_runs": 2
   },
   "mode": "mock",
+  "next_steps": [
+    "Fix or explain the 6 failing case(s) listed under \"Cases\" before reading any other figure.",
+    "These are hand-written fixture outputs. To learn anything about a model, replay a recording from an approved live benchmark run.",
+    "Add human-reviewed cases with real images (evaluation/HUMAN_REVIEW.md). Until then accuracy on real images is unavailable.",
+    "Finish the 1 unreviewed reference(s); they are not scored."
+  ],
   "performance": {
     "cost": {
       "input_tokens": null,
@@ -750,7 +1978,1407 @@
     }
   },
   "provenance": "synthetic_fixture",
-  "report_format": "verdict-evaluation-report/2",
+  "quality": {
+    "agreement": {
+      "brief_derived": {
+        "cases_with_output": 0,
+        "coverage": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "dimensions": {
+          "color": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "formality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "occasion": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "seasonality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style_preference_match": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "reference_cases": 0
+      },
+      "image_reviewed": {
+        "cases_with_output": 0,
+        "coverage": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "dimensions": {
+          "color": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "formality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "occasion": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "seasonality": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "style_preference_match": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "mae": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "reference_cases": 0
+      },
+      "synthetic": {
+        "cases_with_output": 4,
+        "coverage": {
+          "n": 4,
+          "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0,
+          "status": "insufficient_sample",
+          "value": 1
+        },
+        "dimensions": {
+          "color": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2421,
+              "status": "insufficient_sample",
+              "value": 0.625
+            },
+            "mae": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.7181,
+              "status": "insufficient_sample",
+              "value": 0.875
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            }
+          },
+          "formality": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2421,
+              "status": "insufficient_sample",
+              "value": 0.625
+            },
+            "mae": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.7181,
+              "status": "insufficient_sample",
+              "value": 0.875
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            }
+          },
+          "occasion": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            },
+            "mae": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.75,
+              "status": "insufficient_sample",
+              "value": 0.75
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            }
+          },
+          "seasonality": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2421,
+              "status": "insufficient_sample",
+              "value": 0.375
+            },
+            "mae": {
+              "n": 3,
+              "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.6009,
+              "status": "insufficient_sample",
+              "value": 0.8333
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.25,
+              "status": "insufficient_sample",
+              "value": 0.5
+            }
+          },
+          "style": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            },
+            "mae": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.75,
+              "status": "insufficient_sample",
+              "value": 0.75
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            }
+          },
+          "style_preference_match": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2421,
+              "status": "insufficient_sample",
+              "value": 0.375
+            },
+            "mae": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.6575,
+              "status": "insufficient_sample",
+              "value": 1.125
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            }
+          }
+        },
+        "reference_cases": 4
+      }
+    },
+    "by_case": {
+      "abstention_recall": {
+        "n": 1,
+        "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.5,
+        "status": "insufficient_sample",
+        "value": 0.5
+      },
+      "false_abstention_rate": {
+        "n": 7,
+        "reason": "Built from 7 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.0973,
+        "status": "insufficient_sample",
+        "value": 0.0714
+      },
+      "valid_output_rate": {
+        "n": 8,
+        "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.1169,
+        "status": "insufficient_sample",
+        "value": 0.875
+      },
+      "verdict_band_agreement_rate": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.1789,
+        "status": "insufficient_sample",
+        "value": 0.8
+      }
+    },
+    "calibration": {
+      "brief_derived": {
+        "buckets": {
+          "High": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "Low": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "Medium": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: no brief-derived references",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "confidence_gap": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "high_confidence_error_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "high_confidence_severe_error_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "ordering": "unavailable"
+      },
+      "image_reviewed": {
+        "buckets": {
+          "High": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "Low": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          },
+          "Medium": {
+            "exact_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            },
+            "within_one_rate": {
+              "n": 0,
+              "reason": "Unavailable: insufficient human-reviewed ground truth",
+              "se": null,
+              "status": "unavailable",
+              "value": null
+            }
+          }
+        },
+        "confidence_gap": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "high_confidence_error_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "high_confidence_severe_error_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "ordering": "unavailable"
+      },
+      "synthetic": {
+        "buckets": {
+          "High": {
+            "exact_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2329,
+              "status": "insufficient_sample",
+              "value": 0.6818
+            },
+            "within_one_rate": {
+              "n": 4,
+              "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2165,
+              "status": "insufficient_sample",
+              "value": 0.75
+            }
+          },
+          "Low": {
+            "exact_rate": {
+              "n": 1,
+              "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0,
+              "status": "insufficient_sample",
+              "value": 0
+            },
+            "within_one_rate": {
+              "n": 1,
+              "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0,
+              "status": "insufficient_sample",
+              "value": 0
+            }
+          },
+          "Medium": {
+            "exact_rate": {
+              "n": 2,
+              "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.3464,
+              "status": "insufficient_sample",
+              "value": 0.6
+            },
+            "within_one_rate": {
+              "n": 2,
+              "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+              "se": 0.2121,
+              "status": "insufficient_sample",
+              "value": 0.9
+            }
+          }
+        },
+        "confidence_gap": {
+          "n": 1,
+          "reason": "One confidence level was stated by fewer than 10 cases.",
+          "se": 0.2329,
+          "status": "insufficient_sample",
+          "value": 0.6818
+        },
+        "high_confidence_error_rate": {
+          "n": 4,
+          "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0.2329,
+          "status": "insufficient_sample",
+          "value": 0.3182
+        },
+        "high_confidence_severe_error_rate": {
+          "n": 4,
+          "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0.2165,
+          "status": "insufficient_sample",
+          "value": 0.25
+        },
+        "ordering": "insufficient_sample"
+      }
+    },
+    "cases_with_unscored_manifest_facts": 0,
+    "garment_identification": {
+      "brief_derived": {
+        "cases": 0,
+        "garment_type_accuracy": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        }
+      },
+      "image_reviewed": {
+        "cases": 0,
+        "garment_type_accuracy": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        }
+      },
+      "synthetic": {
+        "cases": 0,
+        "garment_type_accuracy": {
+          "n": 0,
+          "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        }
+      }
+    },
+    "grounding": {
+      "brief_derived": {
+        "cases_missing_key_facts": [],
+        "cases_with_facts": 0,
+        "contradiction_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "key_fact_mention_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "kind": "proxy",
+        "mention_rate_by_attribute": {
+          "colour": {
+            "n": 0,
+            "reason": "Unavailable: no brief-derived references",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "fit": {
+            "n": 0,
+            "reason": "Unavailable: no brief-derived references",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "garment": {
+            "n": 0,
+            "reason": "Unavailable: no brief-derived references",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "occasion": {
+            "n": 0,
+            "reason": "Unavailable: no brief-derived references",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "other": {
+            "n": 0,
+            "reason": "Unavailable: no brief-derived references",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "pattern": {
+            "n": 0,
+            "reason": "Unavailable: no brief-derived references",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "supporting_fact_mention_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "uncertainty_handling_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "unverifiable_claim_rate": {
+          "n": 0,
+          "reason": "Unavailable: no brief-derived references",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        }
+      },
+      "image_reviewed": {
+        "cases_missing_key_facts": [],
+        "cases_with_facts": 0,
+        "contradiction_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "key_fact_mention_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "kind": "proxy",
+        "mention_rate_by_attribute": {
+          "colour": {
+            "n": 0,
+            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "fit": {
+            "n": 0,
+            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "garment": {
+            "n": 0,
+            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "occasion": {
+            "n": 0,
+            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "other": {
+            "n": 0,
+            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "pattern": {
+            "n": 0,
+            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "supporting_fact_mention_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "uncertainty_handling_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "unverifiable_claim_rate": {
+          "n": 0,
+          "reason": "Unavailable: insufficient human-reviewed ground truth",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        }
+      },
+      "synthetic": {
+        "cases_missing_key_facts": [],
+        "cases_with_facts": 1,
+        "contradiction_rate": {
+          "n": 1,
+          "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0,
+          "status": "insufficient_sample",
+          "value": 0
+        },
+        "key_fact_mention_rate": {
+          "n": 1,
+          "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0,
+          "status": "insufficient_sample",
+          "value": 1
+        },
+        "kind": "proxy",
+        "mention_rate_by_attribute": {
+          "colour": {
+            "n": 1,
+            "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+            "se": 0,
+            "status": "insufficient_sample",
+            "value": 0
+          },
+          "fit": {
+            "n": 0,
+            "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "garment": {
+            "n": 0,
+            "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "occasion": {
+            "n": 0,
+            "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "other": {
+            "n": 1,
+            "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+            "se": 0,
+            "status": "insufficient_sample",
+            "value": 1
+          },
+          "pattern": {
+            "n": 0,
+            "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "supporting_fact_mention_rate": {
+          "n": 1,
+          "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0,
+          "status": "insufficient_sample",
+          "value": 0
+        },
+        "uncertainty_handling_rate": {
+          "n": 1,
+          "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0.5,
+          "status": "insufficient_sample",
+          "value": 0.5
+        },
+        "unverifiable_claim_rate": {
+          "n": 1,
+          "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
+          "se": 0,
+          "status": "insufficient_sample",
+          "value": 0
+        }
+      }
+    },
+    "image_grounded_accuracy": {
+      "cases": 0,
+      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "status": "unavailable"
+    },
+    "multi_image": {
+      "comparison_groups": {
+        "cross_mode_rating_consistency": {
+          "n": 0,
+          "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "details": [],
+        "groups": 0,
+        "mean_band_shift": {
+          "n": 0,
+          "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "multi_minus_single_exact": {
+          "brief_derived": {
+            "n": 0,
+            "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "image_reviewed": {
+            "n": 0,
+            "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "synthetic": {
+            "n": 0,
+            "reason": "Unavailable: no comparison group holds cases of two image modes with ratings",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        }
+      },
+      "modes": {
+        "outfit_items": {
+          "agreement": {
+            "brief_derived": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            },
+            "image_reviewed": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            },
+            "synthetic": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            }
+          },
+          "cases": 0,
+          "repeat_rating_stability": {
+            "n": 0,
+            "reason": "Unavailable: no case in this mode was run more than once",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "runs_with_unsupported_claims": 0,
+          "scored_runs": 0,
+          "valid_output_rate": {
+            "n": 0,
+            "reason": "Unavailable: no run in this mode",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "same_garment_views": {
+          "agreement": {
+            "brief_derived": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            },
+            "image_reviewed": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            },
+            "synthetic": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            }
+          },
+          "cases": 0,
+          "repeat_rating_stability": {
+            "n": 0,
+            "reason": "Unavailable: no case in this mode was run more than once",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "runs_with_unsupported_claims": 0,
+          "scored_runs": 0,
+          "valid_output_rate": {
+            "n": 0,
+            "reason": "Unavailable: no run in this mode",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          }
+        },
+        "single": {
+          "agreement": {
+            "brief_derived": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: no brief-derived references",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            },
+            "image_reviewed": {
+              "exact_rate": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "mae": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              },
+              "within_one_rate": {
+                "n": 0,
+                "reason": "Unavailable: insufficient human-reviewed ground truth",
+                "se": null,
+                "status": "unavailable",
+                "value": null
+              }
+            },
+            "synthetic": {
+              "exact_rate": {
+                "n": 4,
+                "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+                "se": 0.2465,
+                "status": "insufficient_sample",
+                "value": 0.5833
+              },
+              "mae": {
+                "n": 4,
+                "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+                "se": 0.6657,
+                "status": "insufficient_sample",
+                "value": 0.8458
+              },
+              "within_one_rate": {
+                "n": 4,
+                "reason": "Built from 4 case(s); at least 10 are needed before anything is concluded.",
+                "se": 0.2273,
+                "status": "insufficient_sample",
+                "value": 0.7083
+              }
+            }
+          },
+          "cases": 9,
+          "repeat_rating_stability": {
+            "n": 5,
+            "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+            "se": 0.1667,
+            "status": "insufficient_sample",
+            "value": 0.8333
+          },
+          "runs_with_unsupported_claims": 1,
+          "scored_runs": 16,
+          "valid_output_rate": {
+            "n": 8,
+            "reason": "Built from 8 case(s); at least 10 are needed before anything is concluded.",
+            "se": 0.1169,
+            "status": "insufficient_sample",
+            "value": 0.875
+          }
+        }
+      },
+      "outfit_items": {
+        "completeness_rate": {
+          "n": 0,
+          "reason": "Unavailable: no complete run of an outfit case",
+          "se": null,
+          "status": "unavailable",
+          "value": null
+        },
+        "unexpected_blocks_in_other_modes": 0
+      }
+    },
+    "not_measurable": {
+      "colour_identification": "The output has no colour field. Colour is covered only by the grounding proxy (key facts with attribute \"colour\").",
+      "contradictions_between_views": "One output is returned for all views, so views cannot be compared with each other. Only the ratings of cases in one comparison group can.",
+      "pattern_identification": "The output has no pattern field. Pattern is covered only by the grounding proxy (key facts with attribute \"pattern\").",
+      "single_garment_identification": "The output names a garment type only for the items of an outfit. A single garment, and views of one garment, carry none."
+    },
+    "stability_by_dimension": {
+      "color": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.1789,
+        "status": "insufficient_sample",
+        "value": 0.8
+      },
+      "formality": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.1789,
+        "status": "insufficient_sample",
+        "value": 0.8
+      },
+      "occasion": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0,
+        "status": "insufficient_sample",
+        "value": 1
+      },
+      "seasonality": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.2191,
+        "status": "insufficient_sample",
+        "value": 0.6
+      },
+      "style": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0,
+        "status": "insufficient_sample",
+        "value": 1
+      },
+      "style_preference_match": {
+        "n": 5,
+        "reason": "Built from 5 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.1789,
+        "status": "insufficient_sample",
+        "value": 0.8
+      }
+    },
+    "thresholds": {
+      "min_sample": 10,
+      "noise_floor_bands": 0.25,
+      "noise_floor_rate": 0.05,
+      "noise_z": 1.96
+    }
+  },
+  "references": {
+    "cases_by_tier": {
+      "brief_derived": 0,
+      "image_reviewed": 0,
+      "synthetic": 4,
+      "unreviewed": 1
+    },
+    "cases_without_reference": 4,
+    "dataset": "selftest",
+    "dataset_version": "1.0.0",
+    "fingerprint": "80813a83cabd",
+    "image_reviewers": [],
+    "image_reviews_from": null,
+    "image_reviews_to": null,
+    "status": "loaded"
+  },
+  "report_format": "verdict-evaluation-report/3",
   "selection": {
     "cases_evaluated": 9,
     "filters": {

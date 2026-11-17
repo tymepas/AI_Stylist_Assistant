@@ -9,13 +9,20 @@
  *   become a baseline;
  * - a report whose recording was made for a different dataset cannot either;
  * - a report that is WORSE than the current baseline is refused unless the
- *   caller states explicitly that the regressions are accepted.
+ *   caller states explicitly that the regressions are accepted. Worse means a
+ *   case-level regression (a check that started failing) or a metric-level
+ *   regression (a figure that moved the wrong way by more than the noise margin,
+ *   or a figure that was measured and is gone).
+ * - When the dataset or the reference set changed, the figures of the two reports
+ *   are not comparable. The update is then judged at case level only, and its
+ *   notes say how many figures were not compared.
  *
  * This module performs no network request.
  */
 
 import { BLOCKING_CHECKS, checkStatus, type BlockingCheckId, type CheckStatus } from './checks'
 import type { CaseReport, EvaluationReport } from './evaluate'
+import { noiseMargin, type IndexedMetric, type MetricIndex } from './quality'
 
 export interface CheckRegression {
   case_id: string
@@ -184,20 +191,162 @@ export function assessBaselineUpdate(current: EvaluationReport | null, candidate
   }
 
   const regressions = classifyRegressions(current, candidate)
+  const metricChanges = classifyMetricChanges(current, candidate)
+  const metricLines = describeMetricChanges(metricChanges)
+  const worse = regressions.has_regression || metricChanges.has_regression
   const datasetChanged = current.dataset?.fingerprint !== candidate.dataset?.fingerprint
-  if (regressions.has_regression && !options.acceptRegressions) {
+  if (worse && !options.acceptRegressions) {
     return {
       allowed: false,
       reasons: [
         'The new report is worse than the current baseline, so the baseline was not replaced.',
         ...describeRegressions(regressions).filter((line) => !/^(Fixed|Added|Consistency change: .* -> pass)/.test(line)),
+        ...metricLines.filter((line) => line.startsWith('Metric regression') || line.startsWith('Metric lost')),
         `To accept this on purpose, set EVAL_ACCEPT_REGRESSIONS=${ACCEPT_WORSE_BASELINE}.`,
       ],
     }
   }
   const notes: string[] = []
   if (datasetChanged) notes.push('The dataset changed since the previous baseline.')
-  if (regressions.has_regression) notes.push('Regressions were accepted explicitly.', ...describeRegressions(regressions))
-  else notes.push(...describeRegressions(regressions))
+  if (worse) notes.push('Regressions were accepted explicitly.')
+  notes.push(...describeRegressions(regressions), ...metricLines)
   return { allowed: true, notes }
+}
+
+// ---------------------------------------------------------------------------
+// Metric-level regression
+// ---------------------------------------------------------------------------
+
+/**
+ * How one metric changed between two reports.
+ *
+ * - `improvement` / `regression`: the figure moved in the good or the bad
+ *   direction by more than the noise margin, on enough samples on both sides.
+ * - `no_meaningful_change`: it moved by no more than the noise margin.
+ * - `inconclusive`: there is a figure on both sides, but it cannot support a
+ *   conclusion: too few samples, a partial run, or the two reports do not
+ *   describe the same dataset or the same references.
+ * - `unavailable`: one side has no figure at all.
+ *
+ * Losing a figure is not neutral. A metric that was measured in the base and
+ * has no measured figure in the candidate, on the same dataset and references,
+ * is listed under `lost` and counts as worse, exactly as a case that can no
+ * longer be judged does at case level. Otherwise an output that stops
+ * producing something (for example the per-item notes of an outfit) would make
+ * its own metric disappear and pass.
+ *
+ * The noise margin is the larger of a fixed floor (5 percentage points for a
+ * rate, a quarter of a band for a mean absolute error) and 1.96 standard errors
+ * of the difference. The thresholds live in quality.ts.
+ */
+export const METRIC_CLASSES = ['improvement', 'no_meaningful_change', 'regression', 'inconclusive', 'unavailable'] as const
+export type MetricClass = (typeof METRIC_CLASSES)[number]
+
+export interface MetricComparison {
+  metric: string
+  classification: MetricClass
+  base: number | null
+  candidate: number | null
+  /** candidate − base; null unless both sides have a figure. */
+  delta: number | null
+  /** The noise margin the delta was judged against; null unless both sides have a figure. */
+  margin: number | null
+  base_n: number
+  candidate_n: number
+  reason: string
+}
+
+export interface MetricRegressionReport {
+  comparisons: MetricComparison[]
+  counts: Record<MetricClass, number>
+  regressions: string[]
+  improvements: string[]
+  /** Measured in the base, not measured in the candidate, although the two are comparable. Counts as worse. */
+  lost: string[]
+  /** Metrics that could not be compared because the dataset or the reference set differs. */
+  not_compared: number
+  /** True when a metric regressed or was lost. */
+  has_regression: boolean
+}
+
+export interface MetricComparisonContext {
+  /** False when the two reports were produced from different manifests. */
+  sameDataset: boolean
+  /** False when the two reports used different reference sets. Only metrics that depend on references are affected. */
+  sameReferences: boolean
+  /** True when either report covers only part of its dataset. */
+  partial: boolean
+}
+
+export function classifyMetric(metric: string, base: IndexedMetric | undefined, candidate: IndexedMetric | undefined, context: MetricComparisonContext): MetricComparison {
+  const result = (classification: MetricClass, reason: string, delta: number | null = null, margin: number | null = null): MetricComparison => ({
+    metric,
+    classification,
+    base: base?.value ?? null,
+    candidate: candidate?.value ?? null,
+    delta,
+    margin,
+    base_n: base?.n ?? 0,
+    candidate_n: candidate?.n ?? 0,
+    reason,
+  })
+
+  if (!base || base.value === null) return result('unavailable', base ? `The base has no figure. ${base.reason ?? ''}`.trim() : 'The base report does not carry this metric.')
+  if (!candidate || candidate.value === null) return result('unavailable', candidate ? `The candidate has no figure. ${candidate.reason ?? ''}`.trim() : 'The candidate report does not carry this metric.')
+
+  const delta = Math.round((candidate.value - base.value) * 10_000) / 10_000
+  const margin = noiseMargin(candidate.kind, base.se, candidate.se)
+  if (!context.sameDataset) return result('inconclusive', 'The two reports were produced from different datasets.', delta, margin)
+  if (context.partial) return result('inconclusive', 'At least one report covers only part of the dataset.', delta, margin)
+  if (candidate.needs_references && !context.sameReferences) return result('inconclusive', 'The two reports used different reference sets.', delta, margin)
+  if (base.status !== 'measured' || candidate.status !== 'measured') {
+    return result('inconclusive', `Too few samples (base ${base.n}, candidate ${candidate.n}).`, delta, margin)
+  }
+  if (Math.abs(delta) <= margin) return result('no_meaningful_change', `A change of ${delta} is within the noise margin of ${margin}.`, delta, margin)
+
+  const better = candidate.direction === 'higher_is_better' ? delta > 0 : delta < 0
+  return result(better ? 'improvement' : 'regression', `A change of ${delta} exceeds the noise margin of ${margin}.`, delta, margin)
+}
+
+/** Every metric of two reports, classified. A report without a metric index (format /2 and older) makes every metric `unavailable`. */
+export function classifyMetricChanges(base: EvaluationReport, candidate: EvaluationReport): MetricRegressionReport {
+  const baseIndex: MetricIndex = base.metric_index ?? {}
+  const candidateIndex: MetricIndex = candidate.metric_index ?? {}
+  const context: MetricComparisonContext = {
+    sameDataset: base.dataset?.fingerprint === candidate.dataset?.fingerprint,
+    sameReferences: (base.references?.fingerprint ?? null) === (candidate.references?.fingerprint ?? null),
+    partial: isPartial(base) || isPartial(candidate),
+  }
+  const comparisons = [...new Set([...Object.keys(baseIndex), ...Object.keys(candidateIndex)])]
+    .sort()
+    .map((metric) => classifyMetric(metric, baseIndex[metric], candidateIndex[metric], context))
+
+  const counts = Object.fromEntries(METRIC_CLASSES.map((entry) => [entry, 0])) as Record<MetricClass, number>
+  for (const comparison of comparisons) counts[comparison.classification] += 1
+  const named = (wanted: MetricClass) => comparisons.filter((comparison) => comparison.classification === wanted).map((comparison) => comparison.metric)
+
+  // Whether a difference between the two reports can be read as a change in this metric at all.
+  const comparable = (metric: string) => context.sameDataset && !context.partial && (context.sameReferences || !baseIndex[metric]?.needs_references)
+  const lost = Object.keys(baseIndex).sort().filter((metric) => baseIndex[metric].status === 'measured' && candidateIndex[metric]?.status !== 'measured' && comparable(metric))
+  const notCompared = comparisons.filter((comparison) => comparison.base !== null && comparison.candidate !== null && !comparable(comparison.metric) && !context.partial).length
+
+  return { comparisons, counts, regressions: named('regression'), improvements: named('improvement'), lost, not_compared: notCompared, has_regression: counts.regression > 0 || lost.length > 0 }
+}
+
+/** One line per metric that moved or could not be judged, then a line of counts. Unavailable metrics are counted, not listed. */
+export function describeMetricChanges(changes: MetricRegressionReport): string[] {
+  const lines: string[] = []
+  const labels: Partial<Record<MetricClass, string>> = { regression: 'Metric regression', improvement: 'Metric improvement', inconclusive: 'Metric inconclusive' }
+  for (const wanted of ['regression', 'improvement', 'inconclusive'] as const) {
+    for (const comparison of changes.comparisons.filter((entry) => entry.classification === wanted)) {
+      lines.push(`${labels[wanted]}: ${comparison.metric} ${comparison.base} -> ${comparison.candidate} (${comparison.reason})`)
+    }
+  }
+  for (const metric of changes.lost) {
+    const comparison = changes.comparisons.find((entry) => entry.metric === metric) as MetricComparison
+    lines.push(`Metric lost: ${metric} was measured in the baseline (${comparison.base}, ${comparison.base_n} cases) and has no measured figure now (${comparison.candidate === null ? 'no figure' : `${comparison.candidate}, ${comparison.candidate_n} cases`})`)
+  }
+  if (changes.not_compared > 0) lines.push(`Metrics not compared: ${changes.not_compared} figure(s) exist on both sides but the dataset or the reference set differs, so nothing is concluded from them.`)
+  lines.push(`Metrics: ${METRIC_CLASSES.map((entry) => `${changes.counts[entry]} ${entry.replace(/_/g, ' ')}`).join(', ')}.`)
+  return lines
 }

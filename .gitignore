@@ -100,3 +100,5 @@ next-dev.*.log
 evaluation/reports/
 # Recordings of real model outputs stay local unless reviewed and committed deliberately
 evaluation/recordings/
+# Review images belong in benchmark/data/ (ignored above). This catches one placed next to a dataset by mistake.
+evaluation/datasets/*/images/

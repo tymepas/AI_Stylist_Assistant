@@ -13,12 +13,18 @@ import { readFileSync, writeFileSync } from 'node:fs'
 jest.mock('server-only', () => ({}), { virtual: true })
 
 import { evaluateRecording, serializeReport, type EvaluationReport } from '@/evaluation/evaluate'
-import { loadCases, loadRecording, mockFixturePaths } from '@/evaluation/load'
+import { loadCases, loadRecording, loadReferenceSet, mockFixturePaths } from '@/evaluation/load'
 import { datasetFingerprint } from '@/evaluation/recording'
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 
 const paths = mockFixturePaths(process.cwd())
 const CURRENT = { promptVersion: 'aaaaaaaaaaaa', schemaVersion: ANALYSIS_OUTPUT_SCHEMA_VERSION }
+
+/** The same inputs `npm run eval` uses for the self-test: the fixtures and their synthetic references. */
+function evaluateFixtures(): EvaluationReport {
+  const cases = loadCases(paths.casesPath)
+  return evaluateRecording(loadRecording(paths.recordingPath), cases, CURRENT, 'mock', { references: loadReferenceSet(paths.referencesPath, cases) })
+}
 
 let report: EvaluationReport
 let fetchSpy: jest.SpiedFunction<typeof fetch>
@@ -27,7 +33,7 @@ beforeEach(() => {
   fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() => {
     throw new Error('Network access is not allowed in an evaluation.')
   })
-  report = evaluateRecording(loadRecording(paths.recordingPath), loadCases(paths.casesPath), CURRENT, 'mock')
+  report = evaluateFixtures()
 })
 
 afterEach(() => {
@@ -189,8 +195,7 @@ describe('mock evaluation of the committed fixtures', () => {
   })
 
   it('is reproducible byte for byte', () => {
-    const again = evaluateRecording(loadRecording(paths.recordingPath), loadCases(paths.casesPath), CURRENT, 'mock')
-    expect(serializeReport(again)).toBe(serializeReport(report))
+    expect(serializeReport(evaluateFixtures())).toBe(serializeReport(report))
   })
 
   it('matches the committed expected report, so any change in results shows up as a diff', () => {

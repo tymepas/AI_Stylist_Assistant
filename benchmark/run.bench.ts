@@ -23,8 +23,10 @@ import { ImageNormalizationError, normalizeImage } from '@/lib/images/normalizeI
 import { resolveModelConfig } from '@/lib/services/openai/modelConfig'
 import {
   evaluateGate,
+  HARD_MAX_USD,
   manifestSchema,
   maxCostPerCallMicroUsd,
+  plannedWorstCaseMicroUsd,
   runCases,
   summarize,
   type BenchmarkCase,
@@ -98,13 +100,16 @@ describe('Verdict model benchmark', () => {
     const manifest = manifestSchema.parse(JSON.parse(readFileSync(casesPath, 'utf8')))
     const { prepared, problems } = await prepare(manifest.cases, dataDir)
 
-    const perCall = maxCostPerCallMicroUsd(options)
     const plannedCalls = prepared.length * options.runsPerCase
     out(`Model: ${options.model}  reasoning: ${options.reasoningEffort ?? 'n/a'}  max_output_tokens: ${options.maxOutputTokens}  runs/case: ${options.runsPerCase}`)
     out(`Cases: ${manifest.cases.length} in manifest, ${prepared.length} ready, ${problems.length} problem(s)`)
     for (const problem of problems) out(`  - ${problem}`)
     const manifestCalls = manifest.cases.length * options.runsPerCase
-    out(`Worst-case cost: $${(perCall / 1e6).toFixed(4)} per call, $${((perCall * plannedCalls) / 1e6).toFixed(2)} for ${plannedCalls} ready calls ($${((perCall * manifestCalls) / 1e6).toFixed(2)} for all ${manifestCalls} manifest calls)`)
+    // Each case is priced at its own number of images: a multi-photo case costs more than a single-photo one.
+    const readyWorst = plannedWorstCaseMicroUsd(prepared.map((entry) => entry.benchmarkCase), options)
+    const manifestWorst = plannedWorstCaseMicroUsd(manifest.cases, options)
+    out(`Worst-case cost: $${(maxCostPerCallMicroUsd(options, 2) / 1e6).toFixed(4)} per call with one garment image, $${(maxCostPerCallMicroUsd(options, 4) / 1e6).toFixed(4)} with three; $${(readyWorst / 1e6).toFixed(2)} for ${plannedCalls} ready calls ($${(manifestWorst / 1e6).toFixed(2)} for all ${manifestCalls} manifest calls)`)
+    if (manifestWorst > HARD_MAX_USD * 1e6) out(`NOTE: the whole manifest could cost more than the hard cap of $${HARD_MAX_USD}. A live run stops before the cap, so it would not finish every case.`)
 
     if (gate.mode === 'dry_run') {
       out(`DRY RUN — no API calls were made. ${gate.reason}`)
