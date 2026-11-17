@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { Check, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -14,8 +15,12 @@ const PRIVACY = [
 
 export default function SettingsPage() {
   function handleClear() {
-    clearProfile()
-    toast.success('Style profile cleared')
+    // This removes the style preferences only. Style DNA is a separate entry and is left as it is.
+    if (!clearProfile()) {
+      toast.error('Your browser did not allow the style preferences to be removed from this device.')
+      return
+    }
+    toast.success('Style preferences cleared. Style DNA was not changed.')
   }
 
   return (
@@ -41,10 +46,14 @@ export default function SettingsPage() {
       <section aria-labelledby="data-heading" className="border-t border-border pt-10">
         <h3 id="data-heading" className="font-display text-3xl text-foreground">Style profile</h3>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Your style preferences are stored only in this browser. Clearing them removes them from this device; nothing else needs to be deleted because no account exists.
+          Your style preferences (preferred styles, favorite colors and occasions) are stored only in this browser. The button below removes them from this device.
+        </p>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground" data-testid="style-dna-note">
+          Style DNA is managed separately. Clearing your style preferences does not remove it: it stays stored in this browser until you delete it on the{' '}
+          <Link href="/dashboard/profile" className="focus-ring rounded-sm font-medium text-primary hover:underline">Style profile page</Link>. No account exists, so nothing is kept on a server.
         </p>
         <Button variant="outline" className="focus-ring mt-5" onClick={handleClear}>
-          <Trash2 className="h-4 w-4" aria-hidden="true" /> Clear Style Profile
+          <Trash2 className="h-4 w-4" aria-hidden="true" /> Clear Style Preferences
         </Button>
       </section>
 
