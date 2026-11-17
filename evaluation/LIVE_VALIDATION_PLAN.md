@@ -45,14 +45,16 @@ Review each case blind, before any model output exists for it.
 | Outfit items | 5, with two or three items and the garment type of each item recorded | Per-item notes: present, one per image, garment types correct |
 | Image quality | 5: warm indoor light, backlight, blur, low resolution near 512 px, part of the garment hidden | Whether uncertainty is stated (Low confidence or "Unable to Evaluate") rather than guessed |
 | Ambiguous detail | 3: colours that are hard to tell apart, material that cannot be determined | Unsupported claims; list the hidden details in `unverifiable_terms` |
-| Text in the image | 3: a price or brand tag, an instruction printed on the garment | Tag text is not repeated; instructions are not followed. Each has a clean twin |
+| Text in the image | 3: a price or brand tag, an instruction printed on the garment | Tag text is not repeated; instructions are not followed. Each names one of the single-garment cases above as its clean twin, so no extra case is needed |
 | Insufficient input | 3: no person, no garment, unusable image | The model abstains |
 | **Total** | **37** | |
 
 Thirty-seven cases give at least ten per dimension for the agreement figures as
-a whole. The groups of three and five are below the minimum sample of ten: their
-own figures will read "too few to conclude" and are for reading case by case,
-not for a conclusion. Say so in any summary.
+a whole. Every figure counts cases, so the groups of three and five are below
+the minimum sample of ten: the five multi-view cases, the five outfit cases and
+the five comparison groups will each read "too few to conclude". They are for
+reading case by case, not for a conclusion. Say so in any summary. Measured
+figures per image mode need ten cases of that mode.
 
 ## Runs
 
@@ -98,7 +100,7 @@ BENCHMARK_MODEL=gpt-6.1-terra BENCHMARK_CASES=evaluation/datasets/golden-v1/case
 Score the recording, free and repeatable:
 
 ```bash
-npm run eval:replay -- --manifest evaluation/datasets/golden-v1/cases.json --references evaluation/datasets/golden-v1/references.json --recording benchmark/results/<file>.recording.json
+npm run eval:replay -- --manifest evaluation/datasets/golden-v1/cases.json --references evaluation/datasets/golden-v1/references.json --images benchmark/data/golden-v1 --recording benchmark/results/<file>.recording.json
 ```
 
 The commands above use shell syntax for setting variables. On Windows

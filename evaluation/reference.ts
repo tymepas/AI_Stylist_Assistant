@@ -294,6 +294,17 @@ export function manifestProblems(set: ReferenceSet, cases: BenchmarkCase[]): str
       else if (benchmarkCase.source !== reference.provenance.image_source) problems.push(`${at}: provenance.image_source differs from the manifest source`)
     }
   }
+
+  // The cases of one comparison group show the same garment for the same occasion; only the image mode differs.
+  const occasionsByGroup = new Map<string, Set<string>>()
+  for (const reference of set.references) {
+    const benchmarkCase = byId.get(reference.case_id)
+    if (!reference.comparison_group || !benchmarkCase) continue
+    occasionsByGroup.set(reference.comparison_group, (occasionsByGroup.get(reference.comparison_group) ?? new Set<string>()).add(benchmarkCase.occasion))
+  }
+  for (const group of [...occasionsByGroup.keys()].sort()) {
+    if ((occasionsByGroup.get(group) as Set<string>).size > 1) problems.push(`Comparison group ${group}: its cases have different occasions. A group holds the same garment for the same occasion`)
+  }
   return problems
 }
 

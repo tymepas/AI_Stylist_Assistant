@@ -119,11 +119,16 @@ BENCHMARK_MODEL=gpt-6.1-terra BENCHMARK_CASES=evaluation/datasets/golden-v1/case
 ### 7. Score, free and repeatable
 
 ```bash
-npm run eval:replay -- --manifest evaluation/datasets/golden-v1/cases.json --references evaluation/datasets/golden-v1/references.json --recording benchmark/results/<file>.recording.json
+npm run eval:replay -- --manifest evaluation/datasets/golden-v1/cases.json --references evaluation/datasets/golden-v1/references.json --images benchmark/data/golden-v1 --recording benchmark/results/<file>.recording.json
 ```
 
+A replay applies the same checks as the validator: a reference set that step 5
+refuses is refused here too, including a review dated in the future and, with
+`--images`, an image that is no longer the file that was reviewed. Without
+`--images` the run says that the images were not checked.
+
 Add `--baseline <earlier report>.json` to see, metric by metric, what improved,
-regressed or stayed inconclusive.
+regressed, was lost or stayed inconclusive.
 
 ## Rubric
 
@@ -243,8 +248,12 @@ them in place.
 | 0 | `Unavailable: insufficient human-reviewed ground truth` |
 | 1 to 9 | Figures are shown and marked "too few to conclude". No regression is ever declared from them |
 | 10 or more | Per-dimension exact agreement, agreement within one band and mean absolute error count as measured |
-| 10 or more ratings at a confidence level | That level's agreement, the confidence gap and the ordering of levels count as measured |
-| 10 or more outfit items | Garment type accuracy counts as measured |
+| 10 or more cases that state a confidence level | That level's agreement counts as measured. The confidence gap and the ordering need this for each level they compare |
+| 10 or more outfit cases | Garment type accuracy and outfit note completeness count as measured |
+| 10 or more comparison groups | One photo against several counts as measured |
+
+Every count is a count of cases. Running a case three times, or an outfit of
+three items, does not add to it.
 
 The minimum is ten units per figure, and a difference between two reports counts
 only when it exceeds the noise margin (`evaluation/README.md`). Thirty to fifty
@@ -256,8 +265,11 @@ of one kind tell you about that kind only.
 - A reference is changed only to correct a mistake in the review. Say what
   changed in `review_notes` and bump `dataset_version`. Never adjust a rating
   because the model disagreed.
-- An image is never swapped under a finished review. The validator reports a
-  file whose hash changed; review it again.
+- An image is never swapped under a finished review. The validator, and a
+  replay given `--images`, refuse a file whose hash changed; review it again.
+  The hash ties the review to the image file. It does not tie a recording to
+  it: run the live benchmark on the same files that were reviewed, and validate
+  with `--images` right before it.
 - A reference set that fails validation stops the evaluation. Nothing is skipped
   quietly.
 - None of these rules can stop someone from typing a false review. They make

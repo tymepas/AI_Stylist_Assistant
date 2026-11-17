@@ -18,7 +18,7 @@ import { computeMetrics, modalOutcome, outcomeSignature, type EvaluationMetrics,
 import { computePerformance, type PerformanceReport } from './performance'
 import { MIN_SAMPLE, buildMetricIndex, computeQuality, type MetricIndex, type QualityReport } from './quality'
 import { datasetFingerprint, stableStringify, type Recording } from './recording'
-import { resolveReferences, summarizeReferences, type ReferenceSet, type ReferenceSummary } from './reference'
+import { parseReferenceSet, resolveReferences, summarizeReferences, type ReferenceSet, type ReferenceSummary } from './reference'
 import { describeSelection, selectCases, type CaseSelection, type SelectionReport } from './selection'
 
 /**
@@ -122,7 +122,7 @@ export interface EvaluationReport {
 export interface EvaluationOptions {
   /** Evaluate only some cases. The report is then marked partial. */
   selection?: CaseSelection
-  /** References for the cases, already validated against the manifest (see parseReferenceSet). */
+  /** References for the cases. They are validated against the manifest here again, so an unchecked set is never scored. */
   references?: ReferenceSet
 }
 
@@ -250,8 +250,10 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
     })
 
   const metrics = computeMetrics(details, cases)
-  const references = summarizeReferences(options.references, cases)
-  const quality = computeQuality(details, cases, resolveReferences(options.references, cases), recording.provenance === 'model' ? 'model' : 'synthetic_fixture')
+  // Validated here whatever the caller did: a set that was only typed, not parsed, must not reach the scoring.
+  const referenceSet = options.references ? parseReferenceSet(options.references, allCases) : undefined
+  const references = summarizeReferences(referenceSet, cases)
+  const quality = computeQuality(details, cases, resolveReferences(referenceSet, cases), recording.provenance === 'model' ? 'model' : 'synthetic_fixture')
   const summary = summarizeCases(caseReports)
 
   return {

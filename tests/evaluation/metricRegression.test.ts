@@ -127,13 +127,12 @@ describe('a deliberately degraded fixture is detected as a regression', () => {
       'agreement.image_reviewed.color.exact_rate', // 1 -> 0
       'agreement.image_reviewed.color.mae', // 0 -> 1 band
       'agreement.image_reviewed.seasonality.exact_rate', // 1 -> 13/17
-      'calibration.image_reviewed.high_confidence_error_rate', // 0 -> 38/85
-      'calibration.image_reviewed.high_confidence_severe_error_rate', // 0 -> 21/85
-      'calibration.image_reviewed.confidence_gap', // 0.5294 -> 0.0823
+      'calibration.image_reviewed.high_confidence_error_rate', // 0 -> 0.4471
+      'calibration.image_reviewed.high_confidence_severe_error_rate', // 0 -> 0.2471
+      'calibration.image_reviewed.confidence_gap', // 0.5294 -> 0.0824
       'grounding.image_reviewed.key_fact_mention_rate', // 1 -> 0
       'grounding.image_reviewed.contradiction_rate', // 0 -> 1
       'grounding.image_reviewed.unverifiable_claim_rate', // 0 -> 1
-      'garment_identification.image_reviewed.garment_type_accuracy', // 1 -> 0.5
     ]) {
       expect({ name, classification: classOf(changes, name) }).toEqual({ name, classification: 'regression' })
     }
@@ -148,7 +147,6 @@ describe('a deliberately degraded fixture is detected as a regression', () => {
       'agreement.image_reviewed.style.exact_rate',
       'agreement.image_reviewed.coverage',
       'validity.valid_output_rate',
-      'multi_image.outfit_items.completeness_rate', // the notes are still well formed, only wrong
     ]) {
       expect({ name, classification: classOf(changes, name) }).toEqual({ name, classification: 'no_meaningful_change' })
     }
@@ -158,8 +156,10 @@ describe('a deliberately degraded fixture is detected as a regression', () => {
     // Uncertainty handling rests on the 4 cases where the reviewer could not judge seasonality: 1 -> 0.
     const comparison = changes.comparisons.find((entry) => entry.metric === 'grounding.image_reviewed.uncertainty_handling_rate')
     expect(comparison).toMatchObject({ classification: 'inconclusive', base: 1, candidate: 0, base_n: 4, candidate_n: 4 })
-    // Per-mode agreement rests on 4, 5 and 8 cases.
+    // Per-mode agreement rests on 4, 5 and 8 cases, and the outfit figures on 5 outfit cases.
     expect(classOf(changes, 'multi_image.same_garment_views.agreement.image_reviewed.exact_rate')).toBe('inconclusive')
+    expect(changes.comparisons.find((entry) => entry.metric === 'garment_identification.image_reviewed.garment_type_accuracy')).toMatchObject({ classification: 'inconclusive', base: 1, candidate: 0.5, base_n: 5 })
+    expect(classOf(changes, 'multi_image.outfit_items.completeness_rate')).toBe('inconclusive')
   })
 
   it('marks the tiers that have no references as unavailable rather than unchanged', () => {

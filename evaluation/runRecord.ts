@@ -83,6 +83,8 @@ export interface RunRecord {
     newly_failing_cases: string[]
     metric_regressions: string[]
     metric_improvements: string[]
+    /** Measured in the baseline, not measured now. Counts as worse. */
+    metrics_lost: string[]
     metrics_inconclusive: number
     metrics_unavailable: number
   } | null
@@ -163,6 +165,7 @@ export function buildRunRecord(input: RunRecordInput): RunRecord {
           newly_failing_cases: regressions.newly_failing.map((entry) => entry.case_id),
           metric_regressions: metricChanges.regressions,
           metric_improvements: metricChanges.improvements,
+          metrics_lost: metricChanges.lost,
           metrics_inconclusive: metricChanges.counts.inconclusive,
           metrics_unavailable: metricChanges.counts.unavailable,
         }

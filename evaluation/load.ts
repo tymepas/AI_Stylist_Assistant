@@ -9,7 +9,7 @@ import path from 'node:path'
 import { manifestSchema, type BenchmarkCase } from '@/benchmark/harness'
 import { evaluateRecording, type CurrentVersions, type EvaluationMode, type EvaluationOptions, type EvaluationReport } from './evaluate'
 import { recordingSchema, type Recording } from './recording'
-import { parseReferenceSet, type ReferenceSet } from './reference'
+import { ReferenceSetError, futureDatedProblems, parseReferenceSet, type ReferenceSet } from './reference'
 
 export const MOCK_FIXTURE_DIR = path.join('evaluation', 'fixtures', 'mock')
 
@@ -21,13 +21,31 @@ export function loadRecording(file: string): Recording {
   return recordingSchema.parse(JSON.parse(readFileSync(file, 'utf8')))
 }
 
+/** Checks that need something from outside the reference file. Each is applied when its input is given. */
+export interface ReferenceChecks {
+  /** Today as YYYY-MM-DD. A review dated later than this is refused. */
+  today?: string
+  /** Where the reviewed images are. Each image is compared with its recorded SHA-256. */
+  imagesDir?: string
+}
+
 /**
- * Reads a reference set and checks it against the manifest it belongs to.
- * Throws a ReferenceSetError that lists every problem: an invalid reference is
- * never skipped quietly, because a skipped reference would look like a missing one.
+ * Reads a reference set and checks it against the manifest it belongs to, and
+ * against the clock and the image files when those are supplied. Throws a
+ * ReferenceSetError that lists every problem: an invalid reference is never
+ * skipped quietly, because a skipped reference would look like a missing one.
+ *
+ * The validator command and an evaluation use this same function, so a set
+ * that the validator refuses is never scored.
  */
-export function loadReferenceSet(file: string, cases: BenchmarkCase[]): ReferenceSet {
-  return parseReferenceSet(JSON.parse(readFileSync(file, 'utf8')), cases)
+export function loadReferenceSet(file: string, cases: BenchmarkCase[], checks: ReferenceChecks = {}): ReferenceSet {
+  const set = parseReferenceSet(JSON.parse(readFileSync(file, 'utf8')), cases)
+  const problems = [
+    ...(checks.today ? futureDatedProblems(set, checks.today) : []),
+    ...(checks.imagesDir ? referenceImageProblems(set, checks.imagesDir) : []),
+  ]
+  if (problems.length > 0) throw new ReferenceSetError(problems)
+  return set
 }
 
 /**
@@ -52,9 +70,9 @@ export function referenceImageProblems(set: ReferenceSet, imageDir: string): str
   return problems
 }
 
-export function evaluateFiles(input: { casesPath: string; recordingPath: string; referencesPath?: string | null; current: CurrentVersions; mode: EvaluationMode; options?: EvaluationOptions }): EvaluationReport {
+export function evaluateFiles(input: { casesPath: string; recordingPath: string; referencesPath?: string | null; referenceChecks?: ReferenceChecks; current: CurrentVersions; mode: EvaluationMode; options?: EvaluationOptions }): EvaluationReport {
   const cases = loadCases(input.casesPath)
-  const references = input.referencesPath ? loadReferenceSet(input.referencesPath, cases) : undefined
+  const references = input.referencesPath ? loadReferenceSet(input.referencesPath, cases, input.referenceChecks) : undefined
   return evaluateRecording(loadRecording(input.recordingPath), cases, input.current, input.mode, { ...input.options, references })
 }
 

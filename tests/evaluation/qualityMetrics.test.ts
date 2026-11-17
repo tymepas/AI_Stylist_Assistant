@@ -192,7 +192,9 @@ describe('reference tiers are never mixed', () => {
     // The references are still counted as what they are.
     expect(report.references.cases_by_tier.image_reviewed).toBe(17)
     expect(report.quality.image_grounded_accuracy).toEqual({ status: 'unavailable', reason: UNAVAILABLE_FIXTURE_OUTPUTS, cases: 0 })
-    expect(report.quality.agreement.image_reviewed).toMatchObject({ reference_cases: 0, cases_with_output: 0 })
+    // The 17 references are reported as existing; none of them is scored.
+    expect(report.quality.agreement.image_reviewed).toMatchObject({ reference_cases: 17, cases_with_output: 0 })
+    expect(report.quality.agreement.image_reviewed.coverage).toMatchObject({ status: 'unavailable', value: null, reason: UNAVAILABLE_FIXTURE_OUTPUTS })
     expect(report.quality.agreement.image_reviewed.dimensions.occasion.exact_rate).toMatchObject({ status: 'unavailable', value: null, reason: UNAVAILABLE_FIXTURE_OUTPUTS })
   })
 
@@ -255,27 +257,30 @@ describe('explanation grounding (proxy)', () => {
 describe('confidence calibration', () => {
   it('reports agreement by stated confidence, with the sample behind each level', () => {
     const calibration = evaluate('image_review', 'model').quality.calibration.image_reviewed
-    // High: occasion, color, formality and style_preference_match of 17 cases, all matching.
-    expect(calibration.buckets.High.exact_rate).toMatchObject({ status: 'measured', value: 1, n: 68 })
-    // Medium: seasonality of 17 cases, all matching.
+    // A case counts once per level, however many of its ratings were stated at that level.
+    // High: occasion, color, formality and style_preference_match of each of the 17 cases, all matching.
+    expect(calibration.buckets.High.exact_rate).toMatchObject({ status: 'measured', value: 1, n: 17 })
+    // Medium: seasonality of each case, all matching.
     expect(calibration.buckets.Medium.exact_rate).toMatchObject({ value: 1, n: 17 })
-    // Low: style of 17 cases, 8 matching.
+    // Low: style of each case; 8 of the 17 cases match.
     expect(calibration.buckets.Low.exact_rate).toMatchObject({ value: 0.4706, n: 17 })
     expect(calibration.buckets.Low.within_one_rate.value).toBe(1)
-    expect(calibration.high_confidence_error_rate).toMatchObject({ value: 0, n: 68 })
-    expect(calibration.high_confidence_severe_error_rate).toMatchObject({ value: 0, n: 68 })
+    expect(calibration.high_confidence_error_rate).toMatchObject({ value: 0, n: 17 })
+    expect(calibration.high_confidence_severe_error_rate).toMatchObject({ value: 0, n: 17 })
     expect(calibration.confidence_gap).toMatchObject({ status: 'measured', value: 0.5294, n: 17 }) // 1 - 8/17
     expect(calibration.ordering).toBe('consistent')
   })
 
   it('detects high confidence that disagrees with the references', () => {
     const calibration = evaluate('image_review', 'model', degrade).quality.calibration.image_reviewed
-    // High now covers five dimensions of 17 cases (85): occasion 0 right, color 0, formality 17, preference 17, seasonality 13.
-    expect(calibration.buckets.High.exact_rate).toMatchObject({ value: 0.5529, n: 85 }) // 47 / 85
-    expect(calibration.high_confidence_error_rate).toMatchObject({ status: 'measured', value: 0.4471, n: 85 }) // 38 / 85
-    // Severe: occasion two bands off in 17 cases, and seasonality rated where it cannot be judged in 4.
-    expect(calibration.high_confidence_severe_error_rate).toMatchObject({ value: 0.2471, n: 85 }) // 21 / 85
-    expect(calibration.confidence_gap.value).toBe(0.0823) // 47/85 - 8/17
+    // High now covers five dimensions of each case. Per case, formality and preference are right and occasion and
+    // color are wrong; seasonality is right in 13 cases (3 of 5) and wrong in the 4 view cases (2 of 5).
+    expect(calibration.buckets.High.exact_rate).toMatchObject({ value: 0.5529, n: 17 }) // (13 x 0.6 + 4 x 0.4) / 17
+    expect(calibration.high_confidence_error_rate).toMatchObject({ status: 'measured', value: 0.4471, n: 17 })
+    // Severe: occasion is two bands off in every case (1 of 5); in the 4 view cases seasonality is rated where it cannot be judged (2 of 5).
+    expect(calibration.high_confidence_severe_error_rate).toMatchObject({ value: 0.2471, n: 17 }) // (13 x 0.2 + 4 x 0.4) / 17
+    // 9.4/17 - 8/17 = 0.08235, from the unrounded rates (the rounded ones would give 0.0823).
+    expect(calibration.confidence_gap.value).toBe(0.0824)
   })
 
   it('reports an inverted ordering when low confidence agrees more often than high confidence', () => {
@@ -299,7 +304,7 @@ describe('confidence calibration', () => {
 
   it('makes no claim about ordering or the gap on too few samples', () => {
     const calibration = evaluate('image_review', 'model', undefined, ['q-single-01', 'q-single-02']).quality.calibration.image_reviewed
-    expect(calibration.buckets.High.exact_rate).toMatchObject({ status: 'insufficient_sample', n: 8 })
+    expect(calibration.buckets.High.exact_rate).toMatchObject({ status: 'insufficient_sample', n: 2 })
     expect(calibration.buckets.Low.exact_rate).toMatchObject({ status: 'insufficient_sample', n: 2 })
     expect(calibration.confidence_gap.status).toBe('insufficient_sample')
     expect(calibration.ordering).toBe('insufficient_sample')
@@ -321,8 +326,9 @@ describe('multi-image evaluation', () => {
     const { modes } = report.quality.multi_image
     expect([modes.single.cases, modes.same_garment_views.cases, modes.outfit_items.cases]).toEqual([8, 4, 5])
     expect([modes.single.scored_runs, modes.same_garment_views.scored_runs, modes.outfit_items.scored_runs]).toEqual([16, 8, 10])
-    expect(modes.single.valid_output_rate).toMatchObject({ status: 'measured', value: 1, n: 16 })
-    expect(modes.same_garment_views.valid_output_rate).toMatchObject({ status: 'insufficient_sample', value: 1, n: 8 })
+    // Cases, not runs: 16 runs of 8 cases are 8 units, which is below the minimum of ten.
+    expect(modes.single.valid_output_rate).toMatchObject({ status: 'insufficient_sample', value: 1, n: 8 })
+    expect(modes.same_garment_views.valid_output_rate).toMatchObject({ status: 'insufficient_sample', value: 1, n: 4 })
     expect(modes.single.repeat_rating_stability).toMatchObject({ value: 1, n: 8 })
   })
 
@@ -336,7 +342,9 @@ describe('multi-image evaluation', () => {
   })
 
   it('checks that an outfit has one valid note per item', () => {
-    expect(report.quality.multi_image.outfit_items).toEqual({ completeness_rate: { status: 'measured', value: 1, n: 10, se: 0 }, unexpected_blocks_in_other_modes: 0 })
+    // Five outfit cases: a figure, and too few to conclude from.
+    expect(report.quality.multi_image.outfit_items.completeness_rate).toMatchObject({ status: 'insufficient_sample', value: 1, n: 5 })
+    expect(report.quality.multi_image.outfit_items.unexpected_blocks_in_other_modes).toBe(0)
 
     const broken = evaluate('image_review', 'model', (output, caseId, run) => {
       if (caseId === 'q-outfit-01') return { ...output, outfit_components: undefined } // missing in both runs
@@ -344,16 +352,17 @@ describe('multi-image evaluation', () => {
       if (caseId === 'q-single-01') return { ...output, outfit_components: [{ item: 1, garment_type: 'top', assessment: 'Works', note: 'A note where none is expected.' }] }
       return output
     })
-    expect(broken.quality.multi_image.outfit_items.completeness_rate).toMatchObject({ value: 0.7, n: 10 }) // 7 of 10 runs
+    expect(broken.quality.multi_image.outfit_items.completeness_rate).toMatchObject({ value: 0.7, n: 5 }) // per case: 0, 0.5, 1, 1, 1
     expect(broken.quality.multi_image.outfit_items.unexpected_blocks_in_other_modes).toBe(2)
     expect(broken.next_steps.join('\n')).toMatch(/Per-item outfit notes are missing or invalid/)
   })
 
   it('scores garment identification for outfit items only, against the reference garment types', () => {
-    expect(report.quality.garment_identification.image_reviewed).toEqual({ cases: 5, garment_type_accuracy: { status: 'measured', value: 1, n: 10, se: 0 } })
+    // One value per outfit case, not per item: five cases.
+    expect(report.quality.garment_identification.image_reviewed).toMatchObject({ cases: 5, garment_type_accuracy: { status: 'insufficient_sample', value: 1, n: 5 } })
     const degraded = evaluate('image_review', 'model', degrade)
-    // Item 1 is called outerwear instead of top in every run; item 2 stays right.
-    expect(degraded.quality.garment_identification.image_reviewed.garment_type_accuracy).toMatchObject({ value: 0.5, n: 10 })
+    // Item 1 is called outerwear instead of top in every run; item 2 stays right: half of each case's items.
+    expect(degraded.quality.garment_identification.image_reviewed.garment_type_accuracy).toMatchObject({ value: 0.5, n: 5 })
     expect(Object.keys(report.quality.not_measurable).sort()).toEqual(['colour_identification', 'contradictions_between_views', 'pattern_identification', 'single_garment_identification'])
   })
 
@@ -404,7 +413,7 @@ describe('the report', () => {
     expect(index['agreement.image_reviewed.occasion.exact_rate']).toMatchObject({ value: 1, n: 17, direction: 'higher_is_better', kind: 'rate', needs_references: true })
     expect(index['agreement.image_reviewed.style.mae']).toMatchObject({ value: 0.5294, direction: 'lower_is_better', kind: 'bands' })
     expect(index['grounding.image_reviewed.contradiction_rate'].direction).toBe('lower_is_better')
-    expect(index['validity.valid_output_rate']).toMatchObject({ value: 1, n: 34, needs_references: false })
+    expect(index['validity.valid_output_rate']).toMatchObject({ value: 1, n: 17, needs_references: false }) // 17 cases, 34 runs
     expect(index['agreement.synthetic.occasion.exact_rate']).toMatchObject({ status: 'unavailable', value: null })
   })
 })

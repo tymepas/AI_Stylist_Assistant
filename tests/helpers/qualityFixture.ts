@@ -33,8 +33,11 @@ export type FixtureBasis = 'image_review' | 'brief' | 'synthetic'
 
 const SINGLE = Array.from({ length: 8 }, (_, index) => `q-single-0${index + 1}`)
 const VIEWS = Array.from({ length: 4 }, (_, index) => `q-views-0${index + 1}`)
-const OUTFITS = Array.from({ length: 5 }, (_, index) => `q-outfit-0${index + 1}`)
-export const FIXTURE_CASE_IDS = [...SINGLE, ...VIEWS, ...OUTFITS]
+/** Five outfit cases by default. A test that needs a measured outfit figure asks for ten. */
+function caseIds(outfits: number): string[] {
+  return [...SINGLE, ...VIEWS, ...Array.from({ length: outfits }, (_, index) => `q-outfit-${String(index + 1).padStart(2, '0')}`)]
+}
+export const FIXTURE_CASE_IDS = caseIds(5)
 
 const REFERENCE_RATINGS = { occasion: 'Excellent', color: 'Good', formality: 'Good', seasonality: 'Good', style: 'Fair', style_preference_match: 'Good' } as const
 const CLEAN_REASON = 'The navy blazer suits the setting and reads as tailored and considered for it.'
@@ -45,8 +48,8 @@ function garmentPaths(id: string): string[] {
   return [`${id}/garment-1.jpg`, `${id}/garment-2.jpg`]
 }
 
-export function fixtureCases(basis: FixtureBasis): BenchmarkCase[] {
-  const cases = FIXTURE_CASE_IDS.map((id) => {
+export function fixtureCases(basis: FixtureBasis, outfits = 5): BenchmarkCase[] {
+  const cases = caseIds(outfits).map((id) => {
     const garments = garmentPaths(id)
     const mode = id.startsWith('q-views') ? 'same_garment_views' : id.startsWith('q-outfit') ? 'outfit_items' : undefined
     return {
@@ -64,8 +67,8 @@ export function fixtureCases(basis: FixtureBasis): BenchmarkCase[] {
   return manifestSchema.parse({ version: 1, cases }).cases
 }
 
-export function fixtureReferences(basis: FixtureBasis): ReferenceSet {
-  const references = FIXTURE_CASE_IDS.map((id) => {
+export function fixtureReferences(basis: FixtureBasis, outfits = 5): ReferenceSet {
+  const references = caseIds(outfits).map((id) => {
     const garments = garmentPaths(id)
     const ratings = Object.fromEntries(Object.entries(REFERENCE_RATINGS).map(([key, rating]) => [key, { rating: key === 'seasonality' && id.startsWith('q-views') ? 'Unable to Evaluate' : rating }]))
     const group = /^q-(single|views)-0[1-4]$/.test(id) ? { comparison_group: `grp-${id.slice(-2)}` } : {}

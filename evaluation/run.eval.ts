@@ -28,10 +28,10 @@ import path from 'node:path'
 import { getAnalysisPromptVersion } from '@/lib/services/openai/openAIAnalysisService'
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION } from '@/lib/services/openai/openAIAnalysisSchema'
 import { REPORT_FORMAT, compareReports, renderMarkdown, serializeReport, type EvaluationReport } from './evaluate'
-import { DATASETS, datasetPaths, evaluateFiles, loadCases, loadReferenceSet, loadReport, referenceImageProblems, type DatasetId } from './load'
+import { DATASETS, datasetPaths, evaluateFiles, loadCases, loadReferenceSet, loadReport, type DatasetId } from './load'
 import { resolveDatasetOptions, resolveEvaluationPlan } from './modes'
 import { datasetFingerprint } from './recording'
-import { REFERENCE_TIERS, ReferenceSetError, futureDatedProblems, referenceSetFingerprint, summarizeReferences } from './reference'
+import { REFERENCE_TIERS, ReferenceSetError, referenceSetFingerprint, summarizeReferences } from './reference'
 import { ACCEPT_WORSE_BASELINE, assessBaselineUpdate, classifyMetricChanges, classifyRegressions, describeMetricChanges, describeRegressions, type MetricRegressionReport, type RegressionReport } from './regression'
 import { buildRunRecord, serializeRunRecord, type RunOutcome } from './runRecord'
 import { selectionFromEnv } from './selection'
@@ -61,7 +61,8 @@ function checkReferences(plan: { casesPath: string; referencesPath: string; imag
   const cases = loadCases(casesPath)
   let set
   try {
-    set = loadReferenceSet(referencesPath, cases)
+    // The same loader, with the same checks, that an evaluation uses: what is refused here is never scored there.
+    set = loadReferenceSet(referencesPath, cases, { today: today(), imagesDir: plan.imagesDir ? path.resolve(ROOT, plan.imagesDir) : undefined })
   } catch (error) {
     if (error instanceof ReferenceSetError) {
       out('Reference set NOT valid:')
@@ -70,8 +71,6 @@ function checkReferences(plan: { casesPath: string; referencesPath: string; imag
     throw error
   }
 
-  const problems = futureDatedProblems(set, new Date().toISOString().slice(0, 10))
-  if (plan.imagesDir) problems.push(...referenceImageProblems(set, path.resolve(ROOT, plan.imagesDir)))
   const summary = summarizeReferences(set, cases)
   out(`Reference set: ${set.dataset} version ${set.dataset_version} (${referenceSetFingerprint(set)}) for manifest ${datasetFingerprint(cases)}`)
   for (const tier of REFERENCE_TIERS) out(`  ${tier}: ${summary.cases_by_tier[tier]}`)
@@ -79,13 +78,12 @@ function checkReferences(plan: { casesPath: string; referencesPath: string; imag
   if (summary.image_reviewers.length > 0) out(`  image reviews by ${summary.image_reviewers.join(', ')} (${summary.image_reviews_from} to ${summary.image_reviews_to})`)
   out(plan.imagesDir ? '  images: every recorded SHA-256 was compared with the file on disk' : '  images: NOT checked (pass --images <directory> to compare each file with its recorded SHA-256)')
   if (summary.cases_by_tier.image_reviewed === 0) out('  Accuracy on real images will read: Unavailable: insufficient human-reviewed ground truth')
-
-  if (problems.length > 0) {
-    out('Reference set NOT valid:')
-    for (const problem of problems) out(`  - ${problem}`)
-    throw new ReferenceSetError(problems)
-  }
   out('Reference set is valid.')
+}
+
+/** Today as YYYY-MM-DD. Used only to refuse a review dated in the future; it never reaches a report. */
+function today(): string {
+  return new Date().toISOString().slice(0, 10)
 }
 
 describe('Verdict evaluation', () => {
@@ -122,9 +120,11 @@ describe('Verdict evaluation', () => {
     }
 
     const selection = selectionFromEnv(process.env)
+    // A replay may be given the image directory; every reviewed image is then compared with its recorded hash.
+    const imagesDir = plan.mode === 'replay' && plan.imagesDir ? path.resolve(ROOT, plan.imagesDir) : undefined
     let report: EvaluationReport
     try {
-      report = evaluateFiles({ casesPath, recordingPath, referencesPath, current, mode: plan.mode, options: { selection } })
+      report = evaluateFiles({ casesPath, recordingPath, referencesPath, referenceChecks: { today: today(), imagesDir }, current, mode: plan.mode, options: { selection } })
     } catch (error) {
       if (error instanceof ReferenceSetError) {
         out('Evaluation refused: the reference set is not valid.')
@@ -147,7 +147,8 @@ describe('Verdict evaluation', () => {
     writeFileSync(path.join(ROOT, reportFile), reportText)
     out(`Report: ${path.join('evaluation', 'reports', name)}.json and .md`)
 
-    // What happened, decided before anything is thrown, so that every run leaves a record.
+    // What happened, decided before anything is thrown, so that every run that produced a report leaves a
+    // record. A run that was refused earlier (a bad mode, an invalid reference set) writes neither.
     // (`as` keeps the declared type: these are assigned inside compareWith, which narrowing cannot see.)
     let outcome = 'no_baseline' as RunOutcome
     let failure: string | null = null
@@ -156,6 +157,13 @@ describe('Verdict evaluation', () => {
     let baselineUsed = null as { file: string; text: string; report: EvaluationReport } | null
     const notes: string[] = []
     const comparisonLines: string[] = []
+
+    // Human-reviewed references are tied to image files by their hashes. Say so when that tie was not checked.
+    if (report.references.cases_by_tier.image_reviewed > 0 && !imagesDir) {
+      const warning = 'The reviewed images were NOT compared with their recorded SHA-256 in this run. Pass --images <directory> to check that each image is still the file that was reviewed.'
+      out(`WARNING: ${warning}`)
+      notes.push(warning)
+    }
 
     const compareWith = (file: string): EvaluationReport => {
       const text = readFileSync(file, 'utf8')

@@ -49,7 +49,8 @@ npm run eval:scenarios
 npm run eval:replay -- --manifest benchmark/cases.json --recording benchmark/results/<file>.recording.json
 ```
 
-Add `--references <references.json>` to score against references, and
+Add `--references <references.json>` to score against references,
+`--images <directory>` to check every reviewed image against its recorded hash, and
 `--baseline <earlier report>.json` to print what changed against an earlier report.
 
 ## Datasets
@@ -138,14 +139,22 @@ across runs and the quality of stated confidence are different things.
 
 | Status | Meaning |
 |---|---|
-| `measured` | Built from at least 10 units |
-| `insufficient_sample` | Built from 1 to 9 units. The value is shown; nothing may be concluded from it |
+| `measured` | Built from at least 10 cases |
+| `insufficient_sample` | Built from 1 to 9 cases. The value is shown; nothing may be concluded from it |
 | `unavailable` | Nothing to measure. The value is `null`, never 0, with the reason |
 
-A figure carries its value, the number of units `n` and a standard error. The
-unit is a **case**, not a run: a case that was run three times still counts
-once, with the share of its runs that agree. Repeated runs of one case are not
-independent, so counting them as extra cases would overstate the evidence.
+A figure carries its value, the number of cases `n` behind it and a standard
+error. **The unit is always a case** (for the comparison-group figures, a
+group). A case contributes one value to a figure, however many runs, dimensions
+or outfit items stand behind it: the share of them that agree. Three runs of one
+case, the six dimensions of one case and the items of one outfit are not
+independent observations. Counting them as samples would let three cases look
+like a measured result, so they are never counted.
+
+The reason attached to an unavailable figure names the actual cause: no
+reference of that tier, hand-written outputs, references whose cases produced no
+scoreable output, or scored references that hold nothing the figure could be
+built from.
 
 ### 1. Agreement with references, per dimension
 
@@ -194,7 +203,7 @@ and are not scored; only the facts of a reference are.
 | Metric | Definition |
 |---|---|
 | Distribution | How many ratings were stated at High, Medium and Low confidence |
-| Agreement by confidence | Exact and within-one agreement among the ratings stated at each level. A unit is one dimension of one case |
+| Agreement by confidence | Exact and within-one agreement among the ratings stated at each level. A case that stated a level at least once contributes one value to it |
 | High-confidence error rate | Share of High-confidence ratings that differ from the reference |
 | High-confidence severe error rate | Share of High-confidence ratings two or more bands off, or rating what the reviewer said cannot be judged (overconfident claims) |
 | Confidence gap | Exact agreement at High minus exact agreement at Low. Positive when confidence carries information |
@@ -203,7 +212,7 @@ and are not scored; only the facts of a reference are.
 The model states High, Medium or Low, not a probability. No probability is
 assigned to those labels here, so no expected calibration error is reported: it
 would depend on numbers nobody defined. The gap and the ordering need at least 10
-rated dimensions in each level they compare; below that they are
+cases in each level they compare; below that they are
 `insufficient_sample` and make no claim. Stability by confidence (how often a
 rating repeats across runs) needs no reference and is reported next to them.
 
@@ -218,7 +227,7 @@ Cases are grouped by garment mode: `single`, `same_garment_views`, `outfit_items
 | Agreement per mode | Exact agreement, pooled over the six dimensions of each case. For comparing modes only |
 | Outfit completeness | Share of complete outfit runs with exactly one valid note per garment image |
 | Unexpected notes | Complete runs of the other modes that returned per-item notes |
-| Garment type accuracy | Share of outfit items whose `garment_type` equals the reference. A unit is one item |
+| Garment type accuracy | Per outfit case, the share of its items whose `garment_type` equals the reference |
 | Cross-mode consistency | For cases in one `comparison_group`: share of dimensions rated the same by every case of the group |
 | Mean band shift | Mean spread in bands between the cases of a group |
 | Several photos against one | Exact agreement of the multi-image cases minus that of the single-image cases of the same group |
@@ -260,8 +269,23 @@ Every figure has a stable name in the report's `metric_index` and a direction
 | `improvement` | Moved in the good direction by more than the noise margin |
 | `no_meaningful_change` | Moved by no more than the noise margin |
 | `regression` | Moved in the bad direction by more than the noise margin |
-| `inconclusive` | There is a figure on both sides, but it supports no conclusion: fewer than 10 units on either side, a partial run, a different dataset, or (for figures that depend on references) a different reference set |
+| `inconclusive` | There is a figure on both sides, but it supports no conclusion: fewer than 10 cases on either side, a partial run, a different dataset, or (for figures that depend on references) a different reference set |
 | `unavailable` | One side has no figure |
+
+**A lost figure counts as worse.** A metric that was measured in the baseline
+and has no measured figure now, on the same dataset and references, is listed as
+*lost*. It is treated like a regression: the run fails and the baseline cannot
+be replaced without the explicit phrase. Otherwise an output that stops
+producing something, for example the per-item notes of an outfit, would make its
+own metric disappear and pass.
+
+**What the metric gate cannot do.** When the manifest or the reference set
+changed, the figures of the two reports are not comparable. They are classified
+`inconclusive`, the comparison says how many were not compared, and the change
+is judged at case level only. And a figure built from fewer than 10 cases never
+produces a regression: in `scenarios-v1` that covers both multi-image modes (3
+multi-view cases, 2 outfit cases), which are protected by the per-case checks
+and not by the metric gate.
 
 **Noise margin.** The larger of a fixed floor and 1.96 standard errors of the
 difference: `max(floor, 1.96 * sqrt(se_base^2 + se_candidate^2))`. The floor is
@@ -270,10 +294,11 @@ For a rate the standard error is `sqrt(p * (1 - p) / n)`. For a mean it is the
 sample standard deviation divided by `sqrt(n)`. The floor matters when both
 standard errors are near zero, as with a rate of 1.0 on few cases.
 
-The margin treats the two reports as independent samples. They are the same
-cases evaluated twice, so the true noise is usually smaller. The test is
-therefore conservative: it will sooner call a real change "no meaningful
-change" than call noise a regression. The thresholds are constants in
+The margin treats the two reports as independent samples of cases. They are
+the same cases evaluated twice, so the true noise is usually smaller, and
+because every figure counts cases the sample is never inflated by repeated
+runs. The test therefore leans towards calling a real change "no meaningful
+change" over calling noise a regression. The thresholds are constants in
 `quality.ts` (`MIN_SAMPLE`, `NOISE_FLOOR_RATE`, `NOISE_FLOOR_BANDS`, `NOISE_Z`)
 and are written into every report.
 
@@ -289,7 +314,7 @@ That command refuses to write the baseline when:
 
 - the run was partial (filtered by case, category or scenario): always refused;
 - the recording was made for a different dataset than the manifest: always refused;
-- the new report is worse than the current baseline, at case level **or at metric level**, unless the decision is stated explicitly:
+- the new report is worse than the current baseline, at case level **or at metric level** (a regressed or a lost metric), unless the decision is stated explicitly:
 
 ```bash
 node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --update-baseline --accept-regressions I_ACCEPT_A_WORSE_BASELINE
@@ -297,7 +322,10 @@ node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --update-baseline --
 
 A baseline is never changed as a side effect of running an evaluation or a test.
 The test suite also fails when the committed baseline is not byte-identical to
-what the code produces, so every baseline change is a reviewed diff.
+what the code produces from the committed dataset, so every baseline change is a
+reviewed diff. (The prompt version recorded in a report is the one the baseline
+was written with; the comparison reads it from the baseline, so editing a prompt
+does not by itself make this test fail.)
 
 **After a change to the report format** (a new metric, a renamed field), the
 baseline no longer matches byte for byte. Run `npm run eval:baseline`, check
@@ -376,7 +404,7 @@ node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --scenarios wedding,
 node scripts/evaluation/run-eval.cjs --dataset scenarios-v1 --categories insufficient_input
 ```
 
-Filters of different kinds combine with AND. A filter that names nothing in the dataset is an error. A filtered run is marked `partial` in the report and in its file name, can never replace a baseline, and makes every metric comparison `inconclusive`.
+Filters of different kinds combine with AND. A filter that names nothing in the dataset is an error. A filtered run is marked `partial` in the report and in its file name, can never replace a baseline, and no metric comparison draws a conclusion from it: a figure present on both sides is `inconclusive`, and one missing on either side is `unavailable`.
 
 ## Cost and approval
 

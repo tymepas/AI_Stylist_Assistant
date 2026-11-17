@@ -17,7 +17,7 @@
 
 export type EvaluationPlan =
   | { mode: 'mock' }
-  | { mode: 'replay'; recordingPath: string; casesPath: string; baselinePath?: string; referencesPath?: string }
+  | { mode: 'replay'; recordingPath: string; casesPath: string; baselinePath?: string; referencesPath?: string; imagesDir?: string }
   /** Validates a reference set against its manifest (and its images, when a directory is given). Evaluates nothing. */
   | { mode: 'check_references'; casesPath: string; referencesPath: string; imagesDir?: string }
   | { mode: 'refused'; reason: string }
@@ -50,7 +50,7 @@ export function resolveEvaluationPlan(env: Record<string, string | undefined>): 
   if (!recordingPath) return { mode: 'refused', reason: 'Replay needs EVAL_RECORDING (path to a recording file). Nothing is fetched when it is missing.' }
   if (!casesPath) return { mode: 'refused', reason: 'Replay needs EVAL_CASES (path to the manifest the recording was made with).' }
   const baselinePath = env.EVAL_BASELINE?.trim()
-  return { mode: 'replay', recordingPath, casesPath, baselinePath: baselinePath || undefined, referencesPath: referencesPath || undefined }
+  return { mode: 'replay', recordingPath, casesPath, baselinePath: baselinePath || undefined, referencesPath: referencesPath || undefined, imagesDir: env.EVAL_IMAGES?.trim() || undefined }
 }
 
 /**

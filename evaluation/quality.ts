@@ -21,14 +21,21 @@
  * when the outputs came from a model. Without such references that tier reads
  * "Unavailable: insufficient human-reviewed ground truth". It never reads 0.
  *
- * A figure built from fewer than MIN_SAMPLE units is marked
+ * THE UNIT IS ALWAYS A CASE (or, for the comparison-group figures, a group).
+ * A case contributes one value to a figure, however many runs, dimensions or
+ * outfit items stand behind it: the share of them that agree. Runs of one case,
+ * the six dimensions of one case and the items of one outfit are not
+ * independent observations, so counting them as samples would overstate the
+ * evidence and let a handful of cases look like a measured result.
+ *
+ * A figure built from fewer than MIN_SAMPLE cases is marked
  * `insufficient_sample`: the value is shown, and nothing may be concluded from it.
  *
  * Nothing here computes a verdict, and nothing here calls a model or the network.
  */
 
 import type { RawOpenAIConfidence, RawOpenAIDimensions, RawOpenAIRating } from '@/types/openai'
-import { DIMENSION_KEYS, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
+import { DIMENSION_KEYS, type Band, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { GARMENT_MODES, type GarmentMode } from '@/lib/constants/garmentModes'
 import { validateOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
 import type { EvaluationMetrics, RunDetail } from './metrics'
@@ -38,7 +45,7 @@ import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, type CaseReference, type KeyFactAttr
 // Thresholds
 // ---------------------------------------------------------------------------
 
-/** Fewest units (cases, items or runs, depending on the metric) a figure needs before anything is concluded from it. */
+/** Fewest cases (or comparison groups) a figure needs before anything is concluded from it. */
 export const MIN_SAMPLE = 10
 /** A rate must move by more than this, in absolute terms, to count as a change. */
 export const NOISE_FLOOR_RATE = 0.05
@@ -49,6 +56,10 @@ export const NOISE_Z = 1.96
 
 export const UNAVAILABLE_NO_GROUND_TRUTH = 'Unavailable: insufficient human-reviewed ground truth'
 export const UNAVAILABLE_FIXTURE_OUTPUTS = 'Unavailable: the outputs are hand-written fixtures, not model outputs'
+/** References of the tier exist, and none of their cases produced ratings that could be scored. */
+export const UNAVAILABLE_NO_SCORED_OUTPUT = 'Unavailable: references exist, but no output with ratings could be scored for them (withheld, failed or abstained)'
+/** The tier was scored, and its references hold nothing this particular figure could be built from. */
+export const UNAVAILABLE_NOTHING_TO_MEASURE = 'Unavailable: the scored references hold nothing this figure can be built from'
 
 const NO_REFERENCES: Record<ScoredTier, string> = {
   image_reviewed: UNAVAILABLE_NO_GROUND_TRUTH,
@@ -68,7 +79,7 @@ export interface Metric {
   reason?: string
   /** Null when unavailable. Never 0 in place of "not measured". */
   value: number | null
-  /** How many units the figure is built from. What a unit is depends on the metric (see METRIC_DEFINITIONS). */
+  /** How many cases (or comparison groups) the figure is built from. Never runs, dimensions or items. */
   n: number
   /** Standard error of the value; null when it cannot be estimated. */
   se: number | null
@@ -82,29 +93,38 @@ function mean(values: number[]): number {
   return values.reduce((sum, value) => sum + value, 0) / values.length
 }
 
+function share<T>(items: T[], of: (item: T) => boolean): number {
+  return items.filter(of).length / items.length
+}
+
 function unavailable(reason: string): Metric {
   return { status: 'unavailable', reason, value: null, n: 0, se: null }
 }
 
 function sampled(value: number, n: number, se: number | null): Metric {
   if (n < MIN_SAMPLE) {
-    return { status: 'insufficient_sample', reason: `Built from ${n} unit(s); at least ${MIN_SAMPLE} are needed before anything is concluded.`, value: round(value), n, se: se === null ? null : round(se) }
+    return { status: 'insufficient_sample', reason: `Built from ${n} case(s); at least ${MIN_SAMPLE} are needed before anything is concluded.`, value: round(value), n, se: se === null ? null : round(se) }
   }
   return { status: 'measured', value: round(value), n, se: se === null ? null : round(se) }
 }
 
+/** Standard error of a rate from one value in [0, 1] per case, before rounding. */
+function rateStandardError(values: number[]): number {
+  const p = mean(values)
+  return Math.sqrt((p * (1 - p)) / values.length)
+}
+
 /**
- * A rate from one value in [0, 1] per unit. The standard error uses the
- * binomial formula, which is exact for 0/1 units and conservative (too wide,
- * never too narrow) for units that are themselves averages over repeated runs.
+ * A rate from one value in [0, 1] per case. The standard error uses the
+ * binomial formula, which is exact for 0/1 values and conservative (too wide,
+ * never too narrow) for values that are themselves averages within a case.
  */
 export function rateMetric(values: number[], reason: string): Metric {
   if (values.length === 0) return unavailable(reason)
-  const p = mean(values)
-  return sampled(p, values.length, Math.sqrt((p * (1 - p)) / values.length))
+  return sampled(mean(values), values.length, rateStandardError(values))
 }
 
-/** A mean of one value per unit (for example a mean absolute error), with the standard error of that mean. */
+/** A mean of one value per case (for example a mean absolute error), with the standard error of that mean. */
 export function meanMetric(values: number[], reason: string): Metric {
   if (values.length === 0) return unavailable(reason)
   const m = mean(values)
@@ -112,7 +132,7 @@ export function meanMetric(values: number[], reason: string): Metric {
   return sampled(m, values.length, se)
 }
 
-/** A rate given as a proportion and a count, for figures computed elsewhere. */
+/** A rate given as a proportion of `n` cases, for figures that are already counted per case elsewhere. */
 export function rateFromProportion(p: number | null, n: number, reason: string): Metric {
   if (p === null || n === 0) return unavailable(reason)
   return sampled(p, n, Math.sqrt((p * (1 - p)) / n))
@@ -167,7 +187,7 @@ type CompleteRun = RunDetail & { dimensions: RawOpenAIDimensions }
 interface ScoredCase {
   benchmarkCase: BenchmarkCase
   reference: CaseReference
-  /** Complete runs only: the ones that carry ratings. */
+  /** Complete runs only: the ones that carry ratings. Never empty. */
   runs: CompleteRun[]
 }
 
@@ -183,8 +203,51 @@ function garmentCount(benchmarkCase: BenchmarkCase): number {
   return 1 + (benchmarkCase.extra_garments?.length ?? 0)
 }
 
-function fractions(runs: CompleteRun[], of: (run: CompleteRun) => boolean): number {
-  return runs.filter(of).length / runs.length
+/** Every comparison of one case: each complete run, each dimension the reference rates. */
+function comparisonsOf({ reference, runs }: ScoredCase): Array<RatingComparison & { key: DimensionKey; confidence: RawOpenAIConfidence }> {
+  return runs.flatMap((run) => DIMENSION_KEYS.flatMap((key) => {
+    const expected = reference.dimension_ratings?.[key]?.rating
+    return expected === undefined ? [] : [{ ...compareRating(run.dimensions[key].rating, expected), key, confidence: run.dimensions[key].confidence }]
+  }))
+}
+
+// ---------------------------------------------------------------------------
+// Figures that need no reference, counted per case
+// ---------------------------------------------------------------------------
+
+export interface CaseRates {
+  /** Per case: the share of its scored runs that returned an output matching the schema. */
+  valid_output_rate: Metric
+  /** Per case that states acceptable bands: the share of its complete runs whose band is one of them. */
+  verdict_band_agreement_rate: Metric
+  /** Per case that should abstain: the share of its scored runs that abstained. */
+  abstention_recall: Metric
+  /** Per case that should not abstain: the share of its scored runs that abstained. */
+  false_abstention_rate: Metric
+}
+
+function caseRatesOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDetail[]>): CaseRates {
+  const valid: number[] = []
+  const band: number[] = []
+  const recall: number[] = []
+  const falseAbstention: number[] = []
+  for (const benchmarkCase of cases) {
+    const runs = runsByCase.get(benchmarkCase.id) ?? []
+    if (runs.length === 0) continue
+    valid.push(share(runs, (run) => run.outcome !== 'error'))
+    const abstained = share(runs, (run) => run.outcome === 'unable_to_analyze')
+    if (benchmarkCase.expected.should_abstain) recall.push(abstained)
+    else falseAbstention.push(abstained)
+    const complete = runs.filter((run) => run.outcome === 'complete')
+    const acceptable = benchmarkCase.expected.acceptable_bands
+    if (acceptable.length > 0 && complete.length > 0) band.push(share(complete, (run) => acceptable.includes(run.band as Band)))
+  }
+  return {
+    valid_output_rate: rateMetric(valid, 'Unavailable: no scored run'),
+    verdict_band_agreement_rate: rateMetric(band, 'Unavailable: no case states acceptable bands'),
+    abstention_recall: rateMetric(recall, 'Unavailable: no case expects an abstention'),
+    false_abstention_rate: rateMetric(falseAbstention, 'Unavailable: no scored run'),
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -203,14 +266,14 @@ export interface DimensionAgreement {
 export interface AgreementBlock {
   /** Cases that have a reference of this tier. */
   reference_cases: number
-  /** Of those, cases with at least one complete run. */
+  /** Of those, cases with at least one complete run that was scored. */
   cases_with_output: number
   /** cases_with_output / reference_cases. Low coverage means the agreement figures describe only part of the references. */
   coverage: Metric
   dimensions: Record<DimensionKey, DimensionAgreement>
 }
 
-function agreementOf(scored: ScoredCase[], referenceCases: number, reason: string): AgreementBlock {
+function agreementOf(scored: ScoredCase[], referenceCases: number, scorable: boolean, reason: string): AgreementBlock {
   const dimensions = Object.fromEntries(DIMENSION_KEYS.map((key) => {
     const exact: number[] = []
     const withinOne: number[] = []
@@ -220,8 +283,8 @@ function agreementOf(scored: ScoredCase[], referenceCases: number, reason: strin
       if (expected === undefined) continue
       const comparisons = runs.map((run) => compareRating(run.dimensions[key].rating, expected))
       // One value per case: the share of its runs that agree. Repeated runs never count as extra cases.
-      exact.push(comparisons.filter((comparison) => comparison.exact).length / comparisons.length)
-      withinOne.push(comparisons.filter((comparison) => comparison.within_one).length / comparisons.length)
+      exact.push(share(comparisons, (comparison) => comparison.exact))
+      withinOne.push(share(comparisons, (comparison) => comparison.within_one))
       const distances = comparisons.map((comparison) => comparison.distance).filter((distance): distance is number => distance !== null)
       if (distances.length > 0) errors.push(mean(distances))
     }
@@ -231,7 +294,7 @@ function agreementOf(scored: ScoredCase[], referenceCases: number, reason: strin
   return {
     reference_cases: referenceCases,
     cases_with_output: scored.length,
-    coverage: rateFromProportion(referenceCases === 0 ? null : scored.length / referenceCases, referenceCases, reason),
+    coverage: scorable ? rateFromProportion(referenceCases === 0 ? null : scored.length / referenceCases, referenceCases, reason) : unavailable(reason),
     dimensions,
   }
 }
@@ -244,18 +307,18 @@ interface PooledAgreement {
 }
 
 function pooledPerCase(scored: ScoredCase[]): Array<{ exact: number; within_one: number; mae: number | null }> {
-  return scored.map(({ reference, runs }) => {
-    const comparisons = runs.flatMap((run) => DIMENSION_KEYS.flatMap((key) => {
-      const expected = reference.dimension_ratings?.[key]?.rating
-      return expected === undefined ? [] : [compareRating(run.dimensions[key].rating, expected)]
-    }))
-    const distances = comparisons.map((comparison) => comparison.distance).filter((distance): distance is number => distance !== null)
-    return {
-      exact: comparisons.length === 0 ? 0 : comparisons.filter((comparison) => comparison.exact).length / comparisons.length,
-      within_one: comparisons.length === 0 ? 0 : comparisons.filter((comparison) => comparison.within_one).length / comparisons.length,
-      mae: distances.length === 0 ? null : mean(distances),
-    }
-  })
+  return scored
+    .map(comparisonsOf)
+    // A complete reference rates all six dimensions, so a scored case always has comparisons; one without is left out.
+    .filter((comparisons) => comparisons.length > 0)
+    .map((comparisons) => {
+      const distances = comparisons.map((comparison) => comparison.distance).filter((distance): distance is number => distance !== null)
+      return {
+        exact: share(comparisons, (comparison) => comparison.exact),
+        within_one: share(comparisons, (comparison) => comparison.within_one),
+        mae: distances.length === 0 ? null : mean(distances),
+      }
+    })
 }
 
 function pooledAgreement(scored: ScoredCase[], reason: string): PooledAgreement {
@@ -308,7 +371,7 @@ export interface GroundingBlock {
   contradiction_rate: Metric
   /** Share of cases whose explanation states a detail the reviewer marked as not visible. */
   unverifiable_claim_rate: Metric
-  /** Where the reviewer said a dimension cannot be judged: how often the model left it unrated or stated Low confidence. */
+  /** Per case where the reviewer could not judge a dimension: how often the model left it unrated or stated Low confidence. */
   uncertainty_handling_rate: Metric
   /** Cases where a `key` fact is mentioned in no run. For a person to read. */
   cases_missing_key_facts: string[]
@@ -343,13 +406,15 @@ function groundingOf(scored: ScoredCase[], reason: string): GroundingBlock {
     }
 
     const contradicting = facts.flatMap((fact) => fact.contradicted_by ?? [])
-    if (contradicting.length > 0) contradictions.push(texts.filter((text) => contradicting.some((term) => mentions(text, term))).length / texts.length)
+    if (contradicting.length > 0) contradictions.push(share(texts, (text) => contradicting.some((term) => mentions(text, term))))
     const hidden = reference.unverifiable_terms ?? []
-    if (hidden.length > 0) unverifiable.push(texts.filter((text) => hidden.some((term) => mentions(text, term))).length / texts.length)
+    if (hidden.length > 0) unverifiable.push(share(texts, (text) => hidden.some((term) => mentions(text, term))))
 
-    for (const dimension of DIMENSION_KEYS) {
-      if (reference.dimension_ratings?.[dimension]?.rating !== UNRATED) continue
-      uncertainty.push(fractions(runs, (run) => run.dimensions[dimension].rating === UNRATED || run.dimensions[dimension].confidence === 'Low'))
+    // One value per case: over every run and every dimension the reviewer could not judge.
+    const unjudged = DIMENSION_KEYS.filter((dimension) => reference.dimension_ratings?.[dimension]?.rating === UNRATED)
+    if (unjudged.length > 0) {
+      const handled = runs.flatMap((run) => unjudged.map((dimension) => run.dimensions[dimension].rating === UNRATED || run.dimensions[dimension].confidence === 'Low'))
+      uncertainty.push(share(handled, (ok) => ok))
     }
   }
 
@@ -375,7 +440,11 @@ const CONFIDENCE_LEVELS: readonly RawOpenAIConfidence[] = ['High', 'Medium', 'Lo
 export type ConfidenceOrdering = 'consistent' | 'inverted' | 'insufficient_sample' | 'unavailable'
 
 export interface CalibrationBlock {
-  /** Agreement with the reference among ratings stated at each confidence. A unit is one dimension of one case. */
+  /**
+   * Agreement with the reference among the ratings a case stated at each confidence.
+   * A case that stated a level at least once contributes one value to that level:
+   * the share of those ratings that agree.
+   */
   buckets: Record<RawOpenAIConfidence, { exact_rate: Metric; within_one_rate: Metric }>
   /** Share of High-confidence ratings that differ from the reference. */
   high_confidence_error_rate: Metric
@@ -391,39 +460,37 @@ export interface CalibrationBlock {
 }
 
 function calibrationOf(scored: ScoredCase[], reason: string): CalibrationBlock {
-  const units = Object.fromEntries(CONFIDENCE_LEVELS.map((level) => [level, { exact: [] as number[], withinOne: [] as number[], severe: [] as number[] }])) as Record<RawOpenAIConfidence, { exact: number[]; withinOne: number[]; severe: number[] }>
+  const perCase = Object.fromEntries(CONFIDENCE_LEVELS.map((level) => [level, { exact: [] as number[], withinOne: [] as number[], severe: [] as number[] }])) as Record<RawOpenAIConfidence, { exact: number[]; withinOne: number[]; severe: number[] }>
 
-  for (const { reference, runs } of scored) {
-    for (const key of DIMENSION_KEYS) {
-      const expected = reference.dimension_ratings?.[key]?.rating
-      if (expected === undefined) continue
-      for (const level of CONFIDENCE_LEVELS) {
-        const comparisons = runs.filter((run) => run.dimensions[key].confidence === level).map((run) => compareRating(run.dimensions[key].rating, expected))
-        if (comparisons.length === 0) continue
-        units[level].exact.push(comparisons.filter((comparison) => comparison.exact).length / comparisons.length)
-        units[level].withinOne.push(comparisons.filter((comparison) => comparison.within_one).length / comparisons.length)
-        units[level].severe.push(comparisons.filter((comparison) => comparison.severe).length / comparisons.length)
-      }
+  for (const entry of scored) {
+    const comparisons = comparisonsOf(entry)
+    for (const level of CONFIDENCE_LEVELS) {
+      const stated = comparisons.filter((comparison) => comparison.confidence === level)
+      if (stated.length === 0) continue
+      perCase[level].exact.push(share(stated, (comparison) => comparison.exact))
+      perCase[level].withinOne.push(share(stated, (comparison) => comparison.within_one))
+      perCase[level].severe.push(share(stated, (comparison) => comparison.severe))
     }
   }
 
   const buckets = Object.fromEntries(CONFIDENCE_LEVELS.map((level) => [level, {
-    exact_rate: rateMetric(units[level].exact, reason),
-    within_one_rate: rateMetric(units[level].withinOne, reason),
+    exact_rate: rateMetric(perCase[level].exact, reason),
+    within_one_rate: rateMetric(perCase[level].withinOne, reason),
   }])) as CalibrationBlock['buckets']
 
   const high = buckets.High.exact_rate
   const low = buckets.Low.exact_rate
   let gap: Metric
-  if (high.value === null || low.value === null) {
+  if (perCase.High.exact.length === 0 || perCase.Low.exact.length === 0) {
     gap = unavailable(scored.length === 0 ? reason : 'Unavailable: needs ratings stated at both High and Low confidence')
   } else {
-    const value = round(high.value - low.value)
-    const se = round(Math.sqrt((high.se ?? 0) ** 2 + (low.se ?? 0) ** 2))
+    // From the unrounded rates, so that the gap is not off by a rounding step.
+    const value = round(mean(perCase.High.exact) - mean(perCase.Low.exact))
+    const se = round(Math.sqrt(rateStandardError(perCase.High.exact) ** 2 + rateStandardError(perCase.Low.exact) ** 2))
     const n = Math.min(high.n, low.n)
     gap = high.status === 'measured' && low.status === 'measured'
       ? { status: 'measured', value, n, se }
-      : { status: 'insufficient_sample', reason: `One confidence level has fewer than ${MIN_SAMPLE} rated dimensions.`, value, n, se }
+      : { status: 'insufficient_sample', reason: `One confidence level was stated by fewer than ${MIN_SAMPLE} cases.`, value, n, se }
   }
 
   const measured = CONFIDENCE_LEVELS.map((level) => buckets[level].exact_rate).filter((metric) => metric.status === 'measured')
@@ -438,8 +505,8 @@ function calibrationOf(scored: ScoredCase[], reason: string): CalibrationBlock {
 
   return {
     buckets,
-    high_confidence_error_rate: rateMetric(units.High.exact.map((value) => 1 - value), reason),
-    high_confidence_severe_error_rate: rateMetric(units.High.severe, reason),
+    high_confidence_error_rate: rateMetric(perCase.High.exact.map((value) => 1 - value), reason),
+    high_confidence_severe_error_rate: rateMetric(perCase.High.severe, reason),
     confidence_gap: gap,
     ordering,
   }
@@ -452,7 +519,7 @@ function calibrationOf(scored: ScoredCase[], reason: string): CalibrationBlock {
 export interface GarmentIdentificationBlock {
   /** Outfit cases of this tier whose reference names the garment type of each item. */
   cases: number
-  /** Share of outfit items whose `garment_type` in the per-item notes equals the reference. A unit is one item. */
+  /** Per outfit case: the share of its items whose `garment_type` in the per-item notes equals the reference. */
   garment_type_accuracy: Metric
 }
 
@@ -465,7 +532,7 @@ function validComponents(run: CompleteRun, count: number): Array<{ item: number;
 }
 
 function garmentIdentificationOf(scored: ScoredCase[], reason: string): GarmentIdentificationBlock {
-  const items: number[] = []
+  const perCase: number[] = []
   let cases = 0
   for (const { benchmarkCase, reference, runs } of scored) {
     const expected = reference.garment_facts?.items ?? []
@@ -474,11 +541,9 @@ function garmentIdentificationOf(scored: ScoredCase[], reason: string): GarmentI
     // A run without a valid block says nothing about identification; it is counted under completeness instead.
     const blocks = runs.map((run) => validComponents(run, garmentCount(benchmarkCase))).filter((block): block is NonNullable<typeof block> => block !== null)
     if (blocks.length === 0) continue
-    for (const entry of expected) {
-      items.push(blocks.filter((block) => block.find((component) => component.item === entry.item)?.garment_type === entry.garment_type).length / blocks.length)
-    }
+    perCase.push(mean(blocks.map((block) => share(expected, (entry) => block.find((component) => component.item === entry.item)?.garment_type === entry.garment_type))))
   }
-  return { cases, garment_type_accuracy: rateMetric(items, reason) }
+  return { cases, garment_type_accuracy: rateMetric(perCase, reason) }
 }
 
 // ---------------------------------------------------------------------------
@@ -488,9 +553,9 @@ function garmentIdentificationOf(scored: ScoredCase[], reason: string): GarmentI
 export interface ModeBlock {
   cases: number
   scored_runs: number
-  /** Share of runs that returned an output matching the schema. A unit is one run. */
+  /** Per case of this mode: the share of its scored runs that returned an output matching the schema. */
   valid_output_rate: Metric
-  /** Share of dimensions that got the same rating on every repeated run. A unit is one case with repeats. */
+  /** Per case with repeats: the share of dimensions that got the same rating on every run. */
   repeat_rating_stability: Metric
   /** Runs whose text matched the price, label or material screening, or a claim the case forbids. */
   runs_with_unsupported_claims: number
@@ -508,13 +573,13 @@ export interface ComparisonGroupDetail {
 export interface MultiImageBlock {
   modes: Record<GarmentMode, ModeBlock>
   outfit_items: {
-    /** Share of complete outfit runs with exactly one valid per-item note for each garment image. A unit is one run. */
+    /** Per outfit case: the share of its complete runs with exactly one valid per-item note for each garment image. */
     completeness_rate: Metric
     /** Complete runs of the other modes that returned per-item notes, where none are expected. */
     unexpected_blocks_in_other_modes: number
   }
   comparison_groups: {
-    /** Groups with at least two cases that produced ratings. */
+    /** Groups that hold cases of at least two different garment modes, each with ratings. */
     groups: number
     /** Share of dimensions rated the same by every case of a group. A unit is one group. */
     cross_mode_rating_consistency: Metric
@@ -547,16 +612,18 @@ function multiImageOf(
   const modes = Object.fromEntries(GARMENT_MODES.map((mode) => {
     const members = cases.filter((benchmarkCase) => modeOf(benchmarkCase) === mode)
     const runs = members.flatMap((benchmarkCase) => runsByCase.get(benchmarkCase.id) ?? [])
+    const valid: number[] = []
     const stability: number[] = []
     for (const benchmarkCase of members) {
-      const complete = completeRuns(runsByCase.get(benchmarkCase.id) ?? [])
-      if (complete.length < 2) continue
-      stability.push(DIMENSION_KEYS.filter((key) => new Set(complete.map((run) => run.dimensions[key].rating)).size === 1).length / DIMENSION_KEYS.length)
+      const own = runsByCase.get(benchmarkCase.id) ?? []
+      if (own.length > 0) valid.push(share(own, (run) => run.outcome !== 'error'))
+      const complete = completeRuns(own)
+      if (complete.length >= 2) stability.push(share([...DIMENSION_KEYS], (key) => new Set(complete.map((run) => run.dimensions[key].rating)).size === 1))
     }
     const block: ModeBlock = {
       cases: members.length,
       scored_runs: runs.length,
-      valid_output_rate: rateFromProportion(runs.length === 0 ? null : runs.filter((run) => run.outcome !== 'error').length / runs.length, runs.length, 'Unavailable: no run in this mode'),
+      valid_output_rate: rateMetric(valid, 'Unavailable: no run in this mode'),
       repeat_rating_stability: rateMetric(stability, 'Unavailable: no case in this mode was run more than once'),
       runs_with_unsupported_claims: runs.filter((run) => run.forbidden_claim_hits.length > 0 || run.prohibited_hits.some((label) => UNSUPPORTED_CLAIM_LABELS.includes(label))).length,
       agreement: Object.fromEntries(SCORED_TIERS.map((tier) => [tier, pooledAgreement(scoredByTier[tier].filter((entry) => modeOf(entry.benchmarkCase) === mode), reasonByTier[tier])])) as Record<ScoredTier, PooledAgreement>,
@@ -565,22 +632,25 @@ function multiImageOf(
   })) as Record<GarmentMode, ModeBlock>
 
   // --- outfit completeness -------------------------------------------------
-  const outfitRuns: boolean[] = []
+  const outfitCases: number[] = []
   let unexpected = 0
   for (const benchmarkCase of cases) {
-    for (const run of completeRuns(runsByCase.get(benchmarkCase.id) ?? [])) {
-      if (modeOf(benchmarkCase) === 'outfit_items') outfitRuns.push(validComponents(run, garmentCount(benchmarkCase)) !== null)
-      else if (run.outfit_components !== undefined) unexpected += 1
+    const complete = completeRuns(runsByCase.get(benchmarkCase.id) ?? [])
+    if (modeOf(benchmarkCase) === 'outfit_items') {
+      if (complete.length > 0) outfitCases.push(share(complete, (run) => validComponents(run, garmentCount(benchmarkCase)) !== null))
+    } else {
+      unexpected += complete.filter((run) => run.outfit_components !== undefined).length
     }
   }
 
   // --- comparison groups ---------------------------------------------------
   const byId = new Map(cases.map((benchmarkCase) => [benchmarkCase.id, benchmarkCase]))
   const groups = new Map<string, Array<{ benchmarkCase: BenchmarkCase; runs: CompleteRun[] }>>()
-  for (const [caseId, { reference }] of references) {
+  for (const [caseId, { reference, tier }] of references) {
     const benchmarkCase = byId.get(caseId)
     const runs = completeRuns(runsByCase.get(caseId) ?? [])
-    if (!reference.comparison_group || !benchmarkCase || runs.length === 0) continue
+    // An unfinished review does not shape any figure, not even by saying which cases belong together.
+    if (tier === 'unreviewed' || !reference.comparison_group || !benchmarkCase || runs.length === 0) continue
     groups.set(reference.comparison_group, [...(groups.get(reference.comparison_group) ?? []), { benchmarkCase, runs }])
   }
 
@@ -589,8 +659,9 @@ function multiImageOf(
   const details: ComparisonGroupDetail[] = []
   const deltas = Object.fromEntries(SCORED_TIERS.map((tier) => [tier, [] as number[]])) as Record<ScoredTier, number[]>
   for (const group of [...groups.keys()].sort()) {
-    const members = (groups.get(group) ?? []).sort((a, b) => a.benchmarkCase.id.localeCompare(b.benchmarkCase.id))
-    if (members.length < 2) continue
+    const members = (groups.get(group) ?? []).sort((a, b) => (a.benchmarkCase.id < b.benchmarkCase.id ? -1 : 1))
+    // A comparison between image modes needs cases of at least two different modes.
+    if (new Set(members.map((member) => modeOf(member.benchmarkCase))).size < 2) continue
     let identical = 0
     const spreads: number[] = []
     for (const key of DIMENSION_KEYS) {
@@ -612,11 +683,11 @@ function multiImageOf(
     }
   }
 
-  const noGroups = 'Unavailable: no comparison group has two cases with ratings'
+  const noGroups = 'Unavailable: no comparison group holds cases of two image modes with ratings'
   return {
     modes,
     outfit_items: {
-      completeness_rate: rateMetric(outfitRuns.map((valid) => (valid ? 1 : 0)), 'Unavailable: no complete run of an outfit case'),
+      completeness_rate: rateMetric(outfitCases, 'Unavailable: no complete run of an outfit case'),
       unexpected_blocks_in_other_modes: unexpected,
     },
     comparison_groups: {
@@ -638,12 +709,14 @@ export interface QualityReport {
   thresholds: { min_sample: number; noise_floor_rate: number; noise_floor_bands: number; noise_z: number }
   /** Whether this report holds any evidence about accuracy on real images. */
   image_grounded_accuracy: { status: 'available' | 'unavailable'; reason?: string; cases: number }
+  /** Validity, band agreement and abstention, counted per case so that they can be compared between reports. */
+  by_case: CaseRates
   agreement: Record<ScoredTier, AgreementBlock>
   grounding: Record<ScoredTier, GroundingBlock>
   calibration: Record<ScoredTier, CalibrationBlock>
   garment_identification: Record<ScoredTier, GarmentIdentificationBlock>
   multi_image: MultiImageBlock
-  /** Per dimension: share of repeated cases that got the same rating on every run. A unit is one case with repeats. */
+  /** Per dimension: share of repeated cases that got the same rating on every run. */
   stability_by_dimension: Record<DimensionKey, Metric>
   /** What the current output cannot support, so that a missing figure is never read as a measured one. */
   not_measurable: Record<string, string>
@@ -668,15 +741,24 @@ export function computeQuality(
   const runsByCase = new Map<string, RunDetail[]>()
   for (const detail of scoredRuns) runsByCase.set(detail.case_id, [...(runsByCase.get(detail.case_id) ?? []), detail])
 
-  // Hand-written outputs agreeing with a human review would say nothing about a model, so that tier stays empty for them.
-  const eligible = (tier: ScoredTier) => !(tier === 'image_reviewed' && outputs !== 'model')
-  const referenceCases = Object.fromEntries(SCORED_TIERS.map((tier) => [tier, cases.filter((benchmarkCase) => references.get(benchmarkCase.id)?.tier === tier)])) as Record<ScoredTier, BenchmarkCase[]>
-  const reasonByTier = Object.fromEntries(SCORED_TIERS.map((tier) => [tier, !eligible(tier) && referenceCases[tier].length > 0 ? UNAVAILABLE_FIXTURE_OUTPUTS : NO_REFERENCES[tier]])) as Record<ScoredTier, string>
-  const scoredByTier = Object.fromEntries(SCORED_TIERS.map((tier) => [tier, !eligible(tier) ? [] : referenceCases[tier]
-    .map((benchmarkCase) => ({ benchmarkCase, reference: (references.get(benchmarkCase.id) as ResolvedReference).reference, runs: completeRuns(runsByCase.get(benchmarkCase.id) ?? []) }))
-    .filter((entry) => entry.runs.length > 0)])) as Record<ScoredTier, ScoredCase[]>
-
+  // Hand-written outputs agreeing with a human review would say nothing about a model, so that tier is not scored for them.
+  const scorable = (tier: ScoredTier) => !(tier === 'image_reviewed' && outputs !== 'model')
   const perTier = <T>(make: (tier: ScoredTier) => T) => Object.fromEntries(SCORED_TIERS.map((tier) => [tier, make(tier)])) as Record<ScoredTier, T>
+
+  const referenceCases = perTier((tier) => cases.filter((benchmarkCase) => references.get(benchmarkCase.id)?.tier === tier))
+  const scoredByTier = perTier((tier) => (!scorable(tier) ? [] : referenceCases[tier]
+    .map((benchmarkCase) => ({ benchmarkCase, reference: (references.get(benchmarkCase.id) as ResolvedReference).reference, runs: completeRuns(runsByCase.get(benchmarkCase.id) ?? []) }))
+    .filter((entry) => entry.runs.length > 0)))
+
+  // Why the tier as a whole has no figure. Each reason names the actual cause.
+  const tierReason = perTier((tier) => {
+    if (referenceCases[tier].length === 0) return NO_REFERENCES[tier]
+    if (!scorable(tier)) return UNAVAILABLE_FIXTURE_OUTPUTS
+    if (scoredByTier[tier].length === 0) return UNAVAILABLE_NO_SCORED_OUTPUT
+    return null
+  })
+  // The reason attached to one figure of the tier that turns out empty.
+  const reasonByTier = perTier((tier) => tierReason[tier] ?? UNAVAILABLE_NOTHING_TO_MEASURE)
 
   const stability = Object.fromEntries(DIMENSION_KEYS.map((key) => {
     const values: number[] = []
@@ -687,13 +769,14 @@ export function computeQuality(
     return [key, rateMetric(values, 'Unavailable: no case was run more than once')]
   })) as Record<DimensionKey, Metric>
 
-  const imageCases = eligible('image_reviewed') ? scoredByTier.image_reviewed.length : 0
+  const imageCases = scoredByTier.image_reviewed.length
   return {
     thresholds: { min_sample: MIN_SAMPLE, noise_floor_rate: NOISE_FLOOR_RATE, noise_floor_bands: NOISE_FLOOR_BANDS, noise_z: NOISE_Z },
     image_grounded_accuracy: imageCases > 0
       ? { status: 'available', cases: imageCases }
       : { status: 'unavailable', reason: reasonByTier.image_reviewed, cases: 0 },
-    agreement: perTier((tier) => agreementOf(scoredByTier[tier], eligible(tier) ? referenceCases[tier].length : 0, reasonByTier[tier])),
+    by_case: caseRatesOf(cases, runsByCase),
+    agreement: perTier((tier) => agreementOf(scoredByTier[tier], referenceCases[tier].length, scorable(tier), reasonByTier[tier])),
     grounding: perTier((tier) => groundingOf(scoredByTier[tier], reasonByTier[tier])),
     calibration: perTier((tier) => calibrationOf(scoredByTier[tier], reasonByTier[tier])),
     garment_identification: perTier((tier) => garmentIdentificationOf(scoredByTier[tier], reasonByTier[tier])),
@@ -721,19 +804,20 @@ export type MetricIndex = Record<string, IndexedMetric>
 /**
  * Flattens a report's figures into `name -> metric`, so two reports can be
  * compared metric by metric (see classifyMetricChanges in regression.ts).
- * Names are stable; adding a metric never renames an existing one.
+ * Names are stable; adding a metric never renames an existing one. Every
+ * figure here counts cases or comparison groups.
  */
 export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityReport): MetricIndex {
   const index: MetricIndex = {}
   const add = (name: string, metric: Metric, direction: IndexedMetric['direction'], kind: IndexedMetric['kind'], needsReferences: boolean) => {
     index[name] = { ...metric, direction, kind, needs_references: needsReferences }
   }
-  const nothing = 'Unavailable: nothing to measure'
 
-  add('validity.valid_output_rate', rateFromProportion(metrics.structured_output.valid_rate, metrics.runs, nothing), 'higher_is_better', 'rate', false)
-  add('end_to_end.verdict_band_agreement_rate', rateFromProportion(metrics.verdict_band.agreement_rate, metrics.verdict_band.graded_runs, 'Unavailable: no case states acceptable bands'), 'higher_is_better', 'rate', false)
-  add('abstention.recall', rateFromProportion(metrics.abstention.recall, metrics.abstention.expected_runs, 'Unavailable: no case expects an abstention'), 'higher_is_better', 'rate', false)
-  add('abstention.false_abstention_rate', rateFromProportion(metrics.abstention.false_abstention_rate, metrics.runs - metrics.abstention.expected_runs, nothing), 'lower_is_better', 'rate', false)
+  add('validity.valid_output_rate', quality.by_case.valid_output_rate, 'higher_is_better', 'rate', false)
+  add('end_to_end.verdict_band_agreement_rate', quality.by_case.verdict_band_agreement_rate, 'higher_is_better', 'rate', false)
+  add('abstention.recall', quality.by_case.abstention_recall, 'higher_is_better', 'rate', false)
+  add('abstention.false_abstention_rate', quality.by_case.false_abstention_rate, 'lower_is_better', 'rate', false)
+  // Already one yes-or-no value per repeated case.
   add('stability.same_outcome_case_rate', rateFromProportion(metrics.stability.same_outcome_case_rate, metrics.stability.cases_with_repeats, 'Unavailable: no case was run more than once'), 'higher_is_better', 'rate', false)
   for (const key of DIMENSION_KEYS) add(`stability.rating.${key}`, quality.stability_by_dimension[key], 'higher_is_better', 'rate', false)
 
