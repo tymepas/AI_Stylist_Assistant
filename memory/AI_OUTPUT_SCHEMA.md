@@ -207,8 +207,10 @@ refused (`views_contradiction`).
 Outfit mode: each `outfit_components` entry may carry
 `"supports": [], "tension": [], "unclear": [], "cites": []`: dimension keys the item helps, strains or cannot be judged
 against, and up to three citations of its OWN visible observations (`g<item>.type|colour|pattern|d<n>`), required with
-supports or tension. Refused per item, with codes `overlapping_dimension`, `uncited_effect`, `foreign_citation`,
-`invalid_citation`, `identity_mismatch`. The API adds `outfit_components.contributions`:
+supports or tension; a photo-limit citation alone never supports an effect. `"colour"` is read as the dimension
+`color`. Refused per item, with codes `malformed_contribution` (fields of the wrong shape), `overlapping_dimension`,
+`uncited_effect`, `foreign_citation`, `invalid_citation`, `identity_mismatch`; a refused contribution never removes
+the item's note or the block. The API adds `outfit_components.contributions`:
 `available` | `partial` | `unavailable`, and `contribution` on each item that passed.
 
 ## Limits and consistency (analysis-output/4, Phase 4 Milestone 4)

@@ -6596,7 +6596,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: no brief-derived references",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6717,7 +6717,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6940,7 +6940,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -8784,7 +8784,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: no brief-derived references",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "without_style_dna",
@@ -8905,7 +8905,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "without_style_dna",
@@ -9125,7 +9125,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": true,
-      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "without_style_dna",
@@ -9299,7 +9299,7 @@
       "n": 0,
       "needs_references": true,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no brief-derived references",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -9420,7 +9420,7 @@
       "n": 0,
       "needs_references": true,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: insufficient human-reviewed ground truth",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -9639,7 +9639,7 @@
       "n": 0,
       "needs_references": true,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+      "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "value": null
@@ -11920,7 +11920,7 @@
           },
           "limit_recall": {
             "n": 0,
-            "reason": "Unavailable: no brief-derived references",
+            "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
             "se": null,
             "status": "unavailable",
             "value": null
@@ -12000,7 +12000,7 @@
           },
           "limit_recall": {
             "n": 0,
-            "reason": "Unavailable: insufficient human-reviewed ground truth",
+            "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
             "se": null,
             "status": "unavailable",
             "value": null
@@ -12077,7 +12077,7 @@
           },
           "limit_recall": {
             "n": 0,
-            "reason": "Unavailable: the scored references hold nothing this figure can be built from",
+            "reason": "Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)",
             "se": null,
             "status": "unavailable",
             "value": null

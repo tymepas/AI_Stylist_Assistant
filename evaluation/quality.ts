@@ -1051,7 +1051,7 @@ export function computeQuality(
     multi_image: multiImageOf(cases, runsByCase, references, scoredByTier, reasonByTier),
     reviewer_agreement: perTier((tier) => reviewerAgreementOf(referenceCases[tier].map((benchmarkCase) => (references.get(benchmarkCase.id) as ResolvedReference).reference), scoredByTier[tier], reasonByTier[tier])),
     shopping_advisor: shoppingAdvisorOf(cases, runsByCase),
-    visual_evidence: visualEvidenceOf(cases, runsByCase, scoredByTier, reasonByTier, carriesVisualEvidence),
+    visual_evidence: visualEvidenceOf(cases, runsByCase, scoredByTier, reasonByTier, carriesVisualEvidence, capabilities.phase4),
     occasion: occasionOf(cases, runsByCase, capabilities.phase4),
     multi_image_reasoning: multiImageReasoningOf(cases, runsByCase, capabilities.phase4),
     uncertainty: uncertaintyOf(cases, runsByCase, capabilities.phase4),

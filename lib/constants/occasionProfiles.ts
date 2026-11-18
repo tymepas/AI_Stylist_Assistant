@@ -13,7 +13,7 @@ import { OCCASION_GROUPS } from '@/lib/constants/options'
  * Every occasion in `OCCASION_GROUPS` (the list the user chooses from) has
  * exactly one profile, keyed by its exact label. A value that is not in the
  * list has no profile and is refused by the API; it is never matched to a
- * different occasion. tests/milestone2/occasionProfiles.test.ts enforces this.
+ * different occasion. tests/milestone2/occasionIntelligence.test.ts enforces this.
  *
  * Changing any profile changes the analysis prompt version, because the
  * catalogue is part of the prompt fingerprint.

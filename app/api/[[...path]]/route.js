@@ -5,7 +5,6 @@ import { buildShoppingAdvisor } from '@/lib/services/shoppingAdvisorService'
 import { buildOutfitComponents } from '@/lib/services/outfitComponentsService'
 import { buildVisualEvidence, hasStylePreferences } from '@/lib/services/visualEvidenceService'
 import { mockVisualEvidenceRaw } from '@/lib/services/mockVisualEvidence'
-import { checkConsistency } from '@/lib/services/consistencyService'
 import {
   aggregateSizeProblem,
   declaredSizeProblem,
@@ -281,8 +280,7 @@ async function handleRoute(request, { params }) {
           if (garmentMode === 'outfit_items') mockAnalysis.outfit_components = buildOutfitComponents(mockOutfitComponentsRaw(garments.length), garmentMode, garments.length, requestId, visual.observations)
           mockAnalysis.evidence = visual.evidence
           mockAnalysis.occasion_context = occasionContextOf(occasion)
-          // The same consistency check as the real path: it only flags, and the mock ratings and verdict stay as they are.
-          mockAnalysis.consistency = { flags: checkConsistency({ dimensions: mockAnalysis.dimensions, observations: visual.observations, evidence: visual.evidence, occasion }) }
+          // No consistency check: a mock result describes no photo, and its fixed demo explanations would raise flags that mean nothing.
         }
         logMockCompleted('analysis', mockAnalysis.status)
         return handleCORS(NextResponse.json(mockAnalysis))

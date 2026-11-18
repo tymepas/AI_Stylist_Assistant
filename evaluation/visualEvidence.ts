@@ -297,7 +297,10 @@ function detailShare(fact: GarmentFact, observations: Observations, terms: strin
   return observation.details.filter((detail) => terms.some((term) => mentionsStem(detail, term))).length / observation.details.length
 }
 
-function referenceBlockOf(scored: ScoredEntry[], reason: string): ReferenceVisualBlock {
+/** Photo limits such as `shadow` and `partial_view` exist only from analysis-output/4 on; an earlier recording is never scored against them. */
+export const UNAVAILABLE_LIMITS_BEFORE_PHASE4 = 'Unavailable: the recording was made with an output schema from before the current photo limit codes (analysis-output/4)'
+
+function referenceBlockOf(scored: ScoredEntry[], reason: string, phase4: boolean): ReferenceVisualBlock {
   const withFacts = scored.filter((entry) => (entry.reference.garment_facts?.items.length ?? 0) > 0)
   const withViews = scored.filter((entry) => entry.reference.views_same_garment !== undefined && visualContextOf(entry.benchmarkCase).mode === 'same_garment_views')
   const sameGarment: number[] = []
@@ -359,7 +362,7 @@ function referenceBlockOf(scored: ScoredEntry[], reason: string): ReferenceVisua
       return terms.length === 0 ? null : detailShare(fact, observations, terms)
     }),
     same_garment_agreement_rate: rateMetric(sameGarment, reason),
-    limit_recall: itemMetric(withFacts, reason, (fact, observations) => {
+    limit_recall: !phase4 ? unavailableMetric(UNAVAILABLE_LIMITS_BEFORE_PHASE4) : itemMetric(withFacts, reason, (fact, observations) => {
       const observation = observationFor(observations, fact.item)
       if (!fact.limits || !observation) return null
       return fact.limits.filter((limit) => observation.limits.includes(limit)).length / fact.limits.length
@@ -393,6 +396,7 @@ export function visualEvidenceOf(
   scoredByTier: Record<ScoredTier, Array<{ benchmarkCase: BenchmarkCase; reference: CaseReference; runs: CompleteRun[] }>>,
   reasonByTier: Record<ScoredTier, string>,
   carriesBlocks: boolean,
+  phase4 = carriesBlocks,
 ): VisualEvidenceReport {
   const emptyModes = Object.fromEntries(GARMENT_MODES.map((mode) => [mode, 0])) as Record<GarmentMode, number>
   if (!carriesBlocks) {
@@ -418,7 +422,7 @@ export function visualEvidenceOf(
   return {
     applicable: true,
     structural: structuralOf(cases, complete),
-    by_tier: Object.fromEntries(SCORED_TIERS.map((tier) => [tier, referenceBlockOf(scoredByTier[tier], reasonByTier[tier])])) as Record<ScoredTier, ReferenceVisualBlock>,
+    by_tier: Object.fromEntries(SCORED_TIERS.map((tier) => [tier, referenceBlockOf(scoredByTier[tier], reasonByTier[tier], phase4)])) as Record<ScoredTier, ReferenceVisualBlock>,
     valid_runs_by_mode: validByMode,
   }
 }

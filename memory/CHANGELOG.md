@@ -331,3 +331,11 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 ### Fixed
 
 - The schema version guard now fingerprints every schema of the output, the observation and evidence schemas included (the Milestone 1 change to it had not taken effect)
+
+### Fixed after the consolidated review (Milestones 2 to 4)
+
+- A malformed contribution field (an unknown dimension, a bad citation, too many citations) dropped every outfit note; it now drops only that item's contribution (`malformed_contribution`), and `"colour"` is read as `color`
+- Style preferences could start a prompt line of their own that looked like the application's `Occasion:` or `Profile:` lines; client text is now kept on one line
+- Consistency flags fired on sound explanations ("navy blue", "black-tie", suggested shoes, "red carpet", "off-white", a cocktail dress for a wedding, a vacation feel at the beach) and missed "works" as a mention of Office Work; narrowed and matched by whole words; mock results no longer carry flags
+- The prompt budget helper under-measured the worst case by up to 91 bytes; it now fills every field to its real limit (worst case 7,989 of 8,000 bytes, still within the bound)
+- A contribution supported only by a photo-limit citation is refused; `limit_recall` is unavailable for recordings before analysis-output/4; `consistency_flag_rate` leaves out runs with no observations and no evidence instead of counting them as clean

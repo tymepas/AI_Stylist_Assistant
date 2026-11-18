@@ -82,9 +82,22 @@ function garmentModeLines(garments: GarmentContext): string[] {
   return [`Image mode: outfit_items. ${range} are ${garments.count} DIFFERENT items worn together.`, MODE_RULES.outfit_items]
 }
 
-/** The user's stated preferences as plain text: compact, and the same words whatever the client sent. */
+/**
+ * Client-provided text on one line. Line breaks, other control characters and
+ * Unicode line separators become a single space, so a value can never start a
+ * line of its own that looks like one the application wrote (a second
+ * "Occasion:" or "Profile:" line, for example). It never gets longer.
+ */
+export function clientText(value: string): string {
+  return value.replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]+/g, ' ').replace(/ {2,}/g, ' ').trim()
+}
+
+/** The user's stated preferences as plain text: compact, one line, and the same words whatever the client sent. */
 function stylePreferencesLine(profile: StyleProfile): string {
-  const list = (values: string[]) => (values.length === 0 ? 'none' : values.join(', '))
+  const list = (values: string[]) => {
+    const cleaned = values.map(clientText).filter((value) => value.length > 0)
+    return cleaned.length === 0 ? 'none' : cleaned.join(', ')
+  }
   return `Style preferences: styles ${list(profile.preferredStyles)}; colours ${list(profile.favoriteColors)}; occasions ${list(profile.occasionPreferences)}.`
 }
 
@@ -125,7 +138,7 @@ export function buildUserContext(
     const coloringParts: string[] = []
     if (c.skin_tone_depth) coloringParts.push(`depth ${c.skin_tone_depth}`)
     if (c.skin_tone_undertone) coloringParts.push(`undertone ${c.skin_tone_undertone}`)
-    if (c.hair_color) coloringParts.push(`hair ${c.hair_color}`)
+    if (c.hair_color) coloringParts.push(`hair ${clientText(c.hair_color)}`)
     if (c.high_contrast !== null) coloringParts.push(`high contrast ${c.high_contrast}`)
     if (coloringParts.length > 0) lines.push(`DNA coloring: ${coloringParts.join(', ')}.`)
 
@@ -133,7 +146,7 @@ export function buildUserContext(
     const a = aiStyleProfile.aesthetic_signals
     const aestheticParts: string[] = []
     if (aiStyleProfile.style_keywords.length > 0) {
-      aestheticParts.push(`style ${aiStyleProfile.style_keywords.map((k) => k.keyword).join(', ')}`)
+      aestheticParts.push(`style ${aiStyleProfile.style_keywords.map((k) => clientText(String(k.keyword))).join(', ')}`)
     }
     if (a.current_outfit_formality) aestheticParts.push(`formality ${a.current_outfit_formality}`)
     if (aestheticParts.length > 0) lines.push(`DNA aesthetic: ${aestheticParts.join('; ')}.`)

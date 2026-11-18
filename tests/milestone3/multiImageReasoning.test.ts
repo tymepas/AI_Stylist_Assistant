@@ -79,6 +79,34 @@ describe('item contributions', () => {
     expect(inspect(items).contributions.size).toBe(2)
   })
 
+  it.each<[string, Record<string, unknown>]>([
+    ['an unknown dimension', { supports: ['elegance'], cites: ['g1.type'] }],
+    ['a citation that is not a citation', { supports: ['style'], cites: ['g1.d4'] }],
+    ['too many citations', { supports: ['style'], cites: ['g1.type', 'g1.colour', 'g1.d1', 'g1.pattern'] }],
+    ['a list that is not a list', { supports: 'style', cites: ['g1.type'] }],
+  ])('drops only that item\'s contribution when its fields are malformed (%s), and keeps every note', (_label, effect) => {
+    const items = [item(1, 'suiting', effect), item(2, 'bottom', { supports: ['occasion'], cites: ['g2.type'] })]
+    const parsed = parseOutfitComponents(items, 2)
+    expect(parsed.map((entry) => entry.note)).toEqual(['A note long enough to pass validation.', 'A note long enough to pass validation.'])
+    const result = inspectContributions(parsed, outfitObservations)
+    expect(result.problems.get(1)).toEqual(['malformed_contribution'])
+    expect(result.contributions.has(2)).toBe(true)
+    const built = buildOutfitComponents(items, 'outfit_items', 2, undefined, outfitObservations)
+    expect([built.availability, built.contributions, built.items.length]).toEqual(['available', 'partial', 2])
+  })
+
+  it('reads the British spelling "colour" as the color dimension', () => {
+    const result = inspect([item(1, 'suiting', { supports: ['colour'], cites: ['g1.colour'] }), item(2, 'bottom')])
+    expect(result.contributions.get(1)?.supports).toEqual(['color'])
+  })
+
+  it('does not accept a photo limit as the only support for an effect', () => {
+    const limited = inspectObservations({ images: [image(1, { category: 'suiting', garment: 'blazer', limits: ['blur'] }), image(2, { category: 'bottom', garment: 'joggers' })] }, { mode: 'outfit_items', garmentCount: 2 }).value
+    const result = inspect([item(1, 'suiting', { supports: ['color', 'style'], cites: ['g1.blur'] }), item(2, 'bottom', { unclear: ['color'], cites: ['g2.type'] })], limited)
+    expect(result.problems.get(1)).toEqual(['uncited_effect'])
+    expect(inspect([item(1, 'suiting', { unclear: ['color'], cites: ['g1.blur'] }), item(2, 'bottom')], limited).contributions.has(1)).toBe(true)
+  })
+
   it('treats items that say nothing about the dimensions as silent, not as errors', () => {
     const result = inspect([item(1, 'suiting'), item(2, 'bottom')])
     expect(result.silent).toEqual([1, 2])

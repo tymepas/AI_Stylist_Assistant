@@ -105,6 +105,33 @@ describe('consistency checks', () => {
     expect(checkConsistency({ dimensions: withReason('occasion', 'Better suited to the office than to a beach.'), occasion: 'Office Work' })).toEqual([])
   })
 
+  it.each<[string, string]>([
+    ['a compound with the observed colour', 'The navy blue jacket is sharp.'],
+    ['a hyphenated dress code', 'It is not black-tie formal.'],
+    ['a suggestion about shoes that were not photographed', 'Brown shoes would complement it.'],
+    ['an idiom', 'It feels red carpet ready.'],
+  ])('do not flag %s', (_label, reason) => {
+    expect(checkConsistency({ dimensions: withReason('color', reason), observations: navy })).toEqual([])
+  })
+
+  it('do not flag "off-white" against an observed cream', () => {
+    const cream = single({ colours: { dominant: ['cream'], secondary: [] } }) ?? undefined
+    expect(checkConsistency({ dimensions: withReason('color', 'The off-white knit is soft.'), observations: cream })).toEqual([])
+  })
+
+  it.each<[string, string]>([
+    ['Wedding Guest', 'A cocktail dress is ideal.'],
+    ['Formal Dinner', 'A sleek cocktail dress suits it.'],
+    ['Award Ceremony', 'Meets black tie expectations.'],
+    ['Beach', 'It has a relaxed vacation feel.'],
+  ])('do not flag a dress code or a closely related occasion (%s)', (occasion, reason) => {
+    expect(checkConsistency({ dimensions: withReason('occasion', reason), occasion })).toEqual([])
+  })
+
+  it('match the selected occasion by whole words only', () => {
+    expect(checkConsistency({ dimensions: withReason('occasion', 'The blazer works for a wedding.'), occasion: 'Office Work' })).toEqual([{ dimension: 'occasion', code: 'occasion_not_selected', detail: 'wedding' }])
+  })
+
   it('flag an Excellent, High-confidence rating whose evidence says the support is only partial', () => {
     const dimensions = makeDimensions({ occasion: 'Excellent', color: 'Good', formality: 'Good', seasonality: 'Good', style_preference_match: 'Good' }) as unknown as Dimensions
     expect(checkConsistency({ dimensions, evidence: { availability: 'available', dimensions: { occasion: { sources: ['occasion'], cites: [], support: 'partial', missing: 'Dress code unknown' } } } })).toEqual([{ dimension: 'occasion', code: 'confident_on_partial_evidence' }])

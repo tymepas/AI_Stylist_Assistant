@@ -11799,12 +11799,12 @@
     "style_dna.without_style_dna.uncertainty.consistency_flag_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 80,
+      "n": 76,
       "needs_references": false,
-      "se": 0.0212,
+      "se": 0.0223,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.0375
+      "value": 0.0395
     },
     "style_dna.without_style_dna.uncertainty.limit_linked_rate": {
       "direction": "higher_is_better",
@@ -12315,12 +12315,12 @@
     "uncertainty.consistency_flag_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 87,
+      "n": 83,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.0196,
+      "se": 0.0205,
       "status": "measured",
-      "value": 0.0345
+      "value": 0.0361
     },
     "uncertainty.limit_linked_rate": {
       "direction": "higher_is_better",
@@ -14998,10 +14998,10 @@
     "uncertainty": {
       "applicable": true,
       "consistency_flag_rate": {
-        "n": 87,
-        "se": 0.0196,
+        "n": 83,
+        "se": 0.0205,
         "status": "measured",
-        "value": 0.0345
+        "value": 0.0361
       },
       "limit_linked_rate": {
         "n": 10,

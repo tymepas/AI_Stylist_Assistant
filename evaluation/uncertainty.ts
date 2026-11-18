@@ -94,7 +94,12 @@ export function uncertaintyOf(cases: BenchmarkCase[], runsByCase: Map<string, Ru
       const confident = (['occasion', 'formality'] as const).some((key) => run.dimensions[key].rating !== 'Unable to Evaluate' && run.dimensions[key].confidence === 'High')
       return confident ? 0 : 1
     }, 'Unavailable: no run in which no garment could be identified'),
-    consistency_flag_rate: perCase(cases, complete, (benchmarkCase, run) => (runConsistencyFlags(benchmarkCase, run).length > 0 ? 1 : 0), 'Unavailable: no complete run'),
+    // A run with neither valid observations nor valid evidence gets no consistency check in the application either; it is left out, never counted as clean.
+    consistency_flag_rate: perCase(cases, complete, (benchmarkCase, run) => {
+      const inspection = inspectRun(benchmarkCase, run)
+      if (!inspection.validObservations && inspection.validEvidence.availability === 'unavailable') return null
+      return runConsistencyFlags(benchmarkCase, run).length > 0 ? 1 : 0
+    }, 'Unavailable: no complete run with observations or evidence'),
   }
 }
 

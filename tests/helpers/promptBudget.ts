@@ -6,7 +6,10 @@
  * case over every garment mode and every occasion: each catalogue occasion
  * with its profile line, and an occasion of the maximum length that has no
  * profile (the API refuses one, but a benchmark manifest may carry it). Every
- * client-controlled text field is filled with 4-byte characters up to its limit.
+ * client-controlled field holds the most bytes its limit accepts: text limited
+ * by characters is filled with 3-byte, single-unit characters, the style
+ * profile reaches its byte limit exactly, and every Style DNA choice takes its
+ * longest value.
  */
 
 import { readFileSync } from 'node:fs'
@@ -24,17 +27,36 @@ export function systemPrompt(): string {
   return readFileSync(path.join(process.cwd(), 'memory', 'SYSTEM_PROMPT.md'), 'utf8')
 }
 
-const WIDE = '\u{1F600}'
-const styleProfile = { preferredStyles: [WIDE.repeat(Math.floor((MAX_STYLE_PROFILE_BYTES - 80) / 4))], favoriteColors: [], occasionPreferences: [] }
+/** Three UTF-8 bytes but ONE UTF-16 unit: the most bytes a field limited by `.max(n)` characters can hold. */
+const WIDE = '€'
+
+/**
+ * The largest style profile the API accepts (MAX_STYLE_PROFILE_BYTES of
+ * serialized JSON), all of it in one preference: every further entry costs
+ * more JSON bytes than prompt bytes, and an empty list prints "none".
+ */
+function largestStyleProfile() {
+  const empty = { preferredStyles: [''], favoriteColors: [] as string[], occasionPreferences: [] as string[] }
+  const room = MAX_STYLE_PROFILE_BYTES - utf8ByteLength(JSON.stringify(empty))
+  const text = WIDE.repeat(Math.floor(room / 3)) + 'a'.repeat(room % 3)
+  const profile = { ...empty, preferredStyles: [text] }
+  if (utf8ByteLength(JSON.stringify(profile)) !== MAX_STYLE_PROFILE_BYTES) throw new Error('The style profile filler does not reach the limit exactly.')
+  return profile
+}
+
+const styleProfile = largestStyleProfile()
+/** The longest value of every Style DNA field that reaches the prompt; keywords may repeat. */
 const aiProfile = {
   ...VALID_COMPLETE_PROFILE,
-  coloring: { ...VALID_COMPLETE_PROFILE.coloring, hair_color: WIDE.repeat(20), skin_tone_depth: 'medium light' as const },
-  style_keywords: (['Minimalist', 'Streetwear', 'Bohemian', 'Romantic', 'Eclectic'] as const).map((keyword) => ({ keyword, confidence: 'High' as const, source: 'observed' as const })),
+  coloring: { ...VALID_COMPLETE_PROFILE.coloring, hair_color: WIDE.repeat(40), skin_tone_depth: 'medium light' as const, skin_tone_undertone: 'neutral' as const, high_contrast: false },
+  aesthetic_signals: { ...VALID_COMPLETE_PROFILE.aesthetic_signals, current_outfit_formality: 'business casual' as const },
+  proportions: { ...VALID_COMPLETE_PROFILE.proportions, frame_width: 'narrow' as const, torso_length: 'average' as const, shoulder_breadth: 'narrow' as const },
+  style_keywords: Array.from({ length: 5 }, () => ({ keyword: 'Minimalist' as const, confidence: 'High' as const, source: 'observed' as const })),
 }
 
 /** Every occasion value that can reach the prompt, with the largest one that has no profile. */
 export function occasionsToCheck(): string[] {
-  return [...OCCASION_PROFILES.map((profile) => profile.label), WIDE.repeat(MAX_OCCASION_LENGTH / 2)]
+  return [...OCCASION_PROFILES.map((profile) => profile.label), WIDE.repeat(MAX_OCCASION_LENGTH)]
 }
 
 export function promptTextBytes(mode: GarmentMode, occasion: string, prompt = systemPrompt()): number {

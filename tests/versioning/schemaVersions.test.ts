@@ -27,7 +27,7 @@ const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   'analysis-output/3': 'b9820a1fc5e0',
   // Phase 4 Milestones 2 to 4, one contract: occasion rules, view differences, item contributions, limit codes and
   // limit citations. Covers every schema of the output, the observation and evidence schemas included.
-  'analysis-output/4': '1f957d08b647',
+  'analysis-output/4': '4883ec6a125d',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {

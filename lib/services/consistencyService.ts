@@ -14,12 +14,18 @@ import type { ConsistencyFlag, Dimensions, Observations, RatingEvidence } from '
  *
  * The checks are deliberately narrow, to avoid flagging sound explanations:
  * - `colour_not_observed`: the explanation names a broad colour family that
- *   no garment observation reported, while colours were observed. Sentences
- *   about skin, hair or eyes are skipped: they describe the person's colouring,
- *   not the garment. Dress codes such as "black tie" and the occasion names
- *   are not colours either.
+ *   no garment observation reported, while colours were observed. Skipped:
+ *   sentences about skin, hair or eyes (the person's colouring, not the
+ *   garment); sentences that suggest or compare (a "would", "could", "pair",
+ *   shoes or accessories that were not photographed); dress codes and idioms
+ *   such as "black tie", "red carpet" and "off-white"; the occasion names; and
+ *   a colour word right next to an observed one ("navy blue" when navy was
+ *   observed).
  * - `occasion_not_selected`: the occasion explanation names a different
- *   occasion from the catalogue and never the selected one.
+ *   occasion from the catalogue and never the selected one. Dress codes such
+ *   as "cocktail" or "black tie" describe formality, not an occasion, and are
+ *   not counted; neither are closely related occasions (a beach and a
+ *   vacation).
  * - `confident_on_partial_evidence`: an Excellent rating stated with High
  *   confidence while its own evidence says the support is only partial.
  *
@@ -28,37 +34,55 @@ import type { ConsistencyFlag, Dimensions, Observations, RatingEvidence } from '
  */
 
 const PERSON_WORDS = /\b(skin|undertone|complexion|hair|eyes?|colouring|coloring)\b/i
+/** Sentences that suggest, compare or talk about things not in the photos. */
+const SUGGESTION_WORDS = /\b(would|could|might|consider|try|instead|pair(s|ed|ing)?|add(s|ed|ing)?|swap\w*|shoes?|boots?|bags?|belts?|accessor\w*|jewel\w*)\b/i
 
-/** Distinctive occasion words, each with the occasions it belongs to. Generic words such as "event" or "day" are left out. */
+/**
+ * Distinctive occasion words, each with the occasions it belongs to or is
+ * closely related to. Generic words such as "event" or "day" are left out, and
+ * so are dress codes ("cocktail", "black tie"): they describe formality.
+ */
 const OCCASION_TERMS: ReadonlyArray<readonly [string, readonly string[]]> = [
   ['wedding', ['Wedding Guest', 'Wedding Reception']],
   ['interview', ['Corporate Interview', 'Startup Interview']],
-  ['black tie', ['Black Tie Event']],
-  ['cocktail', ['Cocktail Party']],
-  ['beach', ['Beach']],
-  ['conference', ['Conference']],
+  ['beach', ['Beach', 'Vacation']],
+  ['conference', ['Conference', 'Networking Event']],
   ['award', ['Award Ceremony']],
-  ['house party', ['House Party']],
-  ['birthday', ['Birthday Party']],
-  ['networking', ['Networking Event']],
-  ['vacation', ['Vacation']],
+  ['house party', ['House Party', 'Birthday Party']],
+  ['birthday', ['Birthday Party', 'House Party']],
+  ['networking', ['Networking Event', 'Conference']],
+  ['vacation', ['Vacation', 'Beach', 'Travel']],
   ['college', ['College']],
 ]
+
+/** Words of an occasion name that are also ordinary words ("it works", "any event"): they do not show the explanation is about that occasion. */
+const GENERIC_OCCASION_WORDS = new Set(['work', 'event', 'party'])
+
+function wordPattern(term: string): RegExp {
+  return new RegExp(`\\b${term}(s|es)?\\b`)
+}
 
 function sentences(text: string): string[] {
   return text.split(/(?<=[.!?;])\s+/)
 }
 
-/** Phrases that contain a colour word without naming a garment colour: dress codes and the occasions themselves. */
-const NON_COLOUR_PHRASES = ['black tie', 'white tie', ...OCCASION_PROFILES.map((profile) => profile.label.toLowerCase())]
+/** Phrases that contain a colour word without naming a garment colour: dress codes, idioms and the occasions themselves (hyphens read as spaces). */
+const NON_COLOUR_PHRASES = ['black tie', 'white tie', 'red carpet', 'off white', ...OCCASION_PROFILES.map((profile) => profile.label.toLowerCase())]
+const FAMILY_SET = new Set<string>(COLOUR_FAMILIES)
 
-function garmentColoursNamed(reason: string): string[] {
+function garmentColoursNamed(reason: string, seen: ReadonlySet<string>): string[] {
   const named = new Set<string>()
   for (const sentence of sentences(reason)) {
-    if (PERSON_WORDS.test(sentence)) continue
-    let lower = sentence.toLowerCase()
-    for (const phrase of NON_COLOUR_PHRASES) lower = lower.split(phrase).join(' ')
-    for (const family of COLOUR_FAMILIES) if (new RegExp(`\\b${family}\\b`).test(lower)) named.add(family)
+    if (PERSON_WORDS.test(sentence) || SUGGESTION_WORDS.test(sentence)) continue
+    let lower = sentence.toLowerCase().replace(/-/g, ' ')
+    for (const phrase of NON_COLOUR_PHRASES) lower = lower.split(phrase).join(' . ')
+    const words = lower.match(/[a-z]+|[^a-z\s]+/g) ?? []
+    words.forEach((word, index) => {
+      if (!FAMILY_SET.has(word)) return
+      // Part of a compound with an observed colour ("navy blue", "blue-grey" when grey was observed).
+      if (seen.has(words[index - 1] ?? '') || seen.has(words[index + 1] ?? '')) return
+      named.add(word)
+    })
   }
   return [...named].sort()
 }
@@ -79,7 +103,7 @@ export function checkConsistency({ dimensions, observations, evidence, occasion 
     const seen = new Set<string>(observations.images.flatMap((entry) => (entry.colour_status === 'not_visible' ? [] : [...entry.colours.dominant, ...entry.colours.secondary])))
     if (seen.size > 0) {
       for (const key of keys) {
-        const unseen = garmentColoursNamed(dimensions[key].reason).filter((family) => !seen.has(family))
+        const unseen = garmentColoursNamed(dimensions[key].reason, seen).filter((family) => !seen.has(family))
         if (unseen.length > 0) flags.push({ dimension: key, code: 'colour_not_observed', detail: unseen.join(', ') })
       }
     }
@@ -89,8 +113,8 @@ export function checkConsistency({ dimensions, observations, evidence, occasion 
   if (occasion && occasionProfile(occasion)) {
     const reason = dimensions.occasion.reason.toLowerCase()
     const selected = occasion.toLowerCase()
-    const others = OCCASION_TERMS.filter(([term, labels]) => !labels.includes(occasion) && !selected.includes(term) && new RegExp(`\\b${term}\\b`).test(reason))
-    const mentionsSelected = selected.split(/\s+/).some((word) => word.length >= 4 && reason.includes(word))
+    const others = OCCASION_TERMS.filter(([term, labels]) => !labels.includes(occasion) && !selected.includes(term) && wordPattern(term).test(reason))
+    const mentionsSelected = selected.split(/\s+/).some((word) => word.length >= 4 && !GENERIC_OCCASION_WORDS.has(word) && wordPattern(word).test(reason))
     if (others.length > 0 && !mentionsSelected) flags.push({ dimension: 'occasion', code: 'occasion_not_selected', detail: others.map(([term]) => term).join(', ') })
   }
 
