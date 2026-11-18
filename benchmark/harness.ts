@@ -194,6 +194,8 @@ const caseSchema = z
           .object({
             observations: z.enum(['available', 'unavailable']),
             evidence: z.enum(['available', 'partial', 'unavailable']),
+            /** Outfit item contributions (analysis-output/4): for every item, for some, or for none. */
+            contributions: z.enum(['available', 'partial', 'unavailable']).optional(),
             problems: z.array(z.string().regex(/^[a-z_]{1,40}$/)).min(1).max(10).optional(),
           })
           .strict()

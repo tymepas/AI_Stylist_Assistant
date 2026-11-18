@@ -32,9 +32,9 @@ const firstLine = (text: string): string => lines(text)[0]
 // line of a mode changes its version; update the value here so the change is visible in review.
 // Changed in Phase 4 Milestone 1 (analysis-output/3, observations and evidence). Before: single 3c78bd7bbd3b,
 // views 26de11106f0a, outfit ff754a0c0e59. A recording made with one of those can never carry these.
-const SINGLE_PROMPT_VERSION = 'ac3e8e676b92'
-const VIEWS_PROMPT_VERSION = '03c4fa35201b'
-const OUTFIT_PROMPT_VERSION = '591d8cb7848c'
+const SINGLE_PROMPT_VERSION = 'a0dac4ea1430'
+const VIEWS_PROMPT_VERSION = 'a9a26deddf9b'
+const OUTFIT_PROMPT_VERSION = '14ff6c47f6d3'
 
 describe('garment mode rules', () => {
   it('has exactly three modes and at most three garment images', () => {
@@ -88,8 +88,9 @@ describe('prompt context per garment mode', () => {
   it('tells the model that several views show one garment, and asks for the views entry, in that mode only', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'same_garment_views', count: 2 })
     expect(lines(text).slice(0, 2)).toEqual(['Image mode: same_garment_views. Garment images 1 to 2 are views of ONE garment.', MODE_RULES.same_garment_views])
-    expect(MODE_RULES.same_garment_views).toContain('never separate garments')
-    expect(MODE_RULES.same_garment_views).toContain('observations.views {"same_garment":"yes|no|unclear","conflicts":""}')
+    expect(MODE_RULES.same_garment_views).toContain('combine them as evidence about one item and claim no feature no view shows')
+    expect(MODE_RULES.same_garment_views).toContain('observations.views {"same_garment":"yes|no|unclear","differences":[],"conflicts":""}')
+    expect(MODE_RULES.same_garment_views).toContain('detail_hidden (one view only, not a conflict)|colour_lighting|different_item')
     expect(text).not.toContain('outfit_components')
     expect(SYSTEM_PROMPT).not.toContain('observations.views')
   })

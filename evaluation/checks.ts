@@ -27,7 +27,8 @@ import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultServic
 import { validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
 import { DIMENSION_KEYS, type Band, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { outcomeSignature, type RunDetail } from './metrics'
-import { inspectRun } from './visualEvidence'
+import { inspectRun, visualContextOf } from './visualEvidence'
+import { inspectContributions, parseOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
 
 export const BLOCKING_CHECKS = [
   'schema_validity',
@@ -292,6 +293,19 @@ function checkVisualEvidence(benchmarkCase: BenchmarkCase, runs: RunDetail[], ca
       ...(inspection.evidence?.blockProblems ?? []),
       ...Object.values(inspection.evidence?.problems ?? {}).flatMap((codes) => codes ?? []),
     ])
+    if (expected.contributions !== undefined) {
+      let parsed: ReturnType<typeof parseOutfitComponents> | null = null
+      try {
+        parsed = parseOutfitComponents(run.outfit_components, visualContextOf(benchmarkCase).garmentCount)
+      } catch {
+        parsed = null
+      }
+      const contributionInspection = parsed ? inspectContributions(parsed, inspection.validObservations) : null
+      const valid = contributionInspection?.contributions.size ?? 0
+      const availability = !parsed || valid === 0 ? 'unavailable' : valid === parsed.length ? 'available' : 'partial'
+      if (availability !== expected.contributions) problems.push(`item contributions were ${availability}, expected ${expected.contributions}, in run ${run.run}`)
+      for (const codes of contributionInspection?.problems.values() ?? []) for (const code of codes) reported.add(code)
+    }
     const missing = (expected.problems ?? []).filter((code) => !reported.has(code))
     if (missing.length > 0) problems.push(`validation did not report ${missing.join(', ')} in run ${run.run}`)
 

@@ -2737,6 +2737,924 @@
     },
     {
       "acceptable_bands": [
+        "Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "v4-outfit-colour-clash",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "colour",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-dna-evening",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "outfit_items",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-dna-street",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "outfit_items",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-duplicate-item",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-foreign-citation",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-identity-mismatch",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-missing-observations",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "v4-outfit-mixed-formality",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "outfit_items",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-multi-dimension",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "outfit_items",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-occasion-beach",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "seasonal",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-office-three",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "outfit_items",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "v4-outfit-one-item-tension",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "outfit_items",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-outfit-uncited-effect",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
         "Recommended"
       ],
       "case_id": "v4-preference-none-unrated",
@@ -3232,6 +4150,780 @@
     },
     {
       "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-conflict-overconfident",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-difference-contradiction",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-different-item",
+      "category": "ambiguous_detail",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-views-dna-coat",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-dna-skirt",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-views-dna-trainers",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-front-back-coat",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended",
+        "Consider Alternatives"
+      ],
+      "case_id": "v4-views-lighting-explained",
+      "category": "difficult_colour",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "colour",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-lighting-unexplained",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "integrity",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Recommended"
+      ],
+      "case_id": "v4-views-occluded-detail",
+      "category": "occluded",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Recommended",
+      "outcomes": [
+        "Recommended",
+        "Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
+        "Highly Recommended",
+        "Recommended"
+      ],
+      "case_id": "v4-views-three-angles-dress",
+      "category": "clear",
+      "checks": [
+        {
+          "blocking": true,
+          "check": "schema_validity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "safety",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "unsupported_claims",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "uncertainty",
+          "status": "not_applicable"
+        },
+        {
+          "blocking": true,
+          "check": "expected_outcome",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "consistency",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "verdict_integrity",
+          "status": "pass"
+        },
+        {
+          "blocking": true,
+          "check": "visual_evidence",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_occasion",
+          "status": "pass"
+        },
+        {
+          "blocking": false,
+          "check": "proxy_explanation",
+          "status": "pass"
+        }
+      ],
+      "failure_reasons": [],
+      "meets_expectation": true,
+      "modal_outcome": "Highly Recommended",
+      "outcomes": [
+        "Highly Recommended",
+        "Highly Recommended"
+      ],
+      "proxy_flags": [],
+      "scenario": "garment_views",
+      "should_abstain": false,
+      "status": "pass"
+    },
+    {
+      "acceptable_bands": [
         "Consider Alternatives",
         "Not Recommended"
       ],
@@ -3444,59 +5136,61 @@
     }
   ],
   "composition": {
-    "cases": 49,
+    "cases": 73,
     "cases_by_mode": {
-      "outfit_items": 0,
-      "same_garment_views": 0,
+      "outfit_items": 13,
+      "same_garment_views": 11,
       "single": 49
     },
     "cases_by_source": {
       "approved_volunteer": 0,
       "owned": 0,
       "public_license": 0,
-      "synthetic": 49
+      "synthetic": 73
     },
     "images": {
-      "distinct_files": 98,
-      "garment_images": 49,
+      "distinct_files": 174,
+      "garment_images": 101,
       "garment_images_by_mode": {
-        "outfit_items": 0,
-        "same_garment_views": 0,
+        "outfit_items": 29,
+        "same_garment_views": 23,
         "single": 49
       },
-      "personal_photos": 49,
-      "total": 98
+      "personal_photos": 73,
+      "total": 174
     },
     "mode_balance": {
-      "balanced": false,
+      "balanced": true,
       "short_by": {
-        "outfit_items": 10,
-        "same_garment_views": 10,
+        "outfit_items": 0,
+        "same_garment_views": 0,
         "single": 0
       },
       "target_per_mode": 10
     },
     "style_dna": {
-      "cases": 2,
+      "cases": 7,
       "cases_by_mode": {
-        "outfit_items": 0,
-        "same_garment_views": 0,
+        "outfit_items": 2,
+        "same_garment_views": 3,
         "single": 2
       },
       "personas": [
         "persona-bold-aesthetic",
-        "persona-classic-tailored"
+        "persona-classic-tailored",
+        "persona-romantic-soft",
+        "persona-street-relaxed"
       ]
     }
   },
   "dataset": {
-    "cases": 49,
+    "cases": 73,
     "cases_with_verified_labels": 0,
-    "fingerprint": "6b306c651c84",
+    "fingerprint": "4b03f0b1b2b2",
     "matches_recording": true
   },
   "evaluated_with": {
-    "prompt_version": "ac3e8e676b92",
+    "prompt_version": "a0dac4ea1430",
     "same_prompt_as_recording": false,
     "same_schema_as_recording": true,
     "schema_version": "analysis-output/4"
@@ -3506,7 +5200,7 @@
     "abstention.false_abstention_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -4469,7 +6163,7 @@
     "end_to_end.verdict_band_agreement_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -4765,35 +6459,32 @@
     "multi_image.outfit_items.completeness_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 13,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no complete run of an outfit case",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0,
+      "status": "measured",
+      "value": 1
     },
     "multi_image.outfit_items.repeat_rating_stability": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 13,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no case in this mode was run more than once",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0,
+      "status": "measured",
+      "value": 1
     },
     "multi_image.outfit_items.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 13,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no run in this mode",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0,
+      "status": "measured",
+      "value": 1
     },
     "multi_image.same_garment_views.agreement.brief_derived.exact_rate": {
       "direction": "higher_is_better",
@@ -4864,24 +6555,22 @@
     "multi_image.same_garment_views.repeat_rating_stability": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 11,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no case in this mode was run more than once",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0,
+      "status": "measured",
+      "value": 1
     },
     "multi_image.same_garment_views.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 11,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no run in this mode",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0,
+      "status": "measured",
+      "value": 1
     },
     "multi_image.single.agreement.brief_derived.exact_rate": {
       "direction": "higher_is_better",
@@ -4969,20 +6658,92 @@
       "status": "measured",
       "value": 1
     },
+    "multi_image_reasoning.contribution_coverage_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 13,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "se": 0.1093,
+      "status": "measured",
+      "value": 0.8077
+    },
+    "multi_image_reasoning.contribution_problem_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 13,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "se": 0.128,
+      "status": "measured",
+      "value": 0.3077
+    },
+    "multi_image_reasoning.duplicate_identity_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 12,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "se": 0.0798,
+      "status": "measured",
+      "value": 0.0833
+    },
+    "multi_image_reasoning.identity_mismatch_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 12,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "se": 0.0798,
+      "status": "measured",
+      "value": 0.0833
+    },
+    "multi_image_reasoning.outfit_colour_evidence_breadth_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 12,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "se": 0,
+      "status": "measured",
+      "value": 1
+    },
+    "multi_image_reasoning.view_colour_difference_explained_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 3,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.2722,
+      "status": "insufficient_sample",
+      "value": 0.6667
+    },
+    "multi_image_reasoning.view_conflict_confidence_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 2,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+      "se": 0.3536,
+      "status": "insufficient_sample",
+      "value": 0.5
+    },
     "occasion.formality_occasion_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.0202,
+      "se": 0.0136,
       "status": "measured",
-      "value": 0.0204
+      "value": 0.0137
     },
     "occasion.occasion_evidence_context_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 48,
+      "n": 70,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -4992,12 +6753,12 @@
     "occasion.occasion_reason_relevance_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.0202,
+      "se": 0.0136,
       "status": "measured",
-      "value": 0.9796
+      "value": 0.9863
     },
     "occasion.occasion_sensitivity_rate": {
       "direction": "higher_is_better",
@@ -5024,29 +6785,29 @@
     "occasion.seasonality_overconfidence_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 43,
+      "n": 63,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.023,
+      "se": 0.0157,
       "status": "measured",
-      "value": 0.0233
+      "value": 0.0159
     },
     "occasion.unsupported_assumption_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0.0202,
+      "se": 0.0136,
       "status": "measured",
-      "value": 0.0204
+      "value": 0.0137
     },
     "shopping_advisor.availability_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 2,
+      "n": 7,
       "needs_references": false,
-      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 7 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "style_dna_condition": "with_style_dna",
@@ -5055,9 +6816,9 @@
     "shopping_advisor.mistargeted_recommendation_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 2,
+      "n": 7,
       "needs_references": false,
-      "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+      "reason": "Built from 7 case(s); at least 10 are needed before anything is concluded.",
       "se": 0,
       "status": "insufficient_sample",
       "style_dna_condition": "with_style_dna",
@@ -5066,7 +6827,7 @@
     "shopping_advisor.unrequested_recommendation_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -5076,7 +6837,7 @@
     "stability.rating.color": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5086,7 +6847,7 @@
     "stability.rating.formality": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5096,7 +6857,7 @@
     "stability.rating.occasion": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5106,7 +6867,7 @@
     "stability.rating.seasonality": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5116,7 +6877,7 @@
     "stability.rating.style": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5126,7 +6887,7 @@
     "stability.rating.style_preference_match": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5136,7 +6897,7 @@
     "stability.same_outcome_case_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -5148,7 +6909,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"abstention.false_abstention_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"abstention.false_abstention_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6112,7 +7873,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"end_to_end.verdict_band_agreement_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"end_to_end.verdict_band_agreement_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6409,7 +8170,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no complete run of an outfit case",
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.outfit_items.completeness_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6420,7 +8181,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no case in this mode was run more than once",
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.outfit_items.repeat_rating_stability\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6431,7 +8192,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no run in this mode",
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.outfit_items.valid_output_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6508,7 +8269,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no case in this mode was run more than once",
+      "reason": "Unavailable: only 3 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.same_garment_views.repeat_rating_stability\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6519,7 +8280,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no run in this mode",
+      "reason": "Unavailable: only 3 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.same_garment_views.valid_output_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6613,12 +8374,89 @@
       "style_dna_condition": "with_style_dna",
       "value": null
     },
+    "style_dna.with_style_dna.multi_image_reasoning.contribution_coverage_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.contribution_coverage_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.multi_image_reasoning.contribution_problem_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.contribution_problem_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.multi_image_reasoning.duplicate_identity_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.duplicate_identity_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.multi_image_reasoning.identity_mismatch_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.identity_mismatch_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.multi_image_reasoning.outfit_colour_evidence_breadth_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.outfit_colour_evidence_breadth_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.multi_image_reasoning.view_colour_difference_explained_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no views run whose views differ in observed colour",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.multi_image_reasoning.view_conflict_confidence_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: no views run that reports views in conflict",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
     "style_dna.with_style_dna.occasion.formality_occasion_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.formality_occasion_conflict_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.formality_occasion_conflict_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6629,7 +8467,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.occasion_evidence_context_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.occasion_evidence_context_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6640,7 +8478,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.occasion_reason_relevance_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.occasion_reason_relevance_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6673,7 +8511,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.seasonality_overconfidence_rate\".",
+      "reason": "Unavailable: only 6 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.seasonality_overconfidence_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6684,7 +8522,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.unsupported_assumption_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"occasion.unsupported_assumption_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6695,7 +8533,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.color\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.color\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6706,7 +8544,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.formality\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.formality\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6717,7 +8555,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.occasion\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.occasion\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6728,7 +8566,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.seasonality\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.seasonality\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6739,7 +8577,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.style\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.style\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6750,7 +8588,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.style_preference_match\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.rating.style_preference_match\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6761,7 +8599,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.same_outcome_case_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"stability.same_outcome_case_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -6772,7 +8610,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"validity.valid_output_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"validity.valid_output_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7003,7 +8841,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.evidence_complete_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.evidence_complete_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7014,7 +8852,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.evidence_relevance_proxy_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.evidence_relevance_proxy_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7025,7 +8863,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.image_mapping_error_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.image_mapping_error_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7036,7 +8874,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.invalid_citation_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.invalid_citation_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7047,7 +8885,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.observations_valid_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.observations_valid_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7058,7 +8896,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no outfit run with valid observations and valid per-item notes",
+      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.outfit_identity_consistency_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7069,7 +8907,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.support_conflict_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.support_conflict_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7080,7 +8918,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.unsupplied_source_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.unsupplied_source_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7091,7 +8929,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: only 2 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.unsupported_text_rate\".",
+      "reason": "Unavailable: only 7 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.unsupported_text_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7102,7 +8940,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no run of a views case with parsable observations",
+      "reason": "Unavailable: only 3 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.view_contradiction_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -7221,7 +9059,7 @@
     "style_dna.without_style_dna.abstention.false_abstention_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8184,7 +10022,7 @@
     "style_dna.without_style_dna.end_to_end.verdict_band_agreement_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8480,35 +10318,32 @@
     "style_dna.without_style_dna.multi_image.outfit_items.completeness_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 11,
       "needs_references": false,
-      "reason": "Unavailable: no complete run of an outfit case",
-      "se": null,
-      "status": "unavailable",
+      "se": 0,
+      "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": null
+      "value": 1
     },
     "style_dna.without_style_dna.multi_image.outfit_items.repeat_rating_stability": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 11,
       "needs_references": false,
-      "reason": "Unavailable: no case in this mode was run more than once",
-      "se": null,
-      "status": "unavailable",
+      "se": 0,
+      "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": null
+      "value": 1
     },
     "style_dna.without_style_dna.multi_image.outfit_items.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 11,
       "needs_references": false,
-      "reason": "Unavailable: no run in this mode",
-      "se": null,
-      "status": "unavailable",
+      "se": 0,
+      "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": null
+      "value": 1
     },
     "style_dna.without_style_dna.multi_image.same_garment_views.agreement.brief_derived.exact_rate": {
       "direction": "higher_is_better",
@@ -8581,7 +10416,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no case in this mode was run more than once",
+      "reason": "Unavailable: only 8 unit(s) without Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.same_garment_views.repeat_rating_stability\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "without_style_dna",
@@ -8592,7 +10427,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no run in this mode",
+      "reason": "Unavailable: only 8 unit(s) without Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.same_garment_views.valid_output_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "without_style_dna",
@@ -8684,20 +10519,92 @@
       "style_dna_condition": "without_style_dna",
       "value": 1
     },
+    "style_dna.without_style_dna.multi_image_reasoning.contribution_coverage_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 11,
+      "needs_references": false,
+      "se": 0.1264,
+      "status": "measured",
+      "style_dna_condition": "without_style_dna",
+      "value": 0.7727
+    },
+    "style_dna.without_style_dna.multi_image_reasoning.contribution_problem_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 11,
+      "needs_references": false,
+      "se": 0.145,
+      "status": "measured",
+      "style_dna_condition": "without_style_dna",
+      "value": 0.3636
+    },
+    "style_dna.without_style_dna.multi_image_reasoning.duplicate_identity_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 10,
+      "needs_references": false,
+      "se": 0.0949,
+      "status": "measured",
+      "style_dna_condition": "without_style_dna",
+      "value": 0.1
+    },
+    "style_dna.without_style_dna.multi_image_reasoning.identity_mismatch_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 10,
+      "needs_references": false,
+      "se": 0.0949,
+      "status": "measured",
+      "style_dna_condition": "without_style_dna",
+      "value": 0.1
+    },
+    "style_dna.without_style_dna.multi_image_reasoning.outfit_colour_evidence_breadth_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 10,
+      "needs_references": false,
+      "se": 0,
+      "status": "measured",
+      "style_dna_condition": "without_style_dna",
+      "value": 1
+    },
+    "style_dna.without_style_dna.multi_image_reasoning.view_colour_difference_explained_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 3 unit(s) without Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.view_colour_difference_explained_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.multi_image_reasoning.view_conflict_confidence_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: only 2 unit(s) without Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image_reasoning.view_conflict_confidence_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
     "style_dna.without_style_dna.occasion.formality_occasion_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
-      "se": 0.021,
+      "se": 0.015,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.0213
+      "value": 0.0152
     },
     "style_dna.without_style_dna.occasion.occasion_evidence_context_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 46,
+      "n": 63,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8707,12 +10614,12 @@
     "style_dna.without_style_dna.occasion.occasion_reason_relevance_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
-      "se": 0.021,
+      "se": 0.015,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.9787
+      "value": 0.9848
     },
     "style_dna.without_style_dna.occasion.occasion_sensitivity_rate": {
       "direction": "higher_is_better",
@@ -8739,27 +10646,27 @@
     "style_dna.without_style_dna.occasion.seasonality_overconfidence_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 41,
+      "n": 57,
       "needs_references": false,
-      "se": 0.0241,
+      "se": 0.0174,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.0244
+      "value": 0.0175
     },
     "style_dna.without_style_dna.occasion.unsupported_assumption_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
-      "se": 0.021,
+      "se": 0.015,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 0.0213
+      "value": 0.0152
     },
     "style_dna.without_style_dna.stability.rating.color": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8769,7 +10676,7 @@
     "style_dna.without_style_dna.stability.rating.formality": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8779,7 +10686,7 @@
     "style_dna.without_style_dna.stability.rating.occasion": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8789,7 +10696,7 @@
     "style_dna.without_style_dna.stability.rating.seasonality": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8799,7 +10706,7 @@
     "style_dna.without_style_dna.stability.rating.style": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8809,7 +10716,7 @@
     "style_dna.without_style_dna.stability.rating.style_preference_match": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8819,7 +10726,7 @@
     "style_dna.without_style_dna.stability.same_outcome_case_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -8829,7 +10736,7 @@
     "style_dna.without_style_dna.validity.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9059,17 +10966,17 @@
     "style_dna.without_style_dna.visual_evidence.structural.evidence_complete_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
-      "se": 0,
+      "se": 0.0211,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 1
+      "value": 0.9697
     },
     "style_dna.without_style_dna.visual_evidence.structural.evidence_relevance_proxy_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 64,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9079,7 +10986,7 @@
     "style_dna.without_style_dna.visual_evidence.structural.image_mapping_error_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 65,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9089,7 +10996,7 @@
     "style_dna.without_style_dna.visual_evidence.structural.invalid_citation_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 64,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9099,28 +11006,27 @@
     "style_dna.without_style_dna.visual_evidence.structural.observations_valid_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
-      "se": 0,
+      "se": 0.0211,
       "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": 1
+      "value": 0.9697
     },
     "style_dna.without_style_dna.visual_evidence.structural.outfit_identity_consistency_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 10,
       "needs_references": false,
-      "reason": "Unavailable: no outfit run with valid observations and valid per-item notes",
-      "se": null,
-      "status": "unavailable",
+      "se": 0.0689,
+      "status": "measured",
       "style_dna_condition": "without_style_dna",
-      "value": null
+      "value": 0.95
     },
     "style_dna.without_style_dna.visual_evidence.structural.support_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9130,7 +11036,7 @@
     "style_dna.without_style_dna.visual_evidence.structural.unsupplied_source_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9140,7 +11046,7 @@
     "style_dna.without_style_dna.visual_evidence.structural.unsupported_text_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 47,
+      "n": 66,
       "needs_references": false,
       "se": 0,
       "status": "measured",
@@ -9152,7 +11058,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no run of a views case with parsable observations",
+      "reason": "Unavailable: only 8 unit(s) without Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"visual_evidence.structural.view_contradiction_rate\".",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "without_style_dna",
@@ -9271,7 +11177,7 @@
     "validity.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9501,17 +11407,17 @@
     "visual_evidence.structural.evidence_complete_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0,
+      "se": 0.0191,
       "status": "measured",
-      "value": 1
+      "value": 0.9726
     },
     "visual_evidence.structural.evidence_relevance_proxy_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 71,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9521,7 +11427,7 @@
     "visual_evidence.structural.image_mapping_error_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 72,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9531,7 +11437,7 @@
     "visual_evidence.structural.invalid_citation_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 71,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9541,28 +11447,27 @@
     "visual_evidence.structural.observations_valid_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "se": 0,
+      "se": 0.0191,
       "status": "measured",
-      "value": 1
+      "value": 0.9726
     },
     "visual_evidence.structural.outfit_identity_consistency_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 12,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no outfit run with valid observations and valid per-item notes",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0.0577,
+      "status": "measured",
+      "value": 0.9583
     },
     "visual_evidence.structural.support_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9572,7 +11477,7 @@
     "visual_evidence.structural.unsupplied_source_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9582,7 +11487,7 @@
     "visual_evidence.structural.unsupported_text_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 49,
+      "n": 73,
       "needs_references": false,
       "pooled_over_style_dna": true,
       "se": 0,
@@ -9592,13 +11497,12 @@
     "visual_evidence.structural.view_contradiction_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
-      "n": 0,
+      "n": 11,
       "needs_references": false,
       "pooled_over_style_dna": true,
-      "reason": "Unavailable: no run of a views case with parsable observations",
-      "se": null,
-      "status": "unavailable",
-      "value": null
+      "se": 0.0867,
+      "status": "measured",
+      "value": 0.0909
     },
     "visual_evidence.synthetic.confident_misidentification_rate": {
       "direction": "lower_is_better",
@@ -9732,7 +11636,7 @@
       "reason": "The model output has no garment, colour or pattern fields, so recognition cannot be scored against labels yet.",
       "status": "not_available"
     },
-    "cases": 49,
+    "cases": 73,
     "confidence": {
       "accuracy_by_confidence": {
         "High": {
@@ -9749,33 +11653,33 @@
         }
       },
       "distribution": {
-        "High": 494,
-        "Low": 4,
-        "Medium": 90
+        "High": 730,
+        "Low": 8,
+        "Medium": 138
       },
       "stability_by_confidence": {
         "High": {
-          "pairs": 247,
+          "pairs": 365,
           "stable_rate": 1
         },
         "Low": {
-          "pairs": 2,
+          "pairs": 4,
           "stable_rate": 1
         },
         "Medium": {
-          "pairs": 45,
+          "pairs": 69,
           "stable_rate": 1
         }
       }
     },
-    "runs": 98,
+    "runs": 146,
     "screening": {
       "runs_with_forbidden_claims": 0,
       "runs_with_prohibited_hits": 0
     },
     "stability": {
       "band_flip_case_rate": 0,
-      "cases_with_repeats": 49,
+      "cases_with_repeats": 73,
       "dimension_rating_agreement_rate": 1,
       "mean_score_range": 0,
       "same_outcome_case_rate": 1
@@ -9787,7 +11691,7 @@
     },
     "verdict_band": {
       "agreement_rate": 1,
-      "graded_runs": 98
+      "graded_runs": 146
     },
     "withheld_runs": 0
   },
@@ -9795,8 +11699,8 @@
   "next_steps": [
     "These are hand-written fixture outputs. To learn anything about a model, replay a recording from an approved live benchmark run.",
     "Add human-reviewed cases with real images (evaluation/HUMAN_REVIEW.md). Until then accuracy on real images is unavailable.",
-    "Fewer than 10 cases in: same_garment_views (0), outfit_items (0). A garment mode with no case has no figure at all; one with fewer than 10 stays \"too few to conclude\". Images do not count: an outfit of three items is one case.",
-    "2 of 49 cases send a Style DNA profile. Figures marked \"pooled\" combine cases with and without one. Read the separate figures for each condition next to them; where a condition has fewer than 10 cases behind a figure, its separate figure is unavailable and only the pooled one exists. Cases without Style DNA: single 47, same_garment_views 0, outfit_items 0."
+    "Observations are missing or invalid in part of the runs (usable 0.9726). The ratings and the verdict are unaffected; the report shows them as unavailable.",
+    "7 of 73 cases send a Style DNA profile. Figures marked \"pooled\" combine cases with and without one. Read the separate figures for each condition next to them; where a condition has fewer than 10 cases behind a figure, its separate figure is unavailable and only the pooled one exists. Cases without Style DNA: single 47, same_garment_views 8, outfit_items 11."
   ],
   "performance": {
     "cost": {
@@ -10283,19 +12187,19 @@
         "value": null
       },
       "false_abstention_rate": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 0
       },
       "valid_output_rate": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "verdict_band_agreement_rate": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
@@ -10932,22 +12836,20 @@
               }
             }
           },
-          "cases": 0,
+          "cases": 13,
           "repeat_rating_stability": {
-            "n": 0,
-            "reason": "Unavailable: no case in this mode was run more than once",
-            "se": null,
-            "status": "unavailable",
-            "value": null
+            "n": 13,
+            "se": 0,
+            "status": "measured",
+            "value": 1
           },
           "runs_with_unsupported_claims": 0,
-          "scored_runs": 0,
+          "scored_runs": 26,
           "valid_output_rate": {
-            "n": 0,
-            "reason": "Unavailable: no run in this mode",
-            "se": null,
-            "status": "unavailable",
-            "value": null
+            "n": 13,
+            "se": 0,
+            "status": "measured",
+            "value": 1
           }
         },
         "same_garment_views": {
@@ -11022,22 +12924,20 @@
               }
             }
           },
-          "cases": 0,
+          "cases": 11,
           "repeat_rating_stability": {
-            "n": 0,
-            "reason": "Unavailable: no case in this mode was run more than once",
-            "se": null,
-            "status": "unavailable",
-            "value": null
+            "n": 11,
+            "se": 0,
+            "status": "measured",
+            "value": 1
           },
           "runs_with_unsupported_claims": 0,
-          "scored_runs": 0,
+          "scored_runs": 22,
           "valid_output_rate": {
-            "n": 0,
-            "reason": "Unavailable: no run in this mode",
-            "se": null,
-            "status": "unavailable",
-            "value": null
+            "n": 11,
+            "se": 0,
+            "status": "measured",
+            "value": 1
           }
         },
         "single": {
@@ -11131,13 +13031,59 @@
       },
       "outfit_items": {
         "completeness_rate": {
-          "n": 0,
-          "reason": "Unavailable: no complete run of an outfit case",
-          "se": null,
-          "status": "unavailable",
-          "value": null
+          "n": 13,
+          "se": 0,
+          "status": "measured",
+          "value": 1
         },
         "unexpected_blocks_in_other_modes": 0
+      }
+    },
+    "multi_image_reasoning": {
+      "applicable": true,
+      "contribution_coverage_rate": {
+        "n": 13,
+        "se": 0.1093,
+        "status": "measured",
+        "value": 0.8077
+      },
+      "contribution_problem_rate": {
+        "n": 13,
+        "se": 0.128,
+        "status": "measured",
+        "value": 0.3077
+      },
+      "duplicate_identity_rate": {
+        "n": 12,
+        "se": 0.0798,
+        "status": "measured",
+        "value": 0.0833
+      },
+      "identity_mismatch_rate": {
+        "n": 12,
+        "se": 0.0798,
+        "status": "measured",
+        "value": 0.0833
+      },
+      "outfit_colour_evidence_breadth_rate": {
+        "n": 12,
+        "se": 0,
+        "status": "measured",
+        "value": 1
+      },
+      "view_colour_difference_explained_rate": {
+        "n": 3,
+        "reason": "Built from 3 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.2722,
+        "status": "insufficient_sample",
+        "value": 0.6667
+      },
+      "view_conflict_confidence_rate": {
+        "n": 2,
+        "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+        "se": 0.3536,
+        "status": "insufficient_sample",
+        "value": 0.5
       }
     },
     "not_measurable": {
@@ -11151,22 +13097,22 @@
         "v4-unknown-occasion"
       ],
       "formality_occasion_conflict_rate": {
-        "n": 49,
-        "se": 0.0202,
+        "n": 73,
+        "se": 0.0136,
         "status": "measured",
-        "value": 0.0204
+        "value": 0.0137
       },
       "occasion_evidence_context_rate": {
-        "n": 48,
+        "n": 70,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "occasion_reason_relevance_rate": {
-        "n": 49,
-        "se": 0.0202,
+        "n": 73,
+        "se": 0.0136,
         "status": "measured",
-        "value": 0.9796
+        "value": 0.9863
       },
       "occasion_sensitivity_rate": {
         "n": 1,
@@ -11183,16 +13129,16 @@
         "value": 0.5
       },
       "seasonality_overconfidence_rate": {
-        "n": 43,
-        "se": 0.023,
+        "n": 63,
+        "se": 0.0157,
         "status": "measured",
-        "value": 0.0233
+        "value": 0.0159
       },
       "unsupported_assumption_rate": {
-        "n": 49,
-        "se": 0.0202,
+        "n": 73,
+        "se": 0.0136,
         "status": "measured",
-        "value": 0.0204
+        "value": 0.0137
       }
     },
     "reviewer_agreement": {
@@ -11763,23 +13709,23 @@
     },
     "shopping_advisor": {
       "availability_rate": {
-        "n": 2,
-        "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+        "n": 7,
+        "reason": "Built from 7 case(s); at least 10 are needed before anything is concluded.",
         "se": 0,
         "status": "insufficient_sample",
         "value": 1
       },
-      "cases_with_style_dna": 2,
-      "cases_without_style_dna": 47,
+      "cases_with_style_dna": 7,
+      "cases_without_style_dna": 66,
       "mistargeted_recommendation_rate": {
-        "n": 2,
-        "reason": "Built from 2 case(s); at least 10 are needed before anything is concluded.",
+        "n": 7,
+        "reason": "Built from 7 case(s); at least 10 are needed before anything is concluded.",
         "se": 0,
         "status": "insufficient_sample",
         "value": 0
       },
       "unrequested_recommendation_rate": {
-        "n": 47,
+        "n": 66,
         "se": 0,
         "status": "measured",
         "value": 0
@@ -11787,45 +13733,45 @@
     },
     "stability_by_dimension": {
       "color": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "formality": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "occasion": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "seasonality": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "style": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       },
       "style_preference_match": {
-        "n": 49,
+        "n": 73,
         "se": 0,
         "status": "measured",
         "value": 1
       }
     },
     "style_dna": {
-      "cases_with_style_dna": 2,
-      "cases_without_style_dna": 47,
+      "cases_with_style_dna": 7,
+      "cases_without_style_dna": 66,
       "mixed": true,
       "reading": "This report mixes cases with and without a Style DNA profile. Every figure that combines them is marked as pooled. Separate figures for each condition are in the metric index under \"style_dna.with_style_dna.\" and \"style_dna.without_style_dna.\"; one built from fewer than the minimum sample is unavailable, not shown as a value."
     },
@@ -12060,71 +14006,69 @@
       },
       "structural": {
         "evidence_complete_rate": {
-          "n": 49,
-          "se": 0,
+          "n": 73,
+          "se": 0.0191,
           "status": "measured",
-          "value": 1
+          "value": 0.9726
         },
         "evidence_relevance_proxy_rate": {
-          "n": 49,
+          "n": 71,
           "se": 0,
           "status": "measured",
           "value": 1
         },
         "image_mapping_error_rate": {
-          "n": 49,
+          "n": 72,
           "se": 0,
           "status": "measured",
           "value": 0
         },
         "invalid_citation_rate": {
-          "n": 49,
+          "n": 71,
           "se": 0,
           "status": "measured",
           "value": 0
         },
         "observations_valid_rate": {
-          "n": 49,
-          "se": 0,
+          "n": 73,
+          "se": 0.0191,
           "status": "measured",
-          "value": 1
+          "value": 0.9726
         },
         "outfit_identity_consistency_rate": {
-          "n": 0,
-          "reason": "Unavailable: no outfit run with valid observations and valid per-item notes",
-          "se": null,
-          "status": "unavailable",
-          "value": null
+          "n": 12,
+          "se": 0.0577,
+          "status": "measured",
+          "value": 0.9583
         },
         "support_conflict_rate": {
-          "n": 49,
+          "n": 73,
           "se": 0,
           "status": "measured",
           "value": 0
         },
         "unsupplied_source_rate": {
-          "n": 49,
+          "n": 73,
           "se": 0,
           "status": "measured",
           "value": 0
         },
         "unsupported_text_rate": {
-          "n": 49,
+          "n": 73,
           "se": 0,
           "status": "measured",
           "value": 0
         },
         "view_contradiction_rate": {
-          "n": 0,
-          "reason": "Unavailable: no run of a views case with parsable observations",
-          "se": null,
-          "status": "unavailable",
-          "value": null
+          "n": 11,
+          "se": 0.0867,
+          "status": "measured",
+          "value": 0.0909
         }
       },
       "valid_runs_by_mode": {
-        "outfit_items": 0,
-        "same_garment_views": 0,
+        "outfit_items": 24,
+        "same_garment_views": 20,
         "single": 98
       }
     }
@@ -12136,7 +14080,7 @@
       "synthetic": 0,
       "unreviewed": 0
     },
-    "cases_without_reference": 49,
+    "cases_without_reference": 73,
     "dataset": null,
     "dataset_version": null,
     "fingerprint": null,
@@ -12150,7 +14094,7 @@
   },
   "report_format": "verdict-evaluation-report/6",
   "selection": {
-    "cases_evaluated": 49,
+    "cases_evaluated": 73,
     "filters": {
       "case_ids": [],
       "categories": [],
@@ -12181,14 +14125,14 @@
     "failures_by_scenario": {},
     "not_applicable": 0,
     "pass_rate": 1,
-    "passed": 49,
+    "passed": 73,
     "proxy_flags": {
       "proxy_explanation": 0,
       "proxy_occasion": 1
     },
     "safety_failures": 0,
     "schema_failures": 0,
-    "total_cases": 49,
+    "total_cases": 73,
     "uncertainty_failures": 0,
     "unsupported_claim_failures": 0,
     "verdict_integrity_failures": 0,

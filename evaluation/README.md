@@ -398,6 +398,15 @@ Section `quality.occasion` of the report, section 9c of the Markdown. Whether ou
 
 It also lists the cases whose occasion has no profile. For a recording made before analysis-output/4, every figure is unavailable: those outputs were never given these rules.
 
+### 9. Multi-view and outfit reasoning (analysis-output/4)
+
+Section `quality.multi_image_reasoning`, section 9d of the Markdown. From the outputs alone:
+
+- views: colour differences between views that are explained (lighting) or lead to "not one garment"; confidence lowered when views are said to conflict;
+- outfit: items with a usable contribution; runs with a refused contribution; an item described as a different kind of garment than its observation; colour evidence citing two or more items; one garment observed twice.
+
+The blocking `visual_evidence` check can also state what must happen to item contributions (`expected.visual_evidence.contributions`). Every figure is unavailable for a recording made before analysis-output/4.
+
 ### What cannot be measured yet
 
 | Wanted | Why not |

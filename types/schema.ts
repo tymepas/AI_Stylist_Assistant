@@ -113,7 +113,7 @@ export interface Observations {
   availability: 'available' | 'unavailable'
   images: GarmentObservation[]
   /** Only for views of one garment: whether the views appear to show the same garment. */
-  views?: { same_garment: 'yes' | 'no' | 'unclear'; conflicts?: string }
+  views?: { same_garment: 'yes' | 'no' | 'unclear'; differences?: Array<'detail_hidden' | 'colour_lighting' | 'different_item'>; conflicts?: string }
 }
 
 export type EvidenceSource = 'person_photo' | 'garment_images' | 'occasion' | 'style_preferences' | 'style_dna'
@@ -144,12 +144,30 @@ export interface OutfitComponent {
   garment_type: ShoppingGarmentCategory
   assessment: OutfitComponentAssessment
   note: string
+  /** How this item affects the six outfit-level ratings (analysis-output/4). Present only when it passed validation. */
+  contribution?: ComponentContribution
+}
+
+/**
+ * What one outfit item does to the outfit-level ratings: dimensions it
+ * supports, creates tension with, or cannot be judged against. A dimension in
+ * none of the lists is one it has little influence on. It explains the
+ * ratings; it never is one and never reaches the verdict.
+ */
+export interface ComponentContribution {
+  supports: Array<keyof Dimensions>
+  tension: Array<keyof Dimensions>
+  unclear: Array<keyof Dimensions>
+  /** The item's own observations it rests on, for example "g2.colour". */
+  cites: string[]
 }
 
 export interface OutfitComponents {
   /** `not_applicable` unless the garment mode is `outfit_items`; `unavailable` when the model output was missing or invalid. */
   availability: 'available' | 'unavailable' | 'not_applicable'
   items: OutfitComponent[]
+  /** Whether item contributions came back usable: for every item, for some, or for none (analysis-output/4). */
+  contributions?: 'available' | 'partial' | 'unavailable'
 }
 
 export interface UnableToAnalyzeResult {

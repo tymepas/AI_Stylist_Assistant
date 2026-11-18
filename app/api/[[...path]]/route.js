@@ -12,7 +12,7 @@ import {
   garmentLabel,
   intakeImage,
   isUploadedFile,
-  mockOutfitComponents,
+  mockOutfitComponentsRaw,
   readGarmentUploads,
 } from '@/lib/services/uploadIntake'
 import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/openAIAnalysisService'
@@ -264,7 +264,6 @@ async function handleRoute(request, { params }) {
           )
           // A single-garment response is exactly what it always was.
           if (garmentMode !== 'single') mockAnalysis.garment_mode = garmentMode
-          if (garmentMode === 'outfit_items') mockAnalysis.outfit_components = mockOutfitComponents(garments.length)
           // Mock observations and evidence say plainly that no image was analysed. They go through
           // the same validation as model output and, like every extra, never reach the verdict.
           const hasStyleDna = Boolean(aiStyleProfileCheck.profile)
@@ -278,6 +277,7 @@ async function handleRoute(request, { params }) {
             requestId,
           })
           mockAnalysis.observations = visual.observations
+          if (garmentMode === 'outfit_items') mockAnalysis.outfit_components = buildOutfitComponents(mockOutfitComponentsRaw(garments.length), garmentMode, garments.length, requestId, visual.observations)
           mockAnalysis.evidence = visual.evidence
           mockAnalysis.occasion_context = occasionContextOf(occasion)
         }
@@ -332,7 +332,7 @@ async function handleRoute(request, { params }) {
             {
               ...(garmentMode === 'single'
                 ? {}
-                : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length, requestId) }),
+                : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length, requestId, visual.observations) }),
               observations: visual.observations,
               evidence: visual.evidence,
               occasionContext: occasionContextOf(occasion),

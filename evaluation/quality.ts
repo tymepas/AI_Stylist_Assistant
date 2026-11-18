@@ -63,6 +63,7 @@ import { computeMetrics, type EvaluationMetrics, type RunDetail } from './metric
 import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, reviewerRatings, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
 import { visualEvidenceMetrics, visualEvidenceOf, type VisualEvidenceReport } from './visualEvidence'
 import { occasionMetrics, occasionOf, type OccasionReport } from './occasion'
+import { multiImageReasoningMetrics, multiImageReasoningOf, type MultiImageReasoningReport } from './multiImageReasoning'
 import { NO_SCHEMA_CAPABILITIES, type SchemaCapabilities } from '@/lib/services/openai/openAIAnalysisSchema'
 
 // ---------------------------------------------------------------------------
@@ -929,6 +930,8 @@ export interface QualityReport {
   visual_evidence: VisualEvidenceReport
   /** Occasion intelligence (Phase 4 Milestone 2): whether outputs follow the occasion-profile rules. Proxies are marked. */
   occasion: OccasionReport
+  /** Multi-view and outfit reasoning (Phase 4 Milestone 3): view differences and item contributions. */
+  multi_image_reasoning: MultiImageReasoningReport
   /** Whether the evaluated cases mix both Style DNA conditions, and how the figures of this report relate to that. */
   style_dna: StyleDnaSummary
   /** Per dimension: share of repeated cases that got the same rating on every run. */
@@ -1047,6 +1050,7 @@ export function computeQuality(
     shopping_advisor: shoppingAdvisorOf(cases, runsByCase),
     visual_evidence: visualEvidenceOf(cases, runsByCase, scoredByTier, reasonByTier, carriesVisualEvidence),
     occasion: occasionOf(cases, runsByCase, capabilities.phase4),
+    multi_image_reasoning: multiImageReasoningOf(cases, runsByCase, capabilities.phase4),
     stability_by_dimension: stability,
     style_dna: styleDnaSummaryOf(cases),
     not_measurable: carriesVisualEvidence ? NOT_MEASURABLE_WITH_OBSERVATIONS : NOT_MEASURABLE,
@@ -1152,6 +1156,7 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
   add('multi_image.comparison_groups.mean_band_shift', quality.multi_image.comparison_groups.mean_band_shift, 'lower_is_better', 'bands', true)
   for (const entry of visualEvidenceMetrics(quality.visual_evidence)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', entry.needsReferences)
   for (const entry of occasionMetrics(quality.occasion)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', false)
+  for (const entry of multiImageReasoningMetrics(quality.multi_image_reasoning)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', false)
 
   return index
 }

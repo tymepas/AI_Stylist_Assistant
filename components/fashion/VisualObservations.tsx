@@ -5,6 +5,7 @@ import {
   LIMIT_LABELS,
   PATTERN_LABELS,
   describeViews,
+  VIEW_DIFFERENCE_LABELS,
   garmentName,
   imageLabel,
   CATEGORY_LABELS,
@@ -140,6 +141,7 @@ export default function VisualObservations({ observations, evidence, garmentMode
           <ScanSearch className={cn('mt-0.5 h-4 w-4 shrink-0', views.same_garment === 'yes' ? 'text-muted-foreground' : 'text-verdict-caution')} aria-hidden="true" />
           <div>
             <p className="font-medium text-foreground">{describeViews(views)}</p>
+            {(views.differences ?? []).map((difference) => <p key={difference} className="mt-1">{VIEW_DIFFERENCE_LABELS[difference]}</p>)}
             {views.conflicts ? <p className="mt-1 break-words">{views.conflicts}</p> : null}
           </div>
         </div>

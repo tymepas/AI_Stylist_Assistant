@@ -25,7 +25,7 @@ const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   'analysis-output/3': 'b9820a1fc5e0',
   // Phase 4 Milestones 2 to 4, one unreleased contract. M2 changes the rules the prompt states, not the shape, so the
   // structure matches /3 here; M3 and M4 add fields and update this line before /4 is released.
-  'analysis-output/4': 'b9820a1fc5e0',
+  'analysis-output/4': '2d67e4646044',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {

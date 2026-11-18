@@ -71,8 +71,8 @@ export interface GarmentContext {
  * from (tests/helpers/promptBudget.ts measures the worst case).
  */
 export const MODE_RULES: Record<'same_garment_views' | 'outfit_items', string> = {
-  same_garment_views: 'Combine the views as evidence about one item, never separate garments. Add observations.views {"same_garment":"yes|no|unclear","conflicts":""}; explain conflicts (max 100 chars) unless yes.',
-  outfit_items: 'Rate the outfit as a whole. Add top-level outfit_components, one per image in order: {"item":1,"garment_type":"","assessment":"Works well|Works|Needs attention|Unable to tell","note":"one sentence"}.',
+  same_garment_views: 'Observe each view on its own; combine them as evidence about one item and claim no feature no view shows. Add observations.views {"same_garment":"yes|no|unclear","differences":[],"conflicts":""}: differences max 3 of detail_hidden (one view only, not a conflict)|colour_lighting|different_item. Unless yes, explain conflicts (max 100 chars) and lower affected confidence.',
+  outfit_items: 'Rate the outfit as a whole. Add top-level outfit_components, one per image in order: {"item":1,"garment_type":"","assessment":"Works well|Works|Needs attention|Unable to tell","note":"one sentence","supports":[],"tension":[],"unclear":[],"cites":[]}: dimension keys it helps, strains or cannot be judged on; cites: max 3 of its own visible g<item> observations, needed with supports or tension.',
 }
 
 function garmentModeLines(garments: GarmentContext): string[] {
@@ -80,6 +80,12 @@ function garmentModeLines(garments: GarmentContext): string[] {
   const range = `Garment images 1 to ${garments.count}`
   if (garments.mode === 'same_garment_views') return [`Image mode: same_garment_views. ${range} are views of ONE garment.`, MODE_RULES.same_garment_views]
   return [`Image mode: outfit_items. ${range} are ${garments.count} DIFFERENT items worn together.`, MODE_RULES.outfit_items]
+}
+
+/** The user's stated preferences as plain text: compact, and the same words whatever the client sent. */
+function stylePreferencesLine(profile: StyleProfile): string {
+  const list = (values: string[]) => (values.length === 0 ? 'none' : values.join(', '))
+  return `Style preferences: styles ${list(profile.preferredStyles)}; colours ${list(profile.favoriteColors)}; occasions ${list(profile.occasionPreferences)}.`
 }
 
 /**
@@ -107,7 +113,7 @@ export function buildUserContext(
     `Occasion: ${occasion}`,
     // The application's profile of the occasion (Phase 4 Milestone 2), or a plain statement that there is none.
     occasionProfileLine(occasionProfile(occasion)),
-    `Style preferences: ${JSON.stringify(styleProfile)}`,
+    stylePreferencesLine(styleProfile),
   ]
 
   if (!aiStyleProfile) {
@@ -117,28 +123,28 @@ export function buildUserContext(
     // Coloring context — improves color dimension (spec § "Coloring context")
     const c = aiStyleProfile.coloring
     const coloringParts: string[] = []
-    if (c.skin_tone_depth) coloringParts.push(`skin tone depth: ${c.skin_tone_depth}`)
-    if (c.skin_tone_undertone) coloringParts.push(`undertone: ${c.skin_tone_undertone}`)
-    if (c.hair_color) coloringParts.push(`hair: ${c.hair_color}`)
-    if (c.high_contrast !== null) coloringParts.push(`high contrast coloring: ${c.high_contrast}`)
+    if (c.skin_tone_depth) coloringParts.push(`depth ${c.skin_tone_depth}`)
+    if (c.skin_tone_undertone) coloringParts.push(`undertone ${c.skin_tone_undertone}`)
+    if (c.hair_color) coloringParts.push(`hair ${c.hair_color}`)
+    if (c.high_contrast !== null) coloringParts.push(`high contrast ${c.high_contrast}`)
     if (coloringParts.length > 0) lines.push(`DNA coloring: ${coloringParts.join(', ')}.`)
 
     // Aesthetic context — improves style_preference_match dimension (spec § "Aesthetic context")
     const a = aiStyleProfile.aesthetic_signals
     const aestheticParts: string[] = []
     if (aiStyleProfile.style_keywords.length > 0) {
-      aestheticParts.push(`observed style: ${aiStyleProfile.style_keywords.map((k) => k.keyword).join(', ')}`)
+      aestheticParts.push(`style ${aiStyleProfile.style_keywords.map((k) => k.keyword).join(', ')}`)
     }
-    if (a.current_outfit_formality) aestheticParts.push(`typical formality level: ${a.current_outfit_formality}`)
-    if (aestheticParts.length > 0) lines.push(`DNA aesthetic: ${aestheticParts.join(', ')}.`)
+    if (a.current_outfit_formality) aestheticParts.push(`formality ${a.current_outfit_formality}`)
+    if (aestheticParts.length > 0) lines.push(`DNA aesthetic: ${aestheticParts.join('; ')}.`)
 
     // Proportions context — optional enrichment for formality/silhouette (spec § "Proportions context")
     const p = aiStyleProfile.proportions
     const proportionParts: string[] = []
-    if (p.frame_width) proportionParts.push(`frame: ${p.frame_width}`)
-    if (p.torso_length) proportionParts.push(`torso: ${p.torso_length}`)
-    if (p.shoulder_breadth) proportionParts.push(`shoulders: ${p.shoulder_breadth}`)
-    if (proportionParts.length > 0) lines.push(`DNA proportions (use only if relevant): ${proportionParts.join(', ')}.`)
+    if (p.frame_width) proportionParts.push(`frame ${p.frame_width}`)
+    if (p.torso_length) proportionParts.push(`torso ${p.torso_length}`)
+    if (p.shoulder_breadth) proportionParts.push(`shoulders ${p.shoulder_breadth}`)
+    if (proportionParts.length > 0) lines.push(`DNA proportions (if relevant): ${proportionParts.join(', ')}.`)
   }
 
   lines.push('Return one JSON object only.')

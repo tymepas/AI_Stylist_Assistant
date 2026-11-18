@@ -127,6 +127,14 @@ How they are handled:
 - **Report.** The result carries `occasion_context` (the profile the model was given); the report shows it in an "Occasion context" section next to the Occasion fit rating, and older results without it render as before.
 - **Behaviour change to note.** For a user with no style preferences and no Style DNA, style_preference_match is now asked to be Unable to Evaluate rather than rated; `computeVerdict` then leaves its weight out, as it already does for any unrated dimension. The formula is unchanged.
 
+## Multi-view and outfit reasoning (Phase 4 Milestone 3)
+
+- **Views of one garment.** The views-mode rules ask the model to observe each view on its own, combine them as evidence about one item, and claim no feature that no view shows. `observations.views` may list `differences`: `detail_hidden` (a detail seen in one view only: missing evidence, not a contradiction), `colour_lighting`, `different_item`. "The same garment" with a different item, or "not the same" without one, is refused as contradictory.
+- **Outfit items.** Each item in `outfit_components` may state the dimensions it `supports`, creates `tension` with, or is `unclear` on, citing its own visible observations (`g<item>.*`). `lib/services/openai/outfitComponentsSchema.ts` checks each item: no dimension in two lists, an effect needs a citation, an item cites only its own image, every citation resolves to a visible observation, and the item's garment type matches what its observation identified with confidence (a jacket is never described as a shirt). A refused contribution is dropped and logged by code; the note stays. `outfit_components.contributions` says whether contributions came back for every item, some or none.
+- **Isolation.** The six ratings still describe the whole outfit. Contributions explain them; they are never a rating, never a per-item verdict, and `computeVerdict` never reads them.
+- **Report.** Each outfit item card says which ratings the item helps, works against or is too little to judge, and what it rests on; a dropped contribution says so. The views note explains how views differ.
+- **Mock mode.** Outfit items in mock mode say they cannot be judged on any dimension, citing only the "no image was analysed" note.
+
 ## Evidence summary and the decision report
 
 `lib/services/evidenceSummary.ts` describes how much a verdict rests on: which weighted dimensions were rated, which were left "Unable to Evaluate", and which have Low confidence. It is display only. The report (`components/fashion/DecisionReport.tsx`) uses it to state, next to the verdict, when the verdict rests on few or uncertain ratings, and to show no score when nothing that counts could be evaluated. It never changes a rating, the score or the band.

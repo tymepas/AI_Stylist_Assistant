@@ -198,6 +198,19 @@ unchanged; the rules for using the profile are stated in the system prompt. The 
 `occasion_context`: `{ occasion, profile_version, formality, setting, suits, varies?, season? }`, the profile the
 model was given. It is display only.
 
+## Views differences and item contributions (analysis-output/4, Phase 4 Milestone 3)
+
+Views mode: `observations.views` may carry `"differences": []`, up to three of `detail_hidden`, `colour_lighting`,
+`different_item`. `same_garment: "yes"` with `different_item`, or `"no"` with differences but no `different_item`, is
+refused (`views_contradiction`).
+
+Outfit mode: each `outfit_components` entry may carry
+`"supports": [], "tension": [], "unclear": [], "cites": []`: dimension keys the item helps, strains or cannot be judged
+against, and up to three citations of its OWN visible observations (`g<item>.type|colour|pattern|d<n>`), required with
+supports or tension. Refused per item, with codes `overlapping_dimension`, `uncited_effect`, `foreign_citation`,
+`invalid_citation`, `identity_mismatch`. The API adds `outfit_components.contributions`:
+`available` | `partial` | `unavailable`, and `contribution` on each item that passed.
+
 ## Version history
 
 - `analysis-output/1`: the six ratings and the optional shopping advisor.

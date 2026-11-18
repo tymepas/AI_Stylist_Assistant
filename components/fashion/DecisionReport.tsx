@@ -7,12 +7,13 @@ import ShoppingAdvisor from '@/components/fashion/ShoppingAdvisor'
 import VisualObservations from '@/components/fashion/VisualObservations'
 import OccasionContext from '@/components/fashion/OccasionContext'
 import { SOURCE_LABELS, SUPPORT_LABELS, describeCites } from '@/lib/services/visualEvidenceDisplay'
+import { labelOf } from '@/lib/services/evidenceSummary'
 import type { GarmentMode } from '@/lib/constants/garmentModes'
 import { GARMENT_MODE_LABELS } from '@/lib/constants/garmentModes'
 import { BAND_TONE, RATING_TONE } from '@/lib/constants/verdictTones'
 import { DIMENSION_DISPLAY, describeEvidence, summarizeEvidence } from '@/lib/services/evidenceSummary'
 import { cn } from '@/lib/utils'
-import type { CompleteAnalysisResult, DimensionEvidence, DimensionResult, Observations, OutfitComponent } from '@/types/schema'
+import type { CompleteAnalysisResult, ComponentContribution, DimensionEvidence, DimensionResult, Observations, OutfitComponent } from '@/types/schema'
 
 interface DecisionReportProps {
   result: CompleteAnalysisResult
@@ -36,6 +37,35 @@ const GARMENT_TYPE_LABELS: Record<OutfitComponent['garment_type'], string> = {
 
 function humanize(value: string): string {
   return value.replace(/_/g, ' ')
+}
+
+/**
+ * What one outfit item does to the outfit-level ratings, in plain words. The
+ * ratings themselves stay those of the whole outfit; this only explains them.
+ */
+function ItemContribution({ contribution, observations }: { contribution: ComponentContribution; observations?: Observations }) {
+  const rows: Array<[string, Array<keyof CompleteAnalysisResult['dimensions']>]> = [
+    ['Helps', contribution.supports],
+    ['Works against', contribution.tension],
+    ['Too little to judge', contribution.unclear],
+  ]
+  const basis = describeCites({ sources: [], cites: contribution.cites, support: 'sufficient' }, observations, undefined)
+  return (
+    <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-t border-border pt-3 text-xs" data-testid="item-contribution">
+      {rows.filter(([, keys]) => keys.length > 0).map(([label, keys]) => (
+        <div key={label} className="contents">
+          <dt className={cn('text-muted-foreground', label === 'Works against' ? 'text-verdict-caution' : '')}>{label}</dt>
+          <dd className="text-foreground">{keys.map((key) => labelOf(key).toLowerCase()).join(', ')}</dd>
+        </div>
+      ))}
+      {basis.length > 0 ? (
+        <div className="contents">
+          <dt className="text-muted-foreground">Seen</dt>
+          <dd className="break-words text-foreground">{basis.join('; ')}</dd>
+        </div>
+      ) : null}
+    </dl>
+  )
 }
 
 const SUPPORT_ICONS = { sufficient: CheckCircle2, partial: CircleDashed, insufficient: CircleHelp } as const
@@ -205,6 +235,11 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
                 <p className="eyebrow">Item {item.item} · {GARMENT_TYPE_LABELS[item.garment_type]}</p>
                 <p className={cn('mt-2 font-display text-2xl', item.assessment === 'Needs attention' ? 'text-verdict-caution' : item.assessment === 'Unable to tell' ? 'text-muted-foreground' : 'text-foreground')}>{item.assessment}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.note}</p>
+                {item.contribution ? (
+                  <ItemContribution contribution={item.contribution} observations={result.observations} />
+                ) : result.outfit_components?.contributions && result.outfit_components.contributions !== 'available' ? (
+                  <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground" data-testid="item-contribution-unavailable">How this item affects each rating is not available.</p>
+                ) : null}
               </li>
             ))}
           </ol>

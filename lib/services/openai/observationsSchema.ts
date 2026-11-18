@@ -27,6 +27,13 @@ export const PATTERNS = ['solid', 'striped', 'checked', 'printed', 'textured', '
 export const IMAGE_LIMITS = ['lighting', 'occlusion', 'cropped', 'blur', 'low_resolution', 'angle', 'image_text', 'several_items'] as const
 export const OBSERVED_CATEGORIES = [...shoppingGarmentCategorySchema.options, 'unclear'] as const
 export const VIEW_AGREEMENT = ['yes', 'no', 'unclear'] as const
+/**
+ * How views of one garment differ (Phase 4 Milestone 3). `detail_hidden`: a
+ * detail is visible in one view only, which is MISSING evidence, not a
+ * contradiction. `colour_lighting`: colours differ in a way lighting explains.
+ * `different_item`: a view appears to show another garment, a contradiction.
+ */
+export const VIEW_DIFFERENCES = ['detail_hidden', 'colour_lighting', 'different_item'] as const
 
 export const MAX_DETAILS = 3
 export const MAX_COLOURS = 3
@@ -52,6 +59,7 @@ const imageObservationSchema = z.object({
 
 const viewsSchema = z.object({
   same_garment: z.enum(VIEW_AGREEMENT),
+  differences: z.array(z.enum(VIEW_DIFFERENCES)).max(VIEW_DIFFERENCES.length).optional(),
   conflicts: z.string().trim().max(100).optional(),
 }).strict()
 
@@ -146,6 +154,11 @@ export function inspectObservations(raw: unknown, context: ObservationContext): 
       // Views that are said to show one garment cannot be identified as two different kinds of garment.
       const identified = new Set(block.images.filter((entry) => entry.identification === 'observed').map((entry) => entry.category))
       if (block.views.same_garment === 'yes' && identified.size > 1) problems.add('views_contradiction')
+      // A different item contradicts "the same garment"; "not the same garment" needs a different item as its reason.
+      const differences = block.views.differences ?? []
+      if (new Set(differences).size !== differences.length) problems.add('views_contradiction')
+      if (block.views.same_garment === 'yes' && differences.includes('different_item')) problems.add('views_contradiction')
+      if (block.views.same_garment === 'no' && differences.length > 0 && !differences.includes('different_item')) problems.add('views_contradiction')
     }
   } else if (block.views) {
     problems.add('views_unexpected')
@@ -162,7 +175,7 @@ export function inspectObservations(raw: unknown, context: ObservationContext): 
     value: {
       availability: 'available',
       images,
-      ...(block.views ? { views: { same_garment: block.views.same_garment, ...(conflicts ? { conflicts } : {}) } } : {}),
+      ...(block.views ? { views: { same_garment: block.views.same_garment, ...(block.views.differences?.length ? { differences: [...block.views.differences] } : {}), ...(conflicts ? { conflicts } : {}) } } : {}),
     },
     problems: [],
   }

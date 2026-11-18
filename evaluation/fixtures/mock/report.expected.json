@@ -2073,6 +2073,76 @@
       "status": "insufficient_sample",
       "value": 0.875
     },
+    "multi_image_reasoning.contribution_coverage_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image_reasoning.contribution_problem_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image_reasoning.duplicate_identity_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image_reasoning.identity_mismatch_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image_reasoning.outfit_colour_evidence_breadth_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image_reasoning.view_colour_difference_explained_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "multi_image_reasoning.view_conflict_confidence_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "occasion.formality_occasion_conflict_rate": {
       "direction": "lower_is_better",
       "kind": "rate",
@@ -4093,6 +4163,59 @@
           "value": null
         },
         "unexpected_blocks_in_other_modes": 0
+      }
+    },
+    "multi_image_reasoning": {
+      "applicable": false,
+      "contribution_coverage_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "contribution_problem_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "duplicate_identity_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "identity_mismatch_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "outfit_colour_evidence_breadth_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "view_colour_difference_explained_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "view_conflict_confidence_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
       }
     },
     "not_measurable": {

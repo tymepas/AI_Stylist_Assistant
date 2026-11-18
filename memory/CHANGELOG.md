@@ -302,3 +302,17 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 - The API refuses an occasion that is not in the list, before any spend reservation
 - The prompt defines the six dimensions apart (occasion fit, formality, seasonality without inferred weather, style consistency, style preference match only from stated preferences and Style DNA); rules for a single garment mode are sent only with that mode
 - Output schema `analysis-output/4` (rules changed; shape as in /3 until Milestones 3 and 4)
+
+---
+
+## Unreleased - Phase 4 Milestone 3: multi-view and outfit reasoning
+
+### Added
+
+- Views: `observations.views.differences` (detail seen in one view only, lighting, a different item), and rules to observe each view on its own and claim nothing no view shows
+- Outfit items: per-item contributions (supports, tension, unclear) citing the item's own observations, validated per item, shown on each item card
+- Evaluation section `quality.multi_image_reasoning`; 24 more `scenarios-v4` cases (11 views, 13 outfits)
+
+### Unchanged
+
+- The six ratings describe the whole outfit; `computeVerdict` never reads contributions

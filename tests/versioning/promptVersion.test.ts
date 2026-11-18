@@ -33,7 +33,7 @@ const PROFILE_PROMPT = readFileSync(path.join(process.cwd(), 'memory', 'STYLE_PR
  */
 // Phase 4 Milestone 1 (observations and evidence, analysis-output/3). Was 3c78bd7bbd3b.
 // Phase 4 Milestone 2 (occasion profiles, analysis-output/4). M1 was 8dd94dba7564.
-const CURRENT_ANALYSIS_PROMPT_VERSION = 'ac3e8e676b92'
+const CURRENT_ANALYSIS_PROMPT_VERSION = 'a0dac4ea1430'
 const CURRENT_PROFILE_PROMPT_VERSION = 'fce6c25bb5cf'
 
 const originalEnv = { ...process.env }
@@ -113,7 +113,7 @@ describe('analysis prompt version', () => {
       proportions: { frame_width: '<frame>', torso_length: '<torso>', shoulder_breadth: '<shoulders>' },
     } as unknown as typeof VALID_COMPLETE_PROFILE
     const text = buildUserContext('<occasion>', EMPTY_PROFILE, placeholderProfile)
-    for (const fragment of ['skin tone depth:', 'undertone:', 'hair:', 'high contrast coloring:', 'observed style:', 'typical formality level:', 'frame:', 'torso:', 'shoulders:']) {
+    for (const fragment of ['depth <depth>', 'undertone <undertone>', 'hair <hair>', 'high contrast false', 'style <keyword>', 'formality <formality>', 'frame <frame>', 'torso <torso>', 'shoulders <shoulders>']) {
       expect(text).toContain(fragment)
     }
   })

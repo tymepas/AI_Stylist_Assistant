@@ -81,6 +81,24 @@ const OCCASION_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['occasio
   ['occasion_sensitivity_rate', 'Occasion fit changes across contrasting occasions (groups)'],
 ]
 
+const MULTI_IMAGE_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['multi_image_reasoning'], 'applicable' | 'reason'>, string]> = [
+  ['view_colour_difference_explained_rate', 'Views: colour differences between views explained'],
+  ['view_conflict_confidence_rate', 'Views: confidence lowered when views conflict'],
+  ['contribution_coverage_rate', 'Outfit: items with a usable contribution'],
+  ['contribution_problem_rate', 'Outfit: runs with a refused contribution'],
+  ['identity_mismatch_rate', 'Outfit: an item described as a different kind of garment than observed'],
+  ['outfit_colour_evidence_breadth_rate', 'Outfit: colour evidence cites two or more items'],
+  ['duplicate_identity_rate', 'Outfit: one garment observed twice'],
+]
+
+/** Multi-view and outfit reasoning (Phase 4 Milestone 3). Aggregates only; never model text. */
+function multiImageReasoningSection(report: EvaluationReport): string[] {
+  const block = report.quality.multi_image_reasoning
+  const heading = ['## 9d. Multi-view and outfit reasoning', '']
+  if (!block.applicable) return [...heading, block.reason as string, '']
+  return [...heading, 'From the outputs alone; none of these figures says whether a rating is right.', '', ...table(['Figure', 'Value'], MULTI_IMAGE_LABELS.map(([key, label]) => [label, showMetric(block[key])]))]
+}
+
 /** Occasion intelligence (Phase 4 Milestone 2). Aggregates only; never model text. */
 function occasionSection(report: EvaluationReport): string[] {
   const occasion = report.quality.occasion
@@ -337,6 +355,7 @@ export function renderMarkdown(report: EvaluationReport): string {
       : SCORED_TIERS.flatMap((tier) => groundingSection(report, tier))),
     ...visualEvidenceSection(report),
     ...occasionSection(report),
+    ...multiImageReasoningSection(report),
     '## 10. End to end and application',
     '',
     ...(styleDna.mixed ? ['**Pooled:** the first four lines combine cases with and without Style DNA. The Shopping Advisor lines are each about one condition only, by definition.', ''] : []),

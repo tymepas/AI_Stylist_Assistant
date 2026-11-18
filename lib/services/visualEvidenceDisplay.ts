@@ -143,6 +143,12 @@ export function describeCites(evidence: DimensionEvidence, observations: Observa
   return evidence.cites.map((cite) => describeCite(cite, observations, mode)).filter((label): label is string => label !== null)
 }
 
+export const VIEW_DIFFERENCE_LABELS: Record<'detail_hidden' | 'colour_lighting' | 'different_item', string> = {
+  detail_hidden: 'Some details show in one view only.',
+  colour_lighting: 'Colours differ between views, likely because of lighting.',
+  different_item: 'One view may show a different garment.',
+}
+
 /** One sentence about whether views show one garment. */
 export function describeViews(views: NonNullable<Observations['views']>): string {
   if (views.same_garment === 'yes') return 'These views appear to show the same garment.'
