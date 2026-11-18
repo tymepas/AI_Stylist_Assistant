@@ -7753,9 +7753,9 @@
       "needs_references": false,
       "pooled_over_style_dna": true,
       "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
-      "se": 0,
+      "se": 0.4,
       "status": "insufficient_sample",
-      "value": 1
+      "value": 0.8
     },
     "occasion.preference_without_input_rate": {
       "direction": "lower_is_better",
@@ -9475,7 +9475,7 @@
       "kind": "rate",
       "n": 0,
       "needs_references": false,
-      "reason": "Unavailable: no group of cases puts one garment brief in occasions with contrasting formality",
+      "reason": "Unavailable: no group of cases puts one garment brief in occasions with contrasting formality, rated in a complete run",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -14331,9 +14331,9 @@
       "occasion_sensitivity_rate": {
         "n": 1,
         "reason": "Built from 1 case(s); at least 10 are needed before anything is concluded.",
-        "se": 0,
+        "se": 0.4,
         "status": "insufficient_sample",
-        "value": 1
+        "value": 0.8
       },
       "preference_without_input_rate": {
         "n": 2,

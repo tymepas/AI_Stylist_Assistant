@@ -79,7 +79,7 @@ const OCCASION_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['occasio
   ['unsupported_assumption_rate', 'Occasion explanation assumes a culture, religion or region (proxy)'],
   ['seasonality_overconfidence_rate', 'High-confidence seasonality with no season stated'],
   ['preference_without_input_rate', 'Preference match rated with no preferences or Style DNA'],
-  ['occasion_sensitivity_rate', 'Occasion fit changes across contrasting occasions (groups)'],
+  ['occasion_sensitivity_rate', 'Occasion fit differs between contrasting occasions (proxy: not shown to be right; unit: a group)'],
 ]
 
 const MULTI_IMAGE_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['multi_image_reasoning'], 'applicable' | 'reason'>, string]> = [

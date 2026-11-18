@@ -394,7 +394,7 @@ Section `quality.occasion` of the report, section 9c of the Markdown. Whether ou
 - the occasion explanation names a culture, religion or region the occasion does not (proxy, a word list);
 - seasonality rated with High confidence when the occasion states no season;
 - style_preference_match rated although no preferences or Style DNA were given;
-- occasion fit changing across occasions with contrasting formality, for cases sharing an `occasion_group` (unit: a group).
+- occasion fit differing between occasions with contrasting formality, for cases sharing an `occasion_group` (proxy; unit: a group, scored as the share of its contrasting pairs whose ratings differ). A difference is not shown to be right, since an outfit can fit two contrasting occasions equally; it only shows the occasion is taken into account. Read it only with reviewed references.
 
 It also lists the cases whose occasion has no profile. For a recording made before analysis-output/4, every figure is unavailable: those outputs were never given these rules.
 

@@ -60,7 +60,11 @@ export interface OccasionReport {
   seasonality_overconfidence_rate: Metric
   /** Per case with neither style preferences nor Style DNA: share of runs that still rate style_preference_match instead of Unable to Evaluate. */
   preference_without_input_rate: Metric
-  /** Per group of cases with the same garment brief and occasions whose formality ranges do not overlap: share of groups whose occasion ratings differ. */
+  /**
+   * PROXY. Per group of cases with the same garment brief: the share of its CONTRASTING pairs (occasions whose
+   * formality ranges do not overlap) whose occasion ratings differ. A difference is not shown to be right: an
+   * outfit can fit two contrasting occasions equally. It only shows the occasion is taken into account.
+   */
   occasion_sensitivity_rate: Metric
 }
 
@@ -130,11 +134,13 @@ export function occasionOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDe
   for (const benchmarkCase of profiled) if (benchmarkCase.occasion_group) groups.set(benchmarkCase.occasion_group, [...(groups.get(benchmarkCase.occasion_group) ?? []), benchmarkCase])
   const sensitivity: number[] = []
   for (const [, members] of [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-    const profiles = members.map((member) => occasionProfile(member.occasion) as OccasionProfile)
-    const hasContrast = profiles.some((a, i) => profiles.slice(i + 1).some((b) => contrasting(a, b)))
-    const ratings = members.map((member) => complete.get(member.id)?.[0]?.dimensions.occasion.rating).filter((rating): rating is NonNullable<typeof rating> => rating !== undefined)
-    if (!hasContrast || ratings.length < 2) continue
-    sensitivity.push(new Set(ratings).size > 1 ? 1 : 0)
+    const rated = members
+      .map((member) => ({ profile: occasionProfile(member.occasion) as OccasionProfile, rating: complete.get(member.id)?.[0]?.dimensions.occasion.rating }))
+      .filter((entry): entry is { profile: OccasionProfile; rating: NonNullable<typeof entry.rating> } => entry.rating !== undefined)
+    // Only pairs whose formality ranges do not overlap count: a difference between two similar occasions says nothing here.
+    const pairs = rated.flatMap((a, i) => rated.slice(i + 1).filter((b) => contrasting(a.profile, b.profile)).map((b) => (a.rating !== b.rating ? 1 : 0)))
+    if (pairs.length === 0) continue
+    sensitivity.push(pairs.reduce<number>((sum, value) => sum + value, 0) / pairs.length)
   }
 
   return {
@@ -162,7 +168,7 @@ export function occasionOf(cases: BenchmarkCase[], runsByCase: Map<string, RunDe
       return run.dimensions.seasonality.confidence === 'High' ? 1 : 0
     }, 'Unavailable: no rated seasonality for an occasion without a stated season'),
     preference_without_input_rate: perCase(cases.filter((benchmarkCase) => !hasStylePreferences(benchmarkCase.style_profile) && benchmarkCase.style_dna === undefined), complete, (_benchmarkCase, run) => (run.dimensions.style_preference_match.rating === 'Unable to Evaluate' ? 0 : 1), 'Unavailable: no case without preferences and without Style DNA'),
-    occasion_sensitivity_rate: rateMetric(sensitivity, 'Unavailable: no group of cases puts one garment brief in occasions with contrasting formality'),
+    occasion_sensitivity_rate: rateMetric(sensitivity, 'Unavailable: no group of cases puts one garment brief in occasions with contrasting formality, rated in a complete run'),
   }
 }
 

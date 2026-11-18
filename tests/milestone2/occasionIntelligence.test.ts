@@ -208,7 +208,9 @@ describe('occasion figures in the evaluation', () => {
   })
 
   it('finds occasion fit responding to contrasting occasions, and recognises contrast from the catalogue', () => {
-    expect(evaluate('scenarios-v4').quality.occasion.occasion_sensitivity_rate).toMatchObject({ value: 1, n: 1 })
+    // One group (navy-suit), 5 contrasting pairs; Black Tie Event and House Party contrast but are both rated Fair,
+    // so 4 of 5 pairs differ. Counting a group as sensitive when ANY two ratings differ would overstate this as 1.
+    expect(evaluate('scenarios-v4').quality.occasion.occasion_sensitivity_rate).toMatchObject({ value: 0.8, n: 1 })
     expect(contrasting(occasionProfile('Beach')!, occasionProfile('Black Tie Event')!)).toBe(true)
     expect(contrasting(occasionProfile('Office Work')!, occasionProfile('Client Meeting')!)).toBe(false)
   })
