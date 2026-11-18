@@ -133,8 +133,8 @@ describe('mock mode (Preview)', () => {
 })
 
 describe('versions', () => {
-  it('the output schema is analysis-output/3, and only /3 or later is expected to carry the blocks', () => {
-    expect(ANALYSIS_OUTPUT_SCHEMA_VERSION).toBe('analysis-output/3')
+  it('the output schema is analysis-output/4 (Phase 4), and only /3 or later is expected to carry the blocks', () => {
+    expect(ANALYSIS_OUTPUT_SCHEMA_VERSION).toBe('analysis-output/4')
     expect(schemaHasVisualEvidence('analysis-output/3')).toBe(true)
     expect(schemaHasVisualEvidence('analysis-output/4')).toBe(true)
     for (const older of ['analysis-output/2', 'analysis-output/1', 'analysis-output/0', 'profile-output/1.0', 'nonsense']) expect(schemaHasVisualEvidence(older)).toBe(false)

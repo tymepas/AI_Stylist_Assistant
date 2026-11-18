@@ -97,7 +97,7 @@ describe('run record', () => {
   it('ties the record to the exact bytes of its report', () => {
     const report = selftestReport()
     const text = serializeReport(report)
-    expect(record(report).report).toEqual({ file: 'evaluation/reports/example.json', format: 'verdict-evaluation-report/5', sha256: sha256(text) })
+    expect(record(report).report).toEqual({ file: 'evaluation/reports/example.json', format: 'verdict-evaluation-report/6', sha256: sha256(text) })
     expect(sha256(text)).toMatch(/^[0-9a-f]{64}$/)
   })
 
@@ -114,7 +114,7 @@ describe('run record', () => {
       outcome: 'regression',
     })
     expect(run.outcome).toBe('regression')
-    expect(run.baseline).toEqual({ file: 'evaluation/baselines/example.json', sha256: sha256(baselineText), dataset_fingerprint: base.dataset.fingerprint, report_format: 'verdict-evaluation-report/5' })
+    expect(run.baseline).toEqual({ file: 'evaluation/baselines/example.json', sha256: sha256(baselineText), dataset_fingerprint: base.dataset.fingerprint, report_format: 'verdict-evaluation-report/6' })
     expect(run.comparison?.newly_failing_cases).toEqual([])
     expect(run.comparison?.metric_regressions).toContain('agreement.image_reviewed.occasion.exact_rate')
     expect(run.comparison?.metric_improvements).toEqual([])

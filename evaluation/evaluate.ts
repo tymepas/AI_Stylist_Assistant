@@ -11,7 +11,7 @@
 
 import type { RawOpenAIAnalysisResult } from '@/types/openai'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
-import { schemaHasVisualEvidence, validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
+import { schemaCapabilities, validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
 import { GARMENT_MODES } from '@/lib/constants/garmentModes'
 import { describeComposition, modelText, scanText, type Band, type BenchmarkCase, type DatasetComposition } from '@/benchmark/harness'
 import { BLOCKING_CHECKS, PROXY_CHECKS, checkStatus, evaluateCase, type BlockingCheckId, type CaseStatus, type CheckResult, type ProxyCheckId } from './checks'
@@ -34,8 +34,10 @@ import { describeSelection, selectCases, type CaseSelection, type SelectionRepor
  * figures against reviewer garment facts), its figures in the metric index under `visual_evidence.`, and the
  * blocking `visual_evidence` check. A recording made with an earlier output schema has every such figure
  * unavailable, never scored as if the blocks were missing. Every /4 field is unchanged.
+ * /6 (Phase 4 Milestones 2 to 4) adds `quality.occasion` and its figures under `occasion.` in the metric
+ * index, unavailable for recordings made before analysis-output/4. Every /5 field is unchanged.
  */
-export const REPORT_FORMAT = 'verdict-evaluation-report/5'
+export const REPORT_FORMAT = 'verdict-evaluation-report/6'
 
 export type EvaluationMode = 'mock' | 'replay'
 
@@ -244,7 +246,8 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   const selectedIds = new Set(cases.map((benchmarkCase) => benchmarkCase.id))
   const details = detailsFromRecording(recording, cases)
   // Outputs recorded with a schema from before observations and evidence existed are never scored as if they had left them out.
-  const carriesVisualEvidence = schemaHasVisualEvidence(recording.schema_version)
+  const capabilities = schemaCapabilities(recording.schema_version)
+  const carriesVisualEvidence = capabilities.visualEvidence
 
   const caseReports: CaseReport[] = [...cases]
     .sort((a, b) => a.id.localeCompare(b.id))
@@ -274,7 +277,7 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
   const references = summarizeReferences(referenceSet, cases)
   const resolved = resolveReferences(referenceSet, cases)
   const outputs = recording.provenance === 'model' ? 'model' : 'synthetic_fixture'
-  const quality = computeQuality(details, cases, resolved, outputs, carriesVisualEvidence)
+  const quality = computeQuality(details, cases, resolved, outputs, capabilities)
   const summary = summarizeCases(caseReports)
   const composition = describeComposition(allCases)
 
@@ -310,7 +313,7 @@ export function evaluateRecording(recording: Recording, allCases: BenchmarkCase[
     references,
     quality,
     // The pooled figures, then the same figures for each Style DNA condition on its own (empty unless the cases mix both).
-    metric_index: { ...buildMetricIndex(metrics, quality), ...buildStyleDnaIndex(details, cases, resolved, outputs, carriesVisualEvidence) },
+    metric_index: { ...buildMetricIndex(metrics, quality), ...buildStyleDnaIndex(details, cases, resolved, outputs, capabilities) },
     next_steps: nextSteps({ provenance: recording.provenance, summary, references, quality, composition }),
     cases: caseReports,
   }

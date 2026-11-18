@@ -18,6 +18,7 @@ import {
 } from '@/lib/services/openai/openAIAnalysisService'
 import { buildProfileContent, computeProfilePromptVersion, generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileService'
 import { fingerprint, IMAGE_PLACEHOLDER } from '@/lib/services/openai/promptVersion'
+import { OCCASION_PROFILES, OCCASION_PROFILE_VERSION } from '@/lib/constants/occasionProfiles'
 import { allRated, makePng, openAIResponse } from '../helpers/fixtures'
 import { captureLogs } from '../logging/logTestUtils'
 import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
@@ -31,7 +32,8 @@ const PROFILE_PROMPT = readFileSync(path.join(process.cwd(), 'memory', 'STYLE_PR
  * value here in the same change so the new version is visible in the diff.
  */
 // Phase 4 Milestone 1 (observations and evidence, analysis-output/3). Was 3c78bd7bbd3b.
-const CURRENT_ANALYSIS_PROMPT_VERSION = '8dd94dba7564'
+// Phase 4 Milestone 2 (occasion profiles, analysis-output/4). M1 was 8dd94dba7564.
+const CURRENT_ANALYSIS_PROMPT_VERSION = 'ac3e8e676b92'
 const CURRENT_PROFILE_PROMPT_VERSION = 'fce6c25bb5cf'
 
 const originalEnv = { ...process.env }
@@ -82,7 +84,7 @@ describe('analysis prompt version', () => {
     const template = buildUserContext('<occasion>', EMPTY_PROFILE)
     const withProfile = buildUserContext('<occasion>', EMPTY_PROFILE, VALID_COMPLETE_PROFILE)
     expect(template).toContain('Return one JSON object only.')
-    expect(withProfile).toContain('Style DNA coloring (for color)')
+    expect(withProfile).toContain('DNA coloring: ')
     // The version is exactly the fingerprint of the system prompt and both message forms.
     const placeholderProfile = {
       coloring: { skin_tone_depth: '<depth>', skin_tone_undertone: '<undertone>', hair_color: '<hair>', high_contrast: false },
@@ -95,6 +97,9 @@ describe('analysis prompt version', () => {
         ANALYSIS_PROMPT,
         JSON.stringify(buildAnalysisContent(template, IMAGE_PLACEHOLDER, IMAGE_PLACEHOLDER)),
         JSON.stringify(buildAnalysisContent(buildUserContext('<occasion>', EMPTY_PROFILE, placeholderProfile), IMAGE_PLACEHOLDER, IMAGE_PLACEHOLDER)),
+        // The occasion catalogue (Phase 4 Milestone 2) is part of the version: editing a profile changes it.
+        OCCASION_PROFILE_VERSION,
+        JSON.stringify(OCCASION_PROFILES),
       ])
     )
   })

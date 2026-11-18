@@ -22,6 +22,7 @@ import { generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileSe
 import { getMockProfile } from '@/lib/constants/mockProfile'
 import { createRequestId, logEvent } from '@/lib/observability/safeLogger'
 import { MAX_OCCASION_LENGTH } from '@/lib/services/requestLimits'
+import { isKnownOccasion, occasionContextOf } from '@/lib/constants/occasionProfiles'
 import { applySpendRejectionHeaders, reserveSpend } from '@/lib/spend/spendGuard'
 import { ALLOWED_METHODS, applyCorsHeaders, evaluateOrigin, isStateChanging } from '@/lib/security/originPolicy'
 
@@ -190,8 +191,10 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      // Occasions offered by the UI are short; a cap bounds prompt tokens and reserved spend.
-      if (occasion.length > MAX_OCCASION_LENGTH) {
+      // Occasions offered by the UI are short; a cap bounds prompt tokens and reserved spend. Only an occasion
+      // the application offers is accepted: each has a profile (lib/constants/occasionProfiles.ts), and a value
+      // that is not one is refused before any spend reservation, never matched to a different occasion.
+      if (occasion.length > MAX_OCCASION_LENGTH || !isKnownOccasion(occasion)) {
         return handleCORS(NextResponse.json(
           { error: 'invalid_upload', message: 'Please select a valid occasion.' },
           { status: 400 }
@@ -276,6 +279,7 @@ async function handleRoute(request, { params }) {
           })
           mockAnalysis.observations = visual.observations
           mockAnalysis.evidence = visual.evidence
+          mockAnalysis.occasion_context = occasionContextOf(occasion)
         }
         logMockCompleted('analysis', mockAnalysis.status)
         return handleCORS(NextResponse.json(mockAnalysis))
@@ -331,6 +335,7 @@ async function handleRoute(request, { params }) {
                 : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length, requestId) }),
               observations: visual.observations,
               evidence: visual.evidence,
+              occasionContext: occasionContextOf(occasion),
             }
           )
         }

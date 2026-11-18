@@ -205,7 +205,7 @@ describe('the committed baselines', () => {
     const baseline = loadReport(datasetPaths(root, dataset).baselinePath as string)
     const versions = await current()
     expect(baseline.evaluated_with).toMatchObject({ prompt_version: versions.promptVersion, schema_version: versions.schemaVersion })
-    expect(baseline.report_format).toBe('verdict-evaluation-report/5')
+    expect(baseline.report_format).toBe('verdict-evaluation-report/6')
   })
 
   it('scenarios-v3 is byte-identical to the current report and shows no regression', () => {

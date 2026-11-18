@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ConfidenceMeter, RatingMeter, ScoreScale } from '@/components/fashion/RatingBadge'
 import ShoppingAdvisor from '@/components/fashion/ShoppingAdvisor'
 import VisualObservations from '@/components/fashion/VisualObservations'
+import OccasionContext from '@/components/fashion/OccasionContext'
 import { SOURCE_LABELS, SUPPORT_LABELS, describeCites } from '@/lib/services/visualEvidenceDisplay'
 import type { GarmentMode } from '@/lib/constants/garmentModes'
 import { GARMENT_MODE_LABELS } from '@/lib/constants/garmentModes'
@@ -139,7 +140,7 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
         <div className={cn('pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-3xl', tone.soft)} aria-hidden="true" />
         <div className="relative">
           <p className="eyebrow">
-            Your verdict{occasion ? ` for ${occasion}` : ''}
+            Your verdict{(result.occasion_context?.occasion ?? occasion) ? ` for ${result.occasion_context?.occasion ?? occasion}` : ''}
             {modeLabel ? ` · ${modeLabel}` : ''}
           </p>
           <h2 className={cn('mt-4 font-display text-5xl sm:text-7xl', tone.text)} data-testid="verdict-band">
@@ -168,6 +169,8 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
           <p className="mt-6 text-xs text-muted-foreground">Calculated by Verdict from the six ratings below. The AI rates each dimension; it never sets the verdict.</p>
         </div>
       </header>
+
+      <OccasionContext context={result.occasion_context} occasionRating={result.dimensions.occasion} />
 
       <VisualObservations observations={result.observations} evidence={result.evidence} garmentMode={garmentMode} />
 

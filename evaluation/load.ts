@@ -106,6 +106,10 @@ export function mockFixturePaths(root: string): { casesPath: string; recordingPa
  *   (analysis-output/3), with a SYNTHETIC reference set for their garment facts
  *   (never a human review). Its own baseline; v1 and v2 are unchanged.
  *
+ * - `scenarios-v4`: synthetic cases for Phase 4 Milestones 2 to 4 (analysis-output/4): every
+ *   occasion of the catalogue, contrasting occasions, multi-view and outfit reasoning, limitations.
+ *   Its own baseline; v1 to v3 are unchanged.
+ *
  * The golden dataset (`evaluation/datasets/golden-v1/`) is not listed here. It
  * holds real images and real model outputs, so it is always evaluated by
  * replaying a recording (see evaluation/HUMAN_REVIEW.md).
@@ -115,6 +119,7 @@ export const DATASETS = {
   'scenarios-v1': { dir: path.join('evaluation', 'datasets', 'scenarios-v1'), baseline: path.join('evaluation', 'baselines', 'scenarios-v1.json'), references: false },
   'scenarios-v2': { dir: path.join('evaluation', 'datasets', 'scenarios-v2'), baseline: path.join('evaluation', 'baselines', 'scenarios-v2.json'), references: false },
   'scenarios-v3': { dir: path.join('evaluation', 'datasets', 'scenarios-v3'), baseline: path.join('evaluation', 'baselines', 'scenarios-v3.json'), references: true },
+  'scenarios-v4': { dir: path.join('evaluation', 'datasets', 'scenarios-v4'), baseline: path.join('evaluation', 'baselines', 'scenarios-v4.json'), references: false },
 } as const
 
 export type DatasetId = keyof typeof DATASETS

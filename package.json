@@ -21,6 +21,8 @@
         "eval:baseline:v2": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v2 --update-baseline",
         "eval:scenarios:v3": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v3",
         "eval:baseline:v3": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v3 --update-baseline",
+        "eval:scenarios:v4": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v4",
+        "eval:baseline:v4": "node scripts/evaluation/run-eval.cjs --dataset scenarios-v4 --update-baseline",
         "eval:build-dataset": "node scripts/evaluation/build-scenarios.cjs",
         "eval:build-golden-plan": "node scripts/evaluation/build-golden-plan.cjs",
         "eval:second-review": "node scripts/evaluation/second-review.cjs",

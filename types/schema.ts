@@ -50,8 +50,22 @@ export interface CompleteAnalysisResult {
   outfit_components?: OutfitComponents
   /** What was visible in each garment image. Informational only; never part of the verdict. Absent in results from before analysis-output/3. */
   observations?: Observations
-  /** Which inputs and observations support each rating. Informational only; never part of the verdict. Absent in results from before analysis-output/3. */
+  /** What each rating rests on. Informational only; never part of the verdict. Absent in results from before analysis-output/3. */
   evidence?: RatingEvidence
+  /** The occasion the analysis was for, with the application's profile of it (Phase 4 Milestone 2). Display only. */
+  occasion_context?: OccasionContext
+}
+
+/** The application's profile of the selected occasion, as sent to the model. Never part of the verdict. */
+export interface OccasionContext {
+  occasion: string
+  profile_version: string
+  /** For example "business casual to business formal". */
+  formality: string
+  setting: string
+  suits: string
+  varies?: string
+  season?: string
 }
 
 // ---------------------------------------------------------------------------

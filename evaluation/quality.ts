@@ -62,6 +62,8 @@ import { validateShoppingRecommendations } from '@/lib/services/openai/shoppingR
 import { computeMetrics, type EvaluationMetrics, type RunDetail } from './metrics'
 import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, reviewerRatings, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
 import { visualEvidenceMetrics, visualEvidenceOf, type VisualEvidenceReport } from './visualEvidence'
+import { occasionMetrics, occasionOf, type OccasionReport } from './occasion'
+import { NO_SCHEMA_CAPABILITIES, type SchemaCapabilities } from '@/lib/services/openai/openAIAnalysisSchema'
 
 // ---------------------------------------------------------------------------
 // Thresholds
@@ -925,6 +927,8 @@ export interface QualityReport {
   shopping_advisor: ShoppingAdvisorBlock
   /** Observations and rating evidence (analysis-output/3): structural figures, and figures against reviewer references. Informational; never part of the verdict. */
   visual_evidence: VisualEvidenceReport
+  /** Occasion intelligence (Phase 4 Milestone 2): whether outputs follow the occasion-profile rules. Proxies are marked. */
+  occasion: OccasionReport
   /** Whether the evaluated cases mix both Style DNA conditions, and how the figures of this report relate to that. */
   style_dna: StyleDnaSummary
   /** Per dimension: share of repeated cases that got the same rating on every run. */
@@ -992,8 +996,9 @@ export function computeQuality(
   cases: BenchmarkCase[],
   references: Map<string, ResolvedReference>,
   outputs: 'model' | 'synthetic_fixture',
-  carriesVisualEvidence = false,
+  capabilities: SchemaCapabilities = NO_SCHEMA_CAPABILITIES,
 ): QualityReport {
+  const carriesVisualEvidence = capabilities.visualEvidence
   const scoredRuns = details.filter((detail) => detail.outcome !== 'withheld')
   const runsByCase = new Map<string, RunDetail[]>()
   for (const detail of scoredRuns) runsByCase.set(detail.case_id, [...(runsByCase.get(detail.case_id) ?? []), detail])
@@ -1041,6 +1046,7 @@ export function computeQuality(
     reviewer_agreement: perTier((tier) => reviewerAgreementOf(referenceCases[tier].map((benchmarkCase) => (references.get(benchmarkCase.id) as ResolvedReference).reference), scoredByTier[tier], reasonByTier[tier])),
     shopping_advisor: shoppingAdvisorOf(cases, runsByCase),
     visual_evidence: visualEvidenceOf(cases, runsByCase, scoredByTier, reasonByTier, carriesVisualEvidence),
+    occasion: occasionOf(cases, runsByCase, capabilities.phase4),
     stability_by_dimension: stability,
     style_dna: styleDnaSummaryOf(cases),
     not_measurable: carriesVisualEvidence ? NOT_MEASURABLE_WITH_OBSERVATIONS : NOT_MEASURABLE,
@@ -1145,6 +1151,7 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
   add('multi_image.comparison_groups.cross_mode_rating_consistency', quality.multi_image.comparison_groups.cross_mode_rating_consistency, 'higher_is_better', 'rate', true)
   add('multi_image.comparison_groups.mean_band_shift', quality.multi_image.comparison_groups.mean_band_shift, 'lower_is_better', 'bands', true)
   for (const entry of visualEvidenceMetrics(quality.visual_evidence)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', entry.needsReferences)
+  for (const entry of occasionMetrics(quality.occasion)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', false)
 
   return index
 }
@@ -1179,7 +1186,7 @@ export function buildStyleDnaIndex(
   cases: BenchmarkCase[],
   references: Map<string, ResolvedReference>,
   outputs: 'model' | 'synthetic_fixture',
-  carriesVisualEvidence = false,
+  capabilities: SchemaCapabilities = NO_SCHEMA_CAPABILITIES,
 ): MetricIndex {
   const groups: Record<StyleDnaCondition, BenchmarkCase[]> = {
     with_style_dna: cases.filter((benchmarkCase) => benchmarkCase.style_dna !== undefined),
@@ -1192,7 +1199,7 @@ export function buildStyleDnaIndex(
     const subset = groups[condition]
     const ids = new Set(subset.map((benchmarkCase) => benchmarkCase.id))
     const subsetDetails = details.filter((detail) => ids.has(detail.case_id))
-    const subsetIndex = buildMetricIndex(computeMetrics(subsetDetails, subset), computeQuality(subsetDetails, subset, references, outputs, carriesVisualEvidence))
+    const subsetIndex = buildMetricIndex(computeMetrics(subsetDetails, subset), computeQuality(subsetDetails, subset, references, outputs, capabilities))
     for (const name of Object.keys(subsetIndex).sort()) {
       // The advisor figures are already specific to one condition in the main index.
       if (name.startsWith('shopping_advisor.')) continue

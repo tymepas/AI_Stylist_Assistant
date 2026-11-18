@@ -202,8 +202,9 @@ describe('a single garment image (the request every existing client sends)', () 
     const body = await response.json()
     expect(response.status).toBe(200)
     expect(body).toMatchObject({ status: 'complete', overall_recommendation: 'Recommended', verdict_score: 4 })
-    // analysis-output/3 adds `observations` and `evidence`. Both are informational and never part of the verdict.
-    expect(Object.keys(body).sort()).toEqual(['analysis_based_on', 'dimensions', 'evidence', 'next_step', 'observations', 'overall_recommendation', 'shopping_advisor', 'status', 'things_to_consider', 'verdict_score'])
+    // analysis-output/3 adds `observations` and `evidence`; Phase 4 Milestone 2 adds `occasion_context`. All three are
+    // informational and never part of the verdict.
+    expect(Object.keys(body).sort()).toEqual(['analysis_based_on', 'dimensions', 'evidence', 'next_step', 'observations', 'occasion_context', 'overall_recommendation', 'shopping_advisor', 'status', 'things_to_consider', 'verdict_score'])
   })
 
   it('accepts the explicit mode "single" with the same result', async () => {
@@ -218,7 +219,7 @@ describe('a single garment image (the request every existing client sends)', () 
     expect(content.map((part) => part.type)).toEqual(['input_text', 'input_text', 'input_image', 'input_text', 'input_image'])
     expect([content[1].text, content[3].text]).toEqual(['Person image:', 'Garment image 1:'])
     expect(content[0].text).toMatch(/^Image mode: single\. Garment image 1 shows one garment\./)
-    expect(content[0].text).not.toMatch(/outfit_components|include views/)
+    expect(content[0].text).not.toMatch(/outfit_components|observations\.views/)
   })
 })
 
@@ -274,11 +275,11 @@ describe('views of one garment', () => {
     expect(content.filter((part) => part.type === 'input_image')).toHaveLength(4)
     expect(content.filter((part) => part.type === 'input_text').map((part) => part.text).slice(1)).toEqual([
       'Person image:',
-      'Garment image 1 of 3 (view):',
-      'Garment image 2 of 3 (view):',
-      'Garment image 3 of 3 (view):',
+      'Garment image 1:',
+      'Garment image 2:',
+      'Garment image 3:',
     ])
-    expect(content[0].text).toMatch(/^Image mode: same_garment_views\. Garment images 1 to 3 are views of ONE garment; include observations\.views\./)
+    expect(content[0].text).toMatch(/^Image mode: same_garment_views\. Garment images 1 to 3 are views of ONE garment\.\n.*observations\.views/)
     expect(content[0].text).not.toMatch(/outfit_components/)
   })
 
@@ -308,11 +309,11 @@ describe('items of one outfit', () => {
     const content = sentContent(fetchMock)
     expect(content.filter((part) => part.type === 'input_text').map((part) => part.text).slice(1)).toEqual([
       'Person image:',
-      'Garment image 1 of 3 (item):',
-      'Garment image 2 of 3 (item):',
-      'Garment image 3 of 3 (item):',
+      'Garment image 1:',
+      'Garment image 2:',
+      'Garment image 3:',
     ])
-    expect(content[0].text).toMatch(/^Image mode: outfit_items\. Garment images 1 to 3 are 3 DIFFERENT items worn together; include outfit_components\./)
+    expect(content[0].text).toMatch(/^Image mode: outfit_items\. Garment images 1 to 3 are 3 DIFFERENT items worn together\.\n.*outfit_components/)
     expect((content[0].text as string).trim().endsWith('Return one JSON object only.')).toBe(true)
   })
 

@@ -8,6 +8,9 @@
  *   scenarios-v3   cases for observations and rating evidence
  *                  (analysis-output/3), defined in scenarios-v3.cjs, with a
  *                  synthetic reference set for their garment facts.
+ *   scenarios-v4   cases for Phase 4 Milestones 2 to 4 (analysis-output/4):
+ *                  occasions, multi-view and outfit reasoning, limitations.
+ *                  Defined in scenarios-v4.cjs.
  *
  *   node scripts/evaluation/build-scenarios.cjs          write cases.json and recording.json of both
  *   node scripts/evaluation/build-scenarios.cjs --check  exit 1 if a committed file differs
@@ -34,6 +37,7 @@ const { readFileSync, writeFileSync, mkdirSync } = require('node:fs')
 const path = require('node:path')
 const { styleDna } = require('./style-dna-personas.cjs')
 const { V3_CASES, autoEvidence } = require('./scenarios-v3.cjs')
+const { V4_CASES } = require('./scenarios-v4.cjs')
 
 const DIMENSIONS = ['occasion', 'color', 'formality', 'seasonality', 'style', 'style_preference_match']
 const RATING = { E: 'Excellent', G: 'Good', F: 'Fair', P: 'Poor', U: 'Unable to Evaluate' }
@@ -318,6 +322,7 @@ const DATASET_CASES = {
   'scenarios-v1': CASES,
   'scenarios-v2': [...CASES, ...V2_CASES],
   'scenarios-v3': V3_CASES,
+  'scenarios-v4': V4_CASES,
 }
 
 /** The output schema each dataset's reference outputs are written for. v1 and v2 stay on /2: their files never change. */
@@ -325,6 +330,7 @@ const SCHEMA_VERSIONS = {
   'scenarios-v1': 'analysis-output/2',
   'scenarios-v2': 'analysis-output/2',
   'scenarios-v3': 'analysis-output/3',
+  'scenarios-v4': 'analysis-output/4',
 }
 
 function datasetDir(name) {
@@ -372,6 +378,7 @@ function buildCase(definition) {
     scenario: definition.scenario,
   }
   if (definition.twin) benchmarkCase.twin_of = definition.twin
+  if (definition.group) benchmarkCase.occasion_group = definition.group
   if (definition.mode) {
     benchmarkCase.garment_mode = definition.mode
     benchmarkCase.extra_garments = Array.from({ length: definition.extra }, (_, index) => `none/${slug}-garment-${index + 2}.jpg`)
@@ -506,6 +513,6 @@ function main() {
   return 0
 }
 
-module.exports = { build, CASES, V2_CASES, V3_CASES, DATASET_CASES, datasetDir }
+module.exports = { build, CASES, V2_CASES, V3_CASES, V4_CASES, DATASET_CASES, datasetDir }
 
 if (require.main === module) process.exit(main())

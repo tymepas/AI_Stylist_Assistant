@@ -1,7 +1,7 @@
 import { computeVerdict } from '@/lib/services/analysisService'
 import type { RawOpenAIDimensions } from '@/types/openai'
 import type { GarmentMode } from '@/lib/constants/garmentModes'
-import type { CompleteAnalysisResult, Observations, OutfitComponents, OverallRecommendation, RatingEvidence, ShoppingAdvisor } from '@/types/schema'
+import type { CompleteAnalysisResult, Observations, OccasionContext, OutfitComponents, OverallRecommendation, RatingEvidence, ShoppingAdvisor } from '@/types/schema'
 
 const DIMENSION_LABELS: Record<keyof RawOpenAIDimensions, string> = {
   occasion: 'Occasion compatibility',
@@ -37,6 +37,8 @@ export interface AnalysisResultExtras {
   observations?: Observations
   /** What each rating rests on. Informational; validated separately. */
   evidence?: RatingEvidence
+  /** The selected occasion and its profile. Display only. */
+  occasionContext?: OccasionContext | null
 }
 
 export function buildCompleteAnalysisResult(
@@ -53,6 +55,7 @@ export function buildCompleteAnalysisResult(
     ...(extras.outfitComponents && extras.outfitComponents.availability !== 'not_applicable' ? { outfit_components: extras.outfitComponents } : {}),
     ...(extras.observations ? { observations: extras.observations } : {}),
     ...(extras.evidence ? { evidence: extras.evidence } : {}),
+    ...(extras.occasionContext ? { occasion_context: extras.occasionContext } : {}),
     status: 'complete',
     dimensions,
     things_to_consider: buildThingsToConsider(dimensions),

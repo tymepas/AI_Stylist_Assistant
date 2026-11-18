@@ -287,3 +287,18 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 
 - `computeVerdict`, weights, thresholds and bands; the model, the output token cap (4,000) and the text bound (8,000); spend reservation and fail-closed protections; image intake
 - No live model call was made. No accuracy figure exists for the new blocks
+
+---
+
+## Unreleased - Phase 4 Milestone 2: occasion intelligence
+
+### Added
+
+- Occasion profile catalogue (`occasion-profiles/1`), one profile for each of the 32 occasions offered, sent to the model as one compact line and shown in the report as "Occasion context"
+- Evaluation section `quality.occasion` (report format `/6`) and the `scenarios-v4` dataset with its own baseline
+
+### Changed
+
+- The API refuses an occasion that is not in the list, before any spend reservation
+- The prompt defines the six dimensions apart (occasion fit, formality, seasonality without inferred weather, style consistency, style preference match only from stated preferences and Style DNA); rules for a single garment mode are sent only with that mode
+- Output schema `analysis-output/4` (rules changed; shape as in /3 until Milestones 3 and 4)

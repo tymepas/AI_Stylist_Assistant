@@ -5621,10 +5621,10 @@
     "matches_recording": true
   },
   "evaluated_with": {
-    "prompt_version": "8dd94dba7564",
+    "prompt_version": "ac3e8e676b92",
     "same_prompt_as_recording": false,
     "same_schema_as_recording": false,
-    "schema_version": "analysis-output/3"
+    "schema_version": "analysis-output/4"
   },
   "interpretation": "Hand-written fixture outputs. This report checks that the evaluation harness and the deterministic verdict code behave as intended. It says nothing about model quality.",
   "metric_index": {
@@ -7088,6 +7088,83 @@
       "se": 0.0252,
       "status": "measured",
       "value": 0.9636
+    },
+    "occasion.formality_occasion_conflict_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "occasion.occasion_evidence_context_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "occasion.occasion_reason_relevance_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "occasion.occasion_sensitivity_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "occasion.preference_without_input_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "occasion.seasonality_overconfidence_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "occasion.unsupported_assumption_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "pooled_over_style_dna": true,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
     },
     "shopping_advisor.availability_rate": {
       "direction": "higher_is_better",
@@ -8652,6 +8729,83 @@
       "n": 0,
       "needs_references": false,
       "reason": "Unavailable: only 6 unit(s) with Style DNA stand behind this figure; a separate figure needs at least 10. See the pooled figure \"multi_image.single.valid_output_rate\".",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.formality_occasion_conflict_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.occasion_evidence_context_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.occasion_reason_relevance_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.occasion_sensitivity_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.preference_without_input_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.seasonality_overconfidence_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "with_style_dna",
+      "value": null
+    },
+    "style_dna.with_style_dna.occasion.unsupported_assumption_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
       "se": null,
       "status": "unavailable",
       "style_dna_condition": "with_style_dna",
@@ -10642,6 +10796,83 @@
       "status": "measured",
       "style_dna_condition": "without_style_dna",
       "value": 0.9592
+    },
+    "style_dna.without_style_dna.occasion.formality_occasion_conflict_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.occasion.occasion_evidence_context_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.occasion.occasion_reason_relevance_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.occasion.occasion_sensitivity_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.occasion.preference_without_input_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.occasion.seasonality_overconfidence_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
+    },
+    "style_dna.without_style_dna.occasion.unsupported_assumption_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "style_dna_condition": "without_style_dna",
+      "value": null
     },
     "style_dna.without_style_dna.stability.rating.color": {
       "direction": "higher_is_better",
@@ -13045,6 +13276,60 @@
       "pattern_identification": "The output has no pattern field. Pattern is covered only by the grounding proxy (key facts with attribute \"pattern\").",
       "single_garment_identification": "The output names a garment type only for the items of an outfit. A single garment, and views of one garment, carry none."
     },
+    "occasion": {
+      "applicable": false,
+      "cases_without_profile": [],
+      "formality_occasion_conflict_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "occasion_evidence_context_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "occasion_reason_relevance_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "occasion_sensitivity_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "preference_without_input_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+      "seasonality_overconfidence_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "unsupported_assumption_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before occasion profiles and their rules existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      }
+    },
     "reviewer_agreement": {
       "brief_derived": {
         "cases": 0,
@@ -14005,7 +14290,7 @@
     "scoring_fingerprint": null,
     "status": "none"
   },
-  "report_format": "verdict-evaluation-report/5",
+  "report_format": "verdict-evaluation-report/6",
   "selection": {
     "cases_evaluated": 79,
     "filters": {

@@ -15,7 +15,8 @@ import { manifestSchema, maxCostPerCallMicroUsd, runCases, type AnalyzeFn, type 
 import { GARMENT_MODES, GARMENT_MODE_LABELS, MAX_GARMENT_IMAGES, garmentCountProblem, garmentCountRange, isGarmentMode } from '@/lib/constants/garmentModes'
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
 import { SUPPORTED_MODEL_IDS, estimateMaxCostMicroUsd, resolveModelConfig } from '@/lib/services/openai/modelConfig'
-import { buildAnalysisContent, buildUserContext, computeAnalysisPromptVersion, getAnalysisPromptVersion } from '@/lib/services/openai/openAIAnalysisService'
+import { MODE_RULES, buildAnalysisContent, buildUserContext, computeAnalysisPromptVersion, getAnalysisPromptVersion } from '@/lib/services/openai/openAIAnalysisService'
+import { FRAMING_ALLOWANCE, worstCasePromptBytes } from '../helpers/promptBudget'
 import { OUTFIT_COMPONENT_ASSESSMENTS, validateOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
 import { buildOutfitComponents } from '@/lib/services/outfitComponentsService'
 import { MAX_OCCASION_LENGTH, MAX_STYLE_PROFILE_BYTES, utf8ByteLength } from '@/lib/services/requestLimits'
@@ -31,9 +32,9 @@ const firstLine = (text: string): string => lines(text)[0]
 // line of a mode changes its version; update the value here so the change is visible in review.
 // Changed in Phase 4 Milestone 1 (analysis-output/3, observations and evidence). Before: single 3c78bd7bbd3b,
 // views 26de11106f0a, outfit ff754a0c0e59. A recording made with one of those can never carry these.
-const SINGLE_PROMPT_VERSION = '8dd94dba7564'
-const VIEWS_PROMPT_VERSION = 'cc0b04509e09'
-const OUTFIT_PROMPT_VERSION = '9be41c46ccc1'
+const SINGLE_PROMPT_VERSION = 'ac3e8e676b92'
+const VIEWS_PROMPT_VERSION = '03c4fa35201b'
+const OUTFIT_PROMPT_VERSION = '591d8cb7848c'
 
 describe('garment mode rules', () => {
   it('has exactly three modes and at most three garment images', () => {
@@ -75,46 +76,51 @@ describe('garment mode rules', () => {
 })
 
 describe('prompt context per garment mode', () => {
-  // analysis-output/3 (Phase 4 Milestone 1): every fixed rule is in the system prompt, stated once. The user
-  // message names the image mode explicitly in EVERY mode, a single garment image included, and carries the data.
+  // Since Phase 4 Milestone 2 the system prompt holds what every mode shares, and the rules and extra output of ONE
+  // mode are sent only with that mode. The user message names the mode explicitly in EVERY mode.
   it('names the image mode in every mode, a single garment image included', () => {
     expect(buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE)).toBe(buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE, { mode: 'single', count: 1 }))
     expect(firstLine(buildUserContext('Office Work', EMPTY_PROFILE))).toBe('Image mode: single. Garment image 1 shows one garment.')
     expect(buildAnalysisContent('c', 'data:photo', 'data:garment')).toEqual(buildAnalysisContent('c', 'data:photo', ['data:garment'], 'single'))
+    expect(buildUserContext('Office Work', EMPTY_PROFILE)).not.toMatch(/observations\.views|outfit_components/)
   })
 
-  it('tells the model that several views show one garment, and asks for the views entry', () => {
+  it('tells the model that several views show one garment, and asks for the views entry, in that mode only', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'same_garment_views', count: 2 })
-    expect(firstLine(text)).toBe('Image mode: same_garment_views. Garment images 1 to 2 are views of ONE garment; include observations.views.')
+    expect(lines(text).slice(0, 2)).toEqual(['Image mode: same_garment_views. Garment images 1 to 2 are views of ONE garment.', MODE_RULES.same_garment_views])
+    expect(MODE_RULES.same_garment_views).toContain('never separate garments')
+    expect(MODE_RULES.same_garment_views).toContain('observations.views {"same_garment":"yes|no|unclear","conflicts":""}')
     expect(text).not.toContain('outfit_components')
-    expect(SYSTEM_PROMPT).toContain('same_garment_views: views of ONE garment. Use them together as evidence about one item, never as separate garments.')
-    expect(SYSTEM_PROMPT).toContain('same_garment_views only: observations.views {"same_garment":"yes|no|unclear","conflicts":""}; explain conflicts (max 100 chars) unless yes.')
+    expect(SYSTEM_PROMPT).not.toContain('observations.views')
   })
 
-  it('tells the model that several items form one outfit, and asks for advisory per-item notes', () => {
+  it('tells the model that several items form one outfit, and asks for advisory per-item notes, in that mode only', () => {
     const text = buildUserContext('Office Work', EMPTY_PROFILE, undefined, { mode: 'outfit_items', count: 3 })
-    expect(firstLine(text)).toBe('Image mode: outfit_items. Garment images 1 to 3 are 3 DIFFERENT items worn together; include outfit_components.')
-    expect(SYSTEM_PROMPT).toContain('outfit_items: DIFFERENT items worn together. Rate the outfit as a whole.')
-    expect(SYSTEM_PROMPT).toContain('outfit_items only: top-level outfit_components, one per garment image in order')
+    expect(lines(text).slice(0, 2)).toEqual(['Image mode: outfit_items. Garment images 1 to 3 are 3 DIFFERENT items worn together.', MODE_RULES.outfit_items])
+    expect(MODE_RULES.outfit_items).toContain('Rate the outfit as a whole.')
+    expect(MODE_RULES.outfit_items).toContain('top-level outfit_components, one per image in order')
+    for (const assessment of OUTFIT_COMPONENT_ASSESSMENTS) expect(MODE_RULES.outfit_items).toContain(assessment)
+    expect(text).not.toContain('observations.views')
+    expect(SYSTEM_PROMPT).not.toContain('outfit_components')
     expect(SYSTEM_PROMPT).toContain('Advisory blocks never change a rating.')
-    for (const assessment of OUTFIT_COMPONENT_ASSESSMENTS) expect(SYSTEM_PROMPT).toContain(assessment)
   })
 
-  it('keeps every rule in the system prompt once, and the closing line last in every mode', () => {
+  it('keeps the shared rules in the system prompt once, and the closing line last in every mode', () => {
     for (const garments of [undefined, { mode: 'same_garment_views' as const, count: 3 }, { mode: 'outfit_items' as const, count: 2 }]) {
       const text = buildUserContext('Office Work', EMPTY_PROFILE, VALID_COMPLETE_PROFILE, garments)
       expect(text.endsWith('Return one JSON object only.')).toBe(true)
-      // No rule is repeated in the message: the message holds the mode and the data only.
-      expect(text.replace('include observations.views.', '')).not.toMatch(/shopping_advisor|recommendations|rating|confidence|observations|evidence/)
+      // Apart from its own mode rules, the message holds data only: no shared rule is repeated in it.
+      const data = lines(text).filter((line) => !Object.values(MODE_RULES).includes(line)).join('\n')
+      expect(data).not.toMatch(/shopping_advisor|recommendations|rating|confidence|observations|evidence/)
     }
-    expect(SYSTEM_PROMPT).toContain('You never decide the overall verdict: the application calculates it from your six ratings.')
+    expect(SYSTEM_PROMPT).toContain('You never decide the verdict: the application calculates it from your six ratings.')
     expect(SYSTEM_PROMPT).toContain('Add no other field: no verdict, score or recommendation.')
-    expect(SYSTEM_PROMPT).toContain('No score estimate, retailers, links, price, stock, discounts, brand, material quality, durability or comfort.')
+    expect(SYSTEM_PROMPT).toContain('No score, retailer, link, price, stock, brand or quality claims.')
   })
 
   it('never puts a verdict field into the output shapes it asks for', () => {
-    const shapes = lines(SYSTEM_PROMPT).filter((line) => line.startsWith('Complete: ') || line.startsWith('Unable: ') || line.startsWith('outfit_items only:'))
-    expect(shapes).toHaveLength(3)
+    const shapes = [...lines(SYSTEM_PROMPT).filter((line) => line.startsWith('Complete: ') || line.startsWith('Unable: ')), ...Object.values(MODE_RULES)]
+    expect(shapes).toHaveLength(4)
     for (const shape of shapes) expect(shape).not.toMatch(/verdict|score|"recommendation"/i)
   })
 
@@ -123,12 +129,12 @@ describe('prompt context per garment mode', () => {
     expect(SYSTEM_PROMPT).not.toContain('.md')
   })
 
-  it('labels every garment image by number and role', () => {
+  it('numbers every garment image; the mode line says whether they are views or items', () => {
     const labels = (mode: 'single' | 'same_garment_views' | 'outfit_items', count: number) =>
       buildAnalysisContent('context', 'data:photo', Array.from({ length: count }, (_, i) => `data:g${i}`), mode).filter((part) => part.type === 'input_text').map((part) => (part as { text: string }).text)
     expect(labels('single', 1)).toEqual(['context', 'Person image:', 'Garment image 1:'])
-    expect(labels('same_garment_views', 2)).toEqual(['context', 'Person image:', 'Garment image 1 of 2 (view):', 'Garment image 2 of 2 (view):'])
-    expect(labels('outfit_items', 3)).toEqual(['context', 'Person image:', 'Garment image 1 of 3 (item):', 'Garment image 2 of 3 (item):', 'Garment image 3 of 3 (item):'])
+    expect(labels('same_garment_views', 2)).toEqual(['context', 'Person image:', 'Garment image 1:', 'Garment image 2:'])
+    expect(labels('outfit_items', 3)).toEqual(['context', 'Person image:', 'Garment image 1:', 'Garment image 2:', 'Garment image 3:'])
   })
 })
 
@@ -213,24 +219,12 @@ describe('cost bounds with several images', () => {
     }
   })
 
-  it('keeps the analysis text within the text-token bound in every mode, at the largest client input', () => {
-    // Worst case: 4-byte characters everywhere the client controls text, as in tests/spend/spendUnits.test.ts.
-    const occasion = '\u{1F600}'.repeat(MAX_OCCASION_LENGTH / 2)
-    const filler = '\u{1F600}'.repeat(Math.floor((MAX_STYLE_PROFILE_BYTES - 80) / 4))
-    const styleProfile = { preferredStyles: [filler], favoriteColors: [], occasionPreferences: [] }
-    const aiProfile = {
-      ...VALID_COMPLETE_PROFILE,
-      coloring: { ...VALID_COMPLETE_PROFILE.coloring, hair_color: '\u{1F600}'.repeat(20), skin_tone_depth: 'medium light' as const },
-      style_keywords: (['Minimalist', 'Streetwear', 'Bohemian', 'Romantic', 'Eclectic'] as const).map((keyword) => ({ keyword, confidence: 'High' as const, source: 'observed' as const })),
-    }
-    for (const mode of GARMENT_MODES) {
-      const count = mode === 'single' ? 1 : MAX_GARMENT_IMAGES
-      const context = buildUserContext(occasion, styleProfile, aiProfile, { mode, count })
-      const labels = buildAnalysisContent('', 'p', Array.from({ length: count }, () => 'a'), mode).filter((part) => part.type === 'input_text').map((part) => (part as { text: string }).text).join('')
-      const textBytes = utf8ByteLength(SYSTEM_PROMPT) + utf8ByteLength(context) + utf8ByteLength(labels) + 200
-      for (const model of SUPPORTED_MODEL_IDS) {
-        expect({ mode, model, fits: textBytes <= resolveModelConfig(model)!.operations.analysis.maxTextInputTokens }).toEqual({ mode, model, fits: true })
-      }
+  it('keeps the analysis text within the text-token bound in every mode and for every occasion, at the largest client input', () => {
+    // Worst case over every garment mode and every occasion profile (tests/helpers/promptBudget.ts), with a
+    // ${FRAMING_ALLOWANCE}-byte allowance for framing. A token covers at least one byte.
+    const worst = worstCasePromptBytes()
+    for (const model of SUPPORTED_MODEL_IDS) {
+      expect({ model, ...worst, fits: worst.bytes <= resolveModelConfig(model)!.operations.analysis.maxTextInputTokens }).toMatchObject({ model, fits: true })
     }
   })
 })

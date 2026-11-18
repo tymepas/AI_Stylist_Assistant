@@ -191,8 +191,16 @@ informational blocks in the application's own shape:
 Nothing in an informational block can change a rating, a weight, a threshold,
 the score or the band.
 
+## Occasion context (analysis-output/4, Phase 4 Milestone 2)
+
+The request carries the selected occasion and its profile (`lib/constants/occasionProfiles.ts`). The output shape is
+unchanged; the rules for using the profile are stated in the system prompt. The API result adds
+`occasion_context`: `{ occasion, profile_version, formality, setting, suits, varies?, season? }`, the profile the
+model was given. It is display only.
+
 ## Version history
 
 - `analysis-output/1`: the six ratings and the optional shopping advisor.
 - `analysis-output/2`: adds the optional `outfit_components` block.
 - `analysis-output/3`: adds the optional `observations` and `evidence` blocks. Every `/2` output is still a valid `/3` output, with neither block.
+- `analysis-output/4` (Phase 4 Milestones 2 to 4, released together): occasion profiles and their rules (Milestone 2); the sections below describe the fields Milestones 3 and 4 add. Every `/3` output is still a valid `/4` output.

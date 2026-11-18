@@ -185,7 +185,7 @@ describe('end-to-end through the API route (production)', () => {
 
   function analyzeForm() {
     const form = new FormData()
-    form.append('occasion', 'MARKER_OCCASION Office Work')
+    form.append('occasion', 'Office Work')
     form.append('photo', makePng())
     form.append('garment', makePng())
     form.append('styleProfile', JSON.stringify({ preferredStyles: ['MARKER_STYLE'], favoriteColors: [], occasionPreferences: [] }))

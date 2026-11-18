@@ -70,7 +70,7 @@ describe('analyzeWithOpenAI — request construction', () => {
       expect(image.image_url).toMatch(/^data:image\/png;base64,/)
     }
     expect(content[0].text).toContain('Occasion: Client Presentation')
-    expect(content[0].text).not.toContain('Style DNA coloring (for color)')
+    expect(content[0].text).not.toContain('DNA coloring: ')
   })
 
   it('adds AI Style Profile context only when a profile is supplied', async () => {
@@ -79,8 +79,8 @@ describe('analyzeWithOpenAI — request construction', () => {
     await analyzeWithOpenAI({ ...analysisInput(), aiStyleProfile: VALID_COMPLETE_PROFILE })
 
     const text = lastRequest(fetchMock).body.input[0].content[0].text as string
-    expect(text).toContain('Style DNA coloring (for color)')
-    expect(text).toContain('Style DNA aesthetic (for style_preference_match)')
+    expect(text).toContain('DNA coloring: ')
+    expect(text).toContain('DNA aesthetic: ')
   })
 
   it('reads output from the output[] array when output_text is absent', async () => {

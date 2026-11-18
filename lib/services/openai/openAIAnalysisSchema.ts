@@ -63,14 +63,43 @@ const unableToAnalyzeSchema = z.object({
  *   each garment image) and the optional `evidence` block (what each rating rests
  *   on). Both are informational and validated separately. Every /2 output is still
  *   a valid /3 output; it simply has neither block.
+ * - analysis-output/4 (Phase 4 Milestones 2 to 4, one unreleased contract): the
+ *   prompt carries an occasion profile and rules for using it
+ *   (style_preference_match is Unable to Evaluate without preferences or Style
+ *   DNA; seasonality confidence is capped when the occasion states no season),
+ *   outfit items may state which dimensions they support or strain, and visual
+ *   limits gain codes and may be tied to a dimension. Every /3 output is still
+ *   a valid /4 output.
  */
-export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/3'
+export const ANALYSIS_OUTPUT_SCHEMA_VERSION = 'analysis-output/4'
+
+function schemaMajor(version: string): number {
+  const match = /^analysis-output\/(\d+)(\.\d+)*$/.exec(version)
+  return match === null ? 0 : Number(match[1])
+}
 
 /** Schema versions whose outputs are expected to carry `observations` and `evidence`. */
 export function schemaHasVisualEvidence(version: string): boolean {
-  const match = /^analysis-output\/(\d+)(\.\d+)*$/.exec(version)
-  return match !== null && Number(match[1]) >= 3
+  return schemaMajor(version) >= 3
 }
+
+/**
+ * What an output of a given schema version was asked to do, so that an
+ * evaluation never judges an older recording by rules it was never given.
+ * `phase4`: occasion profiles and their rules, outfit contributions and
+ * dimension-linked visual limits (analysis-output/4).
+ */
+export interface SchemaCapabilities {
+  visualEvidence: boolean
+  phase4: boolean
+}
+
+export function schemaCapabilities(version: string): SchemaCapabilities {
+  const major = schemaMajor(version)
+  return { visualEvidence: major >= 3, phase4: major >= 4 }
+}
+
+export const NO_SCHEMA_CAPABILITIES: SchemaCapabilities = { visualEvidence: false, phase4: false }
 
 export const rawOpenAIAnalysisSchema = z.discriminatedUnion('status', [
   completeAnalysisSchema,

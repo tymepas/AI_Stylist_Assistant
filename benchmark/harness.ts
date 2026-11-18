@@ -205,6 +205,8 @@ const caseSchema = z
     twin_of: caseId.optional(),
     /** What the scenario is about, for grouping results. The image-condition `category` stays required. */
     scenario: z.enum(SCENARIO_TYPES).optional(),
+    /** Cases that put the same garment brief in different occasions, to see whether occasion fit responds to the occasion. */
+    occasion_group: z.string().regex(/^[a-z0-9][a-z0-9-]{0,39}$/).optional(),
     /** How the garment images relate to each other. Absent means one garment image. */
     garment_mode: z.enum(GARMENT_MODES).optional(),
     /** Further garment images (at most two more), for the multi-image modes. */

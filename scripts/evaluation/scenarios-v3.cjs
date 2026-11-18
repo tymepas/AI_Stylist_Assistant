@@ -236,4 +236,4 @@ const V3_CASES = [
     facts: { items: [{ item: 1, garment_type: 'top', colours: { dominant: ['blue'] }, pattern_category: 'solid' }, { item: 2, garment_type: 'bottom', colours: { dominant: ['navy'] }, pattern_category: 'solid' }, { item: 3, garment_type: 'footwear', colours: { dominant: ['brown'] } }] } },
 ]
 
-module.exports = { V3_CASES, autoEvidence }
+module.exports = { V3_CASES, autoEvidence, img, rec, ADVISOR }

@@ -23,6 +23,9 @@ const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   'analysis-output/2': '2bf1446af120',
   // Adds the optional observations and evidence blocks (Phase 4 Milestone 1) and their schemas.
   'analysis-output/3': 'b9820a1fc5e0',
+  // Phase 4 Milestones 2 to 4, one unreleased contract. M2 changes the rules the prompt states, not the shape, so the
+  // structure matches /3 here; M3 and M4 add fields and update this line before /4 is released.
+  'analysis-output/4': 'b9820a1fc5e0',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {

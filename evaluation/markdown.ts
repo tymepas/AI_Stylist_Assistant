@@ -71,6 +71,31 @@ const REFERENCE_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['visual
   ['same_garment_agreement_rate', 'Views: same-garment answer matches the reviewer'],
 ]
 
+const OCCASION_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['occasion'], 'applicable' | 'reason' | 'cases_without_profile'>, string]> = [
+  ['occasion_evidence_context_rate', 'Occasion evidence names the occasion as a source'],
+  ['occasion_reason_relevance_rate', 'Occasion reason uses the occasion or its profile (proxy)'],
+  ['formality_occasion_conflict_rate', 'Formality rated Poor while occasion fit is Excellent'],
+  ['unsupported_assumption_rate', 'Occasion explanation assumes a culture, religion or region (proxy)'],
+  ['seasonality_overconfidence_rate', 'High-confidence seasonality with no season stated'],
+  ['preference_without_input_rate', 'Preference match rated with no preferences or Style DNA'],
+  ['occasion_sensitivity_rate', 'Occasion fit changes across contrasting occasions (groups)'],
+]
+
+/** Occasion intelligence (Phase 4 Milestone 2). Aggregates only; never model text. */
+function occasionSection(report: EvaluationReport): string[] {
+  const occasion = report.quality.occasion
+  const heading = ['## 9c. Occasion intelligence', '']
+  if (!occasion.applicable) return [...heading, occasion.reason as string, '']
+  return [
+    ...heading,
+    'Whether outputs follow the occasion-profile rules. None of these figures says whether a rating is right.',
+    '',
+    ...table(['Figure', 'Value'], OCCASION_LABELS.map(([key, label]) => [label, showMetric(occasion[key])])),
+    `- Cases whose occasion has no profile: ${occasion.cases_without_profile.length === 0 ? 'none' : occasion.cases_without_profile.join(', ')}`,
+    '',
+  ]
+}
+
 /** Observations and rating evidence (analysis-output/3). Aggregates only; never model text. */
 function visualEvidenceSection(report: EvaluationReport): string[] {
   const visual = report.quality.visual_evidence
@@ -311,6 +336,7 @@ export function renderMarkdown(report: EvaluationReport): string {
       ? ['Grounding against reference facts: unavailable (no scored reference).', '']
       : SCORED_TIERS.flatMap((tier) => groundingSection(report, tier))),
     ...visualEvidenceSection(report),
+    ...occasionSection(report),
     '## 10. End to end and application',
     '',
     ...(styleDna.mixed ? ['**Pooled:** the first four lines combine cases with and without Style DNA. The Shopping Advisor lines are each about one condition only, by definition.', ''] : []),
