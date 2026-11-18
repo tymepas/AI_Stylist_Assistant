@@ -32,9 +32,9 @@ const firstLine = (text: string): string => lines(text)[0]
 // line of a mode changes its version; update the value here so the change is visible in review.
 // Changed in Phase 4 Milestone 1 (analysis-output/3, observations and evidence). Before: single 3c78bd7bbd3b,
 // views 26de11106f0a, outfit ff754a0c0e59. A recording made with one of those can never carry these.
-const SINGLE_PROMPT_VERSION = 'a0dac4ea1430'
-const VIEWS_PROMPT_VERSION = 'a9a26deddf9b'
-const OUTFIT_PROMPT_VERSION = '14ff6c47f6d3'
+const SINGLE_PROMPT_VERSION = '5a46417ea17e'
+const VIEWS_PROMPT_VERSION = '6a8b1dc5424f'
+const OUTFIT_PROMPT_VERSION = 'a16c1bb5794a'
 
 describe('garment mode rules', () => {
   it('has exactly three modes and at most three garment images', () => {

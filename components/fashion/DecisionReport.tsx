@@ -6,14 +6,15 @@ import { ConfidenceMeter, RatingMeter, ScoreScale } from '@/components/fashion/R
 import ShoppingAdvisor from '@/components/fashion/ShoppingAdvisor'
 import VisualObservations from '@/components/fashion/VisualObservations'
 import OccasionContext from '@/components/fashion/OccasionContext'
-import { SOURCE_LABELS, SUPPORT_LABELS, describeCites } from '@/lib/services/visualEvidenceDisplay'
+import LimitationsSummary from '@/components/fashion/LimitationsSummary'
+import { SOURCE_LABELS, SUPPORT_LABELS, describeCites, describeLimitCites } from '@/lib/services/visualEvidenceDisplay'
 import { labelOf } from '@/lib/services/evidenceSummary'
 import type { GarmentMode } from '@/lib/constants/garmentModes'
 import { GARMENT_MODE_LABELS } from '@/lib/constants/garmentModes'
 import { BAND_TONE, RATING_TONE } from '@/lib/constants/verdictTones'
 import { DIMENSION_DISPLAY, describeEvidence, summarizeEvidence } from '@/lib/services/evidenceSummary'
 import { cn } from '@/lib/utils'
-import type { CompleteAnalysisResult, ComponentContribution, DimensionEvidence, DimensionResult, Observations, OutfitComponent } from '@/types/schema'
+import type { CompleteAnalysisResult, ComponentContribution, ConsistencyFlag, DimensionEvidence, DimensionResult, Observations, OutfitComponent } from '@/types/schema'
 
 interface DecisionReportProps {
   result: CompleteAnalysisResult
@@ -55,7 +56,7 @@ function ItemContribution({ contribution, observations }: { contribution: Compon
       {rows.filter(([, keys]) => keys.length > 0).map(([label, keys]) => (
         <div key={label} className="contents">
           <dt className={cn('text-muted-foreground', label === 'Works against' ? 'text-verdict-caution' : '')}>{label}</dt>
-          <dd className="text-foreground">{keys.map((key) => labelOf(key).toLowerCase()).join(', ')}</dd>
+          <dd className="text-foreground">{keys.length === 6 ? 'all six ratings' : keys.map((key) => labelOf(key).toLowerCase()).join(', ')}</dd>
         </div>
       ))}
       {basis.length > 0 ? (
@@ -66,6 +67,13 @@ function ItemContribution({ contribution, observations }: { contribution: Compon
       ) : null}
     </dl>
   )
+}
+
+/** One plain sentence for a consistency flag. The detail comes from fixed vocabularies, never from model text. */
+function flagSentence(flag: ConsistencyFlag): string {
+  if (flag.code === 'colour_not_observed') return `It mentions ${flag.detail}, which was not among the colours observed in your photos.`
+  if (flag.code === 'occasion_not_selected') return `It refers to ${flag.detail}, not the occasion you chose.`
+  return 'It is rated with high confidence, although its evidence is only partial.'
 }
 
 const SUPPORT_ICONS = { sufficient: CheckCircle2, partial: CircleDashed, insufficient: CircleHelp } as const
@@ -83,6 +91,7 @@ function RatingEvidencePanel({ label, evidence, observations, mode }: { label: s
     return <p className="mt-3 text-xs text-muted-foreground/90" data-testid="dimension-evidence-unavailable">The evidence behind this rating is not available.</p>
   }
   const cites = describeCites(evidence, observations, mode)
+  const limits = describeLimitCites(evidence.cites, observations, mode)
   const Icon = SUPPORT_ICONS[evidence.support]
   return (
     <details className="group mt-3" data-testid="dimension-evidence">
@@ -103,6 +112,7 @@ function RatingEvidencePanel({ label, evidence, observations, mode }: { label: s
           </div>
         ) : null}
         <p className="text-muted-foreground">Based on: <span className="text-foreground">{evidence.sources.map((source) => SOURCE_LABELS[source]).join(', ')}</span></p>
+        {limits.length > 0 ? <p className="text-muted-foreground">Limited by: <span className="text-foreground">{limits.join('; ')}</span></p> : null}
         {evidence.missing ? <p className="break-words text-muted-foreground">Missing or unclear: <span className="text-foreground">{evidence.missing}</span></p> : null}
         <p className="text-xs text-muted-foreground">These are the facts the rating rests on. The explanation above is Verdict&apos;s reading of them.</p>
       </div>
@@ -110,7 +120,7 @@ function RatingEvidencePanel({ label, evidence, observations, mode }: { label: s
   )
 }
 
-function DimensionRow({ label, weightPercent, dim, delayClass, conflict, evidence, observations, mode }: { label: string; weightPercent: number | null; dim: DimensionResult; delayClass: string; conflict: boolean; evidence?: DimensionEvidence | null; observations?: Observations; mode?: GarmentMode }) {
+function DimensionRow({ label, weightPercent, dim, delayClass, conflict, evidence, observations, mode, flags = [] }: { label: string; weightPercent: number | null; dim: DimensionResult; delayClass: string; conflict: boolean; evidence?: DimensionEvidence | null; observations?: Observations; mode?: GarmentMode; flags?: ConsistencyFlag[] }) {
   const tone = RATING_TONE[dim.rating]
   return (
     <li className={cn('animate-rise py-5', delayClass)}>
@@ -134,6 +144,11 @@ function DimensionRow({ label, weightPercent, dim, delayClass, conflict, evidenc
         // Stated plainly rather than left blank; nothing is written on the analysis's behalf.
         <p className="mt-3 max-w-prose text-sm italic leading-relaxed text-muted-foreground/80">No explanation was given for this rating.</p>
       )}
+      {flags.length > 0 ? (
+        <div role="note" data-testid="consistency-flag" className="mt-3 max-w-prose rounded-lg border border-verdict-caution/30 bg-verdict-caution/[0.06] px-3 py-2 text-xs leading-relaxed text-foreground/90">
+          <span className="font-medium">Check this explanation.</span> {flags.map(flagSentence).join(' ')} The rating itself is shown as given.
+        </div>
+      ) : null}
       {evidence !== undefined ? <RatingEvidencePanel label={label} evidence={evidence} observations={observations} mode={mode} /> : null}
     </li>
   )
@@ -204,6 +219,8 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
 
       <VisualObservations observations={result.observations} evidence={result.evidence} garmentMode={garmentMode} />
 
+      <LimitationsSummary observations={result.observations} garmentMode={garmentMode} />
+
       <section aria-labelledby="ratings-heading">
         <p className="eyebrow">How it was calculated</p>
         <h3 id="ratings-heading" className="mt-2 font-display text-4xl text-foreground">The six ratings</h3>
@@ -217,6 +234,7 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
               delayClass={DELAYS[index] ?? ''}
               conflict={entry.key === 'style_preference_match' && (result.dimensions[entry.key].rating === 'Poor' || result.dimensions[entry.key].rating === 'Fair')}
               evidence={ratingEvidence ? ratingEvidence.dimensions[entry.key] ?? null : undefined}
+              flags={(result.consistency?.flags ?? []).filter((flag) => flag.dimension === entry.key)}
               observations={result.observations}
               mode={garmentMode}
             />

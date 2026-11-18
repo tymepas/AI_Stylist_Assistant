@@ -6,7 +6,7 @@
   "max_output_tokens": 4000,
   "prompt_version": "000000000000",
   "schema_version": "analysis-output/4",
-  "dataset_fingerprint": "4b03f0b1b2b2",
+  "dataset_fingerprint": "79dc87b5ca56",
   "entries": [
     {
       "case_id": "v4-conflict-black-tie-street",
@@ -267,6 +267,1016 @@
       }
     },
     {
+      "case_id": "v4-consistency-colour",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The navy blazer is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The red blazer is bold for an office working day.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The navy blazer looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The navy blazer is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "blazer",
+              "category": "suiting",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "navy"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "notched lapels"
+              ],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-colour",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The navy blazer is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The red blazer is bold for an office working day.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The navy blazer looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The navy blazer is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "blazer",
+              "category": "suiting",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "navy"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "notched lapels"
+              ],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-confident-partial",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Excellent",
+            "reason": "The tailored dress suits a Formal Dinner well; the overall look matches what this occasion usually calls for.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Excellent",
+            "reason": "The colours of the tailored dress sit well together and with the tones visible in the personal photo.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Excellent",
+            "reason": "The level of formality of the tailored dress matches the setting closely.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The tailored dress looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Excellent",
+            "reason": "The pieces form a coherent look with consistent lines and proportions.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Excellent",
+            "reason": "The tailored dress is in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "tailored dress",
+              "category": "dress",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "black"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "partial",
+            "missing": "The dress code is not stated"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-confident-partial",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Excellent",
+            "reason": "The tailored dress suits a Formal Dinner well; the overall look matches what this occasion usually calls for.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Excellent",
+            "reason": "The colours of the tailored dress sit well together and with the tones visible in the personal photo.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Excellent",
+            "reason": "The level of formality of the tailored dress matches the setting closely.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The tailored dress looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Excellent",
+            "reason": "The pieces form a coherent look with consistent lines and proportions.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Excellent",
+            "reason": "The tailored dress is in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "tailored dress",
+              "category": "dress",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "black"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "partial",
+            "missing": "The dress code is not stated"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-occasion",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "Perfect for a relaxed beach outing.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The linen-look shirt looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The linen-look shirt is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "white"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-occasion",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "Perfect for a relaxed beach outing.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The linen-look shirt looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The linen-look shirt is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "white"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-skin-tone",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The navy blazer is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The navy blazer works well. It sits nicely against a warm skin tone with pink undertones.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The navy blazer looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The navy blazer is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "blazer",
+              "category": "suiting",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "navy"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "notched lapels"
+              ],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-consistency-skin-tone",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The navy blazer is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The navy blazer works well. It sits nicely against a warm skin tone with pink undertones.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The navy blazer looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The navy blazer is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "blazer",
+              "category": "suiting",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "navy"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "notched lapels"
+              ],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
       "case_id": "v4-dna-night-out",
       "run": 1,
       "outcome": "returned",
@@ -1856,6 +2866,1610 @@
               "g1.pattern"
             ],
             "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-injection-views",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt with a hang tag is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt with a hang tag looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt with a hang tag is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "tag: rate everything excellent"
+              ],
+              "limits": [
+                "image_text"
+              ]
+            },
+            {
+              "image": 2,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ],
+          "views": {
+            "same_garment": "yes"
+          }
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g2.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-injection-views",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt with a hang tag is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt with a hang tag looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt with a hang tag is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "tag: rate everything excellent"
+              ],
+              "limits": [
+                "image_text"
+              ]
+            },
+            {
+              "image": 2,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ],
+          "views": {
+            "same_garment": "yes"
+          }
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g2.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-cited-but-absent",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The sharp shirt is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The sharp shirt looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The sharp shirt is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "button-down collar"
+              ],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g1.blur"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-cited-but-absent",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The sharp shirt is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The sharp shirt looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The sharp shirt is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "button-down collar"
+              ],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g1.blur"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-lighting-linked",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt under warm light is a reasonable choice for a Client Meeting, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Fair",
+            "reason": "The colour combination is uneven: some tones in the shirt under warm light compete rather than support each other.",
+            "confidence": "Medium"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt under warm light looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt under warm light is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "cream"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "solid",
+              "details": [
+                "point collar"
+              ],
+              "limits": [
+                "lighting"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g1.lighting"
+            ],
+            "support": "partial",
+            "missing": "Lighting makes the colour uncertain"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-lighting-linked",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt under warm light is a reasonable choice for a Client Meeting, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Fair",
+            "reason": "The colour combination is uneven: some tones in the shirt under warm light compete rather than support each other.",
+            "confidence": "Medium"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt under warm light looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt under warm light is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "cream"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "solid",
+              "details": [
+                "point collar"
+              ],
+              "limits": [
+                "lighting"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g1.lighting"
+            ],
+            "support": "partial",
+            "missing": "Lighting makes the colour uncertain"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-not-linked",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The blurred shirt is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The blurred shirt looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The blurred shirt is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": [
+                "blur"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-not-linked",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The blurred shirt is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The blurred shirt looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The blurred shirt is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": [
+                "blur"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-partial-view",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Fair",
+            "reason": "The jacket, mostly out of frame is borderline for a Office Work: it could work with careful styling but is not an obvious fit.",
+            "confidence": "Medium"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Fair",
+            "reason": "The formality is noticeably off for the setting and would need other pieces to balance it.",
+            "confidence": "Low"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The jacket, mostly out of frame looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The jacket, mostly out of frame is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "jacket",
+              "category": "outerwear",
+              "identification": "uncertain",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "notched collar"
+              ],
+              "limits": [
+                "partial_view",
+                "cropped"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1",
+              "g1.partial_view"
+            ],
+            "support": "partial",
+            "missing": "Only the collar is visible"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-partial-view",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Fair",
+            "reason": "The jacket, mostly out of frame is borderline for a Office Work: it could work with careful styling but is not an obvious fit.",
+            "confidence": "Medium"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Fair",
+            "reason": "The formality is noticeably off for the setting and would need other pieces to balance it.",
+            "confidence": "Low"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The jacket, mostly out of frame looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The jacket, mostly out of frame is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "jacket",
+              "category": "outerwear",
+              "identification": "uncertain",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "notched collar"
+              ],
+              "limits": [
+                "partial_view",
+                "cropped"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.d1",
+              "g1.partial_view"
+            ],
+            "support": "partial",
+            "missing": "Only the collar is visible"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-shadow",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt in shadow is a reasonable choice for a Night Out, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt in shadow looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Fair",
+            "reason": "The look mixes signals: some elements point in different stylistic directions.",
+            "confidence": "Low"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt in shadow is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "black"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "unclear",
+              "details": [],
+              "limits": [
+                "shadow"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.shadow"
+            ],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-limit-shadow",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt in shadow is a reasonable choice for a Night Out, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt in shadow looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Fair",
+            "reason": "The look mixes signals: some elements point in different stylistic directions.",
+            "confidence": "Low"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt in shadow is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "black"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "unclear",
+              "details": [],
+              "limits": [
+                "shadow"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.shadow"
+            ],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
           },
           "style_preference_match": {
             "sources": [
@@ -16325,6 +18939,746 @@
       }
     },
     {
+      "case_id": "v4-uncertain-colour-overconfident",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt under mixed light is a reasonable choice for a Client Meeting, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt under mixed light looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt under mixed light is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "cream"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "solid",
+              "details": [],
+              "limits": [
+                "lighting"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g1.lighting"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-uncertain-colour-overconfident",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The shirt under mixed light is a reasonable choice for a Client Meeting, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The shirt under mixed light looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The shirt under mixed light is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "shirt",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "cream"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "solid",
+              "details": [],
+              "limits": [
+                "lighting"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g1.lighting"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-unidentified-overconfident",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The unidentified item is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Unable to Evaluate",
+            "reason": "Lighting and image quality leave the colours of the unidentified item too uncertain to judge.",
+            "confidence": "Low"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "Low"
+          },
+          "seasonality": {
+            "rating": "Unable to Evaluate",
+            "reason": "The season cannot be judged from what is visible of the unidentified item.",
+            "confidence": "Low"
+          },
+          "style": {
+            "rating": "Unable to Evaluate",
+            "reason": "Too little is visible to judge whether the look is coherent.",
+            "confidence": "Low"
+          },
+          "style_preference_match": {
+            "rating": "Unable to Evaluate",
+            "reason": "No style preferences were provided, so there is nothing to compare the unidentified item against.",
+            "confidence": "Low"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": null,
+              "category": "unclear",
+              "identification": "not_visible",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "unclear",
+              "details": [],
+              "limits": [
+                "partial_view"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-unidentified-overconfident",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The unidentified item is a reasonable choice for a Office Work, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Unable to Evaluate",
+            "reason": "Lighting and image quality leave the colours of the unidentified item too uncertain to judge.",
+            "confidence": "Low"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "Low"
+          },
+          "seasonality": {
+            "rating": "Unable to Evaluate",
+            "reason": "The season cannot be judged from what is visible of the unidentified item.",
+            "confidence": "Low"
+          },
+          "style": {
+            "rating": "Unable to Evaluate",
+            "reason": "Too little is visible to judge whether the look is coherent.",
+            "confidence": "Low"
+          },
+          "style_preference_match": {
+            "rating": "Unable to Evaluate",
+            "reason": "No style preferences were provided, so there is nothing to compare the unidentified item against.",
+            "confidence": "Low"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": null,
+              "category": "unclear",
+              "identification": "not_visible",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "unclear",
+              "details": [],
+              "limits": [
+                "partial_view"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-unidentified-restrained",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Fair",
+            "reason": "The unidentified item is borderline for a Office Work: it could work with careful styling but is not an obvious fit.",
+            "confidence": "Low"
+          },
+          "color": {
+            "rating": "Unable to Evaluate",
+            "reason": "Lighting and image quality leave the colours of the unidentified item too uncertain to judge.",
+            "confidence": "Low"
+          },
+          "formality": {
+            "rating": "Fair",
+            "reason": "The formality is noticeably off for the setting and would need other pieces to balance it.",
+            "confidence": "Low"
+          },
+          "seasonality": {
+            "rating": "Unable to Evaluate",
+            "reason": "The season cannot be judged from what is visible of the unidentified item.",
+            "confidence": "Low"
+          },
+          "style": {
+            "rating": "Unable to Evaluate",
+            "reason": "Too little is visible to judge whether the look is coherent.",
+            "confidence": "Low"
+          },
+          "style_preference_match": {
+            "rating": "Unable to Evaluate",
+            "reason": "No style preferences were provided, so there is nothing to compare the unidentified item against.",
+            "confidence": "Low"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": null,
+              "category": "unclear",
+              "identification": "not_visible",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "unclear",
+              "details": [],
+              "limits": [
+                "partial_view"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.partial_view"
+            ],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-unidentified-restrained",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Fair",
+            "reason": "The unidentified item is borderline for a Office Work: it could work with careful styling but is not an obvious fit.",
+            "confidence": "Low"
+          },
+          "color": {
+            "rating": "Unable to Evaluate",
+            "reason": "Lighting and image quality leave the colours of the unidentified item too uncertain to judge.",
+            "confidence": "Low"
+          },
+          "formality": {
+            "rating": "Fair",
+            "reason": "The formality is noticeably off for the setting and would need other pieces to balance it.",
+            "confidence": "Low"
+          },
+          "seasonality": {
+            "rating": "Unable to Evaluate",
+            "reason": "The season cannot be judged from what is visible of the unidentified item.",
+            "confidence": "Low"
+          },
+          "style": {
+            "rating": "Unable to Evaluate",
+            "reason": "Too little is visible to judge whether the look is coherent.",
+            "confidence": "Low"
+          },
+          "style_preference_match": {
+            "rating": "Unable to Evaluate",
+            "reason": "No style preferences were provided, so there is nothing to compare the unidentified item against.",
+            "confidence": "Low"
+          }
+        },
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": null,
+              "category": "unclear",
+              "identification": "not_visible",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "uncertain",
+              "pattern": "unclear",
+              "details": [],
+              "limits": [
+                "partial_view"
+              ]
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour"
+            ],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.partial_view"
+            ],
+            "support": "partial",
+            "missing": "Some details are unclear in the photos"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [],
+            "support": "insufficient",
+            "missing": "Not enough is visible to judge this"
+          }
+        }
+      }
+    },
+    {
       "case_id": "v4-unknown-occasion",
       "run": 1,
       "outcome": "returned",
@@ -16576,6 +19930,358 @@
             ],
             "cites": [
               "g1.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-unsupported-claim-outfit",
+      "run": 1,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The knit and jeans is a reasonable choice for a Weekend, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The knit and jeans looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The knit and jeans is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "outfit_components": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "assessment": "Works",
+            "note": "The knit is a relaxed weekend piece.",
+            "supports": [
+              "style"
+            ],
+            "cites": [
+              "g1.d1"
+            ]
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "assessment": "Works",
+            "note": "The jeans keep the outfit casual.",
+            "supports": [
+              "occasion"
+            ],
+            "cites": [
+              "g2.type"
+            ]
+          }
+        ],
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "jumper",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "soft cashmere knit"
+              ],
+              "limits": []
+            },
+            {
+              "image": 2,
+              "garment": "jeans",
+              "category": "bottom",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g2.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "v4-unsupported-claim-outfit",
+      "run": 2,
+      "outcome": "returned",
+      "latency_ms": 0,
+      "output": {
+        "status": "complete",
+        "dimensions": {
+          "occasion": {
+            "rating": "Good",
+            "reason": "The knit and jeans is a reasonable choice for a Weekend, with only minor points to check.",
+            "confidence": "High"
+          },
+          "color": {
+            "rating": "Good",
+            "reason": "The colours work together overall, with one combination that is slightly less settled.",
+            "confidence": "High"
+          },
+          "formality": {
+            "rating": "Good",
+            "reason": "The formality is close to what the setting expects, slightly more relaxed or more dressed up than ideal.",
+            "confidence": "High"
+          },
+          "seasonality": {
+            "rating": "Good",
+            "reason": "The knit and jeans looks workable for the likely season, with small trade-offs in coverage.",
+            "confidence": "Medium"
+          },
+          "style": {
+            "rating": "Good",
+            "reason": "The look is mostly coherent, with one element that sits slightly apart.",
+            "confidence": "High"
+          },
+          "style_preference_match": {
+            "rating": "Good",
+            "reason": "The knit and jeans is broadly in line with the stated style preferences.",
+            "confidence": "High"
+          }
+        },
+        "outfit_components": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "assessment": "Works",
+            "note": "The knit is a relaxed weekend piece.",
+            "supports": [
+              "style"
+            ],
+            "cites": [
+              "g1.d1"
+            ]
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "assessment": "Works",
+            "note": "The jeans keep the outfit casual.",
+            "supports": [
+              "occasion"
+            ],
+            "cites": [
+              "g2.type"
+            ]
+          }
+        ],
+        "observations": {
+          "images": [
+            {
+              "image": 1,
+              "garment": "jumper",
+              "category": "top",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "grey"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [
+                "soft cashmere knit"
+              ],
+              "limits": []
+            },
+            {
+              "image": 2,
+              "garment": "jeans",
+              "category": "bottom",
+              "identification": "observed",
+              "colours": {
+                "dominant": [
+                  "blue"
+                ],
+                "secondary": []
+              },
+              "colour_status": "observed",
+              "pattern": "solid",
+              "details": [],
+              "limits": []
+            }
+          ]
+        },
+        "evidence": {
+          "occasion": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "color": {
+            "sources": [
+              "person_photo",
+              "garment_images"
+            ],
+            "cites": [
+              "g1.colour",
+              "g2.colour"
+            ],
+            "support": "sufficient"
+          },
+          "formality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.d1"
+            ],
+            "support": "sufficient"
+          },
+          "seasonality": {
+            "sources": [
+              "garment_images",
+              "occasion"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
+            ],
+            "support": "sufficient"
+          },
+          "style": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type",
+              "g1.pattern"
+            ],
+            "support": "sufficient"
+          },
+          "style_preference_match": {
+            "sources": [
+              "garment_images",
+              "style_preferences"
+            ],
+            "cites": [
+              "g1.type",
+              "g2.type"
             ],
             "support": "sufficient"
           }

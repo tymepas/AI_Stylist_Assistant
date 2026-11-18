@@ -24,7 +24,7 @@ describe('Occasion context', () => {
     renderReport(buildCompleteAnalysisResult(dimensions, undefined, { occasionContext: occasionContextOf('Wedding Guest') }))
     const section = screen.getByTestId('occasion-context')
     expect(within(section).getByRole('heading', { name: 'Wedding Guest' })).toBeTruthy()
-    expect(section.textContent).toContain('Usually business formal to formal, wedding ceremony; celebratory, polished pieces tend to suit it.')
+    expect(section.textContent).toContain('Usually business formal to formal; wedding ceremony. What tends to suit: celebratory, polished pieces.')
     expect(section.textContent).toContain('Expectations vary: Dress codes, timing, traditions differ.')
     expect(section.textContent).toContain('Occasion fit: Fair')
     expect(section.textContent).toContain('A general guide to the occasion, not a rule.')

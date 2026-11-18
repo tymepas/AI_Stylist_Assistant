@@ -135,6 +135,16 @@ How they are handled:
 - **Report.** Each outfit item card says which ratings the item helps, works against or is too little to judge, and what it rests on; a dropped contribution says so. The views note explains how views differ.
 - **Mock mode.** Outfit items in mock mode say they cannot be judged on any dimension, citing only the "no image was analysed" note.
 
+## Limitations, uncertainty and consistency (Phase 4 Milestone 4)
+
+- **Limit codes.** Image limits are `lighting`, `shadow`, `occlusion`, `cropped`, `blur`, `low_resolution`, `angle`, `partial_view` (too little of the garment visible), `image_text` and `several_items`. Conflicting evidence between images is `observations.views`; missing input is unable_to_analyze or an evidence `missing` note.
+- **Limits tied to a rating.** Evidence may cite `g<image>.<limit>` to say a limit weakened that rating; the citation resolves only when that image reported the limit. Outfit contributions may cite their own image's limits the same way.
+- **Four states.** Observed, uncertain and not visible describe what a photo shows; Unable to Evaluate is a rating. No percentage is ever asked for or shown.
+- **Consistency flags.** `lib/services/consistencyService.ts` runs after the verdict and only flags: an explanation naming a garment colour that was never observed (sentences about skin, hair or eyes, dress codes such as "black tie" and occasion names are skipped), an occasion explanation about a different occasion, an Excellent High-confidence rating whose evidence is partial. The result carries `consistency.flags` (dimension, code, a detail from a fixed vocabulary); the report shows "Check this explanation" next to the rating, which is shown as given. Evidence that cites something unseen or contradicts its rating is refused by validation, as before.
+- **Report.** "What limited this assessment" lists, in plain sentences per photo, the limits, uncertain or hidden colours, unclear patterns, unidentified garments and disagreeing views; it is left out when nothing limited the photos. Each rating's evidence shows "Limited by". Older results render without any of these sections.
+- **Truncation.** An answer cut off at the output cap is `incomplete` and fails the whole analysis; cut-short JSON is `invalid_response`. Nothing partial is ever shown. Missing informational blocks alone never fail an analysis.
+- **Budget.** Worst-case prompt text after Milestone 4: 7,898 bytes of the unchanged 8,000-token bound (every mode and occasion, 200-byte allowance included).
+
 ## Evidence summary and the decision report
 
 `lib/services/evidenceSummary.ts` describes how much a verdict rests on: which weighted dimensions were rated, which were left "Unable to Evaluate", and which have Low confidence. It is display only. The report (`components/fashion/DecisionReport.tsx`) uses it to state, next to the verdict, when the verdict rests on few or uncertain ratings, and to show no score when nothing that counts could be evaluated. It never changes a rating, the score or the band.

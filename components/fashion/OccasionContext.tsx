@@ -30,7 +30,7 @@ export default function OccasionContext({ context, occasionRating }: OccasionCon
       <p className="eyebrow inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" aria-hidden="true" /> Occasion context</p>
       <h3 id="occasion-context-heading" className="mt-1 font-display text-3xl text-foreground">{context.occasion}</h3>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-        Usually <span className="text-foreground">{context.formality}</span>, {context.setting}; {context.suits} tend to suit it.
+        Usually <span className="text-foreground">{context.formality}</span>; {context.setting}. What tends to suit: {context.suits}.
         {context.season ? <> Season stated by the occasion: <span className="text-foreground">{context.season}</span>.</> : null}
       </p>
       {context.varies ? <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">Expectations vary: {sentence(context.varies)}</p> : null}

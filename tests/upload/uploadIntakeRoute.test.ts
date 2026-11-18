@@ -202,9 +202,9 @@ describe('a single garment image (the request every existing client sends)', () 
     const body = await response.json()
     expect(response.status).toBe(200)
     expect(body).toMatchObject({ status: 'complete', overall_recommendation: 'Recommended', verdict_score: 4 })
-    // analysis-output/3 adds `observations` and `evidence`; Phase 4 Milestone 2 adds `occasion_context`. All three are
-    // informational and never part of the verdict.
-    expect(Object.keys(body).sort()).toEqual(['analysis_based_on', 'dimensions', 'evidence', 'next_step', 'observations', 'occasion_context', 'overall_recommendation', 'shopping_advisor', 'status', 'things_to_consider', 'verdict_score'])
+    // analysis-output/3 adds `observations` and `evidence`; Phase 4 Milestone 2 adds `occasion_context` and Milestone 4
+    // `consistency`. All four are informational and never part of the verdict.
+    expect(Object.keys(body).sort()).toEqual(['analysis_based_on', 'consistency', 'dimensions', 'evidence', 'next_step', 'observations', 'occasion_context', 'overall_recommendation', 'shopping_advisor', 'status', 'things_to_consider', 'verdict_score'])
   })
 
   it('accepts the explicit mode "single" with the same result', async () => {

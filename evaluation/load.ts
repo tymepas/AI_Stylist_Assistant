@@ -119,7 +119,7 @@ export const DATASETS = {
   'scenarios-v1': { dir: path.join('evaluation', 'datasets', 'scenarios-v1'), baseline: path.join('evaluation', 'baselines', 'scenarios-v1.json'), references: false },
   'scenarios-v2': { dir: path.join('evaluation', 'datasets', 'scenarios-v2'), baseline: path.join('evaluation', 'baselines', 'scenarios-v2.json'), references: false },
   'scenarios-v3': { dir: path.join('evaluation', 'datasets', 'scenarios-v3'), baseline: path.join('evaluation', 'baselines', 'scenarios-v3.json'), references: true },
-  'scenarios-v4': { dir: path.join('evaluation', 'datasets', 'scenarios-v4'), baseline: path.join('evaluation', 'baselines', 'scenarios-v4.json'), references: false },
+  'scenarios-v4': { dir: path.join('evaluation', 'datasets', 'scenarios-v4'), baseline: path.join('evaluation', 'baselines', 'scenarios-v4.json'), references: true },
 } as const
 
 export type DatasetId = keyof typeof DATASETS

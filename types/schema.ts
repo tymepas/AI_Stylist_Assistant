@@ -54,6 +54,16 @@ export interface CompleteAnalysisResult {
   evidence?: RatingEvidence
   /** The occasion the analysis was for, with the application's profile of it (Phase 4 Milestone 2). Display only. */
   occasion_context?: OccasionContext
+  /** Where an explanation does not match the observations or evidence (Phase 4 Milestone 4). Flags only; nothing is changed. */
+  consistency?: { flags: ConsistencyFlag[] }
+}
+
+/** One inconsistency between a rating's explanation and what was observed. It flags; it never changes the rating. */
+export interface ConsistencyFlag {
+  dimension: keyof Dimensions
+  code: 'colour_not_observed' | 'occasion_not_selected' | 'confident_on_partial_evidence'
+  /** The colour families or occasion words involved, from fixed vocabularies. Never free model text. */
+  detail?: string
 }
 
 /** The application's profile of the selected occasion, as sent to the model. Never part of the verdict. */
@@ -88,7 +98,7 @@ export type ColourFamily =
 export type PatternObservation = 'solid' | 'striped' | 'checked' | 'printed' | 'textured' | 'other' | 'unclear'
 
 /** What limited an image, in fixed categories, so the report can say it plainly. */
-export type ImageLimitation = 'lighting' | 'occlusion' | 'cropped' | 'blur' | 'low_resolution' | 'angle' | 'image_text' | 'several_items'
+export type ImageLimitation = 'lighting' | 'shadow' | 'occlusion' | 'cropped' | 'blur' | 'low_resolution' | 'angle' | 'partial_view' | 'image_text' | 'several_items'
 
 export type ObservedGarmentCategory = ShoppingGarmentCategory | 'unclear'
 

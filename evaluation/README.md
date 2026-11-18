@@ -407,6 +407,10 @@ Section `quality.multi_image_reasoning`, section 9d of the Markdown. From the ou
 
 The blocking `visual_evidence` check can also state what must happen to item contributions (`expected.visual_evidence.contributions`). Every figure is unavailable for a recording made before analysis-output/4.
 
+### 10. Limitations and uncertainty (analysis-output/4)
+
+Section `quality.uncertainty`, section 9e of the Markdown: photo limits tied to the ratings they weakened; colour ratings held back when colour is uncertain; occasion fit and formality held back when no garment is identified; runs with a consistency flag. Against references, `visual_evidence.<tier>.limit_recall` scores the limits a reviewer listed (`garment_facts.items[].limits`). Cases can require exact consistency flags (`expected.visual_evidence.consistency`, an empty list meaning none). Unavailable for recordings made before analysis-output/4.
+
 ### What cannot be measured yet
 
 | Wanted | Why not |

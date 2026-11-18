@@ -384,6 +384,7 @@ leave a field out rather than guess.
 | `pattern_category` | `solid`, `striped`, `checked`, `printed`, `textured`, `other`, or `unclear` when it cannot be judged |
 | `visible_details` | Words that name details you can see (for example `lapel`, `pocket`). A model detail mentioning one counts as supported |
 | `absent_details` | Words that name details that are NOT there (for example `hood` on a blazer). A model detail mentioning one counts as contradicted |
+| `limits` | What limits this photo, in the model's codes: `lighting`, `shadow`, `occlusion`, `cropped`, `blur`, `low_resolution`, `angle`, `partial_view`, `image_text`, `several_items`. Scored as recall |
 
 For views of one garment, also set `views_same_garment` on the reference:
 `yes` when the views show the same garment, `no` when they do not. The free-text

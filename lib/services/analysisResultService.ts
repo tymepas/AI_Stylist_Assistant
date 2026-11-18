@@ -1,4 +1,5 @@
 import { computeVerdict } from '@/lib/services/analysisService'
+import { checkConsistency } from '@/lib/services/consistencyService'
 import type { RawOpenAIDimensions } from '@/types/openai'
 import type { GarmentMode } from '@/lib/constants/garmentModes'
 import type { CompleteAnalysisResult, Observations, OccasionContext, OutfitComponents, OverallRecommendation, RatingEvidence, ShoppingAdvisor } from '@/types/schema'
@@ -56,6 +57,8 @@ export function buildCompleteAnalysisResult(
     ...(extras.observations ? { observations: extras.observations } : {}),
     ...(extras.evidence ? { evidence: extras.evidence } : {}),
     ...(extras.occasionContext ? { occasion_context: extras.occasionContext } : {}),
+    // Consistency is checked after the verdict, from values already validated; it only flags.
+    ...(extras.observations || extras.evidence ? { consistency: { flags: checkConsistency({ dimensions, observations: extras.observations, evidence: extras.evidence, occasion: extras.occasionContext?.occasion }) } } : {}),
     status: 'complete',
     dimensions,
     things_to_consider: buildThingsToConsider(dimensions),

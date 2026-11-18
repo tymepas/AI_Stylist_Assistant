@@ -41,7 +41,7 @@ import { z } from 'zod'
 import { DIMENSION_KEYS, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { fingerprint } from '@/lib/services/openai/promptVersion'
 import { shoppingGarmentCategorySchema } from '@/lib/services/openai/shoppingRecommendationSchema'
-import { COLOUR_FAMILIES, PATTERNS } from '@/lib/services/openai/observationsSchema'
+import { COLOUR_FAMILIES, IMAGE_LIMITS, PATTERNS } from '@/lib/services/openai/observationsSchema'
 
 export const REFERENCE_SET_FORMAT = 'verdict-reference-set/1'
 
@@ -163,6 +163,8 @@ const garmentItemSchema = z
     visible_details: z.array(term).min(1).max(8).optional(),
     /** Words that name details a reviewer confirms are NOT there. A model detail mentioning one of them is contradicted. */
     absent_details: z.array(term).min(1).max(8).optional(),
+    /** What limits this image, as a reviewer sees it, in the codes the model uses (Phase 4 Milestone 4). */
+    limits: z.array(z.enum(IMAGE_LIMITS)).min(1).max(IMAGE_LIMITS.length).optional(),
   })
   .strict()
 

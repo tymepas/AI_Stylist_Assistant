@@ -69,6 +69,7 @@ const REFERENCE_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['visual
   ['supported_detail_rate', 'Details the reviewer confirmed'],
   ['contradicted_detail_rate', 'Details the reviewer marked absent or unverifiable'],
   ['same_garment_agreement_rate', 'Views: same-garment answer matches the reviewer'],
+  ['limit_recall', 'Photo limits the reviewer listed that the output reported'],
 ]
 
 const OCCASION_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['occasion'], 'applicable' | 'reason' | 'cases_without_profile'>, string]> = [
@@ -97,6 +98,21 @@ function multiImageReasoningSection(report: EvaluationReport): string[] {
   const heading = ['## 9d. Multi-view and outfit reasoning', '']
   if (!block.applicable) return [...heading, block.reason as string, '']
   return [...heading, 'From the outputs alone; none of these figures says whether a rating is right.', '', ...table(['Figure', 'Value'], MULTI_IMAGE_LABELS.map(([key, label]) => [label, showMetric(block[key])]))]
+}
+
+const UNCERTAINTY_LABELS: Array<[Exclude<keyof EvaluationReport['quality']['uncertainty'], 'applicable' | 'reason'>, string]> = [
+  ['limit_linked_rate', 'Photo limits tied to the ratings they weakened'],
+  ['uncertain_colour_restraint_rate', 'Colour rating held back when colour is uncertain'],
+  ['unidentified_garment_restraint_rate', 'Occasion and formality held back when no garment is identified'],
+  ['consistency_flag_rate', 'Runs with an explanation that does not match observations or evidence'],
+]
+
+/** Limitations and uncertainty (Phase 4 Milestone 4). Aggregates only; never model text. */
+function uncertaintySection(report: EvaluationReport): string[] {
+  const block = report.quality.uncertainty
+  const heading = ['## 9e. Limitations and uncertainty', '']
+  if (!block.applicable) return [...heading, block.reason as string, '']
+  return [...heading, 'From the outputs alone; none of these figures says whether a rating is right.', '', ...table(['Figure', 'Value'], UNCERTAINTY_LABELS.map(([key, label]) => [label, showMetric(block[key])]))]
 }
 
 /** Occasion intelligence (Phase 4 Milestone 2). Aggregates only; never model text. */
@@ -356,6 +372,7 @@ export function renderMarkdown(report: EvaluationReport): string {
     ...visualEvidenceSection(report),
     ...occasionSection(report),
     ...multiImageReasoningSection(report),
+    ...uncertaintySection(report),
     '## 10. End to end and application',
     '',
     ...(styleDna.mixed ? ['**Pooled:** the first four lines combine cases with and without Style DNA. The Shopping Advisor lines are each about one condition only, by definition.', ''] : []),

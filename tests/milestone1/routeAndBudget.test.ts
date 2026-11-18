@@ -129,6 +129,8 @@ describe('mock mode (Preview)', () => {
     expect(body.observations.availability).toBe('available')
     expect(body.observations.images.map((entry: { image: number; details: string[] }) => [entry.image, entry.details])).toEqual([1, 2, 3].map((n) => [n, ['Mock example: no image was analysed']]))
     expect(body.evidence.availability).toBe('available')
+    // The consistency check runs on mock results too (Phase 4 Milestone 4); it only flags.
+    expect(Array.isArray(body.consistency.flags)).toBe(true)
   }, 20_000)
 })
 

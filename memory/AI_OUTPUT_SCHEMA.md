@@ -211,6 +211,16 @@ supports or tension. Refused per item, with codes `overlapping_dimension`, `unci
 `invalid_citation`, `identity_mismatch`. The API adds `outfit_components.contributions`:
 `available` | `partial` | `unavailable`, and `contribution` on each item that passed.
 
+## Limits and consistency (analysis-output/4, Phase 4 Milestone 4)
+
+`limits` codes: `lighting`, `shadow`, `occlusion`, `cropped`, `blur`, `low_resolution`, `angle`, `partial_view`,
+`image_text`, `several_items` (at most four per image). Evidence and item contributions may cite `g<image>.<limit>`
+for a limit of that image that weakened the rating; the citation is refused unless the image reported that limit.
+
+The API result adds `consistency`: `{ "flags": [{ "dimension", "code", "detail"? }] }`, computed by the application after
+the verdict; codes `colour_not_observed`, `occasion_not_selected`, `confident_on_partial_evidence`. Flags never change a
+rating, an explanation or the verdict.
+
 ## Version history
 
 - `analysis-output/1`: the six ratings and the optional shopping advisor.

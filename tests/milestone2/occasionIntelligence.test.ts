@@ -193,7 +193,10 @@ describe('occasion figures in the evaluation', () => {
       expect({ figure, after: (without(caseId).quality.occasion[figure] as { value: number }).value }).toEqual({ figure, after: 0 })
     }
     expect(occasion.occasion_reason_relevance_rate.value).toBeLessThan(1)
-    expect(without('v4-rule-generic-occasion-reason').quality.occasion.occasion_reason_relevance_rate.value).toBe(1)
+    // Two fixtures have an occasion reason that is irrelevant on purpose: the generic one, and the Milestone 4 one that
+    // talks about a beach for an office occasion (which the consistency check flags).
+    const relevant = evaluate('scenarios-v4', (recording) => { recording.entries = recording.entries.filter((entry) => !['v4-rule-generic-occasion-reason', 'v4-consistency-occasion'].includes(entry.case_id)) })
+    expect(relevant.quality.occasion.occasion_reason_relevance_rate.value).toBe(1)
   })
 
   it('finds occasion fit responding to contrasting occasions, and recognises contrast from the catalogue', () => {

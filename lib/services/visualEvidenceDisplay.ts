@@ -43,11 +43,13 @@ export const PATTERN_LABELS: Record<PatternObservation, string> = {
 
 export const LIMIT_LABELS: Record<ImageLimitation, string> = {
   lighting: 'Lighting may affect the colours',
+  shadow: 'Strong shadows',
   occlusion: 'Partly hidden',
   cropped: 'Partly out of frame',
   blur: 'Blurred',
   low_resolution: 'Low resolution',
   angle: 'Unusual angle',
+  partial_view: 'Too little of the garment is visible',
   image_text: 'Text visible in the photo',
   several_items: 'Several items in one photo',
 }
@@ -116,6 +118,7 @@ export function colourList(families: ColourFamily[]): string {
  */
 export function describeCite(cite: string, observations: Observations | undefined, mode: GarmentMode | undefined): string | null {
   const match = /^g([1-3])\.(type|colour|pattern|d([1-3]))$/.exec(cite)
+  // Limits (g1.lighting) are shown apart, under "Limited by" (describeLimitCites).
   if (!match || !observations || observations.availability !== 'available' || !Array.isArray(observations.images)) return null
   const observation = observations.images.find((entry) => entry.image === Number(match[1]))
   if (!observation) return null
@@ -136,6 +139,26 @@ export function describeCite(cite: string, observations: Observations | undefine
       return detail ? `${prefix}${detail}` : null
     }
   }
+}
+
+/** The image limits a rating cites, in words, for example "lighting in item 2". */
+export function describeLimitCites(cites: string[], observations: Observations | undefined, mode: GarmentMode | undefined): string[] {
+  const labels: string[] = []
+  for (const cite of cites) {
+    const match = /^g([1-3])\.([a-z_]+)$/.exec(cite)
+    if (!match || !(match[2] in LIMIT_LABELS) || !observations || observations.availability !== 'available') continue
+    const observation = observations.images.find((entry) => entry.image === Number(match[1]))
+    if (!observation || !observation.limits.includes(match[2] as ImageLimitation)) continue
+    labels.push(`${LIMIT_LABELS[match[2] as ImageLimitation].toLowerCase()} (${photoName(mode, observation.image)})`)
+  }
+  return labels
+}
+
+/** How a garment photo is named in a sentence: "the garment photo", "view 2" or "item 3". */
+export function photoName(mode: GarmentMode | undefined, image: number): string {
+  if (mode === 'same_garment_views') return `view ${image}`
+  if (mode === 'outfit_items') return `item ${image}`
+  return 'the garment photo'
 }
 
 /** The citations of one dimension in words, without any that cannot be shown. */

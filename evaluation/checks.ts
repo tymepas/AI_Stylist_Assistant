@@ -28,6 +28,7 @@ import { validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisS
 import { DIMENSION_KEYS, type Band, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { outcomeSignature, type RunDetail } from './metrics'
 import { inspectRun, visualContextOf } from './visualEvidence'
+import { runConsistencyFlags } from './uncertainty'
 import { inspectContributions, parseOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
 
 export const BLOCKING_CHECKS = [
@@ -305,6 +306,11 @@ function checkVisualEvidence(benchmarkCase: BenchmarkCase, runs: RunDetail[], ca
       const availability = !parsed || valid === 0 ? 'unavailable' : valid === parsed.length ? 'available' : 'partial'
       if (availability !== expected.contributions) problems.push(`item contributions were ${availability}, expected ${expected.contributions}, in run ${run.run}`)
       for (const codes of contributionInspection?.problems.values() ?? []) for (const code of codes) reported.add(code)
+    }
+    if (expected.consistency !== undefined) {
+      const flagged = [...new Set(runConsistencyFlags(benchmarkCase, run))].sort()
+      const wanted = [...expected.consistency].sort()
+      if (flagged.join(',') !== wanted.join(',')) problems.push(`consistency flags were [${flagged.join(', ')}], expected [${wanted.join(', ')}], in run ${run.run}`)
     }
     const missing = (expected.problems ?? []).filter((code) => !reported.has(code))
     if (missing.length > 0) problems.push(`validation did not report ${missing.join(', ')} in run ${run.run}`)

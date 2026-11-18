@@ -316,3 +316,18 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 ### Unchanged
 
 - The six ratings describe the whole outfit; `computeVerdict` never reads contributions
+
+---
+
+## Unreleased - Phase 4 Milestone 4: limitations, uncertainty and report UX
+
+### Added
+
+- Limit codes `shadow` and `partial_view`; evidence and item contributions may cite a limit of their image to tie it to the rating it weakened
+- Consistency flags (never changes): a colour named but not observed, an occasion explanation about another occasion, an Excellent High-confidence rating on partial evidence
+- Report: "What limited this assessment", "Limited by" in each rating's evidence, "Check this explanation" next to a flagged rating; honest unavailable states; older results unchanged
+- Evaluation section `quality.uncertainty`, reviewer limit recall, exact consistency expectations in the blocking check, 15 more `scenarios-v4` cases
+
+### Fixed
+
+- The schema version guard now fingerprints every schema of the output, the observation and evidence schemas included (the Milestone 1 change to it had not taken effect)

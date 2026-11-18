@@ -2316,6 +2316,46 @@
       "status": "insufficient_sample",
       "value": 0.5
     },
+    "uncertainty.consistency_flag_rate": {
+      "direction": "lower_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "uncertainty.limit_linked_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "uncertainty.uncertain_colour_restraint_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "uncertainty.unidentified_garment_restraint_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": false,
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
     "validity.valid_output_rate": {
       "direction": "higher_is_better",
       "kind": "rate",
@@ -2367,6 +2407,16 @@
       "value": null
     },
     "visual_evidence.brief_derived.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.brief_derived.limit_recall": {
       "direction": "higher_is_better",
       "kind": "rate",
       "n": 0,
@@ -2467,6 +2517,16 @@
       "value": null
     },
     "visual_evidence.image_reviewed.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.image_reviewed.limit_recall": {
       "direction": "higher_is_better",
       "kind": "rate",
       "n": 0,
@@ -2667,6 +2727,16 @@
       "value": null
     },
     "visual_evidence.synthetic.identification_abstention_rate": {
+      "direction": "higher_is_better",
+      "kind": "rate",
+      "n": 0,
+      "needs_references": true,
+      "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+      "se": null,
+      "status": "unavailable",
+      "value": null
+    },
+    "visual_evidence.synthetic.limit_recall": {
       "direction": "higher_is_better",
       "kind": "rate",
       "n": 0,
@@ -4925,6 +4995,38 @@
       "noise_floor_rate": 0.05,
       "noise_z": 1.96
     },
+    "uncertainty": {
+      "applicable": false,
+      "consistency_flag_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "limit_linked_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+      "uncertain_colour_restraint_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      },
+      "unidentified_garment_restraint_rate": {
+        "n": 0,
+        "reason": "Unavailable: the recording was made with an output schema from before view differences and item contributions existed (analysis-output/4)",
+        "se": null,
+        "status": "unavailable",
+        "value": null
+      }
+    },
     "visual_evidence": {
       "applicable": false,
       "by_tier": {
@@ -4959,6 +5061,13 @@
             "value": null
           },
           "identification_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "limit_recall": {
             "n": 0,
             "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
             "se": null,
@@ -5038,6 +5147,13 @@
             "status": "unavailable",
             "value": null
           },
+          "limit_recall": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
           "pattern_accuracy": {
             "n": 0,
             "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
@@ -5105,6 +5221,13 @@
             "value": null
           },
           "identification_abstention_rate": {
+            "n": 0,
+            "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
+            "se": null,
+            "status": "unavailable",
+            "value": null
+          },
+          "limit_recall": {
             "n": 0,
             "reason": "Unavailable: the recording was made with an output schema from before observations and evidence existed (analysis-output/3)",
             "se": null,

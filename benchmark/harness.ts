@@ -196,6 +196,8 @@ const caseSchema = z
             evidence: z.enum(['available', 'partial', 'unavailable']),
             /** Outfit item contributions (analysis-output/4): for every item, for some, or for none. */
             contributions: z.enum(['available', 'partial', 'unavailable']).optional(),
+            /** The consistency flags the application must raise for every run, exactly (analysis-output/4). An empty list means none. */
+            consistency: z.array(z.enum(['colour_not_observed', 'occasion_not_selected', 'confident_on_partial_evidence'])).max(3).optional(),
             problems: z.array(z.string().regex(/^[a-z_]{1,40}$/)).min(1).max(10).optional(),
           })
           .strict()

@@ -24,7 +24,13 @@ export const COLOUR_FAMILIES = [
   'yellow', 'green', 'blue', 'navy', 'purple', 'gold', 'silver', 'multicolour',
 ] as const
 export const PATTERNS = ['solid', 'striped', 'checked', 'printed', 'textured', 'other', 'unclear'] as const
-export const IMAGE_LIMITS = ['lighting', 'occlusion', 'cropped', 'blur', 'low_resolution', 'angle', 'image_text', 'several_items'] as const
+/**
+ * What limited an image. `shadow` and `partial_view` (too little of the
+ * garment is visible) were added in Phase 4 Milestone 4. Conflicting evidence
+ * between images is `observations.views`; missing input is unable_to_analyze
+ * or an evidence `missing` note, never an image limit.
+ */
+export const IMAGE_LIMITS = ['lighting', 'shadow', 'occlusion', 'cropped', 'blur', 'low_resolution', 'angle', 'partial_view', 'image_text', 'several_items'] as const
 export const OBSERVED_CATEGORIES = [...shoppingGarmentCategorySchema.options, 'unclear'] as const
 export const VIEW_AGREEMENT = ['yes', 'no', 'unclear'] as const
 /**
@@ -185,16 +191,21 @@ export function inspectObservations(raw: unknown, context: ObservationContext): 
 // References to observations
 // ---------------------------------------------------------------------------
 
-/** `g<image>.type`, `g<image>.colour`, `g<image>.pattern` or `g<image>.d<detail>`. */
-export const CITE_PATTERN = /^g([1-3])\.(type|colour|pattern|d([1-3]))$/
+/**
+ * `g<image>.type`, `g<image>.colour`, `g<image>.pattern` or `g<image>.d<detail>`; since Phase 4 Milestone 4 also
+ * `g<image>.<limit>`, a limit of that image that weakened the rating (for example `g1.lighting`).
+ */
+export const CITE_PATTERN = new RegExp(`^g([1-3])\\.(type|colour|pattern|d([1-3])|${IMAGE_LIMITS.join('|')})$`)
 
-export type CiteField = 'type' | 'colour' | 'pattern' | 'detail'
+export type CiteField = 'type' | 'colour' | 'pattern' | 'detail' | 'limit'
 
 export interface ResolvedCite {
   image: number
   field: CiteField
   /** For a detail: its position in the list, starting at 1. */
   detail?: number
+  /** For a limit: which one. */
+  limit?: (typeof IMAGE_LIMITS)[number]
   observation: GarmentObservation
 }
 
@@ -213,6 +224,11 @@ export function resolveCite(cite: string, observations: Observations | null): Re
   if (kind === 'type') return observation.identification === 'not_visible' || observation.category === 'unclear' ? null : { image, field: 'type', observation }
   if (kind === 'colour') return observation.colour_status === 'not_visible' ? null : { image, field: 'colour', observation }
   if (kind === 'pattern') return observation.pattern === 'unclear' ? null : { image, field: 'pattern', observation }
+  if ((IMAGE_LIMITS as readonly string[]).includes(kind)) {
+    // A limit can be cited only when that image reported it.
+    const limit = kind as (typeof IMAGE_LIMITS)[number]
+    return observation.limits.includes(limit) ? { image, field: 'limit', limit, observation } : null
+  }
   const detail = Number(match[3])
   return detail <= observation.details.length ? { image, field: 'detail', detail, observation } : null
 }

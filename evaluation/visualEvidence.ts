@@ -167,6 +167,8 @@ export interface ReferenceVisualBlock {
   contradicted_detail_rate: Metric
   /** Views cases only: share of runs answering yes or no whose answer matches the reviewer's. An "unclear" answer is an abstention and is left out. */
   same_garment_agreement_rate: Metric
+  /** Per case: share of the photo limits a reviewer listed that the model reported for that image. */
+  limit_recall: Metric
 }
 
 export interface VisualEvidenceReport {
@@ -357,6 +359,11 @@ function referenceBlockOf(scored: ScoredEntry[], reason: string): ReferenceVisua
       return terms.length === 0 ? null : detailShare(fact, observations, terms)
     }),
     same_garment_agreement_rate: rateMetric(sameGarment, reason),
+    limit_recall: itemMetric(withFacts, reason, (fact, observations) => {
+      const observation = observationFor(observations, fact.item)
+      if (!fact.limits || !observation) return null
+      return fact.limits.filter((limit) => observation.limits.includes(limit)).length / fact.limits.length
+    }),
   }
 }
 
@@ -371,6 +378,7 @@ const STRUCTURAL_KEYS: Array<keyof StructuralBlock> = [
 const REFERENCE_KEYS: Array<Exclude<keyof ReferenceVisualBlock, 'cases'>> = [
   'garment_category_accuracy', 'confident_misidentification_rate', 'identification_abstention_rate', 'dominant_colour_recall', 'unsupported_colour_rate',
   'pattern_accuracy', 'visual_abstention_rate', 'supported_detail_rate', 'contradicted_detail_rate', 'same_garment_agreement_rate',
+  'limit_recall',
 ]
 
 /** Lower is better for these; higher for every other figure. */
