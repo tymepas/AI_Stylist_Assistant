@@ -75,9 +75,9 @@ describe('the persona library', () => {
       expect({ name, stated }).toEqual({ name, stated: [] })
       // So the request says nothing about the person's colouring or build: only the style lines are added.
       const context = buildUserContext('Office Work', { preferredStyles: [], favoriteColors: [], occasionPreferences: [] }, validateAIStyleProfile(profile))
-      expect(context).toContain('AI-analyzed aesthetic context')
-      expect(context).not.toContain('AI-analyzed coloring context')
-      expect(context).not.toContain('AI-analyzed proportions context')
+      expect(context).toContain('DNA aesthetic: ')
+      expect(context).not.toContain('DNA coloring: ')
+      expect(context).not.toContain('DNA proportions')
     }
   })
 })

@@ -12,6 +12,8 @@ import { aiStyleProfileResultSchema, PROFILE_OUTPUT_SCHEMA_VERSION } from '@/lib
 import { ANALYSIS_OUTPUT_SCHEMA_VERSION, rawOpenAIAnalysisSchema } from '@/lib/services/openai/openAIAnalysisSchema'
 import { outfitComponentsPayloadSchema } from '@/lib/services/openai/outfitComponentsSchema'
 import { shoppingAdvisorPayloadSchema } from '@/lib/services/openai/shoppingRecommendationSchema'
+import { observationsPayloadSchema } from '@/lib/services/openai/observationsSchema'
+import { dimensionEvidenceSchema, evidencePayloadSchema } from '@/lib/services/openai/ratingEvidenceSchema'
 import { describeSchema, schemaFingerprint } from '../helpers/zodFingerprint'
 
 /** version → fingerprint. Add a new line when a schema changes; never edit an old one. */
@@ -19,6 +21,13 @@ const ANALYSIS_FINGERPRINTS: Record<string, string> = {
   'analysis-output/1': '2e81c731e418',
   // Adds the optional outfit_components block (several outfit items) and its schema.
   'analysis-output/2': '2bf1446af120',
+  // Adds the optional observations and evidence blocks (Phase 4 Milestone 1). Recorded while this guard still covered
+  // only the core, advisor and outfit schemas (found and fixed in Milestone 4), so it does not cover the two new blocks.
+  // Kept as it was recorded; /3 was never released.
+  'analysis-output/3': 'b9820a1fc5e0',
+  // Phase 4 Milestones 2 to 4, one contract: occasion rules, view differences, item contributions, limit codes and
+  // limit citations. Covers every schema of the output, the observation and evidence schemas included.
+  'analysis-output/4': '4883ec6a125d',
 }
 
 const PROFILE_FINGERPRINTS: Record<string, string> = {
@@ -28,8 +37,8 @@ const PROFILE_FINGERPRINTS: Record<string, string> = {
 const HOW_TO_FIX = 'The schema changed. Bump the version constant next to the schema and record the new fingerprint in this file.'
 
 describe('output schema versions', () => {
-  it('the analysis output version matches the analysis, shopping and outfit component schemas', () => {
-    const actual = schemaFingerprint(rawOpenAIAnalysisSchema, shoppingAdvisorPayloadSchema, outfitComponentsPayloadSchema)
+  it('the analysis output version matches every schema of the output: core, shopping, outfit components, observations and evidence', () => {
+    const actual = schemaFingerprint(rawOpenAIAnalysisSchema, shoppingAdvisorPayloadSchema, outfitComponentsPayloadSchema, observationsPayloadSchema, evidencePayloadSchema, dimensionEvidenceSchema)
     expect({ version: ANALYSIS_OUTPUT_SCHEMA_VERSION, fingerprint: actual, note: HOW_TO_FIX }).toEqual({
       version: ANALYSIS_OUTPUT_SCHEMA_VERSION,
       fingerprint: ANALYSIS_FINGERPRINTS[ANALYSIS_OUTPUT_SCHEMA_VERSION],

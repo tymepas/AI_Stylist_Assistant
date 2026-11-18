@@ -61,6 +61,11 @@ import { validateOutfitComponents } from '@/lib/services/openai/outfitComponents
 import { validateShoppingRecommendations } from '@/lib/services/openai/shoppingRecommendationSchema'
 import { computeMetrics, type EvaluationMetrics, type RunDetail } from './metrics'
 import { KEY_FACT_ATTRIBUTES, SCORED_TIERS, reviewerRatings, type CaseReference, type KeyFactAttribute, type ReferenceRating, type ResolvedReference, type ScoredTier } from './reference'
+import { visualEvidenceMetrics, visualEvidenceOf, type VisualEvidenceReport } from './visualEvidence'
+import { occasionMetrics, occasionOf, type OccasionReport } from './occasion'
+import { multiImageReasoningMetrics, multiImageReasoningOf, type MultiImageReasoningReport } from './multiImageReasoning'
+import { uncertaintyMetrics, uncertaintyOf, type UncertaintyReport } from './uncertainty'
+import { NO_SCHEMA_CAPABILITIES, type SchemaCapabilities } from '@/lib/services/openai/openAIAnalysisSchema'
 
 // ---------------------------------------------------------------------------
 // Thresholds
@@ -736,7 +741,8 @@ function garmentIdentificationOf(scored: ScoredCase[], reason: string): GarmentI
   const perCase: number[] = []
   let cases = 0
   for (const { benchmarkCase, reference, runs } of scored) {
-    const expected = reference.garment_facts?.items ?? []
+    // Items a reviewer could not identify carry no garment type; they are scored under visual_evidence instead.
+    const expected = (reference.garment_facts?.items ?? []).filter((entry) => entry.garment_type !== undefined)
     if (modeOf(benchmarkCase) !== 'outfit_items' || expected.length === 0) continue
     cases += 1
     // A run without a valid block says nothing about identification; it is counted under completeness instead.
@@ -921,6 +927,14 @@ export interface QualityReport {
   reviewer_agreement: Record<ScoredTier, ReviewerAgreementBlock>
   /** The advisory block, with and without Style DNA. It never reaches the verdict. */
   shopping_advisor: ShoppingAdvisorBlock
+  /** Observations and rating evidence (analysis-output/3): structural figures, and figures against reviewer references. Informational; never part of the verdict. */
+  visual_evidence: VisualEvidenceReport
+  /** Occasion intelligence (Phase 4 Milestone 2): whether outputs follow the occasion-profile rules. Proxies are marked. */
+  occasion: OccasionReport
+  /** Multi-view and outfit reasoning (Phase 4 Milestone 3): view differences and item contributions. */
+  multi_image_reasoning: MultiImageReasoningReport
+  /** Limitations and uncertainty (Phase 4 Milestone 4): limits tied to ratings, restraint, consistency flags. */
+  uncertainty: UncertaintyReport
   /** Whether the evaluated cases mix both Style DNA conditions, and how the figures of this report relate to that. */
   style_dna: StyleDnaSummary
   /** Per dimension: share of repeated cases that got the same rating on every run. */
@@ -968,6 +982,7 @@ function styleDnaSummaryOf(cases: BenchmarkCase[]): StyleDnaSummary {
   }
 }
 
+/** What an output from before analysis-output/3 cannot support. With observations, these become figures under `visual_evidence`. */
 export const NOT_MEASURABLE: Record<string, string> = {
   colour_identification: 'The output has no colour field. Colour is covered only by the grounding proxy (key facts with attribute "colour").',
   pattern_identification: 'The output has no pattern field. Pattern is covered only by the grounding proxy (key facts with attribute "pattern").',
@@ -975,12 +990,21 @@ export const NOT_MEASURABLE: Record<string, string> = {
   contradictions_between_views: 'One output is returned for all views, so views cannot be compared with each other. Only the ratings of cases in one comparison group can.',
 }
 
+/** What an output with observations and evidence still cannot support. */
+export const NOT_MEASURABLE_WITH_OBSERVATIONS: Record<string, string> = {
+  exact_colour_shades: 'Observations use broad colour families on purpose. Exact shades are never claimed, so they are never scored.',
+  material_and_quality: 'Material, fibre, brand, price, durability and comfort cannot be seen in a photo. Observations that state them are refused, so there is nothing to score.',
+  reasoning_quality: 'Evidence shows what a rating rests on, not whether the reasoning is right. The relevance figure is a proxy.',
+}
+
 export function computeQuality(
   details: RunDetail[],
   cases: BenchmarkCase[],
   references: Map<string, ResolvedReference>,
   outputs: 'model' | 'synthetic_fixture',
+  capabilities: SchemaCapabilities = NO_SCHEMA_CAPABILITIES,
 ): QualityReport {
+  const carriesVisualEvidence = capabilities.visualEvidence
   const scoredRuns = details.filter((detail) => detail.outcome !== 'withheld')
   const runsByCase = new Map<string, RunDetail[]>()
   for (const detail of scoredRuns) runsByCase.set(detail.case_id, [...(runsByCase.get(detail.case_id) ?? []), detail])
@@ -1027,9 +1051,13 @@ export function computeQuality(
     multi_image: multiImageOf(cases, runsByCase, references, scoredByTier, reasonByTier),
     reviewer_agreement: perTier((tier) => reviewerAgreementOf(referenceCases[tier].map((benchmarkCase) => (references.get(benchmarkCase.id) as ResolvedReference).reference), scoredByTier[tier], reasonByTier[tier])),
     shopping_advisor: shoppingAdvisorOf(cases, runsByCase),
+    visual_evidence: visualEvidenceOf(cases, runsByCase, scoredByTier, reasonByTier, carriesVisualEvidence, capabilities.phase4),
+    occasion: occasionOf(cases, runsByCase, capabilities.phase4),
+    multi_image_reasoning: multiImageReasoningOf(cases, runsByCase, capabilities.phase4),
+    uncertainty: uncertaintyOf(cases, runsByCase, capabilities.phase4),
     stability_by_dimension: stability,
     style_dna: styleDnaSummaryOf(cases),
-    not_measurable: NOT_MEASURABLE,
+    not_measurable: carriesVisualEvidence ? NOT_MEASURABLE_WITH_OBSERVATIONS : NOT_MEASURABLE,
     cases_with_unscored_manifest_facts: cases.filter((benchmarkCase) => benchmarkCase.expected.key_facts.length > 0).length,
   }
 }
@@ -1130,6 +1158,10 @@ export function buildMetricIndex(metrics: EvaluationMetrics, quality: QualityRep
   add('shopping_advisor.unrequested_recommendation_rate', quality.shopping_advisor.unrequested_recommendation_rate, 'lower_is_better', 'rate', false)
   add('multi_image.comparison_groups.cross_mode_rating_consistency', quality.multi_image.comparison_groups.cross_mode_rating_consistency, 'higher_is_better', 'rate', true)
   add('multi_image.comparison_groups.mean_band_shift', quality.multi_image.comparison_groups.mean_band_shift, 'lower_is_better', 'bands', true)
+  for (const entry of visualEvidenceMetrics(quality.visual_evidence)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', entry.needsReferences)
+  for (const entry of occasionMetrics(quality.occasion)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', false)
+  for (const entry of multiImageReasoningMetrics(quality.multi_image_reasoning)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', false)
+  for (const entry of uncertaintyMetrics(quality.uncertainty)) add(entry.name, entry.metric, entry.lowerIsBetter ? 'lower_is_better' : 'higher_is_better', 'rate', false)
 
   return index
 }
@@ -1164,6 +1196,7 @@ export function buildStyleDnaIndex(
   cases: BenchmarkCase[],
   references: Map<string, ResolvedReference>,
   outputs: 'model' | 'synthetic_fixture',
+  capabilities: SchemaCapabilities = NO_SCHEMA_CAPABILITIES,
 ): MetricIndex {
   const groups: Record<StyleDnaCondition, BenchmarkCase[]> = {
     with_style_dna: cases.filter((benchmarkCase) => benchmarkCase.style_dna !== undefined),
@@ -1176,7 +1209,7 @@ export function buildStyleDnaIndex(
     const subset = groups[condition]
     const ids = new Set(subset.map((benchmarkCase) => benchmarkCase.id))
     const subsetDetails = details.filter((detail) => ids.has(detail.case_id))
-    const subsetIndex = buildMetricIndex(computeMetrics(subsetDetails, subset), computeQuality(subsetDetails, subset, references, outputs))
+    const subsetIndex = buildMetricIndex(computeMetrics(subsetDetails, subset), computeQuality(subsetDetails, subset, references, outputs, capabilities))
     for (const name of Object.keys(subsetIndex).sort()) {
       // The advisor figures are already specific to one condition in the main index.
       if (name.startsWith('shopping_advisor.')) continue

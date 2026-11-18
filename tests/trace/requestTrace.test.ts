@@ -25,7 +25,9 @@ import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
 
 const originalEnv = { ...process.env }
 const USAGE = { input_tokens: 5200, output_tokens: 640, total_tokens: 5840, input_tokens_details: { cached_tokens: 0 }, output_tokens_details: { reasoning_tokens: 0 } }
-const OCCASION = 'PRIVATE-OCCASION-MARKER'
+// Since Phase 4 Milestone 2 the API accepts only an occasion it offers (lib/constants/occasionProfiles.ts), so the
+// private marker is carried by the free-text fields; the occasion itself must still never be logged.
+const OCCASION = 'Corporate Interview'
 
 function analyzeRequest(signal?: AbortSignal): Request {
   const form = new FormData()

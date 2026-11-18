@@ -41,6 +41,7 @@ import { z } from 'zod'
 import { DIMENSION_KEYS, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { fingerprint } from '@/lib/services/openai/promptVersion'
 import { shoppingGarmentCategorySchema } from '@/lib/services/openai/shoppingRecommendationSchema'
+import { COLOUR_FAMILIES, IMAGE_LIMITS, PATTERNS } from '@/lib/services/openai/observationsSchema'
 
 export const REFERENCE_SET_FORMAT = 'verdict-reference-set/1'
 
@@ -139,10 +140,31 @@ const garmentItemSchema = z
   .object({
     /** Number of the garment image this entry describes, starting at 1. */
     item: z.number().int().min(1).max(3),
-    garment_type: shoppingGarmentCategorySchema,
-    /** Recorded for the reviewer and for later phases. The model output has no field to compare it with yet. */
+    /** The kind of garment. Left out, together with `identifiable: false`, when a careful reviewer cannot tell from the image. */
+    garment_type: shoppingGarmentCategorySchema.optional(),
+    /** False when the garment cannot be identified from this image: the model is then expected to abstain. Absent means identifiable. */
+    identifiable: z.boolean().optional(),
+    /** Free-text notes kept from the first reference format. Never scored: the structured fields below are. */
     colour_family: z.string().trim().min(1).max(40).optional(),
     pattern: z.string().trim().min(1).max(40).optional(),
+    /** The colour families a reviewer sees, in the same broad families the model must use (analysis-output/3). */
+    colours: z
+      .object({
+        dominant: z.array(z.enum(COLOUR_FAMILIES)).min(1).max(2),
+        secondary: z.array(z.enum(COLOUR_FAMILIES)).max(2).optional(),
+      })
+      .strict()
+      .optional(),
+    /** False when the colour cannot be judged from this image (lighting, occlusion). The model is then expected not to state it as observed. */
+    colour_visible: z.boolean().optional(),
+    /** The pattern a reviewer sees; `unclear` when it cannot be judged from the image. */
+    pattern_category: z.enum(PATTERNS).optional(),
+    /** Words that name details a reviewer confirms are visible. A model detail mentioning one of them is supported. */
+    visible_details: z.array(term).min(1).max(8).optional(),
+    /** Words that name details a reviewer confirms are NOT there. A model detail mentioning one of them is contradicted. */
+    absent_details: z.array(term).min(1).max(8).optional(),
+    /** What limits this image, as a reviewer sees it, in the codes the model uses (Phase 4 Milestone 4). */
+    limits: z.array(z.enum(IMAGE_LIMITS)).min(1).max(IMAGE_LIMITS.length).optional(),
   })
   .strict()
 
@@ -190,6 +212,8 @@ const referenceSchema = z
     unverifiable_terms: z.array(term).max(12).optional(),
     /** Cases that show the same garment for the same occasion and differ only in how it was photographed. */
     comparison_group: identifier(40).optional(),
+    /** Views of one garment only: whether the views really show the same garment, as a reviewer sees it. */
+    views_same_garment: z.enum(['yes', 'no']).optional(),
     /** Independent reviews of the same case by other people. See secondReviewSchema. */
     second_reviews: z.array(secondReviewSchema).min(1).max(4).optional(),
     review_notes: z.string().max(500).optional(),
@@ -216,6 +240,15 @@ export function referenceProblems(reference: CaseReference): string[] {
   for (const id of duplicates(reference.images.map((image) => image.id))) problems.push(`image id "${id}" is used twice`)
   for (const id of duplicates((reference.key_facts ?? []).map((fact) => fact.id))) problems.push(`key fact id "${id}" is used twice`)
   for (const item of duplicates((reference.garment_facts?.items ?? []).map((entry) => entry.item))) problems.push(`garment item ${item} is described twice`)
+  for (const entry of reference.garment_facts?.items ?? []) {
+    const at = `garment item ${entry.item}`
+    if (entry.identifiable === false && entry.garment_type !== undefined) problems.push(`${at} is marked not identifiable and still names a garment type`)
+    if (entry.identifiable !== false && entry.garment_type === undefined) problems.push(`${at} names no garment type; mark it identifiable: false if it cannot be identified`)
+    if (entry.colour_visible === false && entry.colours !== undefined) problems.push(`${at} is marked colour not visible and still lists colours`)
+    const colours = [...(entry.colours?.dominant ?? []), ...(entry.colours?.secondary ?? [])]
+    if (new Set(colours).size !== colours.length) problems.push(`${at} lists a colour family twice`)
+    if (colours.length > 3) problems.push(`${at} lists more than three colour families`)
+  }
 
   // An image review is a claim about a real image, whatever stage the review is at.
   if (basis === 'image_review' && !realImage) problems.push('an image review needs a real image: provenance.image_source must be owned, public_license or approved_volunteer');
@@ -327,6 +360,10 @@ export function manifestProblems(set: ReferenceSet, cases: BenchmarkCase[]): str
     if (items.some((entry) => entry.item > garmentCount)) problems.push(`${at}: garment_facts names an item beyond the ${garmentCount} garment image(s) of the case`)
     if (tierOf(reference) !== 'unreviewed' && items.length > 0 && (benchmarkCase.garment_mode ?? 'single') === 'outfit_items' && items.length !== garmentCount) {
       problems.push(`${at}: an outfit of ${garmentCount} items needs one garment_facts entry per item`)
+    }
+
+    if (reference.views_same_garment !== undefined && (benchmarkCase.garment_mode ?? 'single') !== 'same_garment_views') {
+      problems.push(`${at}: views_same_garment applies only to a case of views of one garment`)
     }
 
     if (tierOf(reference) === 'image_reviewed') {

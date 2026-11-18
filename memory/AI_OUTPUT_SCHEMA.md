@@ -1,52 +1,150 @@
 # AI OUTPUT SCHEMA
 
-- Allowed rating values: "Excellent" | "Good" | "Fair" | "Poor" | "Unable to Evaluate"
-- Allowed confidence values: "High" | "Medium" | "Low"
-- Allowed status values: "complete" | "unable_to_analyze"
+Version: `analysis-output/3` (`ANALYSIS_OUTPUT_SCHEMA_VERSION` in `lib/services/openai/openAIAnalysisSchema.ts`).
 
-## Model output (no overall verdict, model never fills this in)
+This document describes the output contract that the code enforces. The
+machine-enforced schemas are the source of truth:
+
+| Block | Schema | Validated |
+|---|---|---|
+| Status, six dimensions | `lib/services/openai/openAIAnalysisSchema.ts` | Strictly. An invalid core makes the whole response invalid |
+| `observations` | `lib/services/openai/observationsSchema.ts` | Separately. Invalid or missing: unavailable, nothing else changes |
+| `evidence` | `lib/services/openai/ratingEvidenceSchema.ts` | Separately, per dimension. Invalid dimensions are dropped, the others kept |
+| `shopping_advisor` | `lib/services/openai/shoppingRecommendationSchema.ts` | Separately. Invalid or missing: unavailable |
+| `outfit_components` | `lib/services/openai/outfitComponentsSchema.ts` | Separately, `outfit_items` mode only |
+
+The model does **not** receive this file. What it receives is
+`memory/SYSTEM_PROMPT.md` (the instructions, including the output shapes) and a
+user message that names the image mode and carries the request data
+(`buildUserContext` in `lib/services/openai/openAIAnalysisService.ts`).
+`tests/versioning/schemaVersions.test.ts` fails if any schema above changes
+without a version bump; `tests/versioning/promptVersion.test.ts` and
+`tests/core/garmentModes.test.ts` record the prompt versions.
+
+## Status
+
+`complete` or `unable_to_analyze`. Nothing else is accepted.
+
+## Complete
 
 ```json
 {
-  "status": "",
+  "status": "complete",
+  "observations": { "images": [ ... ], "views": { ... } },
   "dimensions": {
-    "occasion": {"rating": "", "reason": "", "confidence": ""},
-    "color": {"rating": "", "reason": "", "confidence": ""},
-    "formality": {"rating": "", "reason": "", "confidence": ""},
-    "seasonality": {"rating": "", "reason": "", "confidence": ""},
-    "style": {"rating": "", "reason": "", "confidence": ""},
-    "style_preference_match": {"rating": "", "reason": "", "confidence": ""}
+    "occasion":               { "rating": "", "reason": "", "confidence": "" },
+    "color":                  { "rating": "", "reason": "", "confidence": "" },
+    "formality":              { "rating": "", "reason": "", "confidence": "" },
+    "seasonality":            { "rating": "", "reason": "", "confidence": "" },
+    "style":                  { "rating": "", "reason": "", "confidence": "" },
+    "style_preference_match": { "rating": "", "reason": "", "confidence": "" }
   },
-  "things_to_consider": [],
-  "analysis_based_on": {
-    "considered": ["photo", "garment", "occasion", "style_preference"],
-    "not_considered": ["price", "material_quality", "brand", "durability", "comfort"]
-  },
-  "next_step": ""
+  "evidence": { "occasion": { ... }, "...": "one entry per dimension key" },
+  "shopping_advisor": { "recommendations": [] },
+  "outfit_components": [ ... ]
 }
 ```
+
+- `rating`: `Excellent` | `Good` | `Fair` | `Poor` | `Unable to Evaluate`.
+- `confidence`: `High` | `Medium` | `Low`.
+- `reason`: a non-empty string.
+- Every object is strict: an unknown key makes the response invalid. In
+  particular the model never returns `overall_recommendation`,
+  `verdict_score`, `things_to_consider`, `analysis_based_on` or `next_step`:
+  the application adds them after it has computed the verdict.
+- A top-level `views` key (where `observations.views` belongs) is tolerated
+  and ignored, so a misplaced entry can never cost the six ratings; the
+  observations are then refused for a missing `views` entry.
+- `observations`, `evidence`, `shopping_advisor` and `outfit_components` are
+  optional in the schema. Each is validated on its own after the six ratings,
+  and none of them is read by `computeVerdict`.
 
 ## Unable to analyze
 
 ```json
-{
-  "status": "unable_to_analyze",
-  "reason": "",
-  "confidence": "Low",
-  "next_step": ""
+{ "status": "unable_to_analyze", "reason": "", "confidence": "Low", "next_step": "" }
+```
+
+## Observations (analysis-output/3)
+
+What is visible in each garment image. The person is never described.
+
+```json
+"observations": {
+  "images": [
+    {
+      "image": 1,
+      "garment": "blazer",
+      "category": "suiting",
+      "identification": "observed",
+      "colours": { "dominant": ["navy"], "secondary": [] },
+      "colour_status": "observed",
+      "pattern": "solid",
+      "details": ["notched lapels", "two-button front"],
+      "limits": []
+    }
+  ],
+  "views": { "same_garment": "yes", "conflicts": "" }
 }
 ```
 
-## Final report (after the application computes the verdict)
+| Field | Values |
+|---|---|
+| `image` | Garment image number, 1 to 3. Exactly one entry per garment image sent |
+| `garment` | Short plain name, 2 to 32 characters, or `null` when it cannot be identified |
+| `category` | `top`, `bottom`, `outerwear`, `dress`, `footwear`, `accessory`, `suiting`, `traditional_wear`, `unclear` |
+| `identification`, `colour_status` | `observed`, `uncertain`, `not_visible` |
+| `colours` | Broad families only: `black`, `white`, `cream`, `grey`, `beige`, `brown`, `red`, `pink`, `orange`, `yellow`, `green`, `blue`, `navy`, `purple`, `gold`, `silver`, `multicolour`. `dominant` 1 to 2 (0 when the colour is not visible), `secondary` 0 to 2, at most 3 in all |
+| `pattern` | `solid`, `striped`, `checked`, `printed`, `textured`, `other`, `unclear` |
+| `details` | Up to 3 visible features, 3 to 48 characters each |
+| `limits` | Up to 4 of `lighting`, `occlusion`, `cropped`, `blur`, `low_resolution`, `angle`, `image_text`, `several_items` |
+| `views` | Required in `same_garment_views` mode, refused in the others. `same_garment`: `yes`, `no`, `unclear`; `conflicts` (up to 100 characters) is required unless `yes` |
 
-The application adds `overall_recommendation` and `verdict_score` to the model's output using the weighted formula in PRD.md. These two fields are never produced by the model directly.
+Refused (the block becomes unavailable, with a logged problem code):
+an entry missing or repeated for an image, or one for an image that was not
+sent (`image_mapping`); a missing or misplaced `views` entry; views said to
+show one garment while identified as different kinds of garment
+(`views_contradiction`); a garment named while `not_visible`
+(`identification_inconsistent`); colours for a colour that is not visible, or
+none for one that is (`colour_inconsistent`); and any text stating a
+material or fibre, a brand, a price, durability, comfort or quality, a link,
+or an instruction (`unsupported_text`, `lib/services/openai/claimScreening.ts`).
 
-## Validation
-Every rating and confidence field must exactly match one of the allowed enum values above. If any field is missing or out of enum, treat the whole response as invalid, enter the invalid JSON failure state, do not partially render it.
+## Evidence (analysis-output/3)
 
-## Phase 4 Shopping Advisor extension
+What each rating rests on. It points at facts; it does not explain the rating
+again (the `reason` does that).
 
-For `status: "complete"`, the raw model response also includes an optional advisory section:
+```json
+"evidence": {
+  "color": {
+    "sources": ["person_photo", "garment_images"],
+    "cites": ["g1.colour"],
+    "support": "partial",
+    "missing": "Warm lighting changes the colour"
+  }
+}
+```
+
+| Field | Values |
+|---|---|
+| `sources` | 1 to 5 of `person_photo`, `garment_images`, `occasion`, `style_preferences`, `style_dna`. Only inputs that were actually sent |
+| `cites` | Up to 4 references to observations: `g<image>.type`, `g<image>.colour`, `g<image>.pattern`, `g<image>.d<detail>` |
+| `support` | `sufficient`, `partial`, `insufficient` |
+| `missing` | What was missing or unclear, up to 80 characters. Required unless `sufficient` |
+
+Each dimension is checked on its own. A dimension's evidence is dropped when it
+cites an observation that does not exist or was reported as not visible
+(`invalid_citation`; with no valid observations, every citation is invalid),
+cites observations without naming `garment_images` (`source_mismatch`), names
+Style DNA or style preferences that were not sent (`unsupplied_source`), states
+support that contradicts its rating (`support_conflict`: an unrated dimension
+with `sufficient`, a rated one with `insufficient`), leaves out what was
+missing (`missing_unexplained`) or makes an unsupported claim
+(`unsupported_text`). The result is `available` (six dimensions), `partial`
+or `unavailable`.
+
+## Shopping Advisor
 
 ```json
 "shopping_advisor": {
@@ -64,24 +162,70 @@ For `status: "complete"`, the raw model response also includes an optional advis
 }
 ```
 
-The model returns an empty `recommendations` array when Style DNA context is absent. The application validates this section separately from the six evaluation dimensions. Invalid shopping data never invalidates an otherwise valid outfit analysis.
+Empty without a Style DNA profile; one to three recommendations with one.
+Advisory only: no verdict or score estimate, no retailer, link, price, stock,
+discount, brand, material quality, durability or comfort.
 
-Shopping advice is advisory only. It must not calculate or estimate a verdict score, recommendation, price, stock, retailer, URL, affiliate link, material quality, brand, durability, or comfort.
-## Outfit item notes (analysis-output/2)
-
-Only when the request's garment mode is `outfit_items` (two or three different items worn together), the raw model response for `status: "complete"` may also include:
+## Outfit item notes (outfit_items only)
 
 ```json
 "outfit_components": [
-  {
-    "item": 1,
-    "garment_type": "top | bottom | outerwear | dress | footwear | accessory | suiting | traditional_wear",
-    "assessment": "Works well | Works | Needs attention | Unable to tell",
-    "note": ""
-  }
+  { "item": 1, "garment_type": "top", "assessment": "Works well | Works | Needs attention | Unable to tell", "note": "" }
 ]
 ```
 
-There must be exactly one entry per garment image, each image described once; `item` is the image number starting at 1. The application validates this block separately from the six dimensions. A missing or invalid block makes the notes unavailable and changes nothing else. The notes are advisory: they never change a rating, the score or the verdict, and they are ignored in every other garment mode.
+Exactly one entry per garment image. Ignored in every other mode.
 
-The six dimensions are unchanged in every mode. With several garment images they describe the single garment seen from several views, or the outfit as a whole.
+## After validation (what the API returns)
+
+The application computes `overall_recommendation` and `verdict_score` from the
+six ratings with `computeVerdict` (`lib/services/analysisService.ts`), and adds
+`things_to_consider`, `analysis_based_on` and `next_step`. It attaches the
+informational blocks in the application's own shape:
+
+- `observations`: `{ "availability": "available" | "unavailable", "images": [...], "views"?: {...} }`
+- `evidence`: `{ "availability": "available" | "partial" | "unavailable", "dimensions": { ... } }`
+- `shopping_advisor`: `{ "availability": "available" | "requires_style_dna" | "unavailable", "recommendations": [...] }`
+- `outfit_components` and `garment_mode` for multi-image requests.
+
+Nothing in an informational block can change a rating, a weight, a threshold,
+the score or the band.
+
+## Occasion context (analysis-output/4, Phase 4 Milestone 2)
+
+The request carries the selected occasion and its profile (`lib/constants/occasionProfiles.ts`). The output shape is
+unchanged; the rules for using the profile are stated in the system prompt. The API result adds
+`occasion_context`: `{ occasion, profile_version, formality, setting, suits, varies?, season? }`, the profile the
+model was given. It is display only.
+
+## Views differences and item contributions (analysis-output/4, Phase 4 Milestone 3)
+
+Views mode: `observations.views` may carry `"differences": []`, up to three of `detail_hidden`, `colour_lighting`,
+`different_item`. `same_garment: "yes"` with `different_item`, or `"no"` with differences but no `different_item`, is
+refused (`views_contradiction`).
+
+Outfit mode: each `outfit_components` entry may carry
+`"supports": [], "tension": [], "unclear": [], "cites": []`: dimension keys the item helps, strains or cannot be judged
+against, and up to three citations of its OWN visible observations (`g<item>.type|colour|pattern|d<n>`), required with
+supports or tension; a photo-limit citation alone never supports an effect. `"colour"` is read as the dimension
+`color`. Refused per item, with codes `malformed_contribution` (fields of the wrong shape), `overlapping_dimension`,
+`uncited_effect`, `foreign_citation`, `invalid_citation`, `identity_mismatch`; a refused contribution never removes
+the item's note or the block. The API adds `outfit_components.contributions`:
+`available` | `partial` | `unavailable`, and `contribution` on each item that passed.
+
+## Limits and consistency (analysis-output/4, Phase 4 Milestone 4)
+
+`limits` codes: `lighting`, `shadow`, `occlusion`, `cropped`, `blur`, `low_resolution`, `angle`, `partial_view`,
+`image_text`, `several_items` (at most four per image). Evidence and item contributions may cite `g<image>.<limit>`
+for a limit of that image that weakened the rating; the citation is refused unless the image reported that limit.
+
+The API result adds `consistency`: `{ "flags": [{ "dimension", "code", "detail"? }] }`, computed by the application after
+the verdict; codes `colour_not_observed`, `occasion_not_selected`, `confident_on_partial_evidence`. Flags never change a
+rating, an explanation or the verdict.
+
+## Version history
+
+- `analysis-output/1`: the six ratings and the optional shopping advisor.
+- `analysis-output/2`: adds the optional `outfit_components` block.
+- `analysis-output/3`: adds the optional `observations` and `evidence` blocks. Every `/2` output is still a valid `/3` output, with neither block.
+- `analysis-output/4` (Phase 4 Milestones 2 to 4, released together): occasion profiles and their rules (Milestone 2); the sections below describe the fields Milestones 3 and 4 add. Every `/3` output is still a valid `/4` output.

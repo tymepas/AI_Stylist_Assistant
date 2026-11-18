@@ -1,7 +1,8 @@
 import { computeVerdict } from '@/lib/services/analysisService'
+import { checkConsistency } from '@/lib/services/consistencyService'
 import type { RawOpenAIDimensions } from '@/types/openai'
 import type { GarmentMode } from '@/lib/constants/garmentModes'
-import type { CompleteAnalysisResult, OutfitComponents, OverallRecommendation, ShoppingAdvisor } from '@/types/schema'
+import type { CompleteAnalysisResult, Observations, OccasionContext, OutfitComponents, OverallRecommendation, RatingEvidence, ShoppingAdvisor } from '@/types/schema'
 
 const DIMENSION_LABELS: Record<keyof RawOpenAIDimensions, string> = {
   occasion: 'Occasion compatibility',
@@ -33,6 +34,12 @@ function buildThingsToConsider(dimensions: RawOpenAIDimensions): string[] {
 export interface AnalysisResultExtras {
   garmentMode?: GarmentMode
   outfitComponents?: OutfitComponents
+  /** What was visible in each garment image. Informational; validated separately. */
+  observations?: Observations
+  /** What each rating rests on. Informational; validated separately. */
+  evidence?: RatingEvidence
+  /** The selected occasion and its profile. Display only. */
+  occasionContext?: OccasionContext | null
 }
 
 export function buildCompleteAnalysisResult(
@@ -40,12 +47,18 @@ export function buildCompleteAnalysisResult(
   shopping_advisor: ShoppingAdvisor = { availability: 'unavailable', recommendations: [] },
   extras: AnalysisResultExtras = {}
 ): CompleteAnalysisResult {
-  // The verdict is computed from the six ratings and from nothing else.
+  // The verdict is computed from the six ratings and from nothing else. The extras below are
+  // attached afterwards; none of them is passed to computeVerdict or read by anything that is.
   const verdict = computeVerdict(dimensions)
 
   return {
     ...(extras.garmentMode ? { garment_mode: extras.garmentMode } : {}),
     ...(extras.outfitComponents && extras.outfitComponents.availability !== 'not_applicable' ? { outfit_components: extras.outfitComponents } : {}),
+    ...(extras.observations ? { observations: extras.observations } : {}),
+    ...(extras.evidence ? { evidence: extras.evidence } : {}),
+    ...(extras.occasionContext ? { occasion_context: extras.occasionContext } : {}),
+    // Consistency is checked after the verdict, from values already validated; it only flags.
+    ...(extras.observations || extras.evidence ? { consistency: { flags: checkConsistency({ dimensions, observations: extras.observations, evidence: extras.evidence, occasion: extras.occasionContext?.occasion }) } } : {}),
     status: 'complete',
     dimensions,
     things_to_consider: buildThingsToConsider(dimensions),

@@ -16,6 +16,7 @@ import { retryAfterFor, SpendStoreError } from '@/lib/spend/spendStore'
 import { buildUserContext } from '@/lib/services/openai/openAIAnalysisService'
 import { resolveModelConfig, SUPPORTED_MODEL_IDS } from '@/lib/services/openai/modelConfig'
 import { MAX_AI_STYLE_PROFILE_BYTES, MAX_OCCASION_LENGTH, MAX_STYLE_PROFILE_BYTES, utf8ByteLength } from '@/lib/services/requestLimits'
+import { worstCasePromptBytes } from '../helpers/promptBudget'
 import { VALID_COMPLETE_PROFILE } from '../phase3/fixtures'
 
 afterEach(() => { jest.restoreAllMocks() })
@@ -147,21 +148,13 @@ describe('reservation bounds hold for the worst-case request', () => {
   })
 
   it('analysis text input (in bytes, an upper bound on tokens) fits maxTextInputTokens', () => {
-    // Worst case: 4-byte characters everywhere the client controls text.
-    const occasion = '\u{1F600}'.repeat(MAX_OCCASION_LENGTH / 2) // 32 surrogate pairs = 64 UTF-16 units
+    // Worst case over every garment mode and every occasion profile, with 4-byte characters everywhere the client
+    // controls text (tests/helpers/promptBudget.ts). The style profile filler must itself be within its byte limit.
     const filler = '\u{1F600}'.repeat(Math.floor((MAX_STYLE_PROFILE_BYTES - 80) / 4))
-    const styleProfile = { preferredStyles: [filler], favoriteColors: [], occasionPreferences: [] }
-    expect(utf8ByteLength(JSON.stringify(styleProfile))).toBeLessThanOrEqual(MAX_STYLE_PROFILE_BYTES)
-    const aiProfile = {
-      ...VALID_COMPLETE_PROFILE,
-      coloring: { ...VALID_COMPLETE_PROFILE.coloring, hair_color: '\u{1F600}'.repeat(20), skin_tone_depth: 'medium light' as const },
-      style_keywords: (['Minimalist', 'Streetwear', 'Bohemian', 'Romantic', 'Eclectic'] as const).map((keyword) => ({ keyword, confidence: 'High' as const, source: 'observed' as const })),
-    }
-    const systemPrompt = readFileSync(path.join(process.cwd(), 'memory', 'SYSTEM_PROMPT.md'), 'utf8')
-    const context = buildUserContext(occasion, styleProfile, aiProfile)
-    const textBytes = utf8ByteLength(systemPrompt) + utf8ByteLength(context) + utf8ByteLength('Person image:Garment image:') + 200
+    expect(utf8ByteLength(JSON.stringify({ preferredStyles: [filler], favoriteColors: [], occasionPreferences: [] }))).toBeLessThanOrEqual(MAX_STYLE_PROFILE_BYTES)
+    const worst = worstCasePromptBytes()
     for (const model of SUPPORTED_MODEL_IDS) {
-      expect(textBytes).toBeLessThanOrEqual(resolveModelConfig(model)!.operations.analysis.maxTextInputTokens)
+      expect(worst.bytes).toBeLessThanOrEqual(resolveModelConfig(model)!.operations.analysis.maxTextInputTokens)
     }
   })
 

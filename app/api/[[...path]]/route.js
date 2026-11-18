@@ -3,6 +3,8 @@ import { getMockAnalysis, parseStyleProfile } from '@/lib/services/analysisServi
 import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultService'
 import { buildShoppingAdvisor } from '@/lib/services/shoppingAdvisorService'
 import { buildOutfitComponents } from '@/lib/services/outfitComponentsService'
+import { buildVisualEvidence, hasStylePreferences } from '@/lib/services/visualEvidenceService'
+import { mockVisualEvidenceRaw } from '@/lib/services/mockVisualEvidence'
 import {
   aggregateSizeProblem,
   declaredSizeProblem,
@@ -10,7 +12,7 @@ import {
   garmentLabel,
   intakeImage,
   isUploadedFile,
-  mockOutfitComponents,
+  mockOutfitComponentsRaw,
   readGarmentUploads,
 } from '@/lib/services/uploadIntake'
 import { analyzeWithOpenAI, OpenAIAnalysisError } from '@/lib/services/openai/openAIAnalysisService'
@@ -20,6 +22,7 @@ import { generateProfileWithOpenAI } from '@/lib/services/openai/openAIProfileSe
 import { getMockProfile } from '@/lib/constants/mockProfile'
 import { createRequestId, logEvent } from '@/lib/observability/safeLogger'
 import { MAX_OCCASION_LENGTH } from '@/lib/services/requestLimits'
+import { isKnownOccasion, occasionContextOf } from '@/lib/constants/occasionProfiles'
 import { applySpendRejectionHeaders, reserveSpend } from '@/lib/spend/spendGuard'
 import { ALLOWED_METHODS, applyCorsHeaders, evaluateOrigin, isStateChanging } from '@/lib/security/originPolicy'
 
@@ -188,8 +191,10 @@ async function handleRoute(request, { params }) {
         ))
       }
 
-      // Occasions offered by the UI are short; a cap bounds prompt tokens and reserved spend.
-      if (occasion.length > MAX_OCCASION_LENGTH) {
+      // Occasions offered by the UI are short; a cap bounds prompt tokens and reserved spend. Only an occasion
+      // the application offers is accepted: each has a profile (lib/constants/occasionProfiles.ts), and a value
+      // that is not one is refused before any spend reservation, never matched to a different occasion.
+      if (occasion.length > MAX_OCCASION_LENGTH || !isKnownOccasion(occasion)) {
         return handleCORS(NextResponse.json(
           { error: 'invalid_upload', message: 'Please select a valid occasion.' },
           { status: 400 }
@@ -259,7 +264,23 @@ async function handleRoute(request, { params }) {
           )
           // A single-garment response is exactly what it always was.
           if (garmentMode !== 'single') mockAnalysis.garment_mode = garmentMode
-          if (garmentMode === 'outfit_items') mockAnalysis.outfit_components = mockOutfitComponents(garments.length)
+          // Mock observations and evidence say plainly that no image was analysed. They go through
+          // the same validation as model output and, like every extra, never reach the verdict.
+          const hasStyleDna = Boolean(aiStyleProfileCheck.profile)
+          const visual = buildVisualEvidence({
+            ...mockVisualEvidenceRaw(mockAnalysis.dimensions, garmentMode, garments.length, { hasStyleDna, hasStylePreferences: hasStylePreferences(styleProfileCheck.profile) }),
+            dimensions: mockAnalysis.dimensions,
+            garmentMode,
+            garmentCount: garments.length,
+            hasStyleDna,
+            styleProfile: styleProfileCheck.profile,
+            requestId,
+          })
+          mockAnalysis.observations = visual.observations
+          if (garmentMode === 'outfit_items') mockAnalysis.outfit_components = buildOutfitComponents(mockOutfitComponentsRaw(garments.length), garmentMode, garments.length, requestId, visual.observations)
+          mockAnalysis.evidence = visual.evidence
+          mockAnalysis.occasion_context = occasionContextOf(occasion)
+          // No consistency check: a mock result describes no photo, and its fixed demo explanations would raise flags that mean nothing.
         }
         logMockCompleted('analysis', mockAnalysis.status)
         return handleCORS(NextResponse.json(mockAnalysis))
@@ -291,17 +312,34 @@ async function handleRoute(request, { params }) {
           onUsage: analysisSpend.ticket.onUsage,
         })
 
-        // The verdict is computed by the application from the ratings. The garment mode and
-        // the per-item notes are attached to the result afterwards and never reach that calculation.
-        const result = rawAnalysis.status === 'complete'
-          ? buildCompleteAnalysisResult(
+        // The verdict is computed by the application from the ratings. The garment mode, the per-item
+        // notes, the observations and the evidence are attached to the result afterwards and never
+        // reach that calculation. Each is validated on its own; an invalid one is marked unavailable.
+        let result = rawAnalysis
+        if (rawAnalysis.status === 'complete') {
+          const visual = buildVisualEvidence({
+            rawObservations: rawAnalysis.observations,
+            rawEvidence: rawAnalysis.evidence,
+            dimensions: rawAnalysis.dimensions,
+            garmentMode,
+            garmentCount: garments.length,
+            hasStyleDna: Boolean(aiStyleProfileCheck.profile),
+            styleProfile: styleProfileCheck.profile,
+            requestId,
+          })
+          result = buildCompleteAnalysisResult(
             rawAnalysis.dimensions,
             buildShoppingAdvisor(rawAnalysis.shopping_advisor, Boolean(aiStyleProfileCheck.profile), requestId),
-            garmentMode === 'single'
-              ? {}
-              : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length, requestId) }
+            {
+              ...(garmentMode === 'single'
+                ? {}
+                : { garmentMode, outfitComponents: buildOutfitComponents(rawAnalysis.outfit_components, garmentMode, garments.length, requestId, visual.observations) }),
+              observations: visual.observations,
+              evidence: visual.evidence,
+              occasionContext: occasionContextOf(occasion),
+            }
           )
-          : rawAnalysis
+        }
 
         return handleCORS(NextResponse.json(result))
       } catch (error) {

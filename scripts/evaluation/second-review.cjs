@@ -92,19 +92,19 @@ function styleDnaContext(manifestCase) {
   const { coloring: c, aesthetic_signals: a, proportions: p, style_keywords: keywords } = dna.profile
   const lines = []
   const colouring = []
-  if (c.skin_tone_depth) colouring.push(`skin tone depth: ${c.skin_tone_depth}`)
-  if (c.skin_tone_undertone) colouring.push(`undertone: ${c.skin_tone_undertone}`)
-  if (c.hair_color) colouring.push(`hair: ${c.hair_color}`)
-  if (c.high_contrast !== null) colouring.push(`high contrast coloring: ${c.high_contrast}`)
+  if (c.skin_tone_depth) colouring.push(`depth ${c.skin_tone_depth}`)
+  if (c.skin_tone_undertone) colouring.push(`undertone ${c.skin_tone_undertone}`)
+  if (c.hair_color) colouring.push(`hair ${c.hair_color}`)
+  if (c.high_contrast !== null) colouring.push(`high contrast ${c.high_contrast}`)
   if (colouring.length > 0) lines.push(`coloring context: ${colouring.join(', ')}`)
   const aesthetic = []
-  if (keywords.length > 0) aesthetic.push(`observed style: ${keywords.map((entry) => entry.keyword).join(', ')}`)
-  if (a.current_outfit_formality) aesthetic.push(`typical formality level: ${a.current_outfit_formality}`)
-  if (aesthetic.length > 0) lines.push(`aesthetic context: ${aesthetic.join(', ')}`)
+  if (keywords.length > 0) aesthetic.push(`style ${keywords.map((entry) => entry.keyword).join(', ')}`)
+  if (a.current_outfit_formality) aesthetic.push(`formality ${a.current_outfit_formality}`)
+  if (aesthetic.length > 0) lines.push(`aesthetic context: ${aesthetic.join('; ')}`)
   const proportions = []
-  if (p.frame_width) proportions.push(`frame: ${p.frame_width}`)
-  if (p.torso_length) proportions.push(`torso: ${p.torso_length}`)
-  if (p.shoulder_breadth) proportions.push(`shoulders: ${p.shoulder_breadth}`)
+  if (p.frame_width) proportions.push(`frame ${p.frame_width}`)
+  if (p.torso_length) proportions.push(`torso ${p.torso_length}`)
+  if (p.shoulder_breadth) proportions.push(`shoulders ${p.shoulder_breadth}`)
   if (proportions.length > 0) lines.push(`proportions context: ${proportions.join(', ')}`)
   return { persona: dna.persona, invented: true, context: lines }
 }

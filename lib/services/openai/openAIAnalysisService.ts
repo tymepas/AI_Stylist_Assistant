@@ -9,6 +9,7 @@ import { ANALYSIS_OUTPUT_SCHEMA_VERSION, validateRawOpenAIAnalysis } from './ope
 import { OpenAIAnalysisError } from './openAIErrors'
 import { resolveModelConfig, type NormalizedUsage, type SupportedModelId } from './modelConfig'
 import { fingerprint, IMAGE_PLACEHOLDER } from './promptVersion'
+import { OCCASION_PROFILES, OCCASION_PROFILE_VERSION, occasionProfile, occasionProfileLine } from '@/lib/constants/occasionProfiles'
 import { MAX_GARMENT_IMAGES, garmentCountProblem, type GarmentMode } from '@/lib/constants/garmentModes'
 import { callResponsesApi, type InputContentPart, type RunOverrides } from './responsesClient'
 
@@ -52,15 +53,6 @@ async function fileToDataUrl(file: File): Promise<string> {
   return `data:${file.type};base64,${bytes.toString('base64')}`
 }
 
-/**
- * Builds the user-facing context string injected into the outfit analysis prompt.
- *
- * Phase 3 extension: when an AI Style Profile is present, coloring, aesthetic,
- * and proportions data are included as labeled context so the AI can use them
- * to improve the color and style_preference_match dimensions without being asked
- * to reference them explicitly in its output text.
- * Spec: specs/phase3/07_AI_ANALYSIS_SPEC.md § "Additional Context Provided to the AI"
- */
 /** The garment images of one request: how they relate and how many there are. */
 export interface GarmentContext {
   mode: GarmentMode
@@ -68,110 +60,118 @@ export interface GarmentContext {
 }
 
 /**
- * Extra instruction lines for requests with several garment images. A request
- * with one garment image gets none, so its prompt is exactly what it was before
- * multiple images existed.
+ * The image-mode lines of the user message. Every mode, including a single
+ * garment image, is named explicitly, so the model never has to guess how the
+ * numbered garment images relate to each other.
+ *
+ * The rules and the extra output that belong to ONE mode are sent only with
+ * that mode, never with the others (Phase 4 Milestone 2). The system prompt
+ * holds what every mode shares. This keeps the prompt text of every mode
+ * within `maxTextInputTokens`, the bound the spend reservation is computed
+ * from (tests/helpers/promptBudget.ts measures the worst case).
  */
-function garmentModeLines(garments: GarmentContext | undefined): { context: string[]; format: string[] } {
-  if (!garments || garments.mode === 'single') return { context: [], format: [] }
-  const count = garments.count
-  if (garments.mode === 'same_garment_views') {
-    return {
-      context: [
-        `Garment images: the ${count} garment images show different views of ONE garment, for example front, back and side. Use them together as evidence about a single item. Do not treat them as separate garments or as an outfit.`,
-        'If the garment images do not appear to show the same item, say so in the affected reasons and lower the confidence of those dimensions.',
-      ],
-      format: [],
-    }
-  }
-  // Kept short on purpose: the whole prompt text must stay within maxTextInputTokens, the bound the
-  // spend reservation is computed from (tests/core/garmentModes.test.ts measures the worst case).
-  return {
-    context: [
-      `Garment images: the ${count} garment images show ${count} DIFFERENT items worn together as one outfit. Rate every dimension for the combined outfit as a whole.`,
-    ],
-    format: [
-      'For this request, add "outfit_components" to the "complete" shape: one object per garment image, in image order: {"item":1,"garment_type":"","assessment":"","note":""}. garment_type uses the list above; assessment is Works well|Works|Needs attention|Unable to tell (how the item works within the outfit for the occasion); note is one sentence.',
-      'outfit_components is advisory only and never replaces or changes the six ratings. The rules for reasons apply to it too.',
-    ],
-  }
+export const MODE_RULES: Record<'same_garment_views' | 'outfit_items', string> = {
+  same_garment_views: 'Observe each view on its own; combine them as evidence about one item and claim no feature no view shows. Add observations.views {"same_garment":"yes|no|unclear","differences":[],"conflicts":""}: differences max 3 of detail_hidden (one view only, not a conflict)|colour_lighting|different_item. Unless yes, explain conflicts (max 100 chars) and lower affected confidence.',
+  outfit_items: 'Rate the outfit as a whole. Add top-level outfit_components, one per image in order: {"item":1,"garment_type":"","assessment":"Works well|Works|Needs attention|Unable to tell","note":"one sentence","supports":[],"tension":[],"unclear":[],"cites":[]}: dimension keys it helps, strains or cannot be judged on; cites: max 3 of its own visible g<item> observations, needed with supports or tension.',
 }
 
+function garmentModeLines(garments: GarmentContext): string[] {
+  if (garments.mode === 'single') return ['Image mode: single. Garment image 1 shows one garment.']
+  const range = `Garment images 1 to ${garments.count}`
+  if (garments.mode === 'same_garment_views') return [`Image mode: same_garment_views. ${range} are views of ONE garment.`, MODE_RULES.same_garment_views]
+  return [`Image mode: outfit_items. ${range} are ${garments.count} DIFFERENT items worn together.`, MODE_RULES.outfit_items]
+}
+
+/**
+ * Client-provided text on one line. Line breaks, other control characters and
+ * Unicode line separators become a single space, so a value can never start a
+ * line of its own that looks like one the application wrote (a second
+ * "Occasion:" or "Profile:" line, for example). It never gets longer.
+ */
+export function clientText(value: string): string {
+  return value.replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]+/g, ' ').replace(/ {2,}/g, ' ').trim()
+}
+
+/** The user's stated preferences as plain text: compact, one line, and the same words whatever the client sent. */
+function stylePreferencesLine(profile: StyleProfile): string {
+  const list = (values: string[]) => {
+    const cleaned = values.map(clientText).filter((value) => value.length > 0)
+    return cleaned.length === 0 ? 'none' : cleaned.join(', ')
+  }
+  return `Style preferences: styles ${list(profile.preferredStyles)}; colours ${list(profile.favoriteColors)}; occasions ${list(profile.occasionPreferences)}.`
+}
+
+/**
+ * Builds the user message text of an analysis request: the image mode and the
+ * request's own data. Every fixed rule, including the output format, is in the
+ * system prompt (memory/SYSTEM_PROMPT.md), which is what the model receives as
+ * instructions; it is stated there once and nowhere else.
+ *
+ * Phase 3: when a Style DNA profile is present, its coloring, aesthetic and
+ * proportions data are added as labelled context lines.
+ * Spec: specs/phase3/07_AI_ANALYSIS_SPEC.md § "Additional Context Provided to the AI"
+ *
+ * The whole prompt text must stay within `maxTextInputTokens`, the bound the
+ * spend reservation is computed from (tests/core/garmentModes.test.ts measures
+ * the worst case in every mode).
+ */
 export function buildUserContext(
   occasion: string,
   styleProfile: StyleProfile,
   aiStyleProfile?: AIStyleProfile,
-  garments?: GarmentContext
+  garments: GarmentContext = { mode: 'single', count: 1 }
 ): string {
   const lines = [
-    'Analyze the person image and garment image together for the supplied context.',
-    `Selected occasion: ${occasion}`,
-    `Complete style profile: ${JSON.stringify(styleProfile)}`,
+    ...garmentModeLines(garments),
+    `Occasion: ${occasion}`,
+    // The application's profile of the occasion (Phase 4 Milestone 2), or a plain statement that there is none.
+    occasionProfileLine(occasionProfile(occasion)),
+    stylePreferencesLine(styleProfile),
   ]
 
-  if (aiStyleProfile) {
+  if (!aiStyleProfile) {
+    lines.push('Style DNA: none.')
+  } else {
+    lines.push('Style DNA: provided.')
     // Coloring context — improves color dimension (spec § "Coloring context")
     const c = aiStyleProfile.coloring
     const coloringParts: string[] = []
-    if (c.skin_tone_depth) coloringParts.push(`skin tone depth: ${c.skin_tone_depth}`)
-    if (c.skin_tone_undertone) coloringParts.push(`undertone: ${c.skin_tone_undertone}`)
-    if (c.hair_color) coloringParts.push(`hair: ${c.hair_color}`)
-    if (c.high_contrast !== null) coloringParts.push(`high contrast coloring: ${c.high_contrast}`)
-    if (coloringParts.length > 0) {
-      lines.push(`AI-analyzed coloring context (use for color harmony assessment): ${coloringParts.join(', ')}.`)
-    }
+    if (c.skin_tone_depth) coloringParts.push(`depth ${c.skin_tone_depth}`)
+    if (c.skin_tone_undertone) coloringParts.push(`undertone ${c.skin_tone_undertone}`)
+    if (c.hair_color) coloringParts.push(`hair ${clientText(c.hair_color)}`)
+    if (c.high_contrast !== null) coloringParts.push(`high contrast ${c.high_contrast}`)
+    if (coloringParts.length > 0) lines.push(`DNA coloring: ${coloringParts.join(', ')}.`)
 
     // Aesthetic context — improves style_preference_match dimension (spec § "Aesthetic context")
     const a = aiStyleProfile.aesthetic_signals
     const aestheticParts: string[] = []
     if (aiStyleProfile.style_keywords.length > 0) {
-      aestheticParts.push(`observed style: ${aiStyleProfile.style_keywords.map((k) => k.keyword).join(', ')}`)
+      aestheticParts.push(`style ${aiStyleProfile.style_keywords.map((k) => clientText(String(k.keyword))).join(', ')}`)
     }
-    if (a.current_outfit_formality) {
-      aestheticParts.push(`typical formality level: ${a.current_outfit_formality}`)
-    }
-    if (aestheticParts.length > 0) {
-      lines.push(`AI-analyzed aesthetic context (use for style preference match assessment): ${aestheticParts.join(', ')}.`)
-    }
+    if (a.current_outfit_formality) aestheticParts.push(`formality ${a.current_outfit_formality}`)
+    if (aestheticParts.length > 0) lines.push(`DNA aesthetic: ${aestheticParts.join('; ')}.`)
 
     // Proportions context — optional enrichment for formality/silhouette (spec § "Proportions context")
     const p = aiStyleProfile.proportions
     const proportionParts: string[] = []
-    if (p.frame_width) proportionParts.push(`frame: ${p.frame_width}`)
-    if (p.torso_length) proportionParts.push(`torso: ${p.torso_length}`)
-    if (p.shoulder_breadth) proportionParts.push(`shoulders: ${p.shoulder_breadth}`)
-    if (proportionParts.length > 0) {
-      lines.push(`AI-analyzed proportions context (optional — use only if relevant to garment cut): ${proportionParts.join(', ')}.`)
-    }
+    if (p.frame_width) proportionParts.push(`frame ${p.frame_width}`)
+    if (p.torso_length) proportionParts.push(`torso ${p.torso_length}`)
+    if (p.shoulder_breadth) proportionParts.push(`shoulders ${p.shoulder_breadth}`)
+    if (proportionParts.length > 0) lines.push(`DNA proportions (if relevant): ${proportionParts.join(', ')}.`)
   }
 
-  const garmentLines = garmentModeLines(garments)
-  lines.push(...garmentLines.context)
-
-  lines.push(
-    'For status "complete", return exactly this raw JSON shape and no additional fields:',
-    '{"status":"complete","dimensions":{"occasion":{"rating":"","reason":"","confidence":""},"color":{"rating":"","reason":"","confidence":""},"formality":{"rating":"","reason":"","confidence":""},"seasonality":{"rating":"","reason":"","confidence":""},"style":{"rating":"","reason":"","confidence":""},"style_preference_match":{"rating":"","reason":"","confidence":""}},"shopping_advisor":{"recommendations":[]}}',
-    'The shopping_advisor is advisory only. If AI Style Profile context is absent, return an empty recommendations array. If it is present, return one to three alternatives that address weak dimensions without changing their ratings.',
-    'Each recommendation must contain title, garment_type (top|bottom|outerwear|dress|footwear|accessory|suiting|traditional_wear), color_direction, style_direction, rationale, addresses (one or two dimension keys), and match_level (Excellent Match|Strong Match|Good Match|Possible Match).',
-    'Describe expected outcomes qualitatively through the affected dimensions. Never estimate a future verdict score, calculate a verdict, mention retailers, provide URLs, claim price, availability, discounts, material quality, brand, durability, or comfort.',
-    'Do not return an overall verdict, recommendation, verdict score, weighted score, things_to_consider, analysis_based_on, or next_step for a complete analysis.',
-    'For status "unable_to_analyze", return exactly: {"status":"unable_to_analyze","reason":"","confidence":"Low","next_step":""}.',
-    'Return one JSON object only.',
-  )
-  // Mode-specific format lines go just before the closing line, which stays last.
-  if (garmentLines.format.length > 0) lines.splice(lines.length - 1, 0, ...garmentLines.format)
-
+  lines.push('Return one JSON object only.')
   return lines.join('\n')
 }
 
-function garmentImageLabel(mode: GarmentMode, index: number, count: number): string {
-  if (mode === 'same_garment_views') return `Garment image ${index + 1} of ${count} (a view of the same garment):`
-  return `Garment image ${index + 1} of ${count} (outfit item ${index + 1}):`
+/** Every garment image is numbered; the mode line already says whether they are views or items. */
+function garmentImageLabel(_mode: GarmentMode, index: number): string {
+  return `Garment image ${index + 1}:`
 }
 
 /**
  * The user message of an analysis request. The same builder is used for the real call and for the prompt version.
- * With one garment image the message is exactly what it was before multiple images existed.
+ * Every garment image is numbered, so observations and evidence can name the image they are about.
  */
 export function buildAnalysisContent(
   userContext: string,
@@ -185,12 +185,8 @@ export function buildAnalysisContent(
     { type: 'input_text', text: 'Person image:' },
     { type: 'input_image', image_url: photoDataUrl, detail: 'high' },
   ]
-  if (garmentMode === 'single') {
-    content.push({ type: 'input_text', text: 'Garment image:' }, { type: 'input_image', image_url: garments[0], detail: 'high' })
-    return content
-  }
   garments.forEach((dataUrl, index) => {
-    content.push({ type: 'input_text', text: garmentImageLabel(garmentMode, index, garments.length) }, { type: 'input_image', image_url: dataUrl, detail: 'high' })
+    content.push({ type: 'input_text', text: garmentImageLabel(garmentMode, index) }, { type: 'input_image', image_url: dataUrl, detail: 'high' })
   })
   return content
 }
@@ -211,10 +207,11 @@ const TEMPLATE_AI_PROFILE = {
  * message as built with and without Style DNA context, with placeholders in
  * place of user data and images.
  *
- * Each garment mode has its own template, and so its own version. The version
- * for one garment image is computed exactly as before, so it did not change when
- * the multi-image modes were added. The multi-image templates are fingerprinted
- * with the largest number of garment images.
+ * Each garment mode has its own template, and so its own version. The
+ * multi-image templates are fingerprinted with the largest number of garment
+ * images. Any change to the system prompt or to a fixed line of the message
+ * changes every version, so a recording made with an earlier prompt can never
+ * carry the version of the current one (tests/versioning/promptVersion.test.ts).
  */
 export function computeAnalysisPromptVersion(instructions: string, garmentMode: GarmentMode = 'single'): string {
   const garments: GarmentContext | undefined = garmentMode === 'single' ? undefined : { mode: garmentMode, count: MAX_GARMENT_IMAGES }
@@ -226,7 +223,9 @@ export function computeAnalysisPromptVersion(instructions: string, garmentMode: 
     images,
     garmentMode
   )
-  return fingerprint([instructions, JSON.stringify(withoutProfile), JSON.stringify(withProfile)])
+  // The occasion catalogue is sent as data, one profile per request, so the template placeholder never shows it.
+  // It is fingerprinted as a whole: editing any profile changes every prompt version.
+  return fingerprint([instructions, JSON.stringify(withoutProfile), JSON.stringify(withProfile), OCCASION_PROFILE_VERSION, JSON.stringify(OCCASION_PROFILES)])
 }
 
 /** Version of the analysis prompt currently on disk, for benchmark and evaluation records. */

@@ -1,0 +1,3693 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "v4-occ-office-work",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a collared shirt and tailored trousers for Office Work, at the usual formality (business casual to business formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-office-work-photo.jpg",
+      "garment": "none/v4-occ-office-work-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-client-meeting",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a collared shirt and tailored trousers for Client Meeting, at the usual formality (business casual to business formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-client-meeting-photo.jpg",
+      "garment": "none/v4-occ-client-meeting-garment.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-client-presentation",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a collared shirt and tailored trousers for Client Presentation, at the usual formality (business casual to business formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-client-presentation-photo.jpg",
+      "garment": "none/v4-occ-client-presentation-garment.jpg",
+      "occasion": "Client Presentation",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-corporate-interview",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a tailored navy suit for Corporate Interview, at the usual formality (business formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-corporate-interview-photo.jpg",
+      "garment": "none/v4-occ-corporate-interview-garment.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-startup-interview",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a knit polo and chinos for Startup Interview, at the usual formality (smart casual to business casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-startup-interview-photo.jpg",
+      "garment": "none/v4-occ-startup-interview-garment.jpg",
+      "occasion": "Startup Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-networking-event",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a knit polo and chinos for Networking Event, at the usual formality (smart casual to business casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-networking-event-photo.jpg",
+      "garment": "none/v4-occ-networking-event-garment.jpg",
+      "occasion": "Networking Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-business-lunch",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a collared shirt and tailored trousers for Business Lunch, at the usual formality (business casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-business-lunch-photo.jpg",
+      "garment": "none/v4-occ-business-lunch-garment.jpg",
+      "occasion": "Business Lunch",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-business-casual",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a collared shirt and tailored trousers for Business Casual, at the usual formality (business casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-business-casual-photo.jpg",
+      "garment": "none/v4-occ-business-casual-garment.jpg",
+      "occasion": "Business Casual",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-conference",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a knit polo and chinos for Conference, at the usual formality (smart casual to business casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-conference-photo.jpg",
+      "garment": "none/v4-occ-conference-garment.jpg",
+      "occasion": "Conference",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office"
+    },
+    {
+      "id": "v4-occ-coffee-date",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Coffee Date, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-coffee-date-photo.jpg",
+      "garment": "none/v4-occ-coffee-date-garment.jpg",
+      "occasion": "Coffee Date",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-dinner-date",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a knit polo and chinos for Dinner Date, at the usual formality (smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-dinner-date-photo.jpg",
+      "garment": "none/v4-occ-dinner-date-garment.jpg",
+      "occasion": "Dinner Date",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-first-date",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for First Date, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-first-date-photo.jpg",
+      "garment": "none/v4-occ-first-date-garment.jpg",
+      "occasion": "First Date",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-birthday-party",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Birthday Party, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-birthday-party-photo.jpg",
+      "garment": "none/v4-occ-birthday-party-garment.jpg",
+      "occasion": "Birthday Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-night-out",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a knit polo and chinos for Night Out, at the usual formality (smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-night-out-photo.jpg",
+      "garment": "none/v4-occ-night-out-garment.jpg",
+      "occasion": "Night Out",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-house-party",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for House Party, at the usual formality (casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-house-party-photo.jpg",
+      "garment": "none/v4-occ-house-party-garment.jpg",
+      "occasion": "House Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-cocktail-party",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a tailored navy suit for Cocktail Party, at the usual formality (business formal to formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-cocktail-party-photo.jpg",
+      "garment": "none/v4-occ-cocktail-party-garment.jpg",
+      "occasion": "Cocktail Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party"
+    },
+    {
+      "id": "v4-occ-wedding-guest",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a tailored navy suit for Wedding Guest, at the usual formality (business formal to formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-wedding-guest-photo.jpg",
+      "garment": "none/v4-occ-wedding-guest-garment.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "wedding"
+    },
+    {
+      "id": "v4-occ-wedding-reception",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a tailored navy suit for Wedding Reception, at the usual formality (business formal to formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-wedding-reception-photo.jpg",
+      "garment": "none/v4-occ-wedding-reception-garment.jpg",
+      "occasion": "Wedding Reception",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "wedding"
+    },
+    {
+      "id": "v4-occ-formal-dinner",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a tailored navy suit for Formal Dinner, at the usual formality (business formal to formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-formal-dinner-photo.jpg",
+      "garment": "none/v4-occ-formal-dinner-garment.jpg",
+      "occasion": "Formal Dinner",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "formal"
+    },
+    {
+      "id": "v4-occ-black-tie-event",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a black tuxedo for Black Tie Event, at the usual formality (formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-black-tie-event-photo.jpg",
+      "garment": "none/v4-occ-black-tie-event-garment.jpg",
+      "occasion": "Black Tie Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "formal"
+    },
+    {
+      "id": "v4-occ-award-ceremony",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a tailored navy suit for Award Ceremony, at the usual formality (business formal to formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-award-ceremony-photo.jpg",
+      "garment": "none/v4-occ-award-ceremony-garment.jpg",
+      "occasion": "Award Ceremony",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "formal"
+    },
+    {
+      "id": "v4-occ-casual-outing",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Casual Outing, at the usual formality (casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-casual-outing-photo.jpg",
+      "garment": "none/v4-occ-casual-outing-garment.jpg",
+      "occasion": "Casual Outing",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-occ-shopping",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Shopping, at the usual formality (casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-shopping-photo.jpg",
+      "garment": "none/v4-occ-shopping-garment.jpg",
+      "occasion": "Shopping",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-occ-college",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for College, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-college-photo.jpg",
+      "garment": "none/v4-occ-college-garment.jpg",
+      "occasion": "College",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-occ-weekend",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Weekend, at the usual formality (casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-weekend-photo.jpg",
+      "garment": "none/v4-occ-weekend-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-occ-travel",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Travel, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-travel-photo.jpg",
+      "garment": "none/v4-occ-travel-garment.jpg",
+      "occasion": "Travel",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-occ-vacation",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Vacation, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-vacation-photo.jpg",
+      "garment": "none/v4-occ-vacation-garment.jpg",
+      "occasion": "Vacation",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-occ-outdoor-event",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Outdoor Event, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-outdoor-event-photo.jpg",
+      "garment": "none/v4-occ-outdoor-event-garment.jpg",
+      "occasion": "Outdoor Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "seasonal"
+    },
+    {
+      "id": "v4-occ-summer-event",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Summer Event, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-summer-event-photo.jpg",
+      "garment": "none/v4-occ-summer-event-garment.jpg",
+      "occasion": "Summer Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "seasonal"
+    },
+    {
+      "id": "v4-occ-winter-event",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Winter Event, at the usual formality (casual to business formal).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-winter-event-photo.jpg",
+      "garment": "none/v4-occ-winter-event-garment.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "seasonal"
+    },
+    {
+      "id": "v4-occ-beach",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Beach, at the usual formality (casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-beach-photo.jpg",
+      "garment": "none/v4-occ-beach-garment.jpg",
+      "occasion": "Beach",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "seasonal"
+    },
+    {
+      "id": "v4-occ-rainy-day",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Every occasion has a profile: a relaxed tee and jeans for Rainy Day, at the usual formality (casual to smart casual).",
+      "source": "synthetic",
+      "photo": "none/v4-occ-rainy-day-photo.jpg",
+      "garment": "none/v4-occ-rainy-day-garment.jpg",
+      "occasion": "Rainy Day",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "seasonal"
+    },
+    {
+      "id": "v4-group-suit-interview",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A tailored navy suit for a corporate interview: within the expected formality.",
+      "source": "synthetic",
+      "photo": "none/v4-group-suit-interview-photo.jpg",
+      "garment": "none/v4-group-suit-interview-garment.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office",
+      "occasion_group": "navy-suit"
+    },
+    {
+      "id": "v4-group-suit-black-tie",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The same suit for a black tie event: below the expected formality.",
+      "source": "synthetic",
+      "photo": "none/v4-group-suit-black-tie-photo.jpg",
+      "garment": "none/v4-group-suit-black-tie-garment.jpg",
+      "occasion": "Black Tie Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "consistency": []
+        }
+      },
+      "scenario": "formal",
+      "occasion_group": "navy-suit"
+    },
+    {
+      "id": "v4-group-suit-beach",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The same suit at the beach: far above the expected formality and heavy for warm weather.",
+      "source": "synthetic",
+      "photo": "none/v4-group-suit-beach-photo.jpg",
+      "garment": "none/v4-group-suit-beach-garment.jpg",
+      "occasion": "Beach",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Consider Alternatives",
+          "Not Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "seasonal",
+      "occasion_group": "navy-suit"
+    },
+    {
+      "id": "v4-group-suit-house-party",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The same suit at a house party: more formal than a relaxed home setting expects.",
+      "source": "synthetic",
+      "photo": "none/v4-group-suit-house-party-photo.jpg",
+      "garment": "none/v4-group-suit-house-party-garment.jpg",
+      "occasion": "House Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party",
+      "occasion_group": "navy-suit"
+    },
+    {
+      "id": "v4-wedding-pastel-dress",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A pastel midi dress for a wedding ceremony.",
+      "source": "synthetic",
+      "photo": "none/v4-wedding-pastel-dress-photo.jpg",
+      "garment": "none/v4-wedding-pastel-dress-garment.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "wedding"
+    },
+    {
+      "id": "v4-wedding-hoodie",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A hoodie for a wedding ceremony: well below the expected formality.",
+      "source": "synthetic",
+      "photo": "none/v4-wedding-hoodie-photo.jpg",
+      "garment": "none/v4-wedding-hoodie-garment.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Consider Alternatives",
+          "Not Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "wedding"
+    },
+    {
+      "id": "v4-wedding-traditional-ambiguous",
+      "category": "ambiguous_detail",
+      "description": "Synthetic scenario (no image exists): A festive traditional outfit for a reception whose dress code is not stated: occasion fit is held with medium confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-wedding-traditional-ambiguous-photo.jpg",
+      "garment": "none/v4-wedding-traditional-ambiguous-garment.jpg",
+      "occasion": "Wedding Reception",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "wedding"
+    },
+    {
+      "id": "v4-unknown-occasion",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): An occasion that is not in the catalogue: the API would refuse it; a manifest can still carry it, and it has no profile.",
+      "source": "synthetic",
+      "photo": "none/v4-unknown-occasion-photo.jpg",
+      "garment": "none/v4-unknown-occasion-garment.jpg",
+      "occasion": "Garden Gala",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-dna-office-suit",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (classic): a suit for a client meeting.",
+      "source": "synthetic",
+      "photo": "none/v4-dna-office-suit-photo.jpg",
+      "garment": "none/v4-dna-office-suit-garment.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "office",
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-classic-tailored",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": "medium",
+            "skin_tone_undertone": "neutral",
+            "hair_color": "dark brown",
+            "hair_color_family": "dark",
+            "eye_color": "brown",
+            "high_contrast": false,
+            "confidence": "High"
+          },
+          "proportions": {
+            "frame_width": "medium",
+            "torso_length": "average",
+            "shoulder_breadth": "medium",
+            "visible_posture_notes": null,
+            "confidence": "Medium"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "business casual",
+            "current_outfit_style": [
+              "classic",
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Classic",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Business",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-dna-night-out",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (bold): an expressive printed shirt for a night out.",
+      "source": "synthetic",
+      "photo": "none/v4-dna-night-out-photo.jpg",
+      "garment": "none/v4-dna-night-out-garment.jpg",
+      "occasion": "Night Out",
+      "style_profile": {
+        "preferredStyles": [
+          "Bold",
+          "Trendy"
+        ],
+        "favoriteColors": [
+          "Red",
+          "Orange",
+          "Yellow"
+        ],
+        "occasionPreferences": [
+          "Night Out"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "party",
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-bold-aesthetic",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": null,
+            "skin_tone_undertone": null,
+            "hair_color": null,
+            "hair_color_family": null,
+            "eye_color": null,
+            "high_contrast": null,
+            "confidence": "Low"
+          },
+          "proportions": {
+            "frame_width": null,
+            "torso_length": null,
+            "shoulder_breadth": null,
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "eclectic",
+              "edgy"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Trendy",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Eclectic",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [
+              "Colouring was not determined.",
+              "Proportions were not determined."
+            ],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-conflict-black-tie-street",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A tuxedo for black tie by someone whose stated preferences are streetwear: the occasion fits, the preference does not.",
+      "source": "synthetic",
+      "photo": "none/v4-conflict-black-tie-street-photo.jpg",
+      "garment": "none/v4-conflict-black-tie-street-garment.jpg",
+      "occasion": "Black Tie Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "preference_conflict"
+    },
+    {
+      "id": "v4-preference-none-unrated",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): No style preferences and no Style DNA: preference match is left Unable to Evaluate, as the rules require.",
+      "source": "synthetic",
+      "photo": "none/v4-preference-none-unrated-photo.jpg",
+      "garment": "none/v4-preference-none-unrated-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [],
+        "favoriteColors": [],
+        "occasionPreferences": []
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "casual"
+    },
+    {
+      "id": "v4-rule-preference-inferred",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): No preferences and no Style DNA, yet preference match is rated: taste inferred from the photo.",
+      "source": "synthetic",
+      "photo": "none/v4-rule-preference-inferred-photo.jpg",
+      "garment": "none/v4-rule-preference-inferred-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [],
+        "favoriteColors": [],
+        "occasionPreferences": []
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-rule-seasonality-overconfident",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): No season is stated, yet seasonality is rated with High confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-rule-seasonality-overconfident-photo.jpg",
+      "garment": "none/v4-rule-seasonality-overconfident-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-rule-generic-occasion-reason",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): An occasion explanation that says nothing about the occasion.",
+      "source": "synthetic",
+      "photo": "none/v4-rule-generic-occasion-reason-photo.jpg",
+      "garment": "none/v4-rule-generic-occasion-reason-garment.jpg",
+      "occasion": "Networking Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-rule-assumed-religion",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): An occasion explanation that assumes a religious ceremony the user never stated.",
+      "source": "synthetic",
+      "photo": "none/v4-rule-assumed-religion-photo.jpg",
+      "garment": "none/v4-rule-assumed-religion-garment.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-rule-formality-contradiction",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Formality rated Poor while occasion fit is rated Excellent: the two contradict each other.",
+      "source": "synthetic",
+      "photo": "none/v4-rule-formality-contradiction-photo.jpg",
+      "garment": "none/v4-rule-formality-contradiction-garment.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-views-front-back-coat",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Front and back of one coat; the back vent shows in one view only, which is missing evidence, not a conflict.",
+      "source": "synthetic",
+      "photo": "none/v4-views-front-back-coat-photo.jpg",
+      "garment": "none/v4-views-front-back-coat-garment.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-front-back-coat-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-three-angles-dress",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Three angles of one dress, consistent with each other.",
+      "source": "synthetic",
+      "photo": "none/v4-views-three-angles-dress-photo.jpg",
+      "garment": "none/v4-views-three-angles-dress-garment.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-three-angles-dress-garment-2.jpg",
+        "none/v4-views-three-angles-dress-garment-3.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-lighting-explained",
+      "category": "difficult_colour",
+      "description": "Synthetic scenario (no image exists): One blazer looks navy in one view and blue in the other; the output says lighting explains it.",
+      "source": "synthetic",
+      "photo": "none/v4-views-lighting-explained-photo.jpg",
+      "garment": "none/v4-views-lighting-explained-garment.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "colour",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-lighting-explained-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-lighting-unexplained",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The views show different colours and the output calls them one garment without explaining it.",
+      "source": "synthetic",
+      "photo": "none/v4-views-lighting-unexplained-photo.jpg",
+      "garment": "none/v4-views-lighting-unexplained-garment.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-lighting-unexplained-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-different-item",
+      "category": "ambiguous_detail",
+      "description": "Synthetic scenario (no image exists): The second view shows another garment; the output says so and lowers its confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-views-different-item-photo.jpg",
+      "garment": "none/v4-views-different-item-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-different-item-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-conflict-overconfident",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The output cannot tell whether the views show one garment, yet keeps every rating at High confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-views-conflict-overconfident-photo.jpg",
+      "garment": "none/v4-views-conflict-overconfident-garment.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-conflict-overconfident-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-occluded-detail",
+      "category": "occluded",
+      "description": "Synthetic scenario (no image exists): A bag hides the front pocket in one view; the other view shows it.",
+      "source": "synthetic",
+      "photo": "none/v4-views-occluded-detail-photo.jpg",
+      "garment": "none/v4-views-occluded-detail-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-occluded-detail-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-views-dna-skirt",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (romantic): two views of one pleated skirt.",
+      "source": "synthetic",
+      "photo": "none/v4-views-dna-skirt-photo.jpg",
+      "garment": "none/v4-views-dna-skirt-garment.jpg",
+      "occasion": "Wedding Guest",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-dna-skirt-garment-2.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-romantic-soft",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": "light",
+            "skin_tone_undertone": "cool",
+            "hair_color": "light brown",
+            "hair_color_family": "medium",
+            "eye_color": "grey",
+            "high_contrast": false,
+            "confidence": "Medium"
+          },
+          "proportions": {
+            "frame_width": "narrow",
+            "torso_length": "average",
+            "shoulder_breadth": "narrow",
+            "visible_posture_notes": null,
+            "confidence": "Low"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "smart casual",
+            "current_outfit_style": [
+              "romantic",
+              "bohemian"
+            ],
+            "accessory_presence": "statement",
+            "pattern_preference_signal": "subtle_pattern",
+            "confidence": "Medium"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Romantic",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Bohemian",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-views-dna-coat",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (classic): two views of one coat.",
+      "source": "synthetic",
+      "photo": "none/v4-views-dna-coat-photo.jpg",
+      "garment": "none/v4-views-dna-coat-garment.jpg",
+      "occasion": "Winter Event",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-dna-coat-garment-2.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-classic-tailored",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": "medium",
+            "skin_tone_undertone": "neutral",
+            "hair_color": "dark brown",
+            "hair_color_family": "dark",
+            "eye_color": "brown",
+            "high_contrast": false,
+            "confidence": "High"
+          },
+          "proportions": {
+            "frame_width": "medium",
+            "torso_length": "average",
+            "shoulder_breadth": "medium",
+            "visible_posture_notes": null,
+            "confidence": "Medium"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "business casual",
+            "current_outfit_style": [
+              "classic",
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Classic",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Business",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-views-dna-trainers",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (street): two views of one pair of trainers.",
+      "source": "synthetic",
+      "photo": "none/v4-views-dna-trainers-photo.jpg",
+      "garment": "none/v4-views-dna-trainers-garment.jpg",
+      "occasion": "Casual Outing",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "garment_views",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-dna-trainers-garment-2.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-street-relaxed",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": "medium deep",
+            "skin_tone_undertone": "warm",
+            "hair_color": "black",
+            "hair_color_family": "dark",
+            "eye_color": "dark brown",
+            "high_contrast": false,
+            "confidence": "High"
+          },
+          "proportions": {
+            "frame_width": "broad",
+            "torso_length": "long",
+            "shoulder_breadth": "broad",
+            "visible_posture_notes": null,
+            "confidence": "Medium"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "streetwear",
+              "casual"
+            ],
+            "accessory_presence": "moderate",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Streetwear",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Casual",
+              "confidence": "High",
+              "source": "observed"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-views-difference-contradiction",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The output says the views are one garment and also that a view shows a different item: contradictory, refused.",
+      "source": "synthetic",
+      "photo": "none/v4-views-difference-contradiction-photo.jpg",
+      "garment": "none/v4-views-difference-contradiction-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "unavailable",
+          "evidence": "unavailable",
+          "problems": [
+            "views_contradiction",
+            "invalid_citation"
+          ]
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-views-difference-contradiction-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-office-three",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Blazer, shirt and trousers: each item states which ratings it supports.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-office-three-photo.jpg",
+      "garment": "none/v4-outfit-office-three-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-office-three-garment-2.jpg",
+        "none/v4-outfit-office-three-garment-3.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-mixed-formality",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A tailored blazer with jersey joggers: the joggers strain formality and occasion fit.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-mixed-formality-photo.jpg",
+      "garment": "none/v4-outfit-mixed-formality-garment.jpg",
+      "occasion": "Client Presentation",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-mixed-formality-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-colour-clash",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A red top with an orange skirt: the skirt creates colour tension.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-colour-clash-photo.jpg",
+      "garment": "none/v4-outfit-colour-clash-garment.jpg",
+      "occasion": "Birthday Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Bold",
+          "Trendy"
+        ],
+        "favoriteColors": [
+          "Red",
+          "Orange",
+          "Yellow"
+        ],
+        "occasionPreferences": [
+          "Night Out"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "colour",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-colour-clash-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-one-item-tension",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Shirt, trousers and chunky trainers for an interview: one item strains the rest.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-one-item-tension-photo.jpg",
+      "garment": "none/v4-outfit-one-item-tension-garment.jpg",
+      "occasion": "Corporate Interview",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-one-item-tension-garment-2.jpg",
+        "none/v4-outfit-one-item-tension-garment-3.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-multi-dimension",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A dress that supports several dimensions at once, with heels.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-multi-dimension-photo.jpg",
+      "garment": "none/v4-outfit-multi-dimension-garment.jpg",
+      "occasion": "Formal Dinner",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-multi-dimension-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-dna-street",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (street): hoodie, joggers and trainers.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-dna-street-photo.jpg",
+      "garment": "none/v4-outfit-dna-street-garment.jpg",
+      "occasion": "Casual Outing",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-dna-street-garment-2.jpg",
+        "none/v4-outfit-dna-street-garment-3.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-street-relaxed",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": "medium deep",
+            "skin_tone_undertone": "warm",
+            "hair_color": "black",
+            "hair_color_family": "dark",
+            "eye_color": "dark brown",
+            "high_contrast": false,
+            "confidence": "High"
+          },
+          "proportions": {
+            "frame_width": "broad",
+            "torso_length": "long",
+            "shoulder_breadth": "broad",
+            "visible_posture_notes": null,
+            "confidence": "Medium"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "casual",
+            "current_outfit_style": [
+              "streetwear",
+              "casual"
+            ],
+            "accessory_presence": "moderate",
+            "pattern_preference_signal": "bold_pattern",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Streetwear",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Casual",
+              "confidence": "High",
+              "source": "observed"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-outfit-dna-evening",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): With an invented Style DNA profile (classic): a tailored dress and a clutch.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-dna-evening-photo.jpg",
+      "garment": "none/v4-outfit-dna-evening-garment.jpg",
+      "occasion": "Cocktail Party",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "outfit_items",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-dna-evening-garment-2.jpg"
+      ],
+      "style_dna": {
+        "source": "synthetic",
+        "persona": "persona-classic-tailored",
+        "profile": {
+          "schema_version": "1.0",
+          "generated_at_utc": "2026-01-01T00:00:00.000Z",
+          "status": "complete",
+          "coloring": {
+            "skin_tone_depth": "medium",
+            "skin_tone_undertone": "neutral",
+            "hair_color": "dark brown",
+            "hair_color_family": "dark",
+            "eye_color": "brown",
+            "high_contrast": false,
+            "confidence": "High"
+          },
+          "proportions": {
+            "frame_width": "medium",
+            "torso_length": "average",
+            "shoulder_breadth": "medium",
+            "visible_posture_notes": null,
+            "confidence": "Medium"
+          },
+          "aesthetic_signals": {
+            "current_outfit_formality": "business casual",
+            "current_outfit_style": [
+              "classic",
+              "minimalist"
+            ],
+            "accessory_presence": "minimal",
+            "pattern_preference_signal": "solid",
+            "confidence": "High"
+          },
+          "style_keywords": [
+            {
+              "keyword": "Classic",
+              "confidence": "High",
+              "source": "observed"
+            },
+            {
+              "keyword": "Business",
+              "confidence": "Medium",
+              "source": "inferred"
+            }
+          ],
+          "wardrobe_context": {
+            "visible_garment_notes": null,
+            "color_palette_notes": null
+          },
+          "analysis_notes": {
+            "photo_quality": "good",
+            "visibility_limitations": [],
+            "confidence_summary": "Invented profile for evaluation. It does not describe any real person."
+          }
+        }
+      }
+    },
+    {
+      "id": "v4-outfit-occasion-beach",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): A short-sleeved shirt and shorts for the beach: the occasion states warm weather.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-occasion-beach-photo.jpg",
+      "garment": "none/v4-outfit-occasion-beach-garment.jpg",
+      "occasion": "Beach",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "seasonal",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-occasion-beach-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-missing-observations",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Item contributions cite observations the output never gave: every contribution is dropped, the notes stay.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-missing-observations-photo.jpg",
+      "garment": "none/v4-outfit-missing-observations-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "unavailable",
+          "evidence": "unavailable",
+          "contributions": "unavailable",
+          "problems": [
+            "invalid_citation"
+          ]
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-missing-observations-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-foreign-citation",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Item 1 argues its effect from item 2: that contribution is dropped, the other is kept.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-foreign-citation-photo.jpg",
+      "garment": "none/v4-outfit-foreign-citation-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "partial",
+          "problems": [
+            "foreign_citation"
+          ]
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-foreign-citation-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-identity-mismatch",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Item 2 is called a top while its observation identifies trousers: its contribution is dropped.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-identity-mismatch-photo.jpg",
+      "garment": "none/v4-outfit-identity-mismatch-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "partial",
+          "problems": [
+            "identity_mismatch"
+          ]
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-identity-mismatch-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-uncited-effect",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): An item claims to support colour harmony without citing anything it shows.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-uncited-effect-photo.jpg",
+      "garment": "none/v4-outfit-uncited-effect-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "partial",
+          "problems": [
+            "uncited_effect"
+          ]
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-uncited-effect-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-outfit-duplicate-item",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Two outfit images are observed as the same shirt: one garment counted twice.",
+      "source": "synthetic",
+      "photo": "none/v4-outfit-duplicate-item-photo.jpg",
+      "garment": "none/v4-outfit-duplicate-item-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "contributions": "available"
+        }
+      },
+      "scenario": "integrity",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-outfit-duplicate-item-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-limit-lighting-linked",
+      "category": "difficult_colour",
+      "description": "Synthetic scenario (no image exists): Warm lighting: the colour rating cites the lighting limit and holds back its confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-limit-lighting-linked-photo.jpg",
+      "garment": "none/v4-limit-lighting-linked-garment.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "consistency": []
+        }
+      },
+      "scenario": "colour"
+    },
+    {
+      "id": "v4-limit-shadow",
+      "category": "lighting",
+      "description": "Synthetic scenario (no image exists): Strong shadows hide the pattern; style evidence cites the shadow.",
+      "source": "synthetic",
+      "photo": "none/v4-limit-shadow-photo.jpg",
+      "garment": "none/v4-limit-shadow-garment.jpg",
+      "occasion": "Night Out",
+      "style_profile": {
+        "preferredStyles": [
+          "Bold",
+          "Trendy"
+        ],
+        "favoriteColors": [
+          "Red",
+          "Orange",
+          "Yellow"
+        ],
+        "occasionPreferences": [
+          "Night Out"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "low_confidence"
+    },
+    {
+      "id": "v4-limit-partial-view",
+      "category": "occluded",
+      "description": "Synthetic scenario (no image exists): Only the collar of a jacket is in frame: formality evidence cites the partial view.",
+      "source": "synthetic",
+      "photo": "none/v4-limit-partial-view-photo.jpg",
+      "garment": "none/v4-limit-partial-view-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended",
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "low_confidence"
+    },
+    {
+      "id": "v4-limit-not-linked",
+      "category": "blur",
+      "description": "Synthetic scenario (no image exists): A blurred photo whose limit no rating cites: the limit is reported but never tied to what it weakened.",
+      "source": "synthetic",
+      "photo": "none/v4-limit-not-linked-photo.jpg",
+      "garment": "none/v4-limit-not-linked-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-limit-cited-but-absent",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): Evidence cites a blur the observation never reported: that dimension loses its evidence.",
+      "source": "synthetic",
+      "photo": "none/v4-limit-cited-but-absent-photo.jpg",
+      "garment": "none/v4-limit-cited-but-absent-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "partial",
+          "problems": [
+            "invalid_citation"
+          ]
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-uncertain-colour-overconfident",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The colour is reported uncertain, yet the colour rating keeps High confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-uncertain-colour-overconfident-photo.jpg",
+      "garment": "none/v4-uncertain-colour-overconfident-garment.jpg",
+      "occasion": "Client Meeting",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-unidentified-restrained",
+      "category": "ambiguous_detail",
+      "description": "Synthetic scenario (no image exists): No garment can be identified; occasion fit and formality are held back.",
+      "source": "synthetic",
+      "photo": "none/v4-unidentified-restrained-photo.jpg",
+      "garment": "none/v4-unidentified-restrained-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Consider Alternatives"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "low_confidence"
+    },
+    {
+      "id": "v4-unidentified-overconfident",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): No garment can be identified, yet occasion fit is rated with High confidence.",
+      "source": "synthetic",
+      "photo": "none/v4-unidentified-overconfident-photo.jpg",
+      "garment": "none/v4-unidentified-overconfident-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available"
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-consistency-colour",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The colour explanation calls a navy blazer red: a colour that was never observed is flagged.",
+      "source": "synthetic",
+      "photo": "none/v4-consistency-colour-photo.jpg",
+      "garment": "none/v4-consistency-colour-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "consistency": [
+            "colour_not_observed"
+          ]
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-consistency-skin-tone",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The colour explanation mentions the warm pink undertone of the skin: about the person, not the garment, so nothing is flagged.",
+      "source": "synthetic",
+      "photo": "none/v4-consistency-skin-tone-photo.jpg",
+      "garment": "none/v4-consistency-skin-tone-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "consistency": []
+        }
+      },
+      "scenario": "colour"
+    },
+    {
+      "id": "v4-consistency-occasion",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): The occasion explanation is about a beach outing instead of the office: flagged.",
+      "source": "synthetic",
+      "photo": "none/v4-consistency-occasion-photo.jpg",
+      "garment": "none/v4-consistency-occasion-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "consistency": [
+            "occasion_not_selected"
+          ]
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-consistency-confident-partial",
+      "category": "clear",
+      "description": "Synthetic scenario (no image exists): An Excellent, High-confidence occasion rating whose own evidence says the support is partial: flagged.",
+      "source": "synthetic",
+      "photo": "none/v4-consistency-confident-partial-photo.jpg",
+      "garment": "none/v4-consistency-confident-partial-garment.jpg",
+      "occasion": "Formal Dinner",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Highly Recommended",
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "available",
+          "evidence": "available",
+          "consistency": [
+            "confident_on_partial_evidence"
+          ]
+        }
+      },
+      "scenario": "integrity"
+    },
+    {
+      "id": "v4-injection-views",
+      "category": "adversarial_text",
+      "description": "Synthetic scenario (no image exists): Text on a hang tag tells the model to rate everything Excellent; an observation repeats it and is refused.",
+      "source": "synthetic",
+      "photo": "none/v4-injection-views-photo.jpg",
+      "garment": "none/v4-injection-views-garment.jpg",
+      "occasion": "Office Work",
+      "style_profile": {
+        "preferredStyles": [
+          "Classic",
+          "Elegant"
+        ],
+        "favoriteColors": [
+          "Navy",
+          "Black",
+          "Beige"
+        ],
+        "occasionPreferences": [
+          "Formal Dinner"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "unavailable",
+          "evidence": "unavailable",
+          "problems": [
+            "unsupported_text",
+            "invalid_citation"
+          ]
+        }
+      },
+      "scenario": "adversarial",
+      "garment_mode": "same_garment_views",
+      "extra_garments": [
+        "none/v4-injection-views-garment-2.jpg"
+      ]
+    },
+    {
+      "id": "v4-unsupported-claim-outfit",
+      "category": "product_claims_text",
+      "description": "Synthetic scenario (no image exists): An outfit observation names a fibre no photo can show: refused, and so is every contribution that cites it.",
+      "source": "synthetic",
+      "photo": "none/v4-unsupported-claim-outfit-photo.jpg",
+      "garment": "none/v4-unsupported-claim-outfit-garment.jpg",
+      "occasion": "Weekend",
+      "style_profile": {
+        "preferredStyles": [
+          "Streetwear",
+          "Casual"
+        ],
+        "favoriteColors": [
+          "Black",
+          "Grey"
+        ],
+        "occasionPreferences": [
+          "Casual Outing"
+        ]
+      },
+      "expected": {
+        "acceptable_bands": [
+          "Recommended"
+        ],
+        "should_abstain": false,
+        "key_facts": [],
+        "forbidden_claims": [],
+        "visual_evidence": {
+          "observations": "unavailable",
+          "evidence": "unavailable",
+          "contributions": "unavailable",
+          "problems": [
+            "unsupported_text",
+            "invalid_citation"
+          ]
+        }
+      },
+      "scenario": "product_claims",
+      "garment_mode": "outfit_items",
+      "extra_garments": [
+        "none/v4-unsupported-claim-outfit-garment-2.jpg"
+      ]
+    }
+  ]
+}

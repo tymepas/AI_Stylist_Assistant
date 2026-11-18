@@ -27,6 +27,9 @@ import { buildCompleteAnalysisResult } from '@/lib/services/analysisResultServic
 import { validateRawOpenAIAnalysis } from '@/lib/services/openai/openAIAnalysisSchema'
 import { DIMENSION_KEYS, type Band, type BenchmarkCase, type DimensionKey } from '@/benchmark/harness'
 import { outcomeSignature, type RunDetail } from './metrics'
+import { inspectRun, visualContextOf } from './visualEvidence'
+import { runConsistencyFlags } from './uncertainty'
+import { inspectContributions, parseOutfitComponents } from '@/lib/services/openai/outfitComponentsSchema'
 
 export const BLOCKING_CHECKS = [
   'schema_validity',
@@ -36,6 +39,7 @@ export const BLOCKING_CHECKS = [
   'expected_outcome',
   'consistency',
   'verdict_integrity',
+  'visual_evidence',
 ] as const
 export const PROXY_CHECKS = ['proxy_occasion', 'proxy_explanation'] as const
 export const CHECK_IDS = [...BLOCKING_CHECKS, ...PROXY_CHECKS] as const
@@ -252,8 +256,73 @@ function checkVerdictIntegrity(benchmarkCase: BenchmarkCase, runs: RunDetail[]):
       items: [1, 2, 3].map((item) => ({ item, garment_type: 'top' as const, assessment: 'Works well' as const, note: 'Present only to prove that per-item notes cannot move the verdict.' })),
     }
     if (verdictOf(dimensions, undefined, { garmentMode: 'outfit_items', outfitComponents }) !== recorded) problems.push('changing the outfit item notes changed the verdict')
+    const observations = {
+      availability: 'available' as const,
+      images: [{ image: 1, garment: 'integrity check', category: 'top' as const, identification: 'observed' as const, colours: { dominant: ['black' as const], secondary: [] }, colour_status: 'observed' as const, pattern: 'solid' as const, details: [], limits: [] }],
+    }
+    const evidence = { availability: 'available' as const, dimensions: Object.fromEntries(DIMENSION_KEYS.map((key) => [key, { sources: ['garment_images' as const], cites: ['g1.type'], support: 'sufficient' as const }])) }
+    if (verdictOf(dimensions, undefined, { observations, evidence }) !== recorded) problems.push('adding observations and evidence changed the verdict')
+    if (verdictOf(dimensions, undefined, { observations: { availability: 'unavailable', images: [] }, evidence: { availability: 'unavailable', dimensions: {} } }) !== recorded) problems.push('unavailable observations and evidence changed the verdict')
   }
   return problems.length > 0 ? fail('verdict_integrity', unique(problems).join('; ')) : pass('verdict_integrity')
+}
+
+/**
+ * Observations and evidence (analysis-output/3) are handled as the case expects.
+ *
+ * For every complete run, the two blocks are validated with the production
+ * validators and the result is compared with what the case states: whether
+ * each block is usable, and the problem codes validation must report (an
+ * invalid citation, a contradiction, an unsupported claim). The check also
+ * confirms that the verdict built with the validated blocks is the verdict
+ * built without them. Reasons name blocks and codes only, never model text.
+ */
+function checkVisualEvidence(benchmarkCase: BenchmarkCase, runs: RunDetail[], carriesVisualEvidence: boolean): CheckResult {
+  const expected = benchmarkCase.expected.visual_evidence
+  const complete = runs.filter((run): run is RunDetail & { dimensions: RawOpenAIDimensions } => run.outcome === 'complete' && run.dimensions !== undefined)
+  // A recording made with a schema from before the blocks existed is never judged as if it had left them out.
+  if (!expected || complete.length === 0 || !carriesVisualEvidence) return notApplicable('visual_evidence')
+
+  const problems: string[] = []
+  for (const run of complete) {
+    const inspection = inspectRun(benchmarkCase, run)
+    const observations = inspection.validObservations ? 'available' : 'unavailable'
+    if (observations !== expected.observations) problems.push(`observations were ${observations}, expected ${expected.observations}, in run ${run.run}`)
+    if (inspection.validEvidence.availability !== expected.evidence) problems.push(`evidence was ${inspection.validEvidence.availability}, expected ${expected.evidence}, in run ${run.run}`)
+    const reported = new Set<string>([
+      ...(inspection.observations?.problems ?? []),
+      ...(inspection.evidence?.blockProblems ?? []),
+      ...Object.values(inspection.evidence?.problems ?? {}).flatMap((codes) => codes ?? []),
+    ])
+    if (expected.contributions !== undefined) {
+      let parsed: ReturnType<typeof parseOutfitComponents> | null = null
+      try {
+        parsed = parseOutfitComponents(run.outfit_components, visualContextOf(benchmarkCase).garmentCount)
+      } catch {
+        parsed = null
+      }
+      const contributionInspection = parsed ? inspectContributions(parsed, inspection.validObservations) : null
+      const valid = contributionInspection?.contributions.size ?? 0
+      const availability = !parsed || valid === 0 ? 'unavailable' : valid === parsed.length ? 'available' : 'partial'
+      if (availability !== expected.contributions) problems.push(`item contributions were ${availability}, expected ${expected.contributions}, in run ${run.run}`)
+      for (const codes of contributionInspection?.problems.values() ?? []) for (const code of codes) reported.add(code)
+    }
+    if (expected.consistency !== undefined) {
+      const flagged = [...new Set(runConsistencyFlags(benchmarkCase, run))].sort()
+      const wanted = [...expected.consistency].sort()
+      if (flagged.join(',') !== wanted.join(',')) problems.push(`consistency flags were [${flagged.join(', ')}], expected [${wanted.join(', ')}], in run ${run.run}`)
+    }
+    const missing = (expected.problems ?? []).filter((code) => !reported.has(code))
+    if (missing.length > 0) problems.push(`validation did not report ${missing.join(', ')} in run ${run.run}`)
+
+    const plain = buildCompleteAnalysisResult(run.dimensions)
+    const withBlocks = buildCompleteAnalysisResult(run.dimensions, undefined, {
+      observations: inspection.validObservations ?? { availability: 'unavailable', images: [] },
+      evidence: inspection.validEvidence,
+    })
+    if (plain.overall_recommendation !== withBlocks.overall_recommendation || plain.verdict_score !== withBlocks.verdict_score) problems.push(`the observations or evidence changed the verdict in run ${run.run}`)
+  }
+  return problems.length > 0 ? fail('visual_evidence', unique(problems).join('; ')) : pass('visual_evidence')
 }
 
 /** Fields a model might add to state its own verdict. The output schema must refuse every one of them. */
@@ -343,7 +412,7 @@ function checkExplanationProxy(runs: RunDetail[]): CheckResult {
  * Judges one case from its scored runs (withheld runs are left out by the caller).
  * A case with nothing to judge is `not_applicable`, never `pass`.
  */
-export function evaluateCase(benchmarkCase: BenchmarkCase, runs: RunDetail[]): CaseEvaluation {
+export function evaluateCase(benchmarkCase: BenchmarkCase, runs: RunDetail[], options: { carriesVisualEvidence?: boolean } = {}): CaseEvaluation {
   const scored = runs.filter((run) => run.outcome !== 'withheld')
   const checks: CheckResult[] = [
     checkSchemaValidity(benchmarkCase, scored),
@@ -353,6 +422,7 @@ export function evaluateCase(benchmarkCase: BenchmarkCase, runs: RunDetail[]): C
     checkExpectedOutcome(benchmarkCase, scored),
     checkConsistency(scored),
     checkVerdictIntegrity(benchmarkCase, scored),
+    checkVisualEvidence(benchmarkCase, scored, options.carriesVisualEvidence ?? true),
     checkOccasionProxy(benchmarkCase, scored),
     checkExplanationProxy(scored),
   ]

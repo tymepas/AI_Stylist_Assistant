@@ -1,0 +1,1086 @@
+{
+  "format": "verdict-reference-set/1",
+  "dataset": "scenarios-v3",
+  "dataset_version": "1.0.0",
+  "references": [
+    {
+      "case_id": "v3-single-navy-blazer-office",
+      "images": [],
+      "garment_description": "Synthetic brief: navy tailored blazer",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "suiting",
+            "colours": {
+              "dominant": [
+                "navy"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "lapel",
+              "button"
+            ],
+            "absent_details": [
+              "hood",
+              "zip"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-floral-dress-wedding",
+      "images": [],
+      "garment_description": "Synthetic brief: floral midi dress",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "dress",
+            "colours": {
+              "dominant": [
+                "pink"
+              ],
+              "secondary": [
+                "green"
+              ]
+            },
+            "pattern_category": "printed",
+            "visible_details": [
+              "midi",
+              "sleeve"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-striped-shirt-weekend",
+      "images": [],
+      "garment_description": "Synthetic brief: blue striped shirt",
+      "occasion": "Weekend",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "blue",
+                "white"
+              ]
+            },
+            "pattern_category": "striped",
+            "visible_details": [
+              "collar"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-dna-red-dress-party",
+      "images": [],
+      "garment_description": "Synthetic brief: red wrap dress",
+      "occasion": "Birthday Party",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "dress",
+            "colours": {
+              "dominant": [
+                "red"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "wrap"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-dna-camel-coat",
+      "images": [],
+      "garment_description": "Synthetic brief: long camel coat",
+      "occasion": "Winter Event",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "outerwear",
+            "colours": {
+              "dominant": [
+                "beige"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "belt"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-dna-grey-hoodie",
+      "images": [],
+      "garment_description": "Synthetic brief: grey hoodie",
+      "occasion": "Casual Outing",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "grey"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "hood",
+              "pocket"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-dna-black-trousers",
+      "images": [],
+      "garment_description": "Synthetic brief: black tailored trousers",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "bottom",
+            "colours": {
+              "dominant": [
+                "black"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "crease"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-poor-quality",
+      "images": [],
+      "garment_description": "Synthetic brief: jacket",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Fair"
+        },
+        "color": {
+          "rating": "Unable to Evaluate"
+        },
+        "formality": {
+          "rating": "Fair"
+        },
+        "seasonality": {
+          "rating": "Unable to Evaluate"
+        },
+        "style": {
+          "rating": "Unable to Evaluate"
+        },
+        "style_preference_match": {
+          "rating": "Unable to Evaluate"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "outerwear",
+            "colour_visible": false,
+            "pattern_category": "unclear"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-lighting",
+      "images": [],
+      "garment_description": "Synthetic brief: plain shirt",
+      "occasion": "Client Meeting",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Fair"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colour_visible": false,
+            "pattern_category": "solid",
+            "visible_details": [
+              "collar"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-occlusion",
+      "images": [],
+      "garment_description": "Synthetic brief: skirt",
+      "occasion": "Weekend",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Fair"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "bottom",
+            "colours": {
+              "dominant": [
+                "green"
+              ]
+            },
+            "pattern_category": "unclear"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-single-unidentifiable",
+      "images": [],
+      "garment_description": "Synthetic brief: folded item",
+      "occasion": "Weekend",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Unable to Evaluate"
+        },
+        "color": {
+          "rating": "Fair"
+        },
+        "formality": {
+          "rating": "Unable to Evaluate"
+        },
+        "seasonality": {
+          "rating": "Unable to Evaluate"
+        },
+        "style": {
+          "rating": "Unable to Evaluate"
+        },
+        "style_preference_match": {
+          "rating": "Unable to Evaluate"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "identifiable": false,
+            "colours": {
+              "dominant": [
+                "brown"
+              ]
+            },
+            "pattern_category": "unclear"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-views-blazer-front-back",
+      "images": [],
+      "garment_description": "Synthetic brief: navy blazer seen from front and back",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "suiting",
+            "colours": {
+              "dominant": [
+                "navy"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "lapel"
+            ]
+          },
+          {
+            "item": 2,
+            "garment_type": "suiting",
+            "colours": {
+              "dominant": [
+                "navy"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "vent"
+            ]
+          }
+        ]
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dress-three",
+      "images": [],
+      "garment_description": "Synthetic brief: green dress seen from three sides",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "dress",
+            "colours": {
+              "dominant": [
+                "green"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 2,
+            "garment_type": "dress",
+            "colours": {
+              "dominant": [
+                "green"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 3,
+            "garment_type": "dress",
+            "colours": {
+              "dominant": [
+                "green"
+              ]
+            },
+            "pattern_category": "solid"
+          }
+        ]
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-coat",
+      "images": [],
+      "garment_description": "Synthetic brief: charcoal coat seen from two sides",
+      "occasion": "Winter Event",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-knit",
+      "images": [],
+      "garment_description": "Synthetic brief: cream knit seen from three sides",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Excellent"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-skirt",
+      "images": [],
+      "garment_description": "Synthetic brief: pleated pink skirt seen from two sides",
+      "occasion": "Wedding Guest",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-dna-bomber",
+      "images": [],
+      "garment_description": "Synthetic brief: olive bomber jacket seen from two sides",
+      "occasion": "Casual Outing",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-views-disagreement",
+      "images": [],
+      "garment_description": "Synthetic brief: garment whose two views disagree",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "suiting",
+            "colours": {
+              "dominant": [
+                "navy"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 2,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "white"
+              ]
+            },
+            "pattern_category": "solid"
+          }
+        ]
+      },
+      "views_same_garment": "no"
+    },
+    {
+      "case_id": "v3-views-lighting-between-views",
+      "images": [],
+      "garment_description": "Synthetic brief: shirt seen under two lights",
+      "occasion": "Client Meeting",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Fair"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "blue"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 2,
+            "garment_type": "top",
+            "colour_visible": false,
+            "pattern_category": "solid"
+          }
+        ]
+      },
+      "views_same_garment": "yes"
+    },
+    {
+      "case_id": "v3-outfit-office-three",
+      "images": [],
+      "garment_description": "Synthetic brief: blazer, shirt and trousers",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Excellent"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Excellent"
+        },
+        "style_preference_match": {
+          "rating": "Excellent"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "suiting",
+            "colours": {
+              "dominant": [
+                "navy"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 2,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "white"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "collar"
+            ]
+          },
+          {
+            "item": 3,
+            "garment_type": "bottom",
+            "colours": {
+              "dominant": [
+                "grey"
+              ]
+            },
+            "pattern_category": "solid"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-outfit-casual-two",
+      "images": [],
+      "garment_description": "Synthetic brief: white tee and blue jeans",
+      "occasion": "Weekend",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Excellent"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Excellent"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "white"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "crew"
+            ]
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "colours": {
+              "dominant": [
+                "blue"
+              ]
+            },
+            "pattern_category": "solid",
+            "visible_details": [
+              "straight"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v3-outfit-partial-occlusion",
+      "images": [],
+      "garment_description": "Synthetic brief: shirt, trousers and shoes",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "blue"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 2,
+            "garment_type": "bottom",
+            "colours": {
+              "dominant": [
+                "navy"
+              ]
+            },
+            "pattern_category": "solid"
+          },
+          {
+            "item": 3,
+            "garment_type": "footwear",
+            "colours": {
+              "dominant": [
+                "brown"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

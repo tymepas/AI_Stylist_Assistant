@@ -197,7 +197,9 @@ describe('replay', () => {
     expect(first.mode).toBe('replay')
     expect(first.provenance).toBe('model')
     expect(first.interpretation).toMatch(/not a measure of recognition accuracy/)
-    expect(first.evaluated_with).toMatchObject({ same_prompt_as_recording: true, same_schema_as_recording: true })
+    // The self-test recording was written for analysis-output/2; the current code is /3, and the report says so.
+    expect(first.evaluated_with).toMatchObject({ same_prompt_as_recording: true, same_schema_as_recording: false })
+    expect(first.quality.visual_evidence).toMatchObject({ applicable: false, reason: expect.stringMatching(/before observations and evidence existed/) })
   })
 
   it('validates recorded outputs against the current schema, so a schema change is not hidden', () => {

@@ -53,7 +53,8 @@ describe('outfit notes isolation', () => {
   ]
 
   it('exposes one valid note per garment image', () => {
-    expect(buildOutfitComponents(items, 'outfit_items', 2)).toEqual({ availability: 'available', items })
+    // Notes without item contributions (analysis-output/4) are kept; the contributions are reported as unavailable.
+    expect(buildOutfitComponents(items, 'outfit_items', 2)).toEqual({ availability: 'available', items, contributions: 'unavailable' })
   })
 
   it('is not applicable outside the outfit mode, whatever the model returned', () => {

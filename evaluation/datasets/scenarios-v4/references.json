@@ -1,0 +1,195 @@
+{
+  "format": "verdict-reference-set/1",
+  "dataset": "scenarios-v4",
+  "dataset_version": "1.0.0",
+  "references": [
+    {
+      "case_id": "v4-limit-lighting-linked",
+      "images": [],
+      "garment_description": "Synthetic brief: shirt under warm light",
+      "occasion": "Client Meeting",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Fair"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colour_visible": false,
+            "pattern_category": "solid",
+            "limits": [
+              "lighting"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v4-limit-shadow",
+      "images": [],
+      "garment_description": "Synthetic brief: shirt in shadow",
+      "occasion": "Night Out",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Fair"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "black"
+              ]
+            },
+            "pattern_category": "unclear",
+            "limits": [
+              "shadow"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v4-limit-partial-view",
+      "images": [],
+      "garment_description": "Synthetic brief: jacket, mostly out of frame",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Fair"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Fair"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "outerwear",
+            "colours": {
+              "dominant": [
+                "grey"
+              ]
+            },
+            "limits": [
+              "partial_view",
+              "cropped"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "v4-limit-not-linked",
+      "images": [],
+      "garment_description": "Synthetic brief: blurred shirt",
+      "occasion": "Office Work",
+      "basis": "synthetic",
+      "status": "complete",
+      "provenance": {
+        "image_source": "synthetic"
+      },
+      "dimension_ratings": {
+        "occasion": {
+          "rating": "Good"
+        },
+        "color": {
+          "rating": "Good"
+        },
+        "formality": {
+          "rating": "Good"
+        },
+        "seasonality": {
+          "rating": "Good"
+        },
+        "style": {
+          "rating": "Good"
+        },
+        "style_preference_match": {
+          "rating": "Good"
+        }
+      },
+      "garment_facts": {
+        "items": [
+          {
+            "item": 1,
+            "garment_type": "top",
+            "colours": {
+              "dominant": [
+                "blue"
+              ]
+            },
+            "limits": [
+              "blur",
+              "low_resolution"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

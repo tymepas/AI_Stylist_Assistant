@@ -32,7 +32,9 @@ const FORBIDDEN = [
   'base64,',
   'SYSTEM PROMPT', // memory/SYSTEM_PROMPT.md heading
   'Style Profile System Prompt', // memory/STYLE_PROFILE_SYSTEM_PROMPT.md heading
-  'Selected occasion', // user context sent to the model
+  'Selected occasion', // user context sent to the model (before analysis-output/3)
+  'Image mode:', // user context sent to the model (analysis-output/3)
+  'Style preferences:',
   'skin tone', // appearance context
 ]
 
@@ -183,7 +185,7 @@ describe('end-to-end through the API route (production)', () => {
 
   function analyzeForm() {
     const form = new FormData()
-    form.append('occasion', 'MARKER_OCCASION Office Work')
+    form.append('occasion', 'Office Work')
     form.append('photo', makePng())
     form.append('garment', makePng())
     form.append('styleProfile', JSON.stringify({ preferredStyles: ['MARKER_STYLE'], favoriteColors: [], occasionPreferences: [] }))

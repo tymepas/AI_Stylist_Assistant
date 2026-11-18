@@ -128,8 +128,26 @@ export function garmentLabel(index: number, count: number): string {
 }
 
 const MOCK_GARMENT_TYPES = ['top', 'bottom', 'outerwear'] as const
+const ALL_DIMENSIONS = ['occasion', 'color', 'formality', 'seasonality', 'style', 'style_preference_match'] as const
 
-/** Per-item notes for mock mode. They say plainly that no image was analysed. */
+/**
+ * Per-item notes for mock mode, in the raw model shape, so they go through the
+ * same validation as a model's. They say plainly that no image was analysed,
+ * and every item says it cannot be judged against any dimension, citing only
+ * its mock note.
+ */
+export function mockOutfitComponentsRaw(garmentCount: number): unknown {
+  return Array.from({ length: garmentCount }, (_, index) => ({
+    item: index + 1,
+    garment_type: MOCK_GARMENT_TYPES[index % MOCK_GARMENT_TYPES.length],
+    assessment: 'Unable to tell',
+    note: 'Example note from mock mode: no image was analysed for this item.',
+    unclear: [...ALL_DIMENSIONS],
+    cites: [`g${index + 1}.d1`],
+  }))
+}
+
+/** Per-item notes for mock mode in the application shape, without contributions. Kept for callers that need no observations. */
 export function mockOutfitComponents(garmentCount: number): OutfitComponents {
   return {
     availability: 'available',

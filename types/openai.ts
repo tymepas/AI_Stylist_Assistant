@@ -29,6 +29,10 @@ export interface RawOpenAICompleteAnalysis {
   shopping_advisor?: unknown
   /** Optional untrusted per-item notes for a multi-item outfit; validated separately. */
   outfit_components?: unknown
+  /** Optional untrusted visual observations; validated separately. */
+  observations?: unknown
+  /** Optional untrusted evidence for each rating; validated separately. */
+  evidence?: unknown
 }
 
 export interface RawOpenAIUnableToAnalyze {

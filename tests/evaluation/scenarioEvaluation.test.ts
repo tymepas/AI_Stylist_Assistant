@@ -125,12 +125,15 @@ describe('scenario evaluation', () => {
   })
 
   it('identifies the prompt version, the schema version and the dataset', () => {
-    expect(report.subject).toMatchObject({ prompt_version: '000000000000', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION })
-    expect(report.evaluated_with).toMatchObject({ prompt_version: 'aaaaaaaaaaaa', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION })
+    // scenarios-v1 is frozen: its reference outputs were written for analysis-output/2, before observations existed.
+    expect(report.subject).toMatchObject({ prompt_version: '000000000000', schema_version: 'analysis-output/2' })
+    expect(report.evaluated_with).toMatchObject({ prompt_version: 'aaaaaaaaaaaa', schema_version: ANALYSIS_OUTPUT_SCHEMA_VERSION, same_schema_as_recording: false })
     expect(report.dataset.fingerprint).toMatch(/^[0-9a-f]{12}$/)
     const markdown = renderMarkdown(report)
     expect(markdown).toMatch(/Prompt version: 000000000000/)
-    expect(markdown).toContain(`Schema version: ${ANALYSIS_OUTPUT_SCHEMA_VERSION}`)
+    expect(markdown).toContain(`Schema version: analysis-output/2 (current code: ${ANALYSIS_OUTPUT_SCHEMA_VERSION})`)
+    // A recording from another prompt or schema is never silently read as the current one.
+    expect(markdown).toContain('The recording was made with a different prompt or schema than the current code.')
     expect(markdown).toContain(report.dataset.fingerprint)
   })
 

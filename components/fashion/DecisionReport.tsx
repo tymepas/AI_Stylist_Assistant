@@ -1,14 +1,20 @@
 'use client'
 
-import { AlertTriangle, CheckCircle2, Info, RefreshCw, RotateCcw, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ChevronDown, CircleDashed, CircleHelp, Info, RefreshCw, RotateCcw, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ConfidenceMeter, RatingMeter, ScoreScale } from '@/components/fashion/RatingBadge'
 import ShoppingAdvisor from '@/components/fashion/ShoppingAdvisor'
+import VisualObservations from '@/components/fashion/VisualObservations'
+import OccasionContext from '@/components/fashion/OccasionContext'
+import LimitationsSummary from '@/components/fashion/LimitationsSummary'
+import { SOURCE_LABELS, SUPPORT_LABELS, describeCites, describeLimitCites } from '@/lib/services/visualEvidenceDisplay'
+import { labelOf } from '@/lib/services/evidenceSummary'
+import type { GarmentMode } from '@/lib/constants/garmentModes'
 import { GARMENT_MODE_LABELS } from '@/lib/constants/garmentModes'
 import { BAND_TONE, RATING_TONE } from '@/lib/constants/verdictTones'
 import { DIMENSION_DISPLAY, describeEvidence, summarizeEvidence } from '@/lib/services/evidenceSummary'
 import { cn } from '@/lib/utils'
-import type { CompleteAnalysisResult, DimensionResult, OutfitComponent } from '@/types/schema'
+import type { CompleteAnalysisResult, ComponentContribution, ConsistencyFlag, DimensionEvidence, DimensionResult, Observations, OutfitComponent } from '@/types/schema'
 
 interface DecisionReportProps {
   result: CompleteAnalysisResult
@@ -34,7 +40,87 @@ function humanize(value: string): string {
   return value.replace(/_/g, ' ')
 }
 
-function DimensionRow({ label, weightPercent, dim, delayClass, conflict }: { label: string; weightPercent: number | null; dim: DimensionResult; delayClass: string; conflict: boolean }) {
+/**
+ * What one outfit item does to the outfit-level ratings, in plain words. The
+ * ratings themselves stay those of the whole outfit; this only explains them.
+ */
+function ItemContribution({ contribution, observations }: { contribution: ComponentContribution; observations?: Observations }) {
+  const rows: Array<[string, Array<keyof CompleteAnalysisResult['dimensions']>]> = [
+    ['Helps', contribution.supports],
+    ['Works against', contribution.tension],
+    ['Too little to judge', contribution.unclear],
+  ]
+  const basis = describeCites({ sources: [], cites: contribution.cites, support: 'sufficient' }, observations, undefined)
+  return (
+    <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-t border-border pt-3 text-xs" data-testid="item-contribution">
+      {rows.filter(([, keys]) => keys.length > 0).map(([label, keys]) => (
+        <div key={label} className="contents">
+          <dt className={cn('text-muted-foreground', label === 'Works against' ? 'text-verdict-caution' : '')}>{label}</dt>
+          <dd className="text-foreground">{keys.length === 6 ? 'all six ratings' : keys.map((key) => labelOf(key).toLowerCase()).join(', ')}</dd>
+        </div>
+      ))}
+      {basis.length > 0 ? (
+        <div className="contents">
+          <dt className="text-muted-foreground">Seen</dt>
+          <dd className="break-words text-foreground">{basis.join('; ')}</dd>
+        </div>
+      ) : null}
+    </dl>
+  )
+}
+
+/** One plain sentence for a consistency flag. The detail comes from fixed vocabularies, never from model text. */
+function flagSentence(flag: ConsistencyFlag): string {
+  if (flag.code === 'colour_not_observed') return `It mentions ${flag.detail}, which was not among the colours observed in your photos.`
+  if (flag.code === 'occasion_not_selected') return `It refers to ${flag.detail}, not the occasion you chose.`
+  return 'It is rated with high confidence, although its evidence is only partial.'
+}
+
+const SUPPORT_ICONS = { sufficient: CheckCircle2, partial: CircleDashed, insufficient: CircleHelp } as const
+const SUPPORT_TONES = { sufficient: 'text-verdict-high', partial: 'text-verdict-caution', insufficient: 'text-muted-foreground' } as const
+
+/**
+ * "Why this rating": what one rating rests on, behind a native disclosure so it
+ * is keyboard accessible and adds no clutter until asked for. It separates
+ * observed facts from the explanation above, which is Verdict's interpretation
+ * of them. `null` means the evidence for this dimension did not pass
+ * validation; that is said plainly instead of being left out silently.
+ */
+function RatingEvidencePanel({ label, evidence, observations, mode }: { label: string; evidence: DimensionEvidence | null; observations?: Observations; mode?: GarmentMode }) {
+  if (evidence === null) {
+    return <p className="mt-3 text-xs text-muted-foreground/90" data-testid="dimension-evidence-unavailable">The evidence behind this rating is not available.</p>
+  }
+  const cites = describeCites(evidence, observations, mode)
+  const limits = describeLimitCites(evidence.cites, observations, mode)
+  const Icon = SUPPORT_ICONS[evidence.support]
+  return (
+    <details className="group mt-3" data-testid="dimension-evidence">
+      <summary className="focus-ring inline-flex cursor-pointer list-none items-center gap-1.5 rounded text-xs font-medium uppercase tracking-[0.14em] text-primary [&::-webkit-details-marker]:hidden">
+        Why this rating<span className="sr-only"> for {label}</span>
+        <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" aria-hidden="true" />
+      </summary>
+      <div className="mt-3 space-y-2.5 border-l border-border pl-4 text-sm leading-relaxed">
+        <p className={cn('inline-flex items-center gap-1.5 font-medium', SUPPORT_TONES[evidence.support])}>
+          <Icon className="h-4 w-4" aria-hidden="true" /> {SUPPORT_LABELS[evidence.support]}
+        </p>
+        {cites.length > 0 ? (
+          <div>
+            <p className="text-xs text-muted-foreground">Observed</p>
+            <ul className="mt-1 space-y-0.5">
+              {cites.map((cite, index) => <li key={index} className="break-words text-foreground">{cite}</li>)}
+            </ul>
+          </div>
+        ) : null}
+        <p className="text-muted-foreground">Based on: <span className="text-foreground">{evidence.sources.map((source) => SOURCE_LABELS[source]).join(', ')}</span></p>
+        {limits.length > 0 ? <p className="text-muted-foreground">Limited by: <span className="text-foreground">{limits.join('; ')}</span></p> : null}
+        {evidence.missing ? <p className="break-words text-muted-foreground">Missing or unclear: <span className="text-foreground">{evidence.missing}</span></p> : null}
+        <p className="text-xs text-muted-foreground">These are the facts the rating rests on. The explanation above is Verdict&apos;s reading of them.</p>
+      </div>
+    </details>
+  )
+}
+
+function DimensionRow({ label, weightPercent, dim, delayClass, conflict, evidence, observations, mode, flags = [] }: { label: string; weightPercent: number | null; dim: DimensionResult; delayClass: string; conflict: boolean; evidence?: DimensionEvidence | null; observations?: Observations; mode?: GarmentMode; flags?: ConsistencyFlag[] }) {
   const tone = RATING_TONE[dim.rating]
   return (
     <li className={cn('animate-rise py-5', delayClass)}>
@@ -58,6 +144,12 @@ function DimensionRow({ label, weightPercent, dim, delayClass, conflict }: { lab
         // Stated plainly rather than left blank; nothing is written on the analysis's behalf.
         <p className="mt-3 max-w-prose text-sm italic leading-relaxed text-muted-foreground/80">No explanation was given for this rating.</p>
       )}
+      {flags.length > 0 ? (
+        <div role="note" data-testid="consistency-flag" className="mt-3 max-w-prose rounded-lg border border-verdict-caution/30 bg-verdict-caution/[0.06] px-3 py-2 text-xs leading-relaxed text-foreground/90">
+          <span className="font-medium">Check this explanation.</span> {flags.map(flagSentence).join(' ')} The rating itself is shown as given.
+        </div>
+      ) : null}
+      {evidence !== undefined ? <RatingEvidencePanel label={label} evidence={evidence} observations={observations} mode={mode} /> : null}
     </li>
   )
 }
@@ -82,6 +174,10 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
   // A section with nothing in it is left out, so the report never shows a heading over an empty space.
   const considerations = result.things_to_consider.filter((item) => item.trim().length > 0)
   const { considered, not_considered: notConsidered } = result.analysis_based_on
+  // Evidence per rating, only when the block came back usable at least in part. An unavailable block is
+  // stated once, under the observations; a single dimension that did not validate is stated on its row.
+  const ratingEvidence = result.evidence && result.evidence.availability !== 'unavailable' ? result.evidence : undefined
+  const garmentMode = result.garment_mode ?? (result.observations ? 'single' : undefined)
 
   return (
     <article className="mx-auto max-w-5xl space-y-12" aria-label="Decision report">
@@ -89,7 +185,7 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
         <div className={cn('pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full blur-3xl', tone.soft)} aria-hidden="true" />
         <div className="relative">
           <p className="eyebrow">
-            Your verdict{occasion ? ` for ${occasion}` : ''}
+            Your verdict{(result.occasion_context?.occasion ?? occasion) ? ` for ${result.occasion_context?.occasion ?? occasion}` : ''}
             {modeLabel ? ` · ${modeLabel}` : ''}
           </p>
           <h2 className={cn('mt-4 font-display text-5xl sm:text-7xl', tone.text)} data-testid="verdict-band">
@@ -119,6 +215,12 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
         </div>
       </header>
 
+      <OccasionContext context={result.occasion_context} occasionRating={result.dimensions.occasion} />
+
+      <VisualObservations observations={result.observations} evidence={result.evidence} garmentMode={garmentMode} />
+
+      <LimitationsSummary observations={result.observations} garmentMode={garmentMode} />
+
       <section aria-labelledby="ratings-heading">
         <p className="eyebrow">How it was calculated</p>
         <h3 id="ratings-heading" className="mt-2 font-display text-4xl text-foreground">The six ratings</h3>
@@ -131,6 +233,10 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
               dim={result.dimensions[entry.key]}
               delayClass={DELAYS[index] ?? ''}
               conflict={entry.key === 'style_preference_match' && (result.dimensions[entry.key].rating === 'Poor' || result.dimensions[entry.key].rating === 'Fair')}
+              evidence={ratingEvidence ? ratingEvidence.dimensions[entry.key] ?? null : undefined}
+              flags={(result.consistency?.flags ?? []).filter((flag) => flag.dimension === entry.key)}
+              observations={result.observations}
+              mode={garmentMode}
             />
           ))}
         </ul>
@@ -147,6 +253,11 @@ export default function DecisionReport({ result, onReset, onCompare, occasion }:
                 <p className="eyebrow">Item {item.item} · {GARMENT_TYPE_LABELS[item.garment_type]}</p>
                 <p className={cn('mt-2 font-display text-2xl', item.assessment === 'Needs attention' ? 'text-verdict-caution' : item.assessment === 'Unable to tell' ? 'text-muted-foreground' : 'text-foreground')}>{item.assessment}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.note}</p>
+                {item.contribution ? (
+                  <ItemContribution contribution={item.contribution} observations={result.observations} />
+                ) : result.outfit_components?.contributions && result.outfit_components.contributions !== 'available' ? (
+                  <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground" data-testid="item-contribution-unavailable">How this item affects each rating is not available.</p>
+                ) : null}
               </li>
             ))}
           </ol>

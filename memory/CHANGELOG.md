@@ -263,3 +263,79 @@ Preparation only. No model was called, nothing was spent, and no prompt, output 
 - The plan has no margin for its ten comparison pairs, its pairs are not independent observations, and within the multi-image modes its figures exist only pooled over Style DNA: eight cases without a profile and four with one are too few for a separate figure
 - The dependency audit fails on `picomatch` GHSA-fc5q-39xc-vjpf, on `main` as well. It is left unresolved and is documented in `memory/ARCHITECTURE.md`; no dependency, override or exception was changed
 - The colouring part of Style DNA is not exercised on real images, because only aesthetic-only personas go with a real photo
+
+---
+
+## Unreleased - Phase 4 Milestone 1: visual observations and rating evidence
+
+### Added
+
+- `observations` block (analysis-output/3): per garment image, a garment name and category, up to three broad colour families (dominant and secondary), a pattern category, up to three visible details and photo limitations, with `observed` / `uncertain` / `not_visible` statuses. Views of one garment say whether they appear to show the same garment. Validated separately; never part of the verdict
+- `evidence` block: for each of the six dimensions, the inputs used, the observations cited, the level of support and what was missing. Validated per dimension against the ratings, the validated observations and the inputs actually sent
+- Refusal of unsupported claims in both blocks (material, fibre, brand, price, durability, comfort, quality, links, instructions), with logged problem codes only
+- Decision report: "What Verdict AI observed" and a "Why this rating" disclosure on each rating, with honest unavailable states
+- Evaluation: `quality.visual_evidence` (structural figures and figures against reviewer garment facts), the blocking `visual_evidence` check, report format `/5`, the `scenarios-v3` dataset with a synthetic reference set and its own baseline, and garment facts for every garment mode in the reference format
+
+### Changed
+
+- System prompt rewritten: every rule stated once, the output shapes the code enforces given directly (it no longer refers to a schema document the model never received), all three image modes described, and every garment image numbered. The prompt text stays within the 8,000-token text bound (worst case 7,827 bytes). New prompt versions: single `8dd94dba7564`, views `cc0b04509e09`, outfit `9be41c46ccc1`
+- `memory/AI_OUTPUT_SCHEMA.md` rewritten to match the enforced schemas
+- `scenarios-v1` and `scenarios-v2` baselines refreshed for the new prompt version and report format; no figure and no case outcome changed
+- After two independent reviews: the prompt states every limit the schema enforces and where `views` and `outfit_components` go; a top-level `views` no longer fails the six ratings; mock observations report nothing as observed; claim screening misses fewer claims and refuses fewer ordinary descriptions; problem rates leave out runs whose block was missing; the blocking check does not judge recordings made before /3
+
+### Unchanged
+
+- `computeVerdict`, weights, thresholds and bands; the model, the output token cap (4,000) and the text bound (8,000); spend reservation and fail-closed protections; image intake
+- No live model call was made. No accuracy figure exists for the new blocks
+
+---
+
+## Unreleased - Phase 4 Milestone 2: occasion intelligence
+
+### Added
+
+- Occasion profile catalogue (`occasion-profiles/1`), one profile for each of the 32 occasions offered, sent to the model as one compact line and shown in the report as "Occasion context"
+- Evaluation section `quality.occasion` (report format `/6`) and the `scenarios-v4` dataset with its own baseline
+
+### Changed
+
+- The API refuses an occasion that is not in the list, before any spend reservation
+- The prompt defines the six dimensions apart (occasion fit, formality, seasonality without inferred weather, style consistency, style preference match only from stated preferences and Style DNA); rules for a single garment mode are sent only with that mode
+- Output schema `analysis-output/4` (rules changed; shape as in /3 until Milestones 3 and 4)
+
+---
+
+## Unreleased - Phase 4 Milestone 3: multi-view and outfit reasoning
+
+### Added
+
+- Views: `observations.views.differences` (detail seen in one view only, lighting, a different item), and rules to observe each view on its own and claim nothing no view shows
+- Outfit items: per-item contributions (supports, tension, unclear) citing the item's own observations, validated per item, shown on each item card
+- Evaluation section `quality.multi_image_reasoning`; 24 more `scenarios-v4` cases (11 views, 13 outfits)
+
+### Unchanged
+
+- The six ratings describe the whole outfit; `computeVerdict` never reads contributions
+
+---
+
+## Unreleased - Phase 4 Milestone 4: limitations, uncertainty and report UX
+
+### Added
+
+- Limit codes `shadow` and `partial_view`; evidence and item contributions may cite a limit of their image to tie it to the rating it weakened
+- Consistency flags (never changes): a colour named but not observed, an occasion explanation about another occasion, an Excellent High-confidence rating on partial evidence
+- Report: "What limited this assessment", "Limited by" in each rating's evidence, "Check this explanation" next to a flagged rating; honest unavailable states; older results unchanged
+- Evaluation section `quality.uncertainty`, reviewer limit recall, exact consistency expectations in the blocking check, 15 more `scenarios-v4` cases
+
+### Fixed
+
+- The schema version guard now fingerprints every schema of the output, the observation and evidence schemas included (the Milestone 1 change to it had not taken effect)
+
+### Fixed after the consolidated review (Milestones 2 to 4)
+
+- A malformed contribution field (an unknown dimension, a bad citation, too many citations) dropped every outfit note; it now drops only that item's contribution (`malformed_contribution`), and `"colour"` is read as `color`
+- Style preferences could start a prompt line of their own that looked like the application's `Occasion:` or `Profile:` lines; client text is now kept on one line
+- Consistency flags fired on sound explanations ("navy blue", "black-tie", suggested shoes, "red carpet", "off-white", a cocktail dress for a wedding, a vacation feel at the beach) and missed "works" as a mention of Office Work; narrowed and matched by whole words; mock results no longer carry flags
+- The prompt budget helper under-measured the worst case by up to 91 bytes; it now fills every field to its real limit (worst case 7,989 of 8,000 bytes, still within the bound)
+- A contribution supported only by a photo-limit citation is refused; `limit_recall` is unavailable for recordings before analysis-output/4; `consistency_flag_rate` leaves out runs with no observations and no evidence instead of counting them as clean

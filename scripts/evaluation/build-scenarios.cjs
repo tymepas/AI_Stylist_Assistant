@@ -5,6 +5,12 @@
  *   scenarios-v1   the original scenarios. Frozen: its cases never change.
  *   scenarios-v2   the same cases plus more multi-view, outfit and Style DNA
  *                  cases, so that every garment mode has at least ten.
+ *   scenarios-v3   cases for observations and rating evidence
+ *                  (analysis-output/3), defined in scenarios-v3.cjs, with a
+ *                  synthetic reference set for their garment facts.
+ *   scenarios-v4   cases for Phase 4 Milestones 2 to 4 (analysis-output/4):
+ *                  occasions, multi-view and outfit reasoning, limitations.
+ *                  Defined in scenarios-v4.cjs.
  *
  *   node scripts/evaluation/build-scenarios.cjs          write cases.json and recording.json of both
  *   node scripts/evaluation/build-scenarios.cjs --check  exit 1 if a committed file differs
@@ -30,6 +36,8 @@ const { createHash } = require('node:crypto')
 const { readFileSync, writeFileSync, mkdirSync } = require('node:fs')
 const path = require('node:path')
 const { styleDna } = require('./style-dna-personas.cjs')
+const { V3_CASES, autoEvidence } = require('./scenarios-v3.cjs')
+const { V4_CASES } = require('./scenarios-v4.cjs')
 
 const DIMENSIONS = ['occasion', 'color', 'formality', 'seasonality', 'style', 'style_preference_match']
 const RATING = { E: 'Excellent', G: 'Good', F: 'Fair', P: 'Poor', U: 'Unable to Evaluate' }
@@ -313,6 +321,16 @@ const V2_CASES = [
 const DATASET_CASES = {
   'scenarios-v1': CASES,
   'scenarios-v2': [...CASES, ...V2_CASES],
+  'scenarios-v3': V3_CASES,
+  'scenarios-v4': V4_CASES,
+}
+
+/** The output schema each dataset's reference outputs are written for. v1 and v2 stay on /2: their files never change. */
+const SCHEMA_VERSIONS = {
+  'scenarios-v1': 'analysis-output/2',
+  'scenarios-v2': 'analysis-output/2',
+  'scenarios-v3': 'analysis-output/3',
+  'scenarios-v4': 'analysis-output/4',
 }
 
 function datasetDir(name) {
@@ -345,6 +363,7 @@ function buildCase(definition) {
   if (definition.uncertainty) expected.uncertainty = definition.uncertainty
   if (definition.mustReject) expected.must_be_rejected = true
   if (definition.terms) expected.occasion_terms = definition.terms
+  if (definition.visual) expected.visual_evidence = definition.visual
 
   const benchmarkCase = {
     id: slug,
@@ -359,6 +378,7 @@ function buildCase(definition) {
     scenario: definition.scenario,
   }
   if (definition.twin) benchmarkCase.twin_of = definition.twin
+  if (definition.group) benchmarkCase.occasion_group = definition.group
   if (definition.mode) {
     benchmarkCase.garment_mode = definition.mode
     benchmarkCase.extra_garments = Array.from({ length: definition.extra }, (_, index) => `none/${slug}-garment-${index + 2}.jpg`)
@@ -376,7 +396,41 @@ function buildOutput(definition) {
   if (definition.advisor) output.shopping_advisor = definition.advisor
   // Per-item notes exist only for outfits of several items. They are advisory and never reach the verdict.
   if (definition.components) output.outfit_components = definition.components
+  // Observations and evidence (scenarios-v3 only). Evidence is written by fixed rules from the ratings and from the
+  // observations the case describes (`evidenceFrom` when the observations themselves are missing or malformed).
+  if ('obs' in definition) {
+    if (definition.obs !== undefined) output.observations = definition.obs
+    if (definition.evidence !== null) {
+      const profile = PROFILE[definition.profile ?? 'none']
+      const context = { hasStyleDna: Boolean(definition.dna), hasPreferences: profile.preferredStyles.length + profile.favoriteColors.length + profile.occasionPreferences.length > 0 }
+      const auto = autoEvidence(output.dimensions, definition.evidenceFrom ?? definition.obs, context)
+      output.evidence = typeof definition.evidence === 'function' ? definition.evidence(auto) : auto
+    }
+  }
   return output
+}
+
+/**
+ * Synthetic references for the cases that state garment facts. They are written for the brief, never from an
+ * image, and carry no reviewer: the evaluation reports them as synthetic, never as a human review.
+ */
+function buildReferences(name, definitions) {
+  const references = definitions.filter((definition) => definition.facts || definition.viewsSame).map((definition) => {
+    const ratings = dimensions(definition.r, definition.c ?? 'HHHHHH', definition.g, definition.occasion)
+    return {
+      case_id: definition.id,
+      images: [],
+      garment_description: `Synthetic brief: ${definition.g}`,
+      occasion: definition.occasion,
+      basis: 'synthetic',
+      status: 'complete',
+      provenance: { image_source: 'synthetic' },
+      dimension_ratings: Object.fromEntries(Object.entries(ratings).map(([key, value]) => [key, { rating: value.rating }])),
+      ...(definition.facts ? { garment_facts: definition.facts } : {}),
+      ...(definition.viewsSame ? { views_same_garment: definition.viewsSame } : {}),
+    }
+  })
+  return { format: 'verdict-reference-set/1', dataset: name, dataset_version: '1.0.0', references }
 }
 
 function sortKeys(value) {
@@ -419,14 +473,16 @@ function build(name = 'scenarios-v1') {
     reasoning_effort: 'low',
     max_output_tokens: 4000,
     prompt_version: '000000000000',
-    schema_version: 'analysis-output/2',
+    schema_version: SCHEMA_VERSIONS[name],
     dataset_fingerprint: datasetFingerprint(cases),
     entries,
   }
-  return {
+  const files = {
     'cases.json': `${JSON.stringify({ version: 1, cases }, null, 2)}\n`,
     'recording.json': `${JSON.stringify(recording, null, 2)}\n`,
   }
+  if (definitions.some((definition) => definition.facts || definition.viewsSame)) files['references.json'] = `${JSON.stringify(buildReferences(name, definitions), null, 2)}\n`
+  return files
 }
 
 function main() {
@@ -457,6 +513,6 @@ function main() {
   return 0
 }
 
-module.exports = { build, CASES, V2_CASES, DATASET_CASES, datasetDir }
+module.exports = { build, CASES, V2_CASES, V3_CASES, V4_CASES, DATASET_CASES, datasetDir }
 
 if (require.main === module) process.exit(main())
